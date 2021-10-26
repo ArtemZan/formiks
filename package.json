@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@datepicker-react/hooks": "^2.8.4",
+    "rsuite": "^5.0.3"
+  }
+}
