@@ -12,6 +12,12 @@ import {
   HStack,
   Input,
   IconButton,
+  CloseButton,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import Select from "react-select";
@@ -22,6 +28,7 @@ import { Table, RangeSlider } from "rsuite";
 import { msalInstance } from "../../index";
 import { AiOutlineDelete, BiPlusMedical } from "react-icons/all";
 import { useState } from "react";
+import { ArrowForwardIcon } from "@chakra-ui/icons";
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -30,8 +37,9 @@ interface Props {
 }
 
 interface FilterField {
-  name: string;
+  column: string;
   type: string;
+  filter: string;
   values: any[];
 }
 
@@ -152,73 +160,254 @@ export function Explorer(props: Props) {
           </Box>
 
           <Box
-            w="100%"
             shadow="md"
             color="gray.600"
             backgroundColor="white"
             mb={10}
             p={8}
+            pb={0}
             rounded="md"
+            w={"100%"}
           >
             <VStack
-              mb={"20px"}
               spacing={8}
               fontSize="md"
               align="stretch"
               color={"gray.500"}
             >
               <Box w={"100%"}>
-                <Table
-                  rowHeight={70}
-                  hover={false}
-                  height={filters.length * 70 + 80}
-                  //   autoHeight
-                  style={{ width: "100%" }}
-                  data={filters}
-                  key="filter-table"
-                >
-                  <Column verticalAlign="middle" flexGrow={2}>
-                    <HeaderCell>Name</HeaderCell>
-                    <Cell dataKey="name">
-                      {(row: any, index: number) => {
-                        return <Input w={"95%"} value={row.name} />;
-                      }}
-                    </Cell>
-                  </Column>
-                  <Column verticalAlign="middle" flexGrow={2}>
-                    <HeaderCell>Type</HeaderCell>
-                    <Cell dataKey="type">
-                      {(row: any) => {
-                        return (
-                          <Input readOnly w={"95%"} defaultValue={"dropdown"} />
-                        );
-                      }}
-                    </Cell>
-                  </Column>
-
-                  <Column verticalAlign="middle" flexGrow={4}>
-                    <HeaderCell>Values</HeaderCell>
-                    <Cell dataKey="values">
-                      {(row: any, index: number) => {
-                        return <Input w={"100%"} value={row.name} />;
-                      }}
-                    </Cell>
-                  </Column>
-                </Table>
-
-                <IconButton
-                  onClick={() => {
-                    setFilters([
-                      ...filters,
-                      { name: "", type: "", values: [] } as FilterField,
-                    ]);
-                  }}
-                  my={5}
-                  float="right"
-                  variant="outline"
-                  aria-label="add-filter"
-                  icon={<BiPlusMedical />}
-                />
+                <Box w={"100%"}>
+                  {filters.map((filter, index) => {
+                    return (
+                      <Box
+                        w={"100%"}
+                        backgroundColor="white"
+                        p={4}
+                        mb={5}
+                        border="1px"
+                        rounded="md"
+                        borderColor="gray.100"
+                      >
+                        <CloseButton
+                          onClick={() => {
+                            var temp = [...filters];
+                            temp.splice(index, 1);
+                            setFilters(temp);
+                          }}
+                          float="right"
+                        />
+                        <VStack
+                          mt={"20px"}
+                          spacing={8}
+                          fontSize="md"
+                          align="stretch"
+                          color={"gray.500"}
+                        >
+                          <Box>
+                            <Stack
+                              direction={{ base: "column", xl: "row" }}
+                              w="100%"
+                              spacing={{ base: "20px", xl: "50px" }}
+                            >
+                              <Box w="100%">
+                                <Text mb="8px">Column</Text>
+                                <Select
+                                  styles={{
+                                    menu: (provided) => ({
+                                      ...provided,
+                                      zIndex: 1000000,
+                                    }),
+                                    singleValue: (provided) => ({
+                                      ...provided,
+                                      color: "#718196",
+                                    }),
+                                    control: (base, state) => ({
+                                      ...base,
+                                      minHeight: 40,
+                                      border: "1px solid #E2E8F0",
+                                      transition: "0.3s",
+                                      "&:hover": {
+                                        border: "1px solid #CBD5E0",
+                                      },
+                                    }),
+                                  }}
+                                  theme={(theme) => ({
+                                    ...theme,
+                                    borderRadius: 6,
+                                    colors: {
+                                      ...theme.colors,
+                                      primary: "#3082CE",
+                                    },
+                                  })}
+                                  value={{
+                                    label: filter.column,
+                                    value: filter.column,
+                                  }}
+                                  onChange={(value: any) => {
+                                    var temp = [...filters];
+                                    temp[index].column = value.value;
+                                    temp[index].type = value.type;
+                                    setFilters(temp);
+                                  }}
+                                  classNamePrefix="select"
+                                  isClearable={false}
+                                  name="color"
+                                  options={fields.map((field) => {
+                                    return {
+                                      label: field,
+                                      value: field,
+                                      type: field,
+                                    };
+                                  })}
+                                />
+                              </Box>
+                              <Box w="100%">
+                                <Text mb="8px">Type</Text>
+                                <Input
+                                  onChange={() => {}}
+                                  value={filter.type}
+                                  readOnly
+                                />
+                              </Box>
+                              <Box w="100%">
+                                <Text mb="8px">Filter</Text>
+                                <Select
+                                  styles={{
+                                    menu: (provided) => ({
+                                      ...provided,
+                                      zIndex: 1000000,
+                                    }),
+                                    singleValue: (provided) => ({
+                                      ...provided,
+                                      color: "#718196",
+                                    }),
+                                    control: (base, state) => ({
+                                      ...base,
+                                      minHeight: 40,
+                                      border: "1px solid #E2E8F0",
+                                      transition: "0.3s",
+                                      "&:hover": {
+                                        border: "1px solid #CBD5E0",
+                                      },
+                                    }),
+                                  }}
+                                  theme={(theme) => ({
+                                    ...theme,
+                                    borderRadius: 6,
+                                    colors: {
+                                      ...theme.colors,
+                                      primary: "#3082CE",
+                                    },
+                                  })}
+                                  value={{
+                                    label:
+                                      filter.filter.charAt(0).toUpperCase() +
+                                      filter.filter.slice(1),
+                                    value: filter.filter,
+                                  }}
+                                  onChange={(value: any) => {
+                                    var temp = [...filters];
+                                    temp[index].filter = value.value;
+                                    setFilters(temp);
+                                  }}
+                                  classNamePrefix="select"
+                                  isClearable={false}
+                                  name="filter"
+                                  options={
+                                    filter.type === "number"
+                                      ? [
+                                          { label: "Exact", value: "exact" },
+                                          {
+                                            label: "Includes",
+                                            value: "includes",
+                                          },
+                                          { label: "Range", value: "range" },
+                                        ]
+                                      : [
+                                          { label: "Exact", value: "exact" },
+                                          {
+                                            label: "Includes",
+                                            value: "includes",
+                                          },
+                                        ]
+                                  }
+                                />
+                              </Box>
+                            </Stack>
+                          </Box>
+                          <Stack
+                            direction={{ base: "column", xl: "row" }}
+                            w="100%"
+                            spacing={{ base: "20px", xl: "50px" }}
+                          >
+                            <Box w="100%">
+                              <Text mb="8px">
+                                {filter.filter === "range" ? "Range" : "Values"}
+                              </Text>
+                              {filter.filter === "range" ? (
+                                <Stack
+                                  direction={{ base: "column", md: "row" }}
+                                >
+                                  <NumberInput w="100%">
+                                    <NumberInputField />
+                                    <NumberInputStepper>
+                                      <NumberIncrementStepper />
+                                      <NumberDecrementStepper />
+                                    </NumberInputStepper>
+                                  </NumberInput>
+                                  <Box textAlign="center" w="20px">
+                                    <ArrowForwardIcon
+                                      alignSelf="center"
+                                      w={5}
+                                      h="100%"
+                                    />
+                                  </Box>
+                                  <NumberInput w="100%">
+                                    <NumberInputField />
+                                    <NumberInputStepper>
+                                      <NumberIncrementStepper />
+                                      <NumberDecrementStepper />
+                                    </NumberInputStepper>
+                                  </NumberInput>
+                                </Stack>
+                              ) : (
+                                <TagPicker
+                                  cleanable
+                                  style={{
+                                    minHeight: "40px",
+                                    paddingTop: "2px",
+                                  }}
+                                  data={fields.map((value) => {
+                                    return { label: value, value };
+                                  })}
+                                  block
+                                />
+                              )}
+                            </Box>
+                          </Stack>
+                        </VStack>
+                      </Box>
+                    );
+                  })}
+                  <IconButton
+                    onClick={() => {
+                      setFilters([
+                        ...filters,
+                        {
+                          column: "",
+                          type: "",
+                          filter: "exact",
+                          values: [],
+                        } as FilterField,
+                      ]);
+                    }}
+                    my={5}
+                    float="right"
+                    variant="outline"
+                    aria-label="add-port"
+                    icon={<BiPlusMedical />}
+                  />
+                </Box>
               </Box>
             </VStack>
           </Box>
