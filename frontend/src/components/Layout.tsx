@@ -50,7 +50,6 @@ function Layout(props: any) {
   const history = useHistory();
 
   useEffect(() => {
-    console.log(isAuthenticated);
     if (localStorage.getItem("cookieConsent") === "allowed") {
       setCookieConsent(true);
     }
