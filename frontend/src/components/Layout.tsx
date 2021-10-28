@@ -23,12 +23,16 @@ import {
   MenuDivider,
   HStack,
   VStack,
+  useColorMode,
+  Center,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
   CloseIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  MoonIcon,
+  SunIcon,
 } from "@chakra-ui/icons";
 import { useHistory } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -41,10 +45,13 @@ import {
 import { FaUserCircle, FiChevronDown } from "react-icons/all";
 import CookiePreference from "./AllowCookies";
 import { msalInstance } from "../index";
+import { InteractionStatus } from "@azure/msal-browser";
+import { getUserPhoto } from "../utils/MsGraphApiCall";
 
 function Layout(props: any) {
   const { instance, inProgress } = useMsal();
 
+  const [userPhoto, setUserPhoto] = useState<undefined | string>(undefined);
   const [cookieConsent, setCookieConsent] = useState(false);
   const isAuthenticated = useIsAuthenticated();
   const history = useHistory();
@@ -55,12 +62,30 @@ function Layout(props: any) {
     }
   }, []);
 
+  useEffect(() => {
+    if (
+      isAuthenticated &&
+      !userPhoto &&
+      inProgress === InteractionStatus.None
+    ) {
+      getUserPhoto().then((response) => setUserPhoto(response));
+    }
+  }, [inProgress, userPhoto, instance, isAuthenticated]);
+
   const { children } = props;
   const { isOpen, onToggle } = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <Box minH="100vh">
-      {!cookieConsent ? <CookiePreference /> : null}
+      {!cookieConsent ? (
+        <CookiePreference
+          onAllow={() => {
+            setCookieConsent(true);
+            localStorage.setItem("cookieConsent", "allowed");
+          }}
+        />
+      ) : null}
 
       <Box>
         <Flex
@@ -94,7 +119,7 @@ function Layout(props: any) {
           </Flex>
           <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
             <Text
-              mt={"4px"}
+              mt={"2px"}
               ml={{ base: "0", md: "10px" }}
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               fontFamily={"heading"}
@@ -104,6 +129,7 @@ function Layout(props: any) {
               onClick={() => {
                 history.push("/");
               }}
+              fontSize="lg"
             >
               Formiks
             </Text>
@@ -119,18 +145,25 @@ function Layout(props: any) {
             direction={"row"}
             spacing={6}
           >
+            {/* <Button variant="ghost" onClick={toggleColorMode}>
+              {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+            </Button> */}
             <AuthenticatedTemplate>
               <Menu>
                 <MenuButton>
                   <HStack>
-                    <Avatar mr={"10px"} size={"sm"} />
+                    <Avatar src={userPhoto} mr={"10px"} size={"sm"} />
                     <VStack
                       display={{ base: "none", md: "flex" }}
                       alignItems="flex-start"
                       spacing="1px"
                       ml={{ base: 0, md: "2" }}
                     >
-                      <Text color="gray.800" fontWeight={500} fontSize="sm">
+                      <Text
+                        color={useColorModeValue("gray.800", "gray.200")}
+                        fontWeight={500}
+                        fontSize="sm"
+                      >
                         {isAuthenticated
                           ? msalInstance.getActiveAccount()?.name
                           : null}
@@ -144,7 +177,7 @@ function Layout(props: any) {
                     </Box>
                   </HStack>
                 </MenuButton>
-                <MenuList zIndex={2000000}>
+                <MenuList boxShadow="none" zIndex={2000000}>
                   <MenuGroup title="Profile">
                     <MenuItem onClick={() => {}}>My Account</MenuItem>
                   </MenuGroup>
@@ -278,7 +311,8 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
           <Text
             transition={"all .3s ease"}
             _groupHover={{ color: "blue.400" }}
-            fontWeight={500}
+            fontWeight={600}
+            fontSize="md"
           >
             {label}
           </Text>
@@ -413,9 +447,21 @@ const NAV_ITEMS: Array<NavItem> = [
       },
     ],
   },
+
   {
     label: "Submissions",
-    href: "/submissions",
+    children: [
+      {
+        label: "Classic Viewer",
+        subLabel: "Default submission explorer and viewer",
+        href: "/submissions",
+      },
+      {
+        label: "Table Viewer",
+        subLabel: "Filter and sort submissions with table view",
+        href: "/submissions",
+      },
+    ],
   },
 
   {

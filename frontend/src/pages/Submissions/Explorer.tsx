@@ -3,6 +3,7 @@ import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
+import moment from "moment";
 import {
   Box,
   Text,
@@ -18,6 +19,7 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Tag,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import Select from "react-select";
@@ -27,7 +29,7 @@ import { TagPicker } from "rsuite";
 import { Table, RangeSlider } from "rsuite";
 import { msalInstance } from "../../index";
 import { AiOutlineDelete, BiPlusMedical } from "react-icons/all";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 
 const { Column, HeaderCell, Cell } = Table;
@@ -41,13 +43,173 @@ interface FilterField {
   type: string;
   filter: string;
   values: any[];
+  selectedValues: any[];
 }
 
-const data = [];
 const fields = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+
+const statuses = ["New", "In Progress", "Completed", "On Hold", "Canceled"];
+
+const columns = [
+  {
+    name: "Text Field",
+    type: "text",
+    values: ["hello"],
+  },
+  {
+    name: "Dropdown Field",
+    type: "dropdown",
+    values: ["hello", "world", "!"],
+  },
+  {
+    name: "Number Field",
+    type: "number",
+    values: [1],
+  },
+  {
+    name: "First Field",
+    type: "text",
+    values: [
+      "hello-1",
+      "hello-2",
+      "hello-3",
+      "hello-4",
+      "hello-5",
+      "hello-6",
+      "hello-7",
+      "hello-8",
+      "hello-9",
+      "hello-10",
+      "hello-11",
+      "hello-12",
+      "hello-13",
+      "hello-14",
+      "hello-15",
+      "hello-16",
+      "hello-17",
+      "hello-18",
+      "hello-19",
+      "hello-20",
+    ],
+  },
+  {
+    name: "Second Field",
+    type: "text",
+    values: ["world"],
+  },
+  {
+    name: "Third Field",
+    type: "number",
+    values: [
+      124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138,
+      139, 140, 141, 142, 143,
+    ],
+  },
+  {
+    name: "Fourth Field",
+    type: "dropdown",
+    values: [1, 2, 3],
+  },
+  {
+    name: "Fifth Field",
+    type: "number",
+    values: [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
+  },
+];
+var submissions: any[] = [];
+for (var i = 1; i < 21; i++) {
+  submissions.push({
+    title: "Test Form #" + i,
+    status: statuses[Math.floor(Math.random() * statuses.length)],
+    data: {
+      "Text Field": "hello",
+      "Dropdown Field": ["hello", "world", "!"],
+      "Number Field": 1,
+      "First Field": "hello-" + i,
+      "Second Field": "world",
+      "Third Field": 123 + i,
+      "Fourth Field": [1, 2, 3],
+      "Fifth Field": i % 2 === 0 ? i : 1,
+    },
+    created: new Date(Date.now() - 1000 * i * 60 * 60 * 24),
+    author: "Guest",
+  });
+}
 
 export function Explorer(props: Props) {
   const [filters, setFilters] = useState<FilterField[]>([]);
+  const [displayedColumns, setDisplayedColumns] = useState<any[]>([]);
+  const [filteredSubmissions, setFilteredSubmissions] = useState<any[]>([]);
+
+  useEffect(() => {
+    var subm: any[] = [];
+    if (filters.length > 0) {
+      submissions.map((submission) => {
+        var valid = true;
+        filters.map((filter) => {
+          if (
+            filter.selectedValues !== null &&
+            filter.selectedValues.length > 0
+          ) {
+            var value = submission.data[filter.column];
+            if (filter.filter === "exact") {
+              switch (typeof value) {
+                case "string":
+                case "number":
+                  if (filter.selectedValues[0] !== value) {
+                    valid = false;
+                  }
+                  break;
+                case "object":
+                  filter.selectedValues.map((selectedValue) => {
+                    if (!value.includes(selectedValue)) {
+                      valid = false;
+                    }
+                  });
+                  break;
+                default:
+                  break;
+              }
+            } else if (filter.filter === "includes") {
+              switch (typeof value) {
+                case "string":
+                case "number":
+                  var t = value.toString();
+                  if (!t.includes(filter.selectedValues[0])) {
+                    valid = false;
+                  }
+                  break;
+                case "object":
+                  var incl = false;
+                  filter.selectedValues.map((selectedValue) => {
+                    if (value.includes(selectedValue)) {
+                      incl = true;
+                    }
+                  });
+                  valid = incl;
+                  break;
+                default:
+                  break;
+              }
+            } else if (filter.filter === "range" && typeof value === "number") {
+              if (
+                value < filter.selectedValues[0] ||
+                value > filter.selectedValues[1]
+              ) {
+                valid = false;
+              }
+            }
+          }
+        });
+        if (valid) {
+          subm.push(submission);
+        }
+      });
+    } else {
+      subm = [...submissions];
+    }
+    setFilteredSubmissions(subm);
+  }, [filters]);
 
   return (
     <>
@@ -100,15 +262,19 @@ export function Explorer(props: Props) {
               color={"gray.500"}
             >
               <Box w="100%">
-                <Text mb="8px">Displayed Fields</Text>
+                <Text mb="8px">Displayed Columns</Text>
                 <TagPicker
                   cleanable
                   style={{
                     minHeight: "40px",
                     paddingTop: "2px",
                   }}
-                  data={fields.map((value) => {
-                    return { label: value, value };
+                  value={displayedColumns}
+                  onChange={(values) => {
+                    setDisplayedColumns(values);
+                  }}
+                  data={columns.map((value) => {
+                    return { label: value.name, value: value.name };
                   })}
                   block
                 />
@@ -131,6 +297,7 @@ export function Explorer(props: Props) {
               <Box w="100%">
                 <Text mb="8px">Statuses</Text>
                 <TagPicker
+                  disabled
                   cleanable
                   style={{
                     minHeight: "40px",
@@ -145,6 +312,7 @@ export function Explorer(props: Props) {
               <Box w="100%">
                 <Text mb="8px">Authors</Text>
                 <TagPicker
+                  disabled
                   cleanable
                   style={{
                     minHeight: "40px",
@@ -247,16 +415,18 @@ export function Explorer(props: Props) {
                                     var temp = [...filters];
                                     temp[index].column = value.value;
                                     temp[index].type = value.type;
+                                    temp[index].values = value.values;
                                     setFilters(temp);
                                   }}
                                   classNamePrefix="select"
                                   isClearable={false}
                                   name="color"
-                                  options={fields.map((field) => {
+                                  options={columns.map((value) => {
                                     return {
-                                      label: field,
-                                      value: field,
-                                      type: field,
+                                      label: value.name,
+                                      value: value.name,
+                                      type: value.type,
+                                      values: value.values,
                                     };
                                   })}
                                 />
@@ -348,7 +518,15 @@ export function Explorer(props: Props) {
                                 <Stack
                                   direction={{ base: "column", md: "row" }}
                                 >
-                                  <NumberInput w="100%">
+                                  <NumberInput
+                                    onChange={(value) => {
+                                      var temp = [...filters];
+                                      temp[index].selectedValues[0] = value;
+                                      setFilters(temp);
+                                    }}
+                                    value={filter.selectedValues[0]}
+                                    w="100%"
+                                  >
                                     <NumberInputField />
                                     <NumberInputStepper>
                                       <NumberIncrementStepper />
@@ -362,7 +540,15 @@ export function Explorer(props: Props) {
                                       h="100%"
                                     />
                                   </Box>
-                                  <NumberInput w="100%">
+                                  <NumberInput
+                                    onChange={(value) => {
+                                      var temp = [...filters];
+                                      temp[index].selectedValues[1] = value;
+                                      setFilters(temp);
+                                    }}
+                                    value={filter.selectedValues[1]}
+                                    w="100%"
+                                  >
                                     <NumberInputField />
                                     <NumberInputStepper>
                                       <NumberIncrementStepper />
@@ -370,17 +556,35 @@ export function Explorer(props: Props) {
                                     </NumberInputStepper>
                                   </NumberInput>
                                 </Stack>
-                              ) : (
+                              ) : (filter.filter === "includes" ||
+                                  filter.filter === "exact") &&
+                                filter.type !== "text" ? (
                                 <TagPicker
                                   cleanable
                                   style={{
                                     minHeight: "40px",
                                     paddingTop: "2px",
                                   }}
-                                  data={fields.map((value) => {
+                                  onChange={(values) => {
+                                    var temp = [...filters];
+                                    temp[index].selectedValues = values;
+                                    setFilters(temp);
+                                  }}
+                                  value={filter.selectedValues}
+                                  data={filter.values.map((value) => {
                                     return { label: value, value };
                                   })}
                                   block
+                                />
+                              ) : (
+                                <Input
+                                  onChange={(event) => {
+                                    var temp = [...filters];
+                                    temp[index].selectedValues[0] =
+                                      event.target.value;
+                                    setFilters(temp);
+                                  }}
+                                  value={filter.selectedValues[0]}
                                 />
                               )}
                             </Box>
@@ -398,6 +602,7 @@ export function Explorer(props: Props) {
                           type: "",
                           filter: "exact",
                           values: [],
+                          selectedValues: [],
                         } as FilterField,
                       ]);
                     }}
@@ -420,9 +625,91 @@ export function Explorer(props: Props) {
             bg="white"
             p="2em"
           >
-            <Text color="gray.700" fontWeight={400} fontSize="sm">
-              <b>0 of 416</b> items
+            <Text mb={"40px"} color="gray.700" fontWeight={400} fontSize="sm">
+              <b>
+                {filteredSubmissions.length} of {submissions.length}
+              </b>{" "}
+              items
             </Text>
+            <Table autoHeight data={filteredSubmissions}>
+              <Column width={200} fixed="left" align="center" resizable>
+                <HeaderCell>Title</HeaderCell>
+                <Cell dataKey="title" />
+              </Column>
+              <Column width={110} align="center" resizable>
+                <HeaderCell>Status</HeaderCell>
+                <Cell dataKey="status">
+                  {(row: any, index: number) => {
+                    return <Tag colorScheme="cyan">{row.status}</Tag>;
+                  }}
+                </Cell>
+              </Column>
+              <Column width={110} align="center" resizable>
+                <HeaderCell>Created</HeaderCell>
+                <Cell dataKey="created">
+                  {(row: any, index: number) => {
+                    return moment(new Date(row.created)).fromNow();
+                  }}
+                </Cell>
+              </Column>
+              {columns.map((column) => {
+                if (
+                  displayedColumns === null ||
+                  displayedColumns.length < 1 ||
+                  displayedColumns.includes(column.name)
+                ) {
+                  return (
+                    <Column width={200} align="center" resizable>
+                      <HeaderCell>{column.name}</HeaderCell>
+                      <Cell dataKey={column.name}>
+                        {(row: any, index: number) => {
+                          var value = row.data[column.name];
+                          switch (typeof value) {
+                            case "number":
+                              return value.toFixed(2);
+                            case "object":
+                              var tags: any[] = [];
+                              value.map((element: any) => {
+                                tags.push(<Tag mr={"5px"}>{element}</Tag>);
+                              });
+                              return tags;
+
+                            default:
+                              return value;
+                          }
+                        }}
+                      </Cell>
+                    </Column>
+                  );
+                }
+              })}
+              <Column width={200} align="center">
+                <HeaderCell>Actions</HeaderCell>
+                <Cell dataKey="actions">
+                  {(row: any, index: number) => {
+                    return (
+                      <span>
+                        <a
+                          style={{ color: "#4399E1", cursor: "pointer" }}
+                          onClick={() => {}}
+                        >
+                          {" "}
+                          Edit{" "}
+                        </a>{" "}
+                        |{" "}
+                        <a
+                          style={{ color: "#4399E1", cursor: "pointer" }}
+                          onClick={() => {}}
+                        >
+                          {" "}
+                          Remove{" "}
+                        </a>
+                      </span>
+                    );
+                  }}
+                </Cell>
+              </Column>
+            </Table>
           </Box>
         </VStack>
       </AuthenticatedTemplate>

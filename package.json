@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@datepicker-react/hooks": "^2.8.4",
+    "moment": "^2.29.1",
     "rsuite": "^5.0.3"
   }
 }

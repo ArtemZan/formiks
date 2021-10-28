@@ -9,7 +9,7 @@ import {
   AccountInfo,
 } from "@azure/msal-browser";
 import { loginRequest } from "../authConfig";
-import { getAccountInfo } from "../utils/MsGraphApiCall";
+import { getAccountInfo, getUserPhoto } from "../utils/MsGraphApiCall";
 
 export type GraphData = {
   displayName: string;
@@ -23,8 +23,12 @@ const ProfileContent = () => {
   const { instance, inProgress } = useMsal();
 
   const [graphData, setGraphData] = useState<null | GraphData>(null);
+  const [userPhoto, setUserPhoto] = useState<undefined | string>(undefined);
 
   useEffect(() => {
+    if (!userPhoto && inProgress === InteractionStatus.None) {
+      getUserPhoto().then((response) => setUserPhoto(response));
+    }
     if (!graphData && inProgress === InteractionStatus.None) {
       getAccountInfo()
         .then((response) => setGraphData(response))
@@ -37,9 +41,13 @@ const ProfileContent = () => {
           }
         });
     }
-  }, [inProgress, graphData, instance]);
+  }, [inProgress, graphData, userPhoto, instance]);
 
-  return <div>{JSON.stringify(graphData)}</div>;
+  return (
+    <div>
+      {JSON.stringify(graphData)} <img alt="" src={userPhoto} />
+    </div>
+  );
 };
 
 export function Profile() {

@@ -3,7 +3,8 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import App from "./App";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { mode } from "@chakra-ui/theme-tools";
 import "focus-visible/dist/focus-visible";
 import { Global, css } from "@emotion/react";
 import "rsuite/dist/rsuite.min.css";
@@ -46,7 +47,18 @@ msalInstance.addEventCallback((event: EventMessage) => {
 });
 
 ReactDOM.render(
-  <ChakraProvider>
+  <ChakraProvider
+    theme={extendTheme({
+      styles: {
+        global: (props: any) => ({
+          body: {
+            bg: mode("#f7fafc", "#232c3c")(props),
+            color: mode("gray.800", "white")(props),
+          },
+        }),
+      },
+    })}
+  >
     <Global styles={GlobalStyles} />
     <Router>
       {/* <ColorModeProvider options={{ initialColorMode: "dark" }}> */}

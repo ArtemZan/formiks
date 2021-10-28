@@ -1,7 +1,7 @@
 import React from "react";
 import { Stack, Text, Button } from "@chakra-ui/react";
 
-export default function CookiePreference() {
+export default function CookiePreference(props: any) {
   return (
     <Stack
       position="absolute"
@@ -43,10 +43,8 @@ export default function CookiePreference() {
               bg: "blue.300",
             }}
             onClick={() => {
+              props.onAllow();
               localStorage.setItem("cookieConsent", "allowed");
-              setTimeout(() => {
-                window.location.reload();
-              }, 500);
             }}
           >
             Allow
