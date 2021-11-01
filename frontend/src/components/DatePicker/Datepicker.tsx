@@ -61,9 +61,6 @@ export interface DatepickerProps
 
 export const Datepicker = React.forwardRef(
   (props: DatepickerProps, ref: Ref<DatepickerElement>) => {
-    const theme = useTheme();
-    console.log("Datepicker:ChakraTheme", { theme });
-
     const {
       changeActiveMonthOnSelect,
       dayLabelFormat,

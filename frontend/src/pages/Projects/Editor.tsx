@@ -120,7 +120,11 @@ export function Editor(props: Props) {
                   roles,
                 }));
               }}
-              options={[]}
+              options={[
+                { label: "administrator", value: "administrator" },
+                { label: "user", value: "user" },
+                { label: "guest", value: "guest" },
+              ]}
             />
           </Box>
         </Stack>
