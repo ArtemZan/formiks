@@ -74,7 +74,7 @@ func (r *Project) Update(c *gin.Context) {
 		return
 	}
 	err = r.repo.Update(c.Request.Context(), project)
-	status := http.StatusCreated
+	status := http.StatusOK
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to update project", err)
 		status = http.StatusInternalServerError

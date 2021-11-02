@@ -7,6 +7,7 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools";
 import "focus-visible/dist/focus-visible";
 import { Global, css } from "@emotion/react";
+import axios from "axios";
 import "rsuite/dist/rsuite.min.css";
 import "./index.css";
 
@@ -17,7 +18,7 @@ import {
   EventMessage,
   AuthenticationResult,
 } from "@azure/msal-browser";
-import { msalConfig } from "./authConfig";
+import { loginRequest, msalConfig } from "./authConfig";
 
 const GlobalStyles = css`
   /*
@@ -44,6 +45,18 @@ msalInstance.addEventCallback((event: EventMessage) => {
     const account = payload.account;
     msalInstance.setActiveAccount(account);
   }
+});
+
+axios.interceptors.request.use(async (config: any) => {
+  const account = msalInstance.getActiveAccount();
+  if (account) {
+    const response = await msalInstance.acquireTokenSilent({
+      ...loginRequest,
+      account: account,
+    });
+    config.headers.Authorization = `Bearer ${response.idToken}`;
+  }
+  return config;
 });
 
 ReactDOM.render(

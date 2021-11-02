@@ -47,6 +47,7 @@ import CookiePreference from "./AllowCookies";
 import { msalInstance } from "../index";
 import { InteractionStatus } from "@azure/msal-browser";
 import { getUserPhoto } from "../utils/MsGraphApiCall";
+import { ServerApi } from "../api/rest";
 
 function Layout(props: any) {
   const { instance, inProgress } = useMsal();
@@ -60,6 +61,7 @@ function Layout(props: any) {
     if (localStorage.getItem("cookieConsent") === "allowed") {
       setCookieConsent(true);
     }
+    new ServerApi().getRoles().then((response) => console.log(response.data));
   }, []);
 
   useEffect(() => {
@@ -164,9 +166,7 @@ function Layout(props: any) {
                         fontWeight={500}
                         fontSize="sm"
                       >
-                        {isAuthenticated
-                          ? msalInstance.getActiveAccount()?.name
-                          : null}
+                        {msalInstance.getActiveAccount()?.name}
                       </Text>
                       <Text fontSize="xs" color="gray.500">
                         administrator

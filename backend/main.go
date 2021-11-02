@@ -1,17 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/doublegrey/formiks/backend/api"
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/middlewares"
+	"github.com/doublegrey/formiks/backend/middlewares/msal"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	go func() {
+		for range time.NewTicker(5 * time.Hour).C {
+			// we should clear active directory public key every 5 hours
+			msal.PubKey = []byte{}
+		}
+	}()
 	if len(os.Getenv("DEV")) > 0 {
 		err := godotenv.Load()
 		if err != nil {
@@ -25,4 +34,5 @@ func main() {
 	r := gin.Default()
 	middlewares.Setup(r)
 	api.RegisterRoutes(r)
+	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
