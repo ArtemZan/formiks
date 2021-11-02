@@ -7,39 +7,75 @@ import {
   Input,
   Stack,
   Textarea,
+  CloseButton,
+  IconButton,
 } from "@chakra-ui/react";
 import CreatableSelect from "react-select/creatable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Project from "../../types/project";
+import { API, RestAPI } from "../../api/rest";
+import { FiTrash2 } from "react-icons/all";
 
 interface Props {
   history: any;
   create: boolean;
+  match: any;
 }
 
 export function Editor(props: Props) {
-  const [form, setForm] = useState({
+  const [project, setProject] = useState<Project>({
     title: "",
+    created: new Date(),
+    updated: new Date(),
+    author: "",
     description: "",
     tags: [] as string[],
     roles: [] as string[],
     components: [] as any[],
   });
-  // const [title, setTitle] = useState("");
-  // const [description, setDescription] = useState("");
-  // const [tags, setTags] = useState([]);
-  // const [roles, setRoles] = useState([]);
-  // const [components, setComponents] = useState([]);
+  useEffect(() => {
+    if (!props.create && props.match.params.id) {
+      RestAPI.getProject(props.match.params.id).then((response) =>
+        setProject(response.data)
+      );
+    }
+  }, []);
 
   return (
     <Box mx={{ base: 0, xl: "5em" }}>
+      <HStack mb={5} w="100%">
+        <Box w="70%"></Box>
+
+        <Box w="30%">
+          <CloseButton
+            onClick={() => {
+              props.history.goBack();
+            }}
+            float="right"
+          />
+          <IconButton
+            display={!props.create ? "grid" : "none"}
+            onClick={() => {
+              // FIXME: delete project
+            }}
+            mr={2}
+            border="none"
+            variant="outline"
+            size="sm"
+            aria-label="settings"
+            float="right"
+            icon={<FiTrash2 />}
+          />
+        </Box>
+      </HStack>
       <Box color={"gray.600"} mb={10}>
         <Stack spacing={4} mb={4} direction={{ base: "column", xl: "row" }}>
           <Box w="100%">
             <Text mb="8px">Title</Text>
             <Input
-              value={form.title}
+              value={project.title}
               onChange={(event) => {
-                setForm((prev) => ({
+                setProject((prev) => ({
                   ...prev,
                   title: event.target.value,
                 }));
@@ -71,13 +107,13 @@ export function Editor(props: Props) {
                 },
               })}
               isMulti
-              value={form.tags.map((tag) => {
+              value={project.tags.map((tag) => {
                 return { label: tag, value: tag };
               })}
               onChange={(values) => {
                 var tags: string[] = [];
                 values.map((element: any) => tags.push(element.value));
-                setForm((prev) => ({
+                setProject((prev) => ({
                   ...prev,
                   tags,
                 }));
@@ -109,13 +145,13 @@ export function Editor(props: Props) {
                 },
               })}
               isMulti
-              value={form.roles.map((role) => {
+              value={project.roles.map((role) => {
                 return { label: role, value: role };
               })}
               onChange={(values) => {
                 var roles: string[] = [];
                 values.map((element: any) => roles.push(element.value));
-                setForm((prev) => ({
+                setProject((prev) => ({
                   ...prev,
                   roles,
                 }));
@@ -133,9 +169,9 @@ export function Editor(props: Props) {
           <Textarea
             bg="white"
             rows={5}
-            value={form.description}
+            value={project.description}
             onChange={(event) => {
-              setForm((prev) => ({
+              setProject((prev) => ({
                 ...prev,
                 description: event.target.value,
               }));
@@ -159,8 +195,14 @@ export function Editor(props: Props) {
             premium: false,
           },
         }}
-        form={{ display: "form" }}
-        onChange={(schema: any) => console.log(schema)}
+        form={{ display: "form", components: project.components }}
+        onChange={(schema: any) => {
+          console.log(schema);
+          setProject((prev) => ({
+            ...prev,
+            components: schema.components,
+          }));
+        }}
       />
       <HStack float="right">
         <Button
@@ -175,8 +217,16 @@ export function Editor(props: Props) {
         <Button
           color={"white"}
           bg={"blue.400"}
-          onClick={() => {
-            props.history.push("/login");
+          onClick={async () => {
+            if (props.create) {
+              var response = await RestAPI.createProject(project);
+              if (response.data.id) {
+                props.history.push(`/projects/edit/${response.data.id}`);
+              }
+            } else {
+              await RestAPI.updateProject(project);
+              // TODO: show notification
+            }
           }}
           _hover={{
             bg: "blue.300",

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/logger"
@@ -9,6 +10,7 @@ import (
 	"github.com/doublegrey/formiks/backend/repositories"
 	"github.com/doublegrey/formiks/backend/repositories/project"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -23,7 +25,7 @@ type Project struct {
 }
 
 func (r *Project) Fetch(c *gin.Context) {
-	projects, err := r.repo.Fetch(c.Request.Context(), nil)
+	projects, err := r.repo.Fetch(c.Request.Context(), bson.D{})
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to fetch projects", err)
 		c.Status(http.StatusInternalServerError)
@@ -49,6 +51,11 @@ func (r *Project) FetchByID(c *gin.Context) {
 }
 
 func (r *Project) Create(c *gin.Context) {
+	email, emailExists := c.Get("Email")
+	if !emailExists {
+		c.Status(http.StatusForbidden)
+		return
+	}
 	var project models.Project
 	err := c.BindJSON(&project)
 	if err != nil {
@@ -56,6 +63,10 @@ func (r *Project) Create(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
+	project.ID = primitive.NewObjectID()
+	project.Created = time.Now()
+	project.Updated = time.Now()
+	project.Author = email.(string)
 	project, err = r.repo.Create(c.Request.Context(), project)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to create project", err)

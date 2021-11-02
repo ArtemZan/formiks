@@ -80,45 +80,48 @@ func Admin() gin.HandlerFunc {
 
 func SetRoles() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		email, roles := getRolesIfValid(c.Request.Context(), c.Request.Header.Get("Authorization"))
+		name, email, roles := getRolesIfValid(c.Request.Context(), c.Request.Header.Get("Authorization"))
 		if len(roles) < 1 {
 			roles = []string{"guest"}
 		}
+		c.Set("Name", name)
 		c.Set("Email", email)
 		c.Set("Roles", roles)
 		c.Next()
 	}
 }
 
-func getRolesIfValid(ctx context.Context, token string) (string, []string) {
+func getRolesIfValid(ctx context.Context, token string) (string, string, []string) {
 	var roles []string
+	var name string
 	var email string
 	split := strings.Split(token, " ")
 	token = split[len(split)-1]
 
 	if token == "" || len(strings.Split(token, ".")) < 3 {
-		return email, roles
+		return name, email, roles
 	}
 	payloadBytes, err := base64.RawStdEncoding.DecodeString(strings.Split(token, ".")[1])
 	if err != nil {
-		return email, roles
+		return name, email, roles
 	}
 	var payload Payload
 	if err := json.Unmarshal(payloadBytes, &payload); err != nil {
-		return email, roles
+		return name, email, roles
 	}
 	email = payload.Email
+	name = payload.Name
 	headerBytes, err := base64.RawStdEncoding.DecodeString(strings.Split(token, ".")[0])
 	if err != nil {
-		return email, roles
+		return name, email, roles
 	}
 	var header Header
 	if err := json.Unmarshal(headerBytes, &header); err != nil {
-		return email, roles
+		return name, email, roles
 	}
 
 	if !validToken(token, header.Kid) || len(email) < 1 || payload.tokenExpired() {
-		return email, roles
+		return name, email, roles
 	}
 
 	se := strings.Split(email, "@")
@@ -130,12 +133,12 @@ func getRolesIfValid(ctx context.Context, token string) (string, []string) {
 		}
 	}
 	if allowed && payload.Aud == ClientID {
-		user, _ := UserRepo.FetchByEmail(ctx, "sk@innovatio.lv")
+		user, _ := UserRepo.FetchByEmail(ctx, email)
 		if len(user.Roles) > 0 {
 			roles = user.Roles
 		}
 	}
-	return email, roles
+	return name, email, roles
 }
 
 func validToken(token, kid string) bool {

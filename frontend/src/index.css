@@ -17,3 +17,20 @@ code {
   min-width: 250px !important;
   max-width: 250px !important;
 } */
+
+button[name="data[submit]"] {
+  background-color: #4299e1 !important;
+  border-color: #4299e1 !important;
+  color: white !important;
+  border-radius: var(--chakra-radii-md) !important;
+  float: right !important;
+  margin-bottom: 30px !important;
+}
+button[name="data[submit]"]:hover {
+  background-color: #63b3ed !important;
+  border-color: #63b3ed !important;
+  color: white !important;
+  border-radius: var(--chakra-radii-md) !important;
+  float: right !important;
+  margin-bottom: 30px !important;
+}

@@ -1,47 +1,40 @@
 import axios, { AxiosResponse } from "axios";
+import Project from "../../types/project";
 
-export class ServerApi {
+export class API {
   public baseUrl =
     process.env.NODE_ENV === "production"
       ? "/api"
       : "http://localhost:8000/api";
-  public userUrl = `${this.baseUrl}/users`;
+  public usersUrl = `${this.baseUrl}/users/`;
+  public projectsUrl = `${this.baseUrl}/projects/`;
 
   getRoles(): Promise<AxiosResponse<string[]>> {
-    return axios.get(`${this.userUrl}/roles`);
+    return axios.get(`${this.usersUrl}roles`);
   }
-
-  //   getApplications(teams?: string[]): Promise<AxiosResponse<Application[]>> {
-  //     return axios.get<Application[]>(`${this.applicationsUrl}`, {
-  //       params: { teams: teams?.join() },
-  //     });
-  //   }
-
-  //   getApplication(id: string): Promise<AxiosResponse<Application>> {
-  //     return axios.get<Application>(`${this.applicationsUrl}${id}`);
-  //   }
-  //   createApplication(
-  //     application: Application
-  //   ): Promise<AxiosResponse<Application>> {
-  //     return axios.post<Application>(
-  //       `${this.applicationsUrl}`,
-  //       JSON.stringify(application)
-  //     );
-  //   }
-  //   updateApplication(
-  //     application: Application
-  //   ): Promise<AxiosResponse<Application>> {
-  //     return axios.put<Application>(
-  //       `${this.applicationsUrl}${application.id}`,
-  //       JSON.stringify(application)
-  //     );
-  //   }
-  //   deleteApplication(id: string): Promise<AxiosResponse> {
-  //     return axios.delete(`${this.applicationsUrl}${id}`);
-  //   }
+  getProjects(): Promise<AxiosResponse<Project[]>> {
+    return axios.get<Project[]>(this.projectsUrl);
+  }
+  getProject(id: string): Promise<AxiosResponse<Project>> {
+    return axios.get<Project>(`${this.projectsUrl}${id}`);
+  }
+  createProject(project: Project): Promise<AxiosResponse<Project>> {
+    return axios.post<Project>(`${this.projectsUrl}`, JSON.stringify(project));
+  }
+  updateProject(project: Project): Promise<AxiosResponse> {
+    return axios.put<Project>(
+      `${this.projectsUrl}${project.id}`,
+      JSON.stringify(project)
+    );
+  }
+  deleteProject(id: string): Promise<AxiosResponse> {
+    return axios.delete(`${this.projectsUrl}${id}`);
+  }
 
   getEntityIdFromUrl(url: string): number {
     const urlSegments = url.split("/").filter((x) => x !== "");
     return parseInt(urlSegments[urlSegments.length - 1]);
   }
 }
+
+export const RestAPI = new API();

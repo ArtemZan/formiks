@@ -25,6 +25,7 @@ import {
   VStack,
   useColorMode,
   Center,
+  Tooltip,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -42,18 +43,19 @@ import {
   useIsAuthenticated,
   useMsal,
 } from "@azure/msal-react";
-import { FaUserCircle, FiChevronDown } from "react-icons/all";
+import { FiChevronDown } from "react-icons/all";
 import CookiePreference from "./AllowCookies";
 import { msalInstance } from "../index";
 import { InteractionStatus } from "@azure/msal-browser";
 import { getUserPhoto } from "../utils/MsGraphApiCall";
-import { ServerApi } from "../api/rest";
+import { RestAPI } from "../api/rest";
 
 function Layout(props: any) {
   const { instance, inProgress } = useMsal();
 
   const [userPhoto, setUserPhoto] = useState<undefined | string>(undefined);
   const [cookieConsent, setCookieConsent] = useState(false);
+  const [roles, setRoles] = useState<string[]>([]);
   const isAuthenticated = useIsAuthenticated();
   const history = useHistory();
 
@@ -61,7 +63,7 @@ function Layout(props: any) {
     if (localStorage.getItem("cookieConsent") === "allowed") {
       setCookieConsent(true);
     }
-    new ServerApi().getRoles().then((response) => console.log(response.data));
+    RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
   }, []);
 
   useEffect(() => {
@@ -147,9 +149,13 @@ function Layout(props: any) {
             direction={"row"}
             spacing={6}
           >
-            {/* <Button variant="ghost" onClick={toggleColorMode}>
+            <Button
+              display={{ base: "none", md: "flex" }}
+              variant="ghost"
+              onClick={toggleColorMode}
+            >
               {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-            </Button> */}
+            </Button>
             <AuthenticatedTemplate>
               <Menu>
                 <MenuButton>
@@ -168,8 +174,11 @@ function Layout(props: any) {
                       >
                         {msalInstance.getActiveAccount()?.name}
                       </Text>
+
                       <Text fontSize="xs" color="gray.500">
-                        administrator
+                        <Tooltip hasArrow label="Search places">
+                          {roles.join(", ")}
+                        </Tooltip>
                       </Text>
                     </VStack>
                     <Box display={{ base: "none", md: "flex" }}>
