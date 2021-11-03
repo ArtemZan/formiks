@@ -11,6 +11,7 @@ import {
   VStack,
   CloseButton,
   IconButton,
+  useColorModeValue,
   Tag,
 } from "@chakra-ui/react";
 import CreatableSelect from "react-select/creatable";
@@ -71,11 +72,11 @@ export function Viewer(props: Props) {
           />
         </Box>
       </HStack>
-      <Box color="gray.600" w="100%" mb={10}>
+      <Box color={useColorModeValue("gray.800", "#ABB2BF")} w="100%" mb={10}>
         <VStack
           mb={"40px"}
           pr={{ base: 0, md: "10px" }}
-          divider={<StackDivider borderColor="gray.100" />}
+          divider={<StackDivider />}
           spacing={4}
           fontSize="md"
           align="stretch"

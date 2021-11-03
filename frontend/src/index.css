@@ -34,3 +34,35 @@ button[name="data[submit]"]:hover {
   float: right !important;
   margin-bottom: 30px !important;
 }
+
+/* .formio-dialog-content {
+  background: red !important;
+}
+
+.form-control,
+.form-builder-panel,
+.ace_content,
+.ace_gutter-layer,
+.choices__inner,
+.choices__input {
+  background: red !important;
+}
+
+.formcomponent {
+  background-color: #4d97e2 !important;
+  border-color: #4d97e2 !important;
+}
+.card.panel {
+  background: red !important;
+}
+
+.formio-component-form,
+.card-header,
+.card-body,
+.tab-pane {
+  background: red !important;
+}
+
+.nav-link.active {
+  background: black !important;
+} */

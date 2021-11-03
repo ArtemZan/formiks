@@ -26,6 +26,7 @@ import {
   useColorMode,
   Center,
   Tooltip,
+  PopoverArrow,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -93,14 +94,14 @@ function Layout(props: any) {
 
       <Box>
         <Flex
-          bg={useColorModeValue("white", "gray.800")}
-          color={useColorModeValue("gray.600", "white")}
+          bg={useColorModeValue("white", "#21252A")}
+          color={useColorModeValue("gray.600", "#ABB2BF")}
           minH={"60px"}
           py={{ base: 2 }}
           px={{ base: 4 }}
           borderBottom={1}
           borderStyle={"solid"}
-          borderColor={useColorModeValue("gray.200", "gray.900")}
+          borderColor={useColorModeValue("gray.200", "#21252A")}
           align={"center"}
         >
           <Flex
@@ -128,7 +129,7 @@ function Layout(props: any) {
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               fontFamily={"heading"}
               fontWeight="bold"
-              color={useColorModeValue("gray.800", "white")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
               cursor="pointer"
               onClick={() => {
                 history.push("/");
@@ -168,7 +169,7 @@ function Layout(props: any) {
                       ml={{ base: 0, md: "2" }}
                     >
                       <Text
-                        color={useColorModeValue("gray.800", "gray.200")}
+                        color={useColorModeValue("gray.800", "#ABB2BF")}
                         fontWeight={500}
                         fontSize="sm"
                       >
@@ -186,7 +187,16 @@ function Layout(props: any) {
                     </Box>
                   </HStack>
                 </MenuButton>
-                <MenuList boxShadow="none" zIndex={2000000}>
+
+                <MenuList
+                  // mt={4}
+                  m={0}
+                  mr={-3.0}
+                  bg={useColorModeValue("white", "#21252A")}
+                  borderColor={useColorModeValue("gray.200", "#21252A")}
+                  boxShadow="none"
+                  zIndex={2000000}
+                >
                   <MenuGroup title="Profile">
                     <MenuItem onClick={() => {}}>My Account</MenuItem>
                   </MenuGroup>
@@ -215,13 +225,13 @@ function Layout(props: any) {
                 fontSize={"sm"}
                 fontWeight={600}
                 color={"white"}
-                bg={"blue.400"}
+                bg={useColorModeValue("blue.400", "#4D97E2")}
+                _hover={{
+                  bg: useColorModeValue("blue.300", "#377bbf"),
+                }}
                 onClick={() => {
                   // history.push("/login");
                   instance.loginPopup();
-                }}
-                _hover={{
-                  bg: "blue.300",
                 }}
               >
                 Sign In
@@ -243,9 +253,9 @@ function Layout(props: any) {
 
 const DesktopNav = () => {
   const history = useHistory();
-  const linkColor = useColorModeValue("gray.600", "gray.200");
+  const linkColor = useColorModeValue("gray.600", "#ABB2BF");
   const linkHoverColor = useColorModeValue("gray.800", "white");
-  const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const popoverContentBgColor = useColorModeValue("white", "#21252A");
   const isAuthenticated = useIsAuthenticated();
 
   return (
@@ -313,19 +323,22 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
       display={"block"}
       p={2}
       rounded={"md"}
-      _hover={{ bg: useColorModeValue("blue.50", "gray.900") }}
+      _hover={{ bg: useColorModeValue("blue.50", "#1d2024") }}
     >
       <Stack direction={"row"} align={"center"}>
         <Box>
           <Text
             transition={"all .3s ease"}
-            _groupHover={{ color: "blue.400" }}
+            _groupHover={{ color: useColorModeValue("blue.400", "#cacfd9") }}
             fontWeight={600}
             fontSize="md"
+            ml={2}
           >
             {label}
           </Text>
-          <Text fontSize={"sm"}>{subLabel}</Text>
+          <Text ml={2} fontSize={"sm"}>
+            {subLabel}
+          </Text>
         </Box>
         <Flex
           transition={"all .3s ease"}
@@ -336,7 +349,12 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
           align={"center"}
           flex={1}
         >
-          <Icon color={"blue.400"} w={5} h={5} as={ChevronRightIcon} />
+          <Icon
+            color={useColorModeValue("blue.400", "#cacfd9")}
+            w={5}
+            h={5}
+            as={ChevronRightIcon}
+          />
         </Flex>
       </Stack>
     </Link>

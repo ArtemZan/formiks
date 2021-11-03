@@ -10,7 +10,7 @@ import {
   Avatar,
   Badge,
   useColorModeValue,
-  Center,
+  Tag,
   Wrap,
   WrapItem,
   Tooltip,
@@ -33,7 +33,7 @@ export default function ProjectCard(props: Props) {
       _hover={{ boxShadow: "2xl" }}
       w={"350px"}
       h={"433px"}
-      bg={useColorModeValue("white", "gray.900")}
+      bg={useColorModeValue("white", "#21252A")}
       boxShadow={"xl"}
       rounded={"md"}
       p={10}
@@ -41,10 +41,16 @@ export default function ProjectCard(props: Props) {
       overflow={"hidden"}
     >
       <Stack spacing={8}>
-        <Tooltip hasArrow label={props.project.title}>
+        <Tooltip
+          bg={useColorModeValue("white", "#373c45")}
+          color={useColorModeValue("gray.600", "#c0c6d1")}
+          p={4}
+          hasArrow
+          label={props.project.title}
+        >
           <Heading
             h={"28px"}
-            color={useColorModeValue("gray.700", "white")}
+            color={useColorModeValue("gray.700", "#c0c6d1")}
             fontSize={"2xl"}
             fontFamily={"body"}
             whiteSpace="nowrap"
@@ -54,7 +60,13 @@ export default function ProjectCard(props: Props) {
             {props.project.title}
           </Heading>
         </Tooltip>
-        <Tooltip hasArrow label={props.project.description}>
+        <Tooltip
+          bg={useColorModeValue("white", "#373c45")}
+          color={useColorModeValue("gray.600", "#c0c6d1")}
+          p={4}
+          hasArrow
+          label={props.project.description}
+        >
           <Text overflow="hidden" h="145px" color={"gray.500"}>
             {props.project.description}
           </Text>
@@ -66,6 +78,9 @@ export default function ProjectCard(props: Props) {
         <Stack direction={"column"} spacing={0} fontSize={"sm"}>
           <Text fontWeight={600}>{props.project.author}</Text>
           <Tooltip
+            bg={useColorModeValue("white", "#373c45")}
+            color={useColorModeValue("gray.600", "#c0c6d1")}
+            p={4}
             hasArrow
             label={moment(props.project.updated).format("DD.MM.YYYY HH:mm")}
           >
@@ -86,9 +101,9 @@ export default function ProjectCard(props: Props) {
         {props.project.tags.map((tag) => {
           return (
             <WrapItem>
-              <Badge px={2} py={1} bg={"gray.50"} fontWeight={"400"}>
-                #{tag}
-              </Badge>
+              <Tag fontWeight={"400"} size="sm" px={2} cursor="pointer">
+                #{tag.toUpperCase()}
+              </Tag>
             </WrapItem>
           );
         })}

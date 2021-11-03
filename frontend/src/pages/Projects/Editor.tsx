@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { FormBuilder } from "@formio/react";
 import {
   Text,
@@ -9,6 +10,7 @@ import {
   Textarea,
   CloseButton,
   IconButton,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import CreatableSelect from "react-select/creatable";
 import { useEffect, useState } from "react";
@@ -64,11 +66,12 @@ export function Editor(props: Props) {
             size="sm"
             aria-label="settings"
             float="right"
+            color={"#ed636e"}
             icon={<FiTrash2 />}
           />
         </Box>
       </HStack>
-      <Box color={"gray.600"} mb={10}>
+      <Box color={useColorModeValue("gray.600", "#ABB2BF")} mb={10}>
         <Stack spacing={4} mb={4} direction={{ base: "column", xl: "row" }}>
           <Box w="100%">
             <Text mb="8px">Title</Text>
@@ -80,7 +83,8 @@ export function Editor(props: Props) {
                   title: event.target.value,
                 }));
               }}
-              bg="white"
+              bg={useColorModeValue("white", "#2C313C")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
             />
           </Box>
           <Box w="100%">
@@ -90,11 +94,56 @@ export function Editor(props: Props) {
               styles={{
                 control: (base, state) => ({
                   ...base,
+                  background: useColorModeValue("white", "#2C313C"),
                   minHeight: 40,
-                  border: "1px solid #E2E8F0",
+                  border: useColorModeValue(
+                    "1px solid #E2E8F0",
+                    "1px solid #4E525C"
+                  ),
                   transition: "0.3s",
                   "&:hover": {
-                    border: "1px solid #CBD5E0",
+                    border: useColorModeValue(
+                      "1px solid #CBD5E0",
+                      "1px solid #5E626B"
+                    ),
+                  },
+                }),
+                option: (
+                  styles,
+                  { data, isDisabled, isFocused, isSelected }
+                ) => {
+                  return {
+                    ...styles,
+                    backgroundColor: useColorModeValue("white", "#2C313C"),
+                    color: useColorModeValue("#4A5667", "white"),
+                    transition: "0.3s",
+                    "&:hover": {
+                      backgroundColor: useColorModeValue("#DEEBFF", "#343945"),
+                    },
+                  };
+                },
+                menu: (styles) => ({
+                  ...styles,
+                  color: useColorModeValue("#4A5667", "white"),
+                  background: useColorModeValue("white", "#2C313C"),
+                }),
+                multiValue: (styles, { data }) => ({
+                  ...styles,
+                  color: "white",
+                  background: useColorModeValue("#E6E6E6", "#464A51"),
+                }),
+                multiValueLabel: (styles, { data }) => ({
+                  ...styles,
+                  color: useColorModeValue("#464646", "white"),
+                  background: useColorModeValue("#E6E6E6", "#464A51"),
+                }),
+                multiValueRemove: (styles, { data }) => ({
+                  ...styles,
+                  color: useColorModeValue("#4A5667", "white"),
+                  background: useColorModeValue("#E6E6E6", "#464A51"),
+                  "&:hover": {
+                    color: useColorModeValue("#DE360C", "#ed636e"),
+                    backgroundColor: useColorModeValue("#FFBDAD", "#4f5259"),
                   },
                 }),
               }}
@@ -118,7 +167,10 @@ export function Editor(props: Props) {
                   tags,
                 }));
               }}
-              options={[]}
+              options={[
+                { label: "test", value: "test" },
+                { label: "test2", value: "test2" },
+              ]}
             />
           </Box>
           <Box w="100%">
@@ -128,11 +180,56 @@ export function Editor(props: Props) {
               styles={{
                 control: (base, state) => ({
                   ...base,
+                  background: useColorModeValue("white", "#2C313C"),
                   minHeight: 40,
-                  border: "1px solid #E2E8F0",
+                  border: useColorModeValue(
+                    "1px solid #E2E8F0",
+                    "1px solid #4E525C"
+                  ),
                   transition: "0.3s",
                   "&:hover": {
-                    border: "1px solid #CBD5E0",
+                    border: useColorModeValue(
+                      "1px solid #CBD5E0",
+                      "1px solid #5E626B"
+                    ),
+                  },
+                }),
+                option: (
+                  styles,
+                  { data, isDisabled, isFocused, isSelected }
+                ) => {
+                  return {
+                    ...styles,
+                    backgroundColor: useColorModeValue("white", "#2C313C"),
+                    color: useColorModeValue("#4A5667", "white"),
+                    transition: "0.3s",
+                    "&:hover": {
+                      backgroundColor: useColorModeValue("#DEEBFF", "#343945"),
+                    },
+                  };
+                },
+                menu: (styles) => ({
+                  ...styles,
+                  color: useColorModeValue("#4A5667", "white"),
+                  background: useColorModeValue("white", "#2C313C"),
+                }),
+                multiValue: (styles, { data }) => ({
+                  ...styles,
+                  color: "white",
+                  background: useColorModeValue("#E6E6E6", "#464A51"),
+                }),
+                multiValueLabel: (styles, { data }) => ({
+                  ...styles,
+                  color: useColorModeValue("#464646", "white"),
+                  background: useColorModeValue("#E6E6E6", "#464A51"),
+                }),
+                multiValueRemove: (styles, { data }) => ({
+                  ...styles,
+                  color: useColorModeValue("#4A5667", "white"),
+                  background: useColorModeValue("#E6E6E6", "#464A51"),
+                  "&:hover": {
+                    color: useColorModeValue("#DE360C", "#ed636e"),
+                    backgroundColor: useColorModeValue("#FFBDAD", "#4f5259"),
                   },
                 }),
               }}
@@ -167,7 +264,8 @@ export function Editor(props: Props) {
         <Box w="100%">
           <Text mb="8px">Description</Text>
           <Textarea
-            bg="white"
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
             rows={5}
             value={project.description}
             onChange={(event) => {
@@ -204,10 +302,11 @@ export function Editor(props: Props) {
           }));
         }}
       />
-      <HStack float="right">
+      <HStack spacing={4} float="right">
         <Button
           variant="outline"
-          colorScheme="twitter"
+          color={useColorModeValue("blue.400", "#4D97E2")}
+          borderColor={useColorModeValue("blue.400", "#4D97E2")}
           onClick={() => {
             props.history.goBack();
           }}
@@ -216,7 +315,10 @@ export function Editor(props: Props) {
         </Button>
         <Button
           color={"white"}
-          bg={"blue.400"}
+          bg={useColorModeValue("blue.400", "#4D97E2")}
+          _hover={{
+            bg: useColorModeValue("blue.300", "#377bbf"),
+          }}
           onClick={async () => {
             if (props.create) {
               var response = await RestAPI.createProject(project);
@@ -227,9 +329,6 @@ export function Editor(props: Props) {
               await RestAPI.updateProject(project);
               // TODO: show notification
             }
-          }}
-          _hover={{
-            bg: "blue.300",
           }}
         >
           {props.create ? "Create" : "Save"}
