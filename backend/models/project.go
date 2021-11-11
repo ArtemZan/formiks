@@ -13,24 +13,25 @@ type ProjectFetchFilter struct {
 }
 
 type Project struct {
-	ID          primitive.ObjectID `bson:"_id" json:"id,omitempty"`
-	Created     time.Time          `json:"created,omitempty"`
-	Updated     time.Time          `json:"updated,omitempty"`
-	Title       string             `json:"title" binding:"required"`
-	Author      string             `json:"author,omitempty"`
-	Description string             `json:"description,omitempty"`
-	Tags        []string           `json:"tags,omitempty"`
-	Roles       []string           `json:"roles"`
-	Components  *json.RawMessage   `json:"components" binding:"required"`
+	ID            primitive.ObjectID `bson:"_id" json:"id,omitempty"`
+	Created       time.Time          `json:"created"`
+	Updated       time.Time          `json:"updated"`
+	Title         string             `json:"title"`
+	Author        string             `json:"author"`
+	Description   string             `json:"description"`
+	DefaultStatus string             `json:"defaultStatus"`
+	Tags          []string           `json:"tags"`
+	Roles         []string           `json:"roles"`
+	Components    *json.RawMessage   `json:"components"`
 }
 
 type ProjectComponent struct {
 	Key    string                  `json:"key"`
 	Label  string                  `json:"label"`
 	Type   string                  `json:"type"`
-	Input  bool                    `json:"input,omitempty"`
-	Values []ProjectComponentValue `json:"values,omitempty"`
-	Data   ProjectComponentData    `json:"data,omitempty"`
+	Input  bool                    `json:"input"`
+	Values []ProjectComponentValue `json:"values"`
+	Data   ProjectComponentData    `json:"data"`
 }
 
 type ProjectComponentData struct {

@@ -20,6 +20,7 @@ import (
 
 var (
 	AllowedDomains []string
+	EnableGuests   bool
 	ClientID       string
 	PubKey         []byte
 	UserRepo       repositories.UserRepo
@@ -63,7 +64,7 @@ type Header struct {
 	Kid string `json:"kid"`
 }
 
-// Admin middleware executes the pending handlers only if user is in admin group
+// Admin middleware executes the pending handlers only if user has 'administrator' role
 func Admin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if roles, exists := c.Get("Roles"); exists {
@@ -82,7 +83,13 @@ func SetRoles() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name, email, roles := getRolesIfValid(c.Request.Context(), c.Request.Header.Get("Authorization"))
 		if len(roles) < 1 {
-			roles = []string{"guest"}
+			// return 401 if ENABLE_GUESTS is not set
+			if EnableGuests {
+				roles = []string{"guest"}
+			} else {
+				c.AbortWithStatus(http.StatusForbidden)
+				return
+			}
 		}
 		c.Set("Name", name)
 		c.Set("Email", email)

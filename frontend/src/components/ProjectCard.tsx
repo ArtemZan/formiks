@@ -26,6 +26,7 @@ interface Props {
 export default function ProjectCard(props: Props) {
   return (
     <Box
+      key={props.project.id}
       onClick={() => {
         props.history.push(`/projects/view/${props.project.id}`);
       }}

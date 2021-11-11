@@ -15,6 +15,14 @@ type ProjectRepo interface {
 	Delete(ctx context.Context, id primitive.ObjectID) error
 }
 
+type SubmissionRepo interface {
+	Fetch(ctx context.Context, filter interface{}) ([]models.Submission, error)
+	FetchByID(ctx context.Context, id primitive.ObjectID) (models.Submission, error)
+	Create(ctx context.Context, submission models.Submission) (models.Submission, error)
+	Update(ctx context.Context, submission models.Submission) error
+	Delete(ctx context.Context, id primitive.ObjectID) error
+}
+
 type UserRepo interface {
 	Fetch(ctx context.Context, filter interface{}) ([]models.User, error)
 	FetchByEmail(ctx context.Context, email string) (models.User, error)

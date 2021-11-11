@@ -12,6 +12,11 @@ import (
 )
 
 func Setup(r *gin.Engine) {
+	enableGuests := false
+	if strings.ToLower(os.Getenv("ENABLE_GUESTS")) == "true" {
+		enableGuests = true
+	}
+	msal.EnableGuests = enableGuests
 	msal.ClientID = os.Getenv("MSAL_CLIENT")
 	msal.AllowedDomains = strings.Split(os.Getenv("ALLOWED_EMAIL_DOMAINS"), ",")
 	msal.UserRepo = user.NewUserRepo(driver.Conn.Mongo)

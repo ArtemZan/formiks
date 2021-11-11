@@ -46,7 +46,7 @@ func (r *projectRepo) Create(ctx context.Context, project models.Project) (model
 }
 
 func (r *projectRepo) Update(ctx context.Context, project models.Project) error {
-	_, err := r.Conn.Collection("projects").UpdateByID(ctx, project.ID, project)
+	_, err := r.Conn.Collection("projects").ReplaceOne(ctx, bson.M{"_id": project.ID}, project)
 	return err
 }
 

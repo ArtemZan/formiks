@@ -20,6 +20,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Tag,
+  Divider,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import Select from "react-select";
@@ -31,6 +32,9 @@ import { msalInstance } from "../../index";
 import { AiOutlineDelete, BiPlusMedical } from "react-icons/all";
 import { useEffect, useState } from "react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { RestAPI } from "../../api/rest";
+import Project from "../../types/project";
+import Submission from "../../types/submission";
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -46,100 +50,40 @@ interface FilterField {
   selectedValues: any[];
 }
 
-const fields = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-
-const statuses = ["New", "In Progress", "Completed", "On Hold", "Canceled"];
-
-const columns = [
-  {
-    name: "Text Field",
-    type: "text",
-    values: ["hello"],
-  },
-  {
-    name: "Dropdown Field",
-    type: "dropdown",
-    values: ["hello", "world", "!"],
-  },
-  {
-    name: "Number Field",
-    type: "number",
-    values: [1],
-  },
-  {
-    name: "First Field",
-    type: "text",
-    values: [
-      "hello-1",
-      "hello-2",
-      "hello-3",
-      "hello-4",
-      "hello-5",
-      "hello-6",
-      "hello-7",
-      "hello-8",
-      "hello-9",
-      "hello-10",
-      "hello-11",
-      "hello-12",
-      "hello-13",
-      "hello-14",
-      "hello-15",
-      "hello-16",
-      "hello-17",
-      "hello-18",
-      "hello-19",
-      "hello-20",
-    ],
-  },
-  {
-    name: "Second Field",
-    type: "text",
-    values: ["world"],
-  },
-  {
-    name: "Third Field",
-    type: "number",
-    values: [
-      124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138,
-      139, 140, 141, 142, 143,
-    ],
-  },
-  {
-    name: "Fourth Field",
-    type: "dropdown",
-    values: [1, 2, 3],
-  },
-  {
-    name: "Fifth Field",
-    type: "number",
-    values: [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
-  },
-];
-var submissions: any[] = [];
-for (var i = 1; i < 21; i++) {
-  submissions.push({
-    title: "Test Form #" + i,
-    status: statuses[Math.floor(Math.random() * statuses.length)],
-    data: {
-      "Text Field": "hello",
-      "Dropdown Field": ["hello", "world", "!"],
-      "Number Field": 1,
-      "First Field": "hello-" + i,
-      "Second Field": "world",
-      "Third Field": 123 + i,
-      "Fourth Field": [1, 2, 3],
-      "Fifth Field": i % 2 === 0 ? i : 1,
-    },
-    created: new Date(Date.now() - 1000 * i * 60 * 60 * 24),
-    author: "Guest",
+export function TableExplorer(props: Props) {
+  const [project, setProject] = useState<Project>({
+    id: "",
+    title: "",
+    created: new Date(),
+    updated: new Date(),
+    author: "",
+    description: "",
+    defaultStatus: "",
+    tags: [] as string[],
+    roles: [] as string[],
+    components: [] as any[],
   });
-}
-
-export function Explorer(props: Props) {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [filters, setFilters] = useState<FilterField[]>([]);
   const [displayedColumns, setDisplayedColumns] = useState<any[]>([]);
   const [filteredSubmissions, setFilteredSubmissions] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (project.id) {
+      RestAPI.getSubmissions(project.id).then((response) => {
+        var submissions = response.data;
+        submissions.reverse();
+        setSubmissions(submissions);
+        setFilteredSubmissions(submissions);
+      });
+    }
+  }, [project]);
+  useEffect(() => {
+    RestAPI.getProjects().then((response) => {
+      setProjects(response.data);
+    });
+  }, []);
 
   useEffect(() => {
     var subm: any[] = [];
@@ -243,12 +187,24 @@ export function Explorer(props: Props) {
                 primary: "#3082CE",
               },
             })}
-            value={{}}
-            onChange={(value) => {}}
+            value={{
+              label: project.title,
+              value: project.id,
+              project: project,
+            }}
+            onChange={(value: any) => {
+              setProject(value.project);
+            }}
             classNamePrefix="select"
             isClearable={false}
-            name="color"
-            options={[]}
+            name="projects"
+            options={projects.map((project) => {
+              return {
+                label: project.title,
+                value: project.id,
+                project: project,
+              };
+            })}
           />
         </Box>
 
@@ -273,9 +229,14 @@ export function Explorer(props: Props) {
                   onChange={(values) => {
                     setDisplayedColumns(values);
                   }}
-                  data={columns.map((value) => {
-                    return { label: value.name, value: value.name };
-                  })}
+                  data={project.components
+                    .filter(
+                      (component: any) =>
+                        component.input && component.type !== "button"
+                    )
+                    .map((component: any) => {
+                      return { label: component.label, value: component.key };
+                    })}
                   block
                 />
               </Box>
@@ -303,9 +264,10 @@ export function Explorer(props: Props) {
                     minHeight: "40px",
                     paddingTop: "2px",
                   }}
-                  data={fields.map((value) => {
-                    return { label: value, value };
-                  })}
+                  data={[]}
+                  // data={fields.map((value) => {
+                  //   return { label: value, value };
+                  // })}
                   block
                 />
               </Box>
@@ -318,9 +280,10 @@ export function Explorer(props: Props) {
                     minHeight: "40px",
                     paddingTop: "2px",
                   }}
-                  data={fields.map((value) => {
-                    return { label: value, value };
-                  })}
+                  data={[]}
+                  // data={fields.map((value) => {
+                  //   return { label: value, value };
+                  // })}
                   block
                 />
               </Box>
@@ -415,20 +378,25 @@ export function Explorer(props: Props) {
                                     var temp = [...filters];
                                     temp[index].column = value.value;
                                     temp[index].type = value.type;
-                                    temp[index].values = value.values;
+                                    temp[index].values = ["hello", "world"];
                                     setFilters(temp);
                                   }}
                                   classNamePrefix="select"
                                   isClearable={false}
                                   name="color"
-                                  options={columns.map((value) => {
-                                    return {
-                                      label: value.name,
-                                      value: value.name,
-                                      type: value.type,
-                                      values: value.values,
-                                    };
-                                  })}
+                                  options={project.components
+                                    .filter(
+                                      (component: any) =>
+                                        component.input &&
+                                        component.type !== "button"
+                                    )
+                                    .map((component: any) => {
+                                      return {
+                                        label: component.label,
+                                        value: component.key,
+                                        type: component.type,
+                                      };
+                                    })}
                                 />
                               </Box>
                               <Box w="100%">
@@ -652,35 +620,37 @@ export function Explorer(props: Props) {
                   }}
                 </Cell>
               </Column>
-              {columns.map((column) => {
+              {project.components.map((component: any) => {
                 if (
                   displayedColumns === null ||
                   displayedColumns.length < 1 ||
-                  displayedColumns.includes(column.name)
+                  displayedColumns.includes(component.key)
                 ) {
-                  return (
-                    <Column width={200} align="center" resizable>
-                      <HeaderCell>{column.name}</HeaderCell>
-                      <Cell dataKey={column.name}>
-                        {(row: any, index: number) => {
-                          var value = row.data[column.name];
-                          switch (typeof value) {
-                            case "number":
-                              return value.toFixed(2);
-                            case "object":
-                              var tags: any[] = [];
-                              value.map((element: any) => {
-                                tags.push(<Tag mr={"5px"}>{element}</Tag>);
-                              });
-                              return tags;
+                  if (component.type !== "button") {
+                    return (
+                      <Column width={200} align="center" resizable>
+                        <HeaderCell>{component.label}</HeaderCell>
+                        <Cell dataKey={component.key}>
+                          {(row: any, index: number) => {
+                            var value = row.data[component.key];
+                            switch (typeof value) {
+                              case "number":
+                                return value.toFixed(2);
+                              case "object":
+                                var tags: any[] = [];
+                                value.map((element: any) => {
+                                  tags.push(<Tag mr={"5px"}>{element}</Tag>);
+                                });
+                                return tags;
 
-                            default:
-                              return value;
-                          }
-                        }}
-                      </Cell>
-                    </Column>
-                  );
+                              default:
+                                return value;
+                            }
+                          }}
+                        </Cell>
+                      </Column>
+                    );
+                  }
                 }
               })}
               <Column width={200} align="center">
@@ -688,23 +658,15 @@ export function Explorer(props: Props) {
                 <Cell dataKey="actions">
                   {(row: any, index: number) => {
                     return (
-                      <span>
-                        <a
-                          style={{ color: "#4399E1", cursor: "pointer" }}
-                          onClick={() => {}}
-                        >
-                          {" "}
-                          Edit{" "}
-                        </a>{" "}
-                        |{" "}
-                        <a
-                          style={{ color: "#4399E1", cursor: "pointer" }}
-                          onClick={() => {}}
-                        >
-                          {" "}
-                          Remove{" "}
-                        </a>
-                      </span>
+                      <HStack>
+                        <Text color="#4399E1" cursor="pointer">
+                          Edit
+                        </Text>
+                        <Divider height="10px" orientation="vertical" />
+                        <Text color="#4399E1" cursor="pointer">
+                          Remove
+                        </Text>
+                      </HStack>
                     );
                   }}
                 </Cell>
@@ -720,4 +682,4 @@ export function Explorer(props: Props) {
   );
 }
 
-export default Explorer;
+export default TableExplorer;

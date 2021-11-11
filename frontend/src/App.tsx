@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Route, useHistory } from "react-router-dom";
-import "./App.css";
 
 import { MsalProvider } from "@azure/msal-react";
 import { IPublicClientApplication } from "@azure/msal-browser";
@@ -15,8 +14,9 @@ import ProjectExplorer from "./pages/Projects/Explorer";
 import ProjectEditor from "./pages/Projects/Editor";
 import ProjectViewer from "./pages/Projects/Viewer";
 
-import SubmissionExplorer from "./pages/Submissions/Explorer";
+import SubmissionsTableExplorer from "./pages/Submissions/TableExplorer";
 import { RestAPI } from "./api/rest";
+import { ToastContainer, Slide } from "react-toastify";
 
 type AppProps = {
   pca: IPublicClientApplication;
@@ -36,6 +36,19 @@ function App({ pca }: AppProps) {
 
   return (
     <MsalProvider instance={pca}>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        closeButton={false}
+        transition={Slide}
+      />
       <Switch>
         <Layout>
           <Route exact path="/" component={Dashboard} />
@@ -67,7 +80,7 @@ function App({ pca }: AppProps) {
           <Route
             exact
             path="/submissions"
-            render={(props) => <SubmissionExplorer {...props} />}
+            render={(props) => <SubmissionsTableExplorer {...props} />}
           />
         </Layout>
       </Switch>

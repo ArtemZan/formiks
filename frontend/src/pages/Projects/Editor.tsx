@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import Project from "../../types/project";
 import { API, RestAPI } from "../../api/rest";
 import { FiTrash2 } from "react-icons/all";
+import { toast } from "react-toastify";
+import Toast from "../../components/Toast";
 
 interface Props {
   history: any;
@@ -24,13 +26,16 @@ interface Props {
   match: any;
 }
 
+// FIXME: add defaultStatus picker (https://rsuitejs.com/components/cascader/)
 export function Editor(props: Props) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [project, setProject] = useState<Project>({
     title: "",
     created: new Date(),
     updated: new Date(),
     author: "",
     description: "",
+    defaultStatus: "",
     tags: [] as string[],
     roles: [] as string[],
     components: [] as any[],
@@ -319,15 +324,41 @@ export function Editor(props: Props) {
           _hover={{
             bg: useColorModeValue("blue.300", "#377bbf"),
           }}
+          isLoading={isSubmitting}
           onClick={async () => {
+            setIsSubmitting(true);
             if (props.create) {
               var response = await RestAPI.createProject(project);
               if (response.data.id) {
                 props.history.push(`/projects/edit/${response.data.id}`);
               }
             } else {
-              await RestAPI.updateProject(project);
-              // TODO: show notification
+              await RestAPI.updateProject(project)
+                .then(() => {
+                  toast(
+                    <Toast
+                      title={"Success"}
+                      message={<div>Project has been successfully updated</div>}
+                      type={"success"}
+                    />
+                  );
+                })
+                .catch(() => {
+                  toast(
+                    <Toast
+                      title={"Error"}
+                      message={
+                        <div>
+                          Failed to update project
+                          <br />
+                          Try again after few seconds
+                        </div>
+                      }
+                      type={"error"}
+                    />
+                  );
+                });
+              setIsSubmitting(false);
             }
           }}
         >

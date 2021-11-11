@@ -17,6 +17,7 @@ import {
 import CreatableSelect from "react-select/creatable";
 import { useEffect, useState } from "react";
 import Project from "../../types/project";
+import Submission from "../../types/submission";
 import { API, RestAPI } from "../../api/rest";
 import { FiSettings, FiRefreshCw } from "react-icons/all";
 
@@ -28,21 +29,24 @@ interface Props {
 }
 
 export function Viewer(props: Props) {
+  const [form, setForm] = useState<any>(null);
   const [project, setProject] = useState<Project>({
     title: "",
     created: new Date(),
     updated: new Date(),
     author: "",
     description: "",
+    defaultStatus: "",
     tags: [] as string[],
     roles: [] as string[],
     components: [] as any[],
   });
   useEffect(() => {
     if (props.match.params.id) {
-      RestAPI.getProject(props.match.params.id).then((response) =>
-        setProject(response.data)
-      );
+      RestAPI.getProject(props.match.params.id).then((response) => {
+        setProject(response.data);
+        setForm({ display: "form", components: response.data.components });
+      });
     }
   }, []);
 
@@ -101,6 +105,7 @@ export function Viewer(props: Props) {
                   {project.tags.map((tag) => {
                     return (
                       <Tag
+                        key={tag}
                         fontWeight={"400"}
                         colorScheme="cyan"
                         cursor="pointer"
@@ -121,14 +126,23 @@ export function Viewer(props: Props) {
       </Box>
 
       <Form
-        onSubmit={(submission: any) => {
-          delete submission.data["submit"];
-          console.log(submission.data);
+        onSubmit={(formio: any) => {
+          delete formio.data["submit"];
+          console.log(formio.data);
+          var submission: Submission = {
+            project: project.id ?? "",
+            created: new Date(),
+            updated: new Date(),
+            title: "",
+            author: "",
+            status: project.defaultStatus,
+            data: formio.data,
+          };
+          RestAPI.createSubmission(submission).then((response) => {
+            props.history.push(`/submissions/view/${response.data.id}`);
+          });
         }}
-        // onSubmitDone={(submission: any) => {
-        //   console.log(submission.data);
-        // }}
-        form={{ display: "form", components: project.components }}
+        form={form}
       />
     </Box>
   );

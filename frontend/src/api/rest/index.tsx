@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import Project from "../../types/project";
+import Submission from "../../types/submission";
 
 export class API {
   public baseUrl =
@@ -8,6 +9,7 @@ export class API {
       : "http://localhost:8000/api";
   public usersUrl = `${this.baseUrl}/users/`;
   public projectsUrl = `${this.baseUrl}/projects/`;
+  public submissionsUrl = `${this.baseUrl}/submissions/`;
 
   getRoles(): Promise<AxiosResponse<string[]>> {
     return axios.get(`${this.usersUrl}roles`);
@@ -29,6 +31,28 @@ export class API {
   }
   deleteProject(id: string): Promise<AxiosResponse> {
     return axios.delete(`${this.projectsUrl}${id}`);
+  }
+
+  getSubmissions(project?: string): Promise<AxiosResponse<Submission[]>> {
+    return axios.get<Submission[]>(this.submissionsUrl);
+  }
+  getSubmission(id: string): Promise<AxiosResponse<Submission>> {
+    return axios.get<Submission>(`${this.submissionsUrl}${id}`);
+  }
+  createSubmission(submission: Submission): Promise<AxiosResponse<Submission>> {
+    return axios.post<Submission>(
+      `${this.submissionsUrl}`,
+      JSON.stringify(submission)
+    );
+  }
+  updateSubmission(submission: Submission): Promise<AxiosResponse> {
+    return axios.put<Submission>(
+      `${this.submissionsUrl}${submission.id}`,
+      JSON.stringify(submission)
+    );
+  }
+  deleteSubmission(id: string): Promise<AxiosResponse> {
+    return axios.delete(`${this.submissionsUrl}${id}`);
   }
 
   getEntityIdFromUrl(url: string): number {

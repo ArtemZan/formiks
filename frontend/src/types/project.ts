@@ -5,6 +5,7 @@ export default interface Project {
     title: string;
     author: string;
     description: string;
+    defaultStatus: string;
     tags: string[];
     roles: string[];
     components: any;

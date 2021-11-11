@@ -8,6 +8,7 @@ import (
 
 func RegisterRoutes(r *gin.Engine) {
 	projectHandler := handlers.NewProjectHandler(driver.Conn)
+	submissionHandler := handlers.NewSubmissionHandler(driver.Conn)
 	userHandler := handlers.NewUserHandler(driver.Conn)
 	apiGroup := r.Group("api")
 	projectsGroup := apiGroup.Group("projects")
@@ -19,20 +20,20 @@ func RegisterRoutes(r *gin.Engine) {
 	projectsGroup.GET("/", projectHandler.Fetch)        // get all projects available to user
 	projectsGroup.GET("/:id", projectHandler.FetchByID) // get project
 	projectsGroup.POST("/", projectHandler.Create)      // create project
-	projectsGroup.PUT("/", projectHandler.Update)       // update project
+	projectsGroup.PUT("/:id", projectHandler.Update)    // update project
 	projectsGroup.DELETE("/:id", projectHandler.Delete) // delete project
 
-	submissionsGroup.GET("/")       // get all submissions available to user
-	submissionsGroup.GET("/:id")    // get submission
-	submissionsGroup.POST("/")      // create submission
-	submissionsGroup.PUT("/")       // update submission
-	submissionsGroup.DELETE("/:id") // delete submission
+	submissionsGroup.GET("/", submissionHandler.Fetch)        // get all submissions available to user
+	submissionsGroup.GET("/:id", submissionHandler.FetchByID) // get submission
+	submissionsGroup.POST("/", submissionHandler.Create)      // create submission
+	submissionsGroup.PUT("/:id", submissionHandler.Update)    // update submission
+	submissionsGroup.DELETE("/:id", submissionHandler.Delete) // delete submission
 
 	usersGroup.GET("/", userHandler.Fetch)              // get all users with custom roles
 	usersGroup.GET("/:email", userHandler.FetchByEmail) // get roles for specific user
 	usersGroup.GET("/roles", userHandler.Roles)         // get current user roles
 	usersGroup.POST("/", userHandler.Create)            // create role
-	usersGroup.PUT("/", userHandler.Update)             // update role
+	usersGroup.PUT("/:id", userHandler.Update)          // update role
 	usersGroup.DELETE("/:email", userHandler.Delete)    // delete role
 
 	pipelinesGroup.GET("/")       // get all pipelines
