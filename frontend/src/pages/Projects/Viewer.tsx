@@ -36,6 +36,7 @@ export function Viewer(props: Props) {
     updated: new Date(),
     author: "",
     description: "",
+    statuses: [] as string[],
     defaultStatus: "",
     tags: [] as string[],
     roles: [] as string[],

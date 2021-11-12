@@ -58,6 +58,7 @@ export function TableExplorer(props: Props) {
     updated: new Date(),
     author: "",
     description: "",
+    statuses: [] as string[],
     defaultStatus: "",
     tags: [] as string[],
     roles: [] as string[],
@@ -265,9 +266,6 @@ export function TableExplorer(props: Props) {
                     paddingTop: "2px",
                   }}
                   data={[]}
-                  // data={fields.map((value) => {
-                  //   return { label: value, value };
-                  // })}
                   block
                 />
               </Box>
@@ -281,9 +279,6 @@ export function TableExplorer(props: Props) {
                     paddingTop: "2px",
                   }}
                   data={[]}
-                  // data={fields.map((value) => {
-                  //   return { label: value, value };
-                  // })}
                   block
                 />
               </Box>

@@ -19,6 +19,7 @@ type Project struct {
 	Title         string             `json:"title"`
 	Author        string             `json:"author"`
 	Description   string             `json:"description"`
+	Statuses      []string           `json:"statuses"`
 	DefaultStatus string             `json:"defaultStatus"`
 	Tags          []string           `json:"tags"`
 	Roles         []string           `json:"roles"`

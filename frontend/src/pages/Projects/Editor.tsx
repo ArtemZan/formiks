@@ -12,6 +12,7 @@ import {
   IconButton,
   useColorModeValue,
 } from "@chakra-ui/react";
+import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { useEffect, useState } from "react";
 import Project from "../../types/project";
@@ -35,6 +36,13 @@ export function Editor(props: Props) {
     updated: new Date(),
     author: "",
     description: "",
+    statuses: [
+      "New",
+      "In Progress",
+      "Completed",
+      "On Hold",
+      "Cancelled",
+    ] as string[],
     defaultStatus: "",
     tags: [] as string[],
     roles: [] as string[],
@@ -263,6 +271,145 @@ export function Editor(props: Props) {
                 { label: "user", value: "user" },
                 { label: "guest", value: "guest" },
               ]}
+            />
+          </Box>
+        </Stack>
+        <Stack spacing={4} mb={4} direction={{ base: "column", xl: "row" }}>
+          <Box w={{ base: "100%", xl: "66.5%" }}>
+            <Text mb="8px">Available Statuses</Text>
+            <CreatableSelect
+              placeholder=""
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  background: useColorModeValue("white", "#2C313C"),
+                  minHeight: 40,
+                  border: useColorModeValue(
+                    "1px solid #E2E8F0",
+                    "1px solid #4E525C"
+                  ),
+                  transition: "0.3s",
+                  "&:hover": {
+                    border: useColorModeValue(
+                      "1px solid #CBD5E0",
+                      "1px solid #5E626B"
+                    ),
+                  },
+                }),
+                option: (
+                  styles,
+                  { data, isDisabled, isFocused, isSelected }
+                ) => {
+                  return {
+                    ...styles,
+                    backgroundColor: useColorModeValue("white", "#2C313C"),
+                    color: useColorModeValue("#4A5667", "white"),
+                    transition: "0.3s",
+                    "&:hover": {
+                      backgroundColor: useColorModeValue("#DEEBFF", "#343945"),
+                    },
+                  };
+                },
+                menu: (styles) => ({
+                  ...styles,
+                  color: useColorModeValue("#4A5667", "white"),
+                  background: useColorModeValue("white", "#2C313C"),
+                }),
+                multiValue: (styles, { data }) => ({
+                  ...styles,
+                  color: "white",
+                  background: useColorModeValue("#E6E6E6", "#464A51"),
+                }),
+                multiValueLabel: (styles, { data }) => ({
+                  ...styles,
+                  color: useColorModeValue("#464646", "white"),
+                  background: useColorModeValue("#E6E6E6", "#464A51"),
+                }),
+                multiValueRemove: (styles, { data }) => ({
+                  ...styles,
+                  color: useColorModeValue("#4A5667", "white"),
+                  background: useColorModeValue("#E6E6E6", "#464A51"),
+                  "&:hover": {
+                    color: useColorModeValue("#DE360C", "#ed636e"),
+                    backgroundColor: useColorModeValue("#FFBDAD", "#4f5259"),
+                  },
+                }),
+              }}
+              theme={(theme) => ({
+                ...theme,
+                borderRadius: 6,
+                colors: {
+                  ...theme.colors,
+                  primary: "#3082CE",
+                },
+              })}
+              isMulti
+              value={project.statuses.map((status) => {
+                return { label: status, value: status };
+              })}
+              onChange={(values) => {
+                var statuses: string[] = [];
+                values.map((element: any) => statuses.push(element.value));
+                setProject((prev) => ({
+                  ...prev,
+                  statuses,
+                }));
+              }}
+              options={[
+                { label: "New", value: "New" },
+                { label: "In Progress", value: "In Progress" },
+                { label: "Completed", value: "Completed" },
+                { label: "On Hold", value: "On Hold" },
+                { label: "Cancelled", value: "Cancelled" },
+              ]}
+            />
+          </Box>
+          <Box w={{ base: "100%", xl: "32.8%" }}>
+            <Text mb="8px">Default Status</Text>
+            <Select
+              styles={{
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 1000000,
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  color: "#718196",
+                }),
+                control: (base, state) => ({
+                  ...base,
+                  minHeight: 40,
+                  border: "1px solid #E2E8F0",
+                  transition: "0.3s",
+                  "&:hover": {
+                    border: "1px solid #CBD5E0",
+                  },
+                }),
+              }}
+              theme={(theme) => ({
+                ...theme,
+                borderRadius: 6,
+                colors: {
+                  ...theme.colors,
+                  primary: "#3082CE",
+                },
+              })}
+              value={{
+                label: project.defaultStatus,
+                value: project.defaultStatus,
+              }}
+              onChange={(value: any) => {
+                setProject((prev) => ({
+                  ...prev,
+                  defaultStatus: value.label,
+                }));
+              }}
+              classNamePrefix="select"
+              isClearable={false}
+              name="filter"
+              options={project.statuses.map((status) => {
+                return { label: status, value: status };
+              })}
             />
           </Box>
         </Stack>
