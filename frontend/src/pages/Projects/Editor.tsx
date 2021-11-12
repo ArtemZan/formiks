@@ -344,9 +344,13 @@ export function Editor(props: Props) {
                 },
               })}
               isMulti
-              value={project.statuses.map((status) => {
-                return { label: status, value: status };
-              })}
+              value={
+                project.statuses
+                  ? project.statuses.map((status) => {
+                      return { label: status, value: status };
+                    })
+                  : []
+              }
               onChange={(values) => {
                 var statuses: string[] = [];
                 values.map((element: any) => statuses.push(element.value));
@@ -406,10 +410,14 @@ export function Editor(props: Props) {
               }}
               classNamePrefix="select"
               isClearable={false}
-              name="filter"
-              options={project.statuses.map((status) => {
-                return { label: status, value: status };
-              })}
+              name="defaultStatus"
+              options={
+                project.statuses
+                  ? project.statuses.map((status) => {
+                      return { label: status, value: status };
+                    })
+                  : []
+              }
             />
           </Box>
         </Stack>

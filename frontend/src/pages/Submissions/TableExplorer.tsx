@@ -259,13 +259,18 @@ export function TableExplorer(props: Props) {
               <Box w="100%">
                 <Text mb="8px">Statuses</Text>
                 <TagPicker
-                  disabled
                   cleanable
                   style={{
                     minHeight: "40px",
                     paddingTop: "2px",
                   }}
-                  data={[]}
+                  data={
+                    project.statuses
+                      ? project.statuses.map((status) => {
+                          return { label: status, value: status };
+                        })
+                      : []
+                  }
                   block
                 />
               </Box>
