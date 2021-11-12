@@ -3,15 +3,18 @@ package api
 import (
 	"github.com/doublegrey/formiks/backend/api/handlers"
 	"github.com/doublegrey/formiks/backend/driver"
+	"github.com/doublegrey/formiks/backend/middlewares/msal"
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoutes(r *gin.Engine) {
 	projectHandler := handlers.NewProjectHandler(driver.Conn)
+	bookmarkHandler := handlers.NewBookmarkHandler(driver.Conn)
 	submissionHandler := handlers.NewSubmissionHandler(driver.Conn)
 	userHandler := handlers.NewUserHandler(driver.Conn)
 	apiGroup := r.Group("api")
 	projectsGroup := apiGroup.Group("projects")
+	bookmarksGroup := apiGroup.Group("bookmarks")
 	submissionsGroup := apiGroup.Group("submissions")
 	usersGroup := apiGroup.Group("users")
 	pipelinesGroup := apiGroup.Group("pipelines")
@@ -22,6 +25,10 @@ func RegisterRoutes(r *gin.Engine) {
 	projectsGroup.POST("/", projectHandler.Create)      // create project
 	projectsGroup.PUT("/:id", projectHandler.Update)    // update project
 	projectsGroup.DELETE("/:id", projectHandler.Delete) // delete project
+
+	bookmarksGroup.GET("/", bookmarkHandler.Fetch)
+	bookmarksGroup.POST("/", msal.Admin(), bookmarkHandler.Create)
+	bookmarksGroup.DELETE("/:id", msal.Admin(), bookmarkHandler.Delete)
 
 	submissionsGroup.GET("/", submissionHandler.Fetch)        // get all submissions available to user
 	submissionsGroup.GET("/:id", submissionHandler.FetchByID) // get submission

@@ -31,7 +31,7 @@ export const datepickerPhrases: DatepickerPhrases = {
   datepickerStartDateLabel: 'Start date:',
   datepickerEndDatePlaceholder: 'Select',
   datepickerEndDateLabel: 'End date:',
-  resetDates: 'Reset dates',
+  resetDates: 'Clean Dates',
   close: 'Close',
 }
 

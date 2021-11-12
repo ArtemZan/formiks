@@ -277,7 +277,6 @@ export function TableExplorer(props: Props) {
               <Box w="100%">
                 <Text mb="8px">Authors</Text>
                 <TagPicker
-                  disabled
                   cleanable
                   style={{
                     minHeight: "40px",

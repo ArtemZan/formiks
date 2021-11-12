@@ -27,7 +27,6 @@ interface Props {
   match: any;
 }
 
-// FIXME: add defaultStatus picker (https://rsuitejs.com/components/cascader/)
 export function Editor(props: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [project, setProject] = useState<Project>({
@@ -180,10 +179,7 @@ export function Editor(props: Props) {
                   tags,
                 }));
               }}
-              options={[
-                { label: "test", value: "test" },
-                { label: "test2", value: "test2" },
-              ]}
+              options={[]}
             />
           </Box>
           <Box w="100%">

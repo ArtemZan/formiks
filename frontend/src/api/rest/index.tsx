@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios";
+import Bookmark from "../../types/bookmark";
 import Project from "../../types/project";
 import Submission from "../../types/submission";
 
@@ -9,6 +10,7 @@ export class API {
       : "http://localhost:8000/api";
   public usersUrl = `${this.baseUrl}/users/`;
   public projectsUrl = `${this.baseUrl}/projects/`;
+  public bookmarksUrl = `${this.baseUrl}/bookmarks/`;
   public submissionsUrl = `${this.baseUrl}/submissions/`;
 
   getRoles(): Promise<AxiosResponse<string[]>> {
@@ -31,6 +33,16 @@ export class API {
   }
   deleteProject(id: string): Promise<AxiosResponse> {
     return axios.delete(`${this.projectsUrl}${id}`);
+  }
+
+  getBookmarks(): Promise<AxiosResponse<Bookmark[]>> {
+    return axios.get<Bookmark[]>(this.bookmarksUrl);
+  }
+  createBookmark(bookmark: Bookmark): Promise<AxiosResponse<Bookmark>> {
+    return axios.post<Bookmark>(this.bookmarksUrl, JSON.stringify(bookmark));
+  }
+  deleteBookmark(id: string): Promise<AxiosResponse> {
+    return axios.delete(`${this.bookmarksUrl}${id}`);
   }
 
   getSubmissions(project?: string): Promise<AxiosResponse<Submission[]>> {

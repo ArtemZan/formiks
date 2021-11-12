@@ -10,10 +10,19 @@ import {
   TagLeftIcon,
   Wrap,
   WrapItem,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { RestAPI } from "../../api/rest";
+import CreateBookmark from "../../components/CreateBookmark";
 import ProjectCard from "../../components/ProjectCard";
+import Bookmark from "../../types/bookmark";
 import Project from "../../types/project";
 
 interface Props {
@@ -23,44 +32,59 @@ interface Props {
 
 export function Explorer(props: Props) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [createBookmarkModal, setCreateBookMarkModal] = useState(false);
 
   useEffect(() => {
+    RestAPI.getBookmarks().then((response) => setBookmarks(response.data));
     RestAPI.getProjects().then((response) => setProjects(response.data));
   }, []);
 
   return (
     <div>
+      <CreateBookmark
+        isOpen={createBookmarkModal}
+        addBookmark={(bookmark: Bookmark) => {
+          setBookmarks((old) => [...old, bookmark]);
+        }}
+        bookmarks={bookmarks}
+        onClose={() => {
+          setCreateBookMarkModal(false);
+        }}
+        projects={projects}
+      />
       <Center mb={"5em"}>
         <Wrap maxW={{ base: "100%", lg: "50%" }} justify="center">
-          <WrapItem>
-            <Tag
-              fontWeight={"400"}
-              size={"lg"}
-              colorScheme="cyan"
-              cursor="pointer"
-            >
-              Marketing Accounting
-            </Tag>
-          </WrapItem>
-          <WrapItem>
-            <Tag fontWeight={"400"} size={"lg"} cursor="pointer">
-              PO Number Request
-            </Tag>
-          </WrapItem>
-          <WrapItem>
-            <Tag fontWeight={"400"} size={"lg"} cursor="pointer">
-              Production
-            </Tag>
-          </WrapItem>
-          <WrapItem>
-            <Tag fontWeight={"400"} size={"lg"} cursor="pointer">
-              Development
-            </Tag>
-          </WrapItem>
+          {bookmarks
+            ? bookmarks.map((bookmark) => {
+                return (
+                  <WrapItem>
+                    <Tag
+                      fontWeight={"400"}
+                      size={"lg"}
+                      // colorScheme="cyan"
+                      cursor="pointer"
+                      id={bookmark.id}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        console.log(bookmark.id);
+                        // FIXME: delete bookmark
+                      }}
+                      onClick={() => {
+                        console.log(bookmark.tags);
+                      }}
+                    >
+                      {bookmark.title}
+                    </Tag>
+                  </WrapItem>
+                );
+              })
+            : null}
+
           <WrapItem display={props.isAdmin ? "grid" : "none"}>
             <Tag
               onClick={() => {
-                // FIXME: create bookmark
+                setCreateBookMarkModal(true);
               }}
               colorScheme="cyan"
               fontWeight={"400"}
