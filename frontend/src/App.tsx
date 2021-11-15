@@ -15,6 +15,9 @@ import ProjectEditor from "./pages/Projects/Editor";
 import ProjectViewer from "./pages/Projects/Viewer";
 
 import SubmissionsTableExplorer from "./pages/Submissions/TableExplorer";
+
+import DropdownExplorer from "./pages/Dropdowns/Explorer";
+import DropdownEditor from "./pages/Dropdowns/Editor";
 import { RestAPI } from "./api/rest";
 import { ToastContainer, Slide } from "react-toastify";
 
@@ -81,6 +84,21 @@ function App({ pca }: AppProps) {
             exact
             path="/submissions"
             render={(props) => <SubmissionsTableExplorer {...props} />}
+          />
+          <Route
+            exact
+            path="/dropdowns"
+            render={(props) => (
+              <DropdownExplorer isAdmin={isAdmin} {...props} />
+            )}
+          />
+          <Route
+            path="/dropdowns/create"
+            render={(props) => <DropdownEditor create={true} {...props} />}
+          />
+          <Route
+            path="/dropdowns/edit/:id"
+            render={(props) => <DropdownEditor create={false} {...props} />}
           />
         </Layout>
       </Switch>

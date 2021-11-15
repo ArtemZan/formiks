@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import Bookmark from "../../types/bookmark";
+import Dropdown from "../../types/dropdown";
 import Project from "../../types/project";
 import Submission from "../../types/submission";
 
@@ -12,6 +13,7 @@ export class API {
   public projectsUrl = `${this.baseUrl}/projects/`;
   public bookmarksUrl = `${this.baseUrl}/bookmarks/`;
   public submissionsUrl = `${this.baseUrl}/submissions/`;
+  public dropdownsUrl = `${this.baseUrl}/dropdowns/`;
 
   getRoles(): Promise<AxiosResponse<string[]>> {
     return axios.get(`${this.usersUrl}roles`);
@@ -65,6 +67,31 @@ export class API {
   }
   deleteSubmission(id: string): Promise<AxiosResponse> {
     return axios.delete(`${this.submissionsUrl}${id}`);
+  }
+
+  getDropdowns(): Promise<AxiosResponse<Dropdown[]>> {
+    return axios.get<Dropdown[]>(this.dropdownsUrl);
+  }
+  getDropdown(id: string): Promise<AxiosResponse<Dropdown>> {
+    return axios.get<Dropdown>(`${this.dropdownsUrl}${id}`);
+  }
+  syncDropdown(id: string): Promise<AxiosResponse> {
+    return axios.get(`${this.dropdownsUrl}sync/${id}`);
+  }
+  createDropdown(dropdown: Dropdown): Promise<AxiosResponse<Dropdown>> {
+    return axios.post<Dropdown>(
+      `${this.dropdownsUrl}`,
+      JSON.stringify(dropdown)
+    );
+  }
+  updateDropdown(dropdown: Dropdown): Promise<AxiosResponse> {
+    return axios.put<Dropdown>(
+      `${this.dropdownsUrl}${dropdown.id}`,
+      JSON.stringify(dropdown)
+    );
+  }
+  deleteDropdown(id: string): Promise<AxiosResponse> {
+    return axios.delete(`${this.dropdownsUrl}${id}`);
   }
 
   getEntityIdFromUrl(url: string): number {

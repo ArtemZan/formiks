@@ -10,15 +10,16 @@ import (
 func RegisterRoutes(r *gin.Engine) {
 	projectHandler := handlers.NewProjectHandler(driver.Conn)
 	bookmarkHandler := handlers.NewBookmarkHandler(driver.Conn)
+	dropdownHandler := handlers.NewDropdownHandler(driver.Conn)
 	submissionHandler := handlers.NewSubmissionHandler(driver.Conn)
 	userHandler := handlers.NewUserHandler(driver.Conn)
 	apiGroup := r.Group("api")
 	projectsGroup := apiGroup.Group("projects")
 	bookmarksGroup := apiGroup.Group("bookmarks")
+	dropdownsGroup := apiGroup.Group("dropdowns")
 	submissionsGroup := apiGroup.Group("submissions")
 	usersGroup := apiGroup.Group("users")
 	pipelinesGroup := apiGroup.Group("pipelines")
-	dropdownsGroup := apiGroup.Group("dropdowns")
 
 	projectsGroup.GET("/", projectHandler.Fetch)        // get all projects available to user
 	projectsGroup.GET("/:id", projectHandler.FetchByID) // get project
@@ -49,8 +50,11 @@ func RegisterRoutes(r *gin.Engine) {
 	pipelinesGroup.PUT("/:id")    // update pipeline
 	pipelinesGroup.DELETE("/:id") // delete pipeline
 
-	dropdownsGroup.GET("/")       // get custom dropdowns
-	dropdownsGroup.POST("/")      // create custom dropdown
-	dropdownsGroup.PUT("/:id")    // update custom dropdown
-	dropdownsGroup.DELETE("/:id") // delete custom dropdown
+	dropdownsGroup.GET("/", dropdownHandler.Fetch)                      // get custom dropdowns
+	dropdownsGroup.GET("/sync/:id", dropdownHandler.Sync)               // sync custom dropdown
+	dropdownsGroup.GET("/:id", dropdownHandler.FetchByID)               // get custom dropdown
+	dropdownsGroup.GET("/:id/values", dropdownHandler.Values)           // get custom dropdown values
+	dropdownsGroup.POST("/", msal.Admin(), dropdownHandler.Create)      // create custom dropdown
+	dropdownsGroup.PUT("/:id", msal.Admin(), dropdownHandler.Update)    // update custom dropdown
+	dropdownsGroup.DELETE("/:id", msal.Admin(), dropdownHandler.Delete) // delete custom dropdown
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/doublegrey/formiks/backend/api"
 	"github.com/doublegrey/formiks/backend/driver"
+	"github.com/doublegrey/formiks/backend/dropdowns"
 	"github.com/doublegrey/formiks/backend/middlewares"
 	"github.com/doublegrey/formiks/backend/middlewares/msal"
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,8 @@ import (
 )
 
 func main() {
+	ticker := time.NewTicker(5 * time.Minute)
+
 	go func() {
 		for range time.NewTicker(5 * time.Hour).C {
 			// we should clear active directory public key every 5 hours
@@ -31,6 +34,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to initialize database connection: %v\n", err)
 	}
+	go dropdowns.SyncAll()
+	go func() {
+		for {
+			<-ticker.C
+			dropdowns.SyncAll()
+		}
+	}()
 	r := gin.Default()
 	middlewares.Setup(r)
 	api.RegisterRoutes(r)

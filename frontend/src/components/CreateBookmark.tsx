@@ -48,7 +48,10 @@ export default function CreateBookmark(props: Props) {
   useEffect(() => {
     var matchingProjects = 0;
     props.projects.map((project) => {
-      if (project.tags.some((item) => selectedTags.includes(item))) {
+      if (
+        project.tags &&
+        project.tags.some((item) => selectedTags.includes(item))
+      ) {
         matchingProjects++;
       }
     });
@@ -177,7 +180,8 @@ export default function CreateBookmark(props: Props) {
           <Button
             isDisabled={
               title.length < 1 ||
-              props.bookmarks.some((bookmark) => bookmark.title === title)
+              (props.bookmarks &&
+                props.bookmarks.some((bookmark) => bookmark.title === title))
             }
             color={"white"}
             bg={useColorModeValue("blue.400", "#4D97E2")}

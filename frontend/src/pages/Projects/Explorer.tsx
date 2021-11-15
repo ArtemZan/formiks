@@ -45,7 +45,7 @@ export function Explorer(props: Props) {
       <CreateBookmark
         isOpen={createBookmarkModal}
         addBookmark={(bookmark: Bookmark) => {
-          setBookmarks((old) => [...old, bookmark]);
+          setBookmarks((old) => [...(old ? old : []), bookmark]);
         }}
         bookmarks={bookmarks}
         onClose={() => {

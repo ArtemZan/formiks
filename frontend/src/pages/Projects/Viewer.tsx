@@ -125,8 +125,10 @@ export function Viewer(props: Props) {
           </Box>
         </VStack>
       </Box>
-
       <Form
+        // onChange={(event: any) => {
+        //   console.log(event);
+        // }}
         onSubmit={(formio: any) => {
           delete formio.data["submit"];
           console.log(formio.data);

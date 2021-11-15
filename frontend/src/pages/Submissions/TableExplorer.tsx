@@ -50,6 +50,26 @@ interface FilterField {
   selectedValues: any[];
 }
 
+const filterTypes = {
+  textfield: [
+    { label: "Exact", value: "exact" },
+    { label: "Includes", value: "includes" },
+  ],
+  textarea: [
+    { label: "Exact", value: "exact" },
+    { label: "Includes", value: "includes" },
+  ],
+  number: [
+    { label: "Exact", value: "exact" },
+    { label: "Range", value: "range" },
+  ],
+  select: [
+    { label: "Exact", value: "exact" },
+    { label: "Includes", value: "includes" },
+  ],
+  datetime: [{ label: "Range", value: "range" }],
+};
+
 export function TableExplorer(props: Props) {
   const [project, setProject] = useState<Project>({
     id: "",
@@ -87,7 +107,7 @@ export function TableExplorer(props: Props) {
   }, []);
 
   useEffect(() => {
-    var subm: any[] = [];
+    var filtered: Submission[] = [];
     if (filters.length > 0) {
       submissions.map((submission) => {
         var valid = true;
@@ -96,64 +116,79 @@ export function TableExplorer(props: Props) {
             filter.selectedValues !== null &&
             filter.selectedValues.length > 0
           ) {
+            // filter
             var value = submission.data[filter.column];
-            if (filter.filter === "exact") {
-              switch (typeof value) {
-                case "string":
-                case "number":
-                  if (filter.selectedValues[0] !== value) {
-                    valid = false;
-                  }
-                  break;
-                case "object":
-                  filter.selectedValues.map((selectedValue) => {
-                    if (!value.includes(selectedValue)) {
-                      valid = false;
+            switch (filter.type) {
+              case "textfield":
+              case "textarea":
+                switch (filter.filter) {
+                  case "exact":
+                    valid =
+                      filter.selectedValues[0].toString() === value.toString();
+                    break;
+                  case "includes":
+                    valid = value
+                      .toString()
+                      .includes(filter.selectedValues[0].toString());
+                    break;
+                }
+                break;
+              case "number":
+                switch (filter.filter) {
+                  case "exact":
+                    valid = filter.selectedValues[0] === value;
+                    break;
+                  case "range":
+                    if (filter.selectedValues.length === 2) {
+                      valid =
+                        value >= filter.selectedValues[0] &&
+                        value <= filter.selectedValues[1];
                     }
-                  });
-                  break;
-                default:
-                  break;
-              }
-            } else if (filter.filter === "includes") {
-              switch (typeof value) {
-                case "string":
-                case "number":
-                  var t = value.toString();
-                  if (!t.includes(filter.selectedValues[0])) {
-                    valid = false;
-                  }
-                  break;
-                case "object":
-                  var incl = false;
-                  filter.selectedValues.map((selectedValue) => {
-                    if (value.includes(selectedValue)) {
-                      incl = true;
-                    }
-                  });
-                  valid = incl;
-                  break;
-                default:
-                  break;
-              }
-            } else if (filter.filter === "range" && typeof value === "number") {
-              if (
-                value < filter.selectedValues[0] ||
-                value > filter.selectedValues[1]
-              ) {
-                valid = false;
-              }
+                    break;
+                }
+                break;
+              case "select":
+                switch (filter.filter) {
+                  case "exact":
+                    filter.selectedValues.map((filterValue) => {
+                      var exists = false;
+                      value.map((v: any) => {
+                        if (v.toString() === filterValue) {
+                          exists = true;
+                        }
+                      });
+                      if (!exists) {
+                        valid = false;
+                      }
+                    });
+                    break;
+                  case "includes":
+                    valid = filter.selectedValues.some((fv) =>
+                      value.includes(fv)
+                    );
+                    break;
+                }
+                break;
+              case "datetime":
+                if (
+                  filter.filter === "range" &&
+                  filter.selectedValues.length === 2
+                ) {
+                  var v = new Date(value);
+                  valid =
+                    v >= filter.selectedValues[0] &&
+                    v <= filter.selectedValues[1];
+                }
+                break;
             }
           }
         });
         if (valid) {
-          subm.push(submission);
+          filtered.push(submission);
         }
       });
-    } else {
-      subm = [...submissions];
     }
-    setFilteredSubmissions(subm);
+    setFilteredSubmissions(filtered);
   }, [filters]);
 
   return (
@@ -242,7 +277,7 @@ export function TableExplorer(props: Props) {
                 />
               </Box>
               <Box w="100%">
-                <Text mb="8px">Date Range</Text>
+                <Text mb="8px">Submission Date</Text>
                 <DateRangeInput
                   allowEditableInputs={true}
                   displayFormat="dd.MM.yyyy"
@@ -308,6 +343,116 @@ export function TableExplorer(props: Props) {
               <Box w={"100%"}>
                 <Box w={"100%"}>
                   {filters.map((filter, index) => {
+                    var valuesField: JSX.Element = <div></div>;
+
+                    switch (filter.type) {
+                      case "textfield":
+                      case "textarea":
+                        valuesField = (
+                          <Input
+                            onChange={(event) => {
+                              var temp = [...filters];
+                              temp[index].selectedValues[0] =
+                                event.target.value;
+                              setFilters(temp);
+                            }}
+                            value={filter.selectedValues[0]}
+                          />
+                        );
+                        break;
+                      case "number":
+                        switch (filter.filter) {
+                          case "exact":
+                            valuesField = (
+                              <NumberInput
+                                onChange={(_, value) => {
+                                  var temp = [...filters];
+                                  temp[index].selectedValues[0] = value;
+                                  setFilters(temp);
+                                }}
+                                value={filter.selectedValues[0]}
+                                w="100%"
+                              >
+                                <NumberInputField />
+                                <NumberInputStepper>
+                                  <NumberIncrementStepper />
+                                  <NumberDecrementStepper />
+                                </NumberInputStepper>
+                              </NumberInput>
+                            );
+                            break;
+                          case "range":
+                            valuesField = (
+                              <Stack direction={{ base: "column", md: "row" }}>
+                                <NumberInput
+                                  w="100%"
+                                  onChange={(_, value) => {
+                                    var temp = [...filters];
+                                    temp[index].selectedValues[0] = value;
+                                    setFilters(temp);
+                                  }}
+                                  value={filter.selectedValues[0]}
+                                >
+                                  <NumberInputField />
+                                  <NumberInputStepper>
+                                    <NumberIncrementStepper />
+                                    <NumberDecrementStepper />
+                                  </NumberInputStepper>
+                                </NumberInput>
+                                <Box textAlign="center" w="20px">
+                                  <ArrowForwardIcon
+                                    alignSelf="center"
+                                    w={5}
+                                    h="100%"
+                                  />
+                                </Box>
+                                <NumberInput
+                                  w="100%"
+                                  onChange={(_, value) => {
+                                    var temp = [...filters];
+                                    temp[index].selectedValues[1] = value;
+                                    setFilters(temp);
+                                  }}
+                                  value={filter.selectedValues[1]}
+                                >
+                                  <NumberInputField />
+                                  <NumberInputStepper>
+                                    <NumberIncrementStepper />
+                                    <NumberDecrementStepper />
+                                  </NumberInputStepper>
+                                </NumberInput>
+                              </Stack>
+                            );
+                            break;
+                        }
+                        break;
+                      case "select":
+                        valuesField = (
+                          <TagPicker
+                            cleanable
+                            style={{
+                              minHeight: "40px",
+                              paddingTop: "2px",
+                            }}
+                            onChange={(value) => {
+                              var temp = [...filters];
+                              temp[index].selectedValues = value;
+                              setFilters(temp);
+                            }}
+                            data={filter.selectedValues}
+                            block
+                          />
+                        );
+                        break;
+                      case "datetime":
+                        valuesField = (
+                          <DateRangeInput
+                            allowEditableInputs={true}
+                            displayFormat="dd.MM.yyyy"
+                          />
+                        );
+                    }
+
                     return (
                       <Box
                         w={"100%"}
@@ -377,7 +522,21 @@ export function TableExplorer(props: Props) {
                                     var temp = [...filters];
                                     temp[index].column = value.value;
                                     temp[index].type = value.type;
-                                    temp[index].values = ["hello", "world"];
+                                    var tv: any = [];
+                                    switch (value.type) {
+                                      case "textfield":
+                                      case "textarea":
+                                        tv = [""];
+                                        break;
+                                      case "number":
+                                        if (temp[index].filter === "exact") {
+                                          tv = [0];
+                                        } else {
+                                          tv = [0, 0];
+                                        }
+                                        break;
+                                    }
+                                    temp[index].selectedValues = tv;
                                     setFilters(temp);
                                   }}
                                   classNamePrefix="select"
@@ -451,22 +610,9 @@ export function TableExplorer(props: Props) {
                                   isClearable={false}
                                   name="filter"
                                   options={
-                                    filter.type === "number"
-                                      ? [
-                                          { label: "Exact", value: "exact" },
-                                          {
-                                            label: "Includes",
-                                            value: "includes",
-                                          },
-                                          { label: "Range", value: "range" },
-                                        ]
-                                      : [
-                                          { label: "Exact", value: "exact" },
-                                          {
-                                            label: "Includes",
-                                            value: "includes",
-                                          },
-                                        ]
+                                    filterTypes[
+                                      filter.type as keyof typeof filterTypes
+                                    ]
                                   }
                                 />
                               </Box>
@@ -478,82 +624,8 @@ export function TableExplorer(props: Props) {
                             spacing={{ base: "20px", xl: "50px" }}
                           >
                             <Box w="100%">
-                              <Text mb="8px">
-                                {filter.filter === "range" ? "Range" : "Values"}
-                              </Text>
-                              {filter.filter === "range" ? (
-                                <Stack
-                                  direction={{ base: "column", md: "row" }}
-                                >
-                                  <NumberInput
-                                    onChange={(value) => {
-                                      var temp = [...filters];
-                                      temp[index].selectedValues[0] = value;
-                                      setFilters(temp);
-                                    }}
-                                    value={filter.selectedValues[0]}
-                                    w="100%"
-                                  >
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                      <NumberIncrementStepper />
-                                      <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                  </NumberInput>
-                                  <Box textAlign="center" w="20px">
-                                    <ArrowForwardIcon
-                                      alignSelf="center"
-                                      w={5}
-                                      h="100%"
-                                    />
-                                  </Box>
-                                  <NumberInput
-                                    onChange={(value) => {
-                                      var temp = [...filters];
-                                      temp[index].selectedValues[1] = value;
-                                      setFilters(temp);
-                                    }}
-                                    value={filter.selectedValues[1]}
-                                    w="100%"
-                                  >
-                                    <NumberInputField />
-                                    <NumberInputStepper>
-                                      <NumberIncrementStepper />
-                                      <NumberDecrementStepper />
-                                    </NumberInputStepper>
-                                  </NumberInput>
-                                </Stack>
-                              ) : (filter.filter === "includes" ||
-                                  filter.filter === "exact") &&
-                                filter.type !== "text" ? (
-                                <TagPicker
-                                  cleanable
-                                  style={{
-                                    minHeight: "40px",
-                                    paddingTop: "2px",
-                                  }}
-                                  onChange={(values) => {
-                                    var temp = [...filters];
-                                    temp[index].selectedValues = values;
-                                    setFilters(temp);
-                                  }}
-                                  value={filter.selectedValues}
-                                  data={filter.values.map((value) => {
-                                    return { label: value, value };
-                                  })}
-                                  block
-                                />
-                              ) : (
-                                <Input
-                                  onChange={(event) => {
-                                    var temp = [...filters];
-                                    temp[index].selectedValues[0] =
-                                      event.target.value;
-                                    setFilters(temp);
-                                  }}
-                                  value={filter.selectedValues[0]}
-                                />
-                              )}
+                              <Text mb="8px">Values</Text>
+                              {valuesField}
                             </Box>
                           </Stack>
                         </VStack>
@@ -641,8 +713,11 @@ export function TableExplorer(props: Props) {
                                   tags.push(<Tag mr={"5px"}>{element}</Tag>);
                                 });
                                 return tags;
-
                               default:
+                                if (component.type === "datetime") {
+                                  var d = new Date(value);
+                                  return d.toLocaleString();
+                                }
                                 return value;
                             }
                           }}
@@ -652,7 +727,7 @@ export function TableExplorer(props: Props) {
                   }
                 }
               })}
-              <Column width={200} align="center">
+              <Column width={150}>
                 <HeaderCell>Actions</HeaderCell>
                 <Cell dataKey="actions">
                   {(row: any, index: number) => {
