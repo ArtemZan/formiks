@@ -21,6 +21,8 @@ import Submission from "../../types/submission";
 import { API, RestAPI } from "../../api/rest";
 import { FiSettings, FiRefreshCw } from "react-icons/all";
 
+import Ermv, { ErmvProject } from "../../components/projects/ermv";
+
 interface Props {
   history: any;
   create: boolean;
@@ -29,6 +31,7 @@ interface Props {
 }
 
 export function Viewer(props: Props) {
+  const [predefinedProject, setPrefedinedProject] = useState<any>(null);
   const [form, setForm] = useState<any>(null);
   const [project, setProject] = useState<Project>({
     title: "",
@@ -41,9 +44,16 @@ export function Viewer(props: Props) {
     tags: [] as string[],
     roles: [] as string[],
     components: [] as any[],
+    type: "formio",
+    code: "",
   });
   useEffect(() => {
     if (props.match.params.id) {
+      if (props.match.params.id === "european-regional-multi-vendor") {
+        setProject(ErmvProject);
+        setPrefedinedProject(<Ermv />);
+        return;
+      }
       RestAPI.getProject(props.match.params.id).then((response) => {
         setProject(response.data);
         setForm({ display: "form", components: response.data.components });
@@ -125,28 +135,32 @@ export function Viewer(props: Props) {
           </Box>
         </VStack>
       </Box>
-      <Form
-        // onChange={(event: any) => {
-        //   console.log(event);
-        // }}
-        onSubmit={(formio: any) => {
-          delete formio.data["submit"];
-          console.log(formio.data);
-          var submission: Submission = {
-            project: project.id ?? "",
-            created: new Date(),
-            updated: new Date(),
-            title: "",
-            author: "",
-            status: project.defaultStatus,
-            data: formio.data,
-          };
-          RestAPI.createSubmission(submission).then((response) => {
-            props.history.push(`/submissions/view/${response.data.id}`);
-          });
-        }}
-        form={form}
-      />
+      {predefinedProject === null ? (
+        <Form
+          // onChange={(event: any) => {
+          //   console.log(event);
+          // }}
+          onSubmit={(formio: any) => {
+            delete formio.data["submit"];
+            console.log(formio.data);
+            var submission: Submission = {
+              project: project.id ?? "",
+              created: new Date(),
+              updated: new Date(),
+              title: "",
+              author: "",
+              status: project.defaultStatus,
+              data: formio.data,
+            };
+            RestAPI.createSubmission(submission).then((response) => {
+              props.history.push(`/submissions/view/${response.data.id}`);
+            });
+          }}
+          form={form}
+        />
+      ) : (
+        predefinedProject
+      )}
     </Box>
   );
 }

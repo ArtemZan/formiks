@@ -1,0 +1,14 @@
+[
+  {
+    "label": "MDF",
+    "value": "mdf"
+  },
+  {
+    "label": "On-Top",
+    "value": "onTop"
+  },
+  {
+    "label": "No budget",
+    "value": "noBudget"
+  }
+]

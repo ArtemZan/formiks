@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { RestAPI } from "../../api/rest";
 import CreateBookmark from "../../components/CreateBookmark";
 import ProjectCard from "../../components/ProjectCard";
+import { ErmvProject } from "../../components/projects/ermv";
 import Bookmark from "../../types/bookmark";
 import Project from "../../types/project";
 
@@ -37,7 +38,10 @@ export function Explorer(props: Props) {
 
   useEffect(() => {
     RestAPI.getBookmarks().then((response) => setBookmarks(response.data));
-    RestAPI.getProjects().then((response) => setProjects(response.data));
+    RestAPI.getProjects().then((response) => {
+      response.data.unshift(ErmvProject);
+      setProjects(response.data);
+    });
   }, []);
 
   return (

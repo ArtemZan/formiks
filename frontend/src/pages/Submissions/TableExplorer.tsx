@@ -7,7 +7,14 @@ import moment from "moment";
 import {
   Box,
   Text,
-  GridItem,
+  Table as CTable,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
   Stack,
   VStack,
   HStack,
@@ -27,9 +34,14 @@ import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
 import { TagPicker } from "rsuite";
-import { Table, RangeSlider } from "rsuite";
+import { Table, IconButton as RIconButton } from "rsuite";
 import { msalInstance } from "../../index";
-import { AiOutlineDelete, BiPlusMedical } from "react-icons/all";
+import {
+  AiOutlineDelete,
+  AiOutlineMinus,
+  AiOutlinePlus,
+  BiPlusMedical,
+} from "react-icons/all";
 import { useEffect, useState } from "react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { RestAPI } from "../../api/rest";
@@ -70,6 +82,74 @@ const filterTypes = {
   datetime: [{ label: "Range", value: "range" }],
 };
 
+const ExpandCell = ({
+  rowData,
+  dataKey,
+  expandedRowKeys,
+  onChange,
+  ...props
+}: any) => (
+  <Cell {...props}>
+    <RIconButton
+      appearance="subtle"
+      size="xs"
+      onClick={() => {
+        onChange(rowData);
+      }}
+      icon={
+        expandedRowKeys.some((key: string) => key === rowData["id"]) ? (
+          <AiOutlineMinus />
+        ) : (
+          <AiOutlinePlus />
+        )
+      }
+    />
+  </Cell>
+);
+
+const renderRowExpanded = (rowData: any) => {
+  return (
+    <Box overflow="scroll" w="100%" borderRadius="5px" h="380px">
+      <CTable>
+        <Thead>
+          <Tr>
+            <Th>To convert</Th>
+            <Th>into</Th>
+            <Th isNumeric>multiply by</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          <Tr>
+            <Td>inches</Td>
+            <Td>millimetres (mm)</Td>
+            <Td isNumeric>25.4</Td>
+          </Tr>
+          <Tr>
+            <Td>feet</Td>
+            <Td>centimetres (cm)</Td>
+            <Td isNumeric>30.48</Td>
+          </Tr>
+          <Tr>
+            <Td>yards</Td>
+            <Td>metres (m)</Td>
+            <Td isNumeric>0.91444</Td>
+          </Tr>
+          <Tr>
+            <Td>yards</Td>
+            <Td>metres (m)</Td>
+            <Td isNumeric>0.91444</Td>
+          </Tr>
+          <Tr>
+            <Td>yards</Td>
+            <Td>metres (m)</Td>
+            <Td isNumeric>0.91444</Td>
+          </Tr>
+        </Tbody>
+      </CTable>
+    </Box>
+  );
+};
+
 export function TableExplorer(props: Props) {
   const [project, setProject] = useState<Project>({
     id: "",
@@ -83,12 +163,34 @@ export function TableExplorer(props: Props) {
     tags: [] as string[],
     roles: [] as string[],
     components: [] as any[],
+    type: "formio",
+    code: "",
   });
   const [projects, setProjects] = useState<Project[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [filters, setFilters] = useState<FilterField[]>([]);
   const [displayedColumns, setDisplayedColumns] = useState<any[]>([]);
   const [filteredSubmissions, setFilteredSubmissions] = useState<any[]>([]);
+  const [expandedRowKeys, setExpandedRowKeys] = useState<any[]>([]);
+
+  const handleExpanded = (rowData: any, dataKey: any) => {
+    let open = false;
+    const nextExpandedRowKeys = [];
+
+    expandedRowKeys.forEach((key) => {
+      if (key === rowData["id"]) {
+        open = true;
+      } else {
+        nextExpandedRowKeys.push(key);
+      }
+    });
+
+    if (!open) {
+      nextExpandedRowKeys.push(rowData["id"]);
+    }
+
+    setExpandedRowKeys(nextExpandedRowKeys);
+  };
 
   useEffect(() => {
     if (project.id) {
@@ -670,7 +772,27 @@ export function TableExplorer(props: Props) {
               </b>{" "}
               items
             </Text>
-            <Table autoHeight data={filteredSubmissions}>
+            <Table
+              // isTree
+              // defaultExpandAllRows={false}
+              rowExpandedHeight={400}
+              rowKey="id"
+              expandedRowKeys={expandedRowKeys}
+              renderRowExpanded={renderRowExpanded}
+              // height={800}
+              autoHeight
+              data={filteredSubmissions}
+            >
+              <Column width={50} fixed="left" align="center">
+                <HeaderCell>
+                  <Text></Text>
+                </HeaderCell>
+                <ExpandCell
+                  dataKey="id"
+                  expandedRowKeys={expandedRowKeys}
+                  onChange={handleExpanded}
+                />
+              </Column>
               <Column width={200} fixed="left" align="center" resizable>
                 <HeaderCell>Title</HeaderCell>
                 <Cell dataKey="title" />
@@ -683,6 +805,7 @@ export function TableExplorer(props: Props) {
                   }}
                 </Cell>
               </Column>
+
               <Column width={110} align="center" resizable>
                 <HeaderCell>Created</HeaderCell>
                 <Cell dataKey="created">

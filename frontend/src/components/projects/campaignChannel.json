@@ -1,0 +1,42 @@
+[
+  {
+    "label": "0 Events and Trainings",
+    "value": "0"
+  },
+  {
+    "label": "1 Print Advertisement",
+    "value": "1"
+  },
+  {
+    "label": "2 Online Paid Advertisement",
+    "value": "2"
+  },
+  {
+    "label": "3 Onsite",
+    "value": "3"
+  },
+  {
+    "label": "4 E-mail and Newsletter",
+    "value": "4"
+  },
+  {
+    "label": "5 Others / Passthrough",
+    "value": "5"
+  },
+  {
+    "label": "6 Incentives",
+    "value": "6"
+  },
+  {
+    "label": "7 Organic Social Media",
+    "value": "7"
+  },
+  {
+    "label": "8 Telemarketing",
+    "value": "8"
+  },
+  {
+    "label": "9 Campaign / Multiple",
+    "value": "9"
+  }
+]

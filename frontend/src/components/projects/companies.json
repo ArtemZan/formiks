@@ -1,0 +1,130 @@
+[
+  {
+    "label": "ALSO Deutschland GmbH",
+    "value": {
+      "name": "ALSO Deutschland GmbH",
+      "code": "1010",
+      "country": "DE"
+    }
+  },
+  {
+    "label": "Medium GmbH",
+    "value": { "name": "Medium GmbH", "code": "1130", "country": "ME" }
+  },
+  {
+    "label": "ALSO France S.A.S.",
+    "value": { "name": "ALSO France S.A.S.", "code": "2000", "country": "FR" }
+  },
+  {
+    "label": "ALSO Austria GmbH",
+    "value": { "name": "ALSO Austria GmbH", "code": "2200", "country": "AT" }
+  },
+  {
+    "label": "ALSO Belgium",
+    "value": { "name": "ALSO Belgium", "code": "2320", "country": "BE" }
+  },
+  {
+    "label": "ALSO Nederland B.V.",
+    "value": { "name": "ALSO Nederland B.V.", "code": "2400", "country": "NL" }
+  },
+  {
+    "label": "ALSO International B.V.",
+    "value": {
+      "name": "ALSO International B.V.",
+      "code": "2420",
+      "country": "IN"
+    }
+  },
+  {
+    "label": "ALSO Denmark A/S",
+    "value": { "name": "ALSO Denmark A/S", "code": "2800", "country": "DK" }
+  },
+  {
+    "label": "ALSO Norway AS",
+    "value": { "name": "ALSO Norway AS", "code": "2900", "country": "NO" }
+  },
+  {
+    "label": "ALSO Sweden AB",
+    "value": { "name": "ALSO Sweden AB", "code": "3100", "country": "SE" }
+  },
+  {
+    "label": "ALSO Eesti OÜ",
+    "value": { "name": "ALSO Eesti OÜ", "code": "5110", "country": "EE" }
+  },
+  {
+    "label": "ALSO Latvia SIA",
+    "value": { "name": "ALSO Latvia SIA", "code": "5210", "country": "LV" }
+  },
+  {
+    "label": "ALSO Lietuva UAB",
+    "value": { "name": "ALSO Lietuva UAB", "code": "5310", "country": "LT" }
+  },
+  {
+    "label": "ALSO Polska sp. z o.o.",
+    "value": {
+      "name": "ALSO Polska sp. z o.o.",
+      "code": "5410",
+      "country": "PL"
+    }
+  },
+  {
+    "label": "ALSO Finland Oy",
+    "value": { "name": "ALSO Finland Oy", "code": "5710", "country": "FI" }
+  },
+  {
+    "label": "ALSO Cloud Oy",
+    "value": { "name": "ALSO Cloud Oy", "code": "5720", "country": "OY" }
+  },
+  {
+    "label": "ALSO Slovakia s.r.o.",
+    "value": { "name": "ALSO Slovakia s.r.o.", "code": "5840", "country": "SK" }
+  },
+  {
+    "label": "ABC Data s.r.o. Czech Rep",
+    "value": {
+      "name": "ABC Data s.r.o. Czech Rep",
+      "code": "5845",
+      "country": "CZ"
+    }
+  },
+  {
+    "label": "ALSO Hungary Kft.",
+    "value": { "name": "ALSO Hungary Kft.", "code": "5850", "country": "HU" }
+  },
+  {
+    "label": "ALSO Technology SRL",
+    "value": { "name": "ALSO Technology SRL", "code": "5860", "country": "RO" }
+  },
+  {
+    "label": "ALSO Schweiz AG",
+    "value": { "name": "ALSO Schweiz AG", "code": "6110", "country": "CH" }
+  },
+  {
+    "label": "ALSO International Services GmbH",
+    "value": {
+      "name": "ALSO International Services GmbH",
+      "code": "1550",
+      "country": "IS"
+    }
+  },
+  {
+    "label": "ALSO Bulgaria",
+    "value": { "name": "ALSO Bulgaria", "code": "5870", "country": "BG" }
+  },
+  {
+    "label": "Sophela UAB (LT)",
+    "value": { "name": "Sophela UAB (LT)", "code": "5320", "country": "LT" }
+  },
+  {
+    "label": "ALSO Technology Ljubljana",
+    "value": {
+      "name": "ALSO Technology Ljubljana",
+      "code": "5820",
+      "country": "SI"
+    }
+  },
+  {
+    "label": "ALSO Croatia d.o.o.",
+    "value": { "name": "ALSO Croatia d.o.o.", "code": "5830", "country": "HR" }
+  }
+]

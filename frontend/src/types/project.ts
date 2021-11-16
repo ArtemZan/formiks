@@ -10,5 +10,7 @@ export default interface Project {
     tags: string[];
     roles: string[];
     components: any;
+    type: string;
+    code: string;
   }
   

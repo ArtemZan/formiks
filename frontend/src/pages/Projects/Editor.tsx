@@ -46,6 +46,8 @@ export function Editor(props: Props) {
     tags: [] as string[],
     roles: [] as string[],
     components: [] as any[],
+    type: "formio",
+    code: "",
   });
   useEffect(() => {
     if (!props.create && props.match.params.id) {
@@ -417,6 +419,58 @@ export function Editor(props: Props) {
             />
           </Box>
         </Stack>
+        <Stack spacing={4} mb={4} direction={{ base: "column", xl: "row" }}>
+          <Box w={{ base: "100%", xl: "32.8%" }}>
+            <Text mb="8px">Project Type</Text>
+            <Select
+              styles={{
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 1000000,
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  color: "#718196",
+                }),
+                control: (base, state) => ({
+                  ...base,
+                  minHeight: 40,
+                  border: "1px solid #E2E8F0",
+                  transition: "0.3s",
+                  "&:hover": {
+                    border: "1px solid #CBD5E0",
+                  },
+                }),
+              }}
+              theme={(theme) => ({
+                ...theme,
+                borderRadius: 6,
+                colors: {
+                  ...theme.colors,
+                  primary: "#3082CE",
+                },
+              })}
+              value={{
+                label:
+                  project.type === "formio" ? "GUI Builder" : "Code Builder",
+                value: project.type,
+              }}
+              onChange={(value: any) => {
+                setProject((prev) => ({
+                  ...prev,
+                  type: value.value,
+                }));
+              }}
+              classNamePrefix="select"
+              isClearable={false}
+              name="projectType"
+              options={[
+                { label: "GUI Builder", value: "formio" },
+                { label: "Code Builder", value: "code" },
+              ]}
+            />
+          </Box>
+        </Stack>
         <Box w="100%">
           <Text mb="8px">Description</Text>
           <Textarea
@@ -433,32 +487,34 @@ export function Editor(props: Props) {
           ></Textarea>
         </Box>
       </Box>
-      <FormBuilder
-        options={{
-          builder: {
-            basic: {
-              components: {
-                excelTable: true,
+      {project.type === "formio" ? (
+        <FormBuilder
+          options={{
+            builder: {
+              basic: {
+                components: {
+                  excelTable: true,
+                },
               },
-            },
-            advanced: {
-              components: {
-                file: true,
+              advanced: {
+                components: {
+                  file: true,
+                },
               },
+              premium: false,
             },
-            premium: false,
-          },
-        }}
-        form={{ display: "form", components: project.components }}
-        onChange={(schema: any) => {
-          console.log(schema);
-          setProject((prev) => ({
-            ...prev,
-            components: schema.components,
-          }));
-        }}
-      />
-      <HStack spacing={4} float="right">
+          }}
+          form={{ display: "form", components: project.components }}
+          onChange={(schema: any) => {
+            console.log(schema);
+            setProject((prev) => ({
+              ...prev,
+              components: schema.components,
+            }));
+          }}
+        />
+      ) : null}
+      <HStack mb="40px" spacing={4} float="right">
         <Button
           variant="outline"
           color={useColorModeValue("blue.400", "#4D97E2")}

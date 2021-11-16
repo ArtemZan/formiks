@@ -16,6 +16,7 @@ type Project struct {
 	ID            primitive.ObjectID `bson:"_id" json:"id,omitempty"`
 	Created       time.Time          `json:"created"`
 	Updated       time.Time          `json:"updated"`
+	Type          string             `json:"type"`
 	Title         string             `json:"title"`
 	Author        string             `json:"author"`
 	Description   string             `json:"description"`
@@ -24,6 +25,7 @@ type Project struct {
 	Tags          []string           `json:"tags"`
 	Roles         []string           `json:"roles"`
 	Components    *json.RawMessage   `json:"components"`
+	Code          string             `json:"code"`
 }
 
 type ProjectComponent struct {

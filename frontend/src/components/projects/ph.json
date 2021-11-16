@@ -1,0 +1,306 @@
+[
+  {
+    "label": "Displays",
+    "value": "DIS05"
+  },
+  {
+    "label": "Stationary Computer",
+    "value": "DIS00"
+  },
+  {
+    "label": "Components",
+    "value": "DIS03"
+  },
+  {
+    "label": "Network",
+    "value": "DIS08"
+  },
+  {
+    "label": "video-conferencing systems",
+    "value": "DIS62"
+  },
+  {
+    "label": "Mobile Computer",
+    "value": "DIS01"
+  },
+  {
+    "label": "Storage",
+    "value": "DIS02"
+  },
+  {
+    "label": "Peripherals",
+    "value": "DIS04"
+  },
+  {
+    "label": "Presentation",
+    "value": "DIS25"
+  },
+  {
+    "label": "mobile phones",
+    "value": "DIS54"
+  },
+  {
+    "label": "Consumables",
+    "value": "DIS09"
+  },
+  {
+    "label": "Hardcopy",
+    "value": "DIS06"
+  },
+  {
+    "label": "Telekommunikation SoHo / PC",
+    "value": "DIS10"
+  },
+  {
+    "label": "Accessories for mobile telephony",
+    "value": "DIS55"
+  },
+  {
+    "label": "Facilityautomation",
+    "value": "DIS12"
+  },
+  {
+    "label": "Unknown",
+    "value": "N/A"
+  },
+  {
+    "label": "Headset-Telephony",
+    "value": "DIS53"
+  },
+  {
+    "label": "Distribution Services",
+    "value": "SRV01"
+  },
+  {
+    "label": "Digital Signage",
+    "value": "DIS13"
+  },
+  {
+    "label": "IaaS",
+    "value": "DIS19"
+  },
+  {
+    "label": "Software",
+    "value": "DIS07"
+  },
+  {
+    "label": "IT Toys",
+    "value": "DIS30"
+  },
+  {
+    "label": "ESD / POSA Software",
+    "value": "DIS14"
+  },
+  {
+    "label": "Software / Cloud",
+    "value": "DIS15"
+  },
+  {
+    "label": "SPL",
+    "value": "DIS17"
+  },
+  {
+    "label": "accessories for vid-conferencing systems",
+    "value": "DIS63"
+  },
+  {
+    "label": "ITC Systems",
+    "value": "DIS69"
+  },
+  {
+    "label": "Office Supply",
+    "value": "DIS40"
+  },
+  {
+    "label": "Spare Parts",
+    "value": "DIS20"
+  },
+  {
+    "label": "Financial Service",
+    "value": "SRV09"
+  },
+  {
+    "label": "Audial products",
+    "value": "DISZZ"
+  },
+  {
+    "label": "telecom systems",
+    "value": "DIS57"
+  },
+  {
+    "label": "fixed network telephony",
+    "value": "DIS52"
+  },
+  {
+    "label": "Medical Equipment",
+    "value": "DIS75"
+  },
+  {
+    "label": "3D Printing",
+    "value": "DIS18"
+  },
+  {
+    "label": "Navigation / CarHiFi",
+    "value": "DIS23"
+  },
+  {
+    "label": "professional radio and broadband systems",
+    "value": "DIS60"
+  },
+  {
+    "label": "infrastructure equipment",
+    "value": "DIS65"
+  },
+  {
+    "label": "Entertainment",
+    "value": "DIS35"
+  },
+  {
+    "label": "audio conferencing systems",
+    "value": "DIS61"
+  },
+  {
+    "label": "Home Appliances",
+    "value": "DIS11"
+  },
+  {
+    "label": "advertising speciality/POS Material/Flye",
+    "value": "DIS90"
+  },
+  {
+    "label": "meter / test equipment",
+    "value": "DIS58"
+  },
+  {
+    "label": "Lighting",
+    "value": "DIS70"
+  },
+  {
+    "label": "IT Services",
+    "value": "SRV04"
+  },
+  {
+    "label": "Cloud Computing",
+    "value": "DIS80"
+  },
+  {
+    "label": "BTC",
+    "value": "DIS21"
+  },
+  {
+    "label": "Hardcopy Managed",
+    "value": "DIS22"
+  },
+  {
+    "label": "VAD Services",
+    "value": "SRV07"
+  },
+  {
+    "label": "Audio / Video",
+    "value": "OEM11"
+  },
+  {
+    "label": "Home-Appliances",
+    "value": "OEM14"
+  },
+  {
+    "label": "Specialists",
+    "value": "SRV83"
+  },
+  {
+    "label": "Software / WaaS",
+    "value": "DIS16"
+  },
+  {
+    "label": "Supply Chain Services",
+    "value": "SRV81"
+  },
+  {
+    "label": "Sales Services",
+    "value": "SRV50"
+  },
+  {
+    "label": "Direct Sales Services",
+    "value": "SRV82"
+  },
+  {
+    "label": "Service",
+    "value": "SRV70"
+  },
+  {
+    "label": "(*)Components",
+    "value": "OEM03"
+  },
+  {
+    "label": "Training & Education",
+    "value": "SRV00"
+  },
+  {
+    "label": "Third Party",
+    "value": "TPW00"
+  },
+  {
+    "label": "Repairservice",
+    "value": "SRV02"
+  },
+  {
+    "label": "Telecom Services",
+    "value": "SRV05"
+  },
+  {
+    "label": "Children products",
+    "value": "DIS73"
+  },
+  {
+    "label": "Safety products",
+    "value": "DIS79"
+  },
+  {
+    "label": "Electrical Toys",
+    "value": "DIS74"
+  },
+  {
+    "label": "Power Tools",
+    "value": "DIS78"
+  },
+  {
+    "label": "Chemical products",
+    "value": "DIS72"
+  },
+  {
+    "label": "Tarife Provider",
+    "value": "SRV06"
+  },
+  {
+    "label": "Mobile Computing",
+    "value": "OEM01"
+  },
+  {
+    "label": "Security Container",
+    "value": "DIS50"
+  },
+  {
+    "label": "After Sales Services",
+    "value": "SRV85"
+  },
+  {
+    "label": "Internet of Things (IoT)",
+    "value": "DIS71"
+  },
+  {
+    "label": "Configuration Scandi/DK",
+    "value": "SRV08"
+  },
+  {
+    "label": "Remarketing",
+    "value": "SRV84"
+  },
+  {
+    "label": "Hand Tools",
+    "value": "DIS76"
+  },
+  {
+    "label": "Internal Services",
+    "value": "SRV03"
+  }
+]
