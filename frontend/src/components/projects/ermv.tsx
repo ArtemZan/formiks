@@ -68,10 +68,6 @@ export default function CreateBookmark(props: Props) {
   const [targetAudience, setTargetAudience] = useState("");
   const [campaignChannel, setCampaignChannel] = useState("");
   const [vendorsNames, setVendorsNames] = useState<any>([]);
-  const [ph, setPh] = useState<any>({
-    label: "",
-    value: "",
-  });
   const [year, setYear] = useState<any>({
     label: "",
     value: "",
@@ -137,7 +133,7 @@ export default function CreateBookmark(props: Props) {
         debitor: vendor.value.debitorischer,
         manufacturer: vendor.value.hersteller,
         bu: vendor.value.bu,
-        ph: "",
+        ph: { label: "", value: "" },
       });
     });
     setVendors(data);
@@ -255,28 +251,29 @@ export default function CreateBookmark(props: Props) {
       var vbEur = parseFloat(row.eurBudget);
       if (!isNaN(vbEur) && totalBudgetEur !== 0) {
         var share = vbEur / totalBudgetEur;
-        row.share = (share * 100).toFixed(2).toString();
+        row.share = (share * 100).toFixed(2);
 
         if (!isNaN(totalCostsCC)) {
-          row.estimatedCostsCC = (share * totalCostsCC).toFixed(2).toString();
+          row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
         }
         if (!isNaN(totalCostsLC)) {
-          row.estimatedCostsLC = (share * totalCostsLC).toFixed(2).toString();
+          row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
         }
         if (!isNaN(totalCostsEur)) {
-          row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2).toString();
+          row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
         }
         var vendorCurr = parseFloat(row.budgetCurrency.value);
         if (!isNaN(netProfitEur)) {
-          row.netProfitTargetEUR = (share * netProfitEur).toFixed(2).toString();
+          row.netProfitTargetEUR = (share * netProfitEur).toFixed(2);
           if (!isNaN(vendorCurr)) {
-            row.netProfitTargetVC = (vendorCurr * (share * netProfitEur))
-              .toFixed(2)
-              .toString();
+            row.netProfitTargetVC = (
+              vendorCurr *
+              (share * netProfitEur)
+            ).toFixed(2);
           }
         }
         if (!isNaN(netProfiLC)) {
-          row.netProfitTargetLC = (share * netProfiLC).toFixed(2).toString();
+          row.netProfitTargetLC = (share * netProfiLC).toFixed(2);
         }
       }
     });
@@ -615,13 +612,46 @@ export default function CreateBookmark(props: Props) {
               <HeaderCell>PH1</HeaderCell>
               <Cell dataKey="ph">
                 {(rowData, index) => (
-                  <Input
+                  <Select
+                    styles={{
+                      menu: (provided) => ({
+                        ...provided,
+                        zIndex: 1000000000,
+                      }),
+                      singleValue: (provided) => ({
+                        ...provided,
+                        color: "#718196",
+                      }),
+                      control: (base, state) => ({
+                        ...base,
+                        minHeight: 40,
+                        border: "1px solid #E2E8F0",
+                        transition: "0.3s",
+                        "&:hover": {
+                          border: "1px solid #CBD5E0",
+                        },
+                      }),
+                    }}
+                    theme={(theme) => ({
+                      ...theme,
+                      borderRadius: 6,
+                      colors: {
+                        ...theme.colors,
+                        primary: "#3082CE",
+                      },
+                    })}
+                    menuPortalTarget={document.body}
                     value={rowData.ph}
-                    onChange={(event) => {
+                    onChange={(value) => {
                       var temp = [...vendors];
-                      temp[index].ph = event.target.value;
+                      temp[index].ph = value;
                       setVendors(temp);
                     }}
+                    placeholder=""
+                    classNamePrefix="select"
+                    isClearable={false}
+                    name="PH1"
+                    options={PH1}
                   />
                 )}
               </Cell>
@@ -1408,7 +1438,91 @@ export default function CreateBookmark(props: Props) {
         _hover={{
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
-        onClick={() => {}}
+        onClick={() => {
+          var submission: any = {};
+          submission.requestorsCompanyName = requestorsCompanyName.label;
+          submission.requestorsCompanyCode = requestorsCompanyName.value.code;
+          submission.requestorsCountry = requestorsCompanyName.value.country;
+          submission.campaignName = campaignName;
+          submission.campaignDescription = campaignDescription;
+          submission.targetAudience = targetAudience;
+          submission.campaignChannel = campaignChannel;
+          submission.vendorsNames = [];
+          vendorsNames.map((vendor: any) => {
+            submission.vendorsNames.push(vendor.label);
+          });
+          submission.vendors = [];
+          vendors.map((vendor: any) => {
+            submission.vendors.push({
+              vendor: vendor.vendor,
+              projectManager: vendor.projectManager,
+              creditor: vendor.creditor,
+              debitor: vendor.debitor,
+              manufacturer: vendor.manufacturer,
+              bu: vendor.bu,
+              ph1: vendor.ph.label,
+            });
+          });
+          submission.year = year.label;
+          submission.projectStartQuarter = projectStartQuarter.label;
+          submission.projectNumber = projectNumber;
+          submission.requestorsName = requestorsName;
+          submission.projectApprover = "";
+          submission.projectApproval = projectApproval;
+          submission.manufacturersFiscalQuarter = fiscalQuarter.label;
+          submission.campaignStartDate = startDate;
+          submission.campaignEndDate = endDate;
+          submission.budgetSource = budgetSource.label;
+          submission.budgetApprovedByVendor = budgetApprovedByVendor;
+          submission.campaignBudgetsCurrency = exchangeRates.label;
+          submission.campaignEstimatedIncomeBudgetsCurrency = parseFloat(
+            estimatedIncomeBudgetCurrency
+          );
+          submission.campaignEstimatedCostsBudgetsCurrency = parseFloat(
+            estimatedCostsBudgetCurrency
+          );
+          submission.campaignNetProfitTargetBudgetsCurrency = parseFloat(
+            netProfitTargetBudgetCurrency
+          );
+          submission.campaignEstimatedIncomeEur = parseFloat(estimatedIncome);
+          submission.campaignEstimatedCostsEur = parseFloat(estimatedCosts);
+          submission.campaignNetProfitTargetEur = parseFloat(netProfitTarget);
+          submission.totalEstimatedCostsCC = parseFloat(totalEstimatedCostsCC);
+          submission.totalEstimatedCostsLC = parseFloat(totalEstimatedCostsLC);
+          submission.totalEstimatedCostsEur = parseFloat(
+            totalEstimatedCostsEur
+          );
+
+          submission.companiesParticipating = [];
+          companiesParticipating.map((company: any) => {
+            submission.companiesParticipating.push(company.label);
+          });
+          submission.costBreakdown = [];
+          costBreakdown.map((vendor: any) => {
+            submission.costBreakdown.push({
+              companyName: vendor.companyName,
+              companyCode: vendor.companyCode,
+              country: vendor.country,
+              contactEmail: vendor.contactEmail,
+              projectNumber: vendor.projectNumber,
+              budgetContribution: vendor.contribution,
+              totalEstimatedCosts: vendor.estimatedCosts,
+              budgetCurrency: vendor.budgetCurrency.label,
+              budgetAmount: parseFloat(vendor.budgetAmount),
+              budgetLC: parseFloat(vendor.localBudget),
+              budgetEur: parseFloat(vendor.eurBudget),
+              share: parseFloat(vendor.share),
+              estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
+              estimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+              estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
+              netProfitTargetVC: parseFloat(vendor.netProfitTargetVC),
+              netProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+              netProfitTargetEur: parseFloat(vendor.netProfitTargetEUR),
+            });
+          });
+          submission.comments = comments;
+          console.log(submission);
+        }}
       >
         Submit
       </Button>

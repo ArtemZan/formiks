@@ -47,6 +47,7 @@ import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { RestAPI } from "../../api/rest";
 import Project from "../../types/project";
 import Submission from "../../types/submission";
+import { ErmvProject } from "../../components/projects/ermv";
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -196,6 +197,9 @@ export function TableExplorer(props: Props) {
     if (project.id) {
       RestAPI.getSubmissions(project.id).then((response) => {
         var submissions = response.data;
+        if (submissions == null) {
+          submissions = [];
+        }
         submissions.reverse();
         setSubmissions(submissions);
         setFilteredSubmissions(submissions);
@@ -204,6 +208,7 @@ export function TableExplorer(props: Props) {
   }, [project]);
   useEffect(() => {
     RestAPI.getProjects().then((response) => {
+      response.data.unshift(ErmvProject);
       setProjects(response.data);
     });
   }, []);

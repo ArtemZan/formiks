@@ -48,7 +48,11 @@ export class API {
   }
 
   getSubmissions(project?: string): Promise<AxiosResponse<Submission[]>> {
-    return axios.get<Submission[]>(this.submissionsUrl);
+    const params = new URLSearchParams([]);
+    if (project) {
+      params.set("project", project);
+    }
+    return axios.get<Submission[]>(this.submissionsUrl, { params });
   }
   getSubmission(id: string): Promise<AxiosResponse<Submission>> {
     return axios.get<Submission>(`${this.submissionsUrl}${id}`);

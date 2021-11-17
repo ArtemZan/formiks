@@ -25,7 +25,11 @@ type Submission struct {
 }
 
 func (r *Submission) Fetch(c *gin.Context) {
-	submissions, err := r.repo.Fetch(c.Request.Context(), bson.D{})
+	filter := bson.M{}
+	if len(c.Query("project")) > 0 {
+		filter = bson.M{"project": c.Query("project")}
+	}
+	submissions, err := r.repo.Fetch(c.Request.Context(), filter)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to fetch submissions", err)
 		c.Status(http.StatusInternalServerError)
