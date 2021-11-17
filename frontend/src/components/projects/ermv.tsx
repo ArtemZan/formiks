@@ -236,6 +236,8 @@ export default function CreateBookmark(props: Props) {
     var totalCostsCC = parseFloat(totalEstimatedCostsCC);
     var totalCostsLC = parseFloat(totalEstimatedCostsLC);
     var totalCostsEur = parseFloat(totalEstimatedCostsEur);
+    var netProfitEur = parseFloat(netProfitTarget);
+    var netProfiLC = parseFloat(netProfitTargetBudgetCurrency);
 
     var temp = [...costBreakdown];
     temp.map((row: any) => {
@@ -263,6 +265,18 @@ export default function CreateBookmark(props: Props) {
         }
         if (!isNaN(totalCostsEur)) {
           row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2).toString();
+        }
+        var vendorCurr = parseFloat(row.budgetCurrency.value);
+        if (!isNaN(netProfitEur)) {
+          row.netProfitTargetEUR = (share * netProfitEur).toFixed(2).toString();
+          if (!isNaN(vendorCurr)) {
+            row.netProfitTargetVC = (vendorCurr * (share * netProfitEur))
+              .toFixed(2)
+              .toString();
+          }
+        }
+        if (!isNaN(netProfiLC)) {
+          row.netProfitTargetLC = (share * netProfiLC).toFixed(2).toString();
         }
       }
     });
