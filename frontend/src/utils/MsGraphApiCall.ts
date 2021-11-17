@@ -4,7 +4,7 @@ import { msalInstance } from "../index";
 export async function getAccountInfo() {
     const account = msalInstance.getActiveAccount();
     if (!account) {
-        throw Error("No active account! Verify a user has been signed in and setActiveAccount has been called.");
+        return
     }
 
     const response = await msalInstance.acquireTokenSilent({
@@ -30,7 +30,7 @@ export async function getAccountInfo() {
 export async function getUserPhoto() {
     const account = msalInstance.getActiveAccount();
     if (!account) {
-        throw Error("No active account! Verify a user has been signed in and setActiveAccount has been called.");
+        return
     }
 
     const response = await msalInstance.acquireTokenSilent({

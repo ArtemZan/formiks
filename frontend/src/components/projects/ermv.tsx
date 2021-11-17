@@ -22,6 +22,7 @@ import Select from "react-select";
 import { msalInstance } from "../../index";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
 import DatePicker from "react-datepicker";
+import isEqual from "lodash/isEqual";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { Table } from "rsuite";
@@ -111,9 +112,18 @@ export default function CreateBookmark(props: Props) {
   const [vendors, setVendors] = useState<any>([]);
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
 
+  const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
+  const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
+
+  const [totalEstimatedCostsCC, setTotalEstimatedCostsCC] = useState("");
+  const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
+  const [totalEstimatedCostsEur, setTotalEstimatedCostsEur] = useState("");
+
   useEffect(() => {
     getAccountInfo().then((response) => {
-      setRequestorsName(response.mail);
+      if (response) {
+        setRequestorsName(response.mail);
+      }
     });
   }, []);
 
@@ -141,9 +151,19 @@ export default function CreateBookmark(props: Props) {
         country: company.value.country,
         contactEmail: "",
         projectNumber: "",
-        share: "",
         contribution: "",
         estimatedCosts: "",
+        budgetCurrency: { label: "", value: "" },
+        budgetAmount: "",
+        localBudget: "",
+        eurBudget: "",
+        share: "",
+        estimatedCostsCC: "",
+        estimatedCostsLC: "",
+        estimatedCostsEUR: "",
+        netProfitTargetVC: "",
+        netProfitTargetLC: "",
+        netProfitTargetEUR: "",
       });
     });
     setCostBreakdown(data);
@@ -209,6 +229,54 @@ export default function CreateBookmark(props: Props) {
         "01"
     );
   }, [year, campaignChannel, projectStartQuarter, requestorsCompanyName]);
+
+  useEffect(() => {
+    var totalBudgetEur = 0;
+    var totalBudgetLC = 0;
+    var totalCostsCC = parseFloat(totalEstimatedCostsCC);
+    var totalCostsLC = parseFloat(totalEstimatedCostsLC);
+    var totalCostsEur = parseFloat(totalEstimatedCostsEur);
+
+    var temp = [...costBreakdown];
+    temp.map((row: any) => {
+      var eb = parseFloat(row.eurBudget);
+      var lb = parseFloat(row.localBudget);
+
+      if (!isNaN(eb)) {
+        totalBudgetEur += eb;
+      }
+      if (!isNaN(lb)) {
+        totalBudgetLC += lb;
+      }
+    });
+    temp.map((row: any) => {
+      var vbEur = parseFloat(row.eurBudget);
+      if (!isNaN(vbEur) && totalBudgetEur !== 0) {
+        var share = vbEur / totalBudgetEur;
+        row.share = (share * 100).toFixed(2).toString();
+
+        if (!isNaN(totalCostsCC)) {
+          row.estimatedCostsCC = (share * totalCostsCC).toFixed(2).toString();
+        }
+        if (!isNaN(totalCostsLC)) {
+          row.estimatedCostsLC = (share * totalCostsLC).toFixed(2).toString();
+        }
+        if (!isNaN(totalCostsEur)) {
+          row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2).toString();
+        }
+      }
+    });
+    setTotalVendorBudgetInEUR(totalBudgetEur);
+    setTotalVendorBudgetInLC(totalBudgetLC);
+    if (!isEqual(costBreakdown, temp)) {
+      setCostBreakdown(temp);
+    }
+  }, [
+    costBreakdown,
+    totalEstimatedCostsCC,
+    totalEstimatedCostsLC,
+    totalEstimatedCostsEur,
+  ]);
 
   return (
     <Box>
@@ -427,7 +495,13 @@ export default function CreateBookmark(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">Vendors</Text>
-          <Table hover={false} autoHeight rowHeight={65} data={vendors}>
+          <Table
+            shouldUpdateScroll={false}
+            hover={false}
+            autoHeight
+            rowHeight={65}
+            data={vendors}
+          >
             <Column flexGrow={2}>
               <HeaderCell>Vendor</HeaderCell>
               <Cell dataKey="vendor">
@@ -954,6 +1028,39 @@ export default function CreateBookmark(props: Props) {
           />
         </Box>
         <Box w="100%">
+          <Text mb="8px">Total Estimated Costs in Campaign Currency</Text>
+          <Input
+            value={totalEstimatedCostsCC}
+            onChange={(event) => {
+              setTotalEstimatedCostsCC(event.target.value);
+            }}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Total Estimated Costs in Local Currency</Text>
+          <Input
+            value={totalEstimatedCostsLC}
+            onChange={(event) => {
+              setTotalEstimatedCostsLC(event.target.value);
+            }}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Total Estimated Costs in EUR</Text>
+          <Input
+            value={totalEstimatedCostsEur}
+            onChange={(event) => {
+              setTotalEstimatedCostsEur(event.target.value);
+            }}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
+          />
+        </Box>
+        <Box w="100%">
           <Text mb="8px">Companies Participating</Text>
           <Select
             isMulti
@@ -997,7 +1104,13 @@ export default function CreateBookmark(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">Cost Breakdown</Text>
-          <Table hover={false} autoHeight rowHeight={65} data={costBreakdown}>
+          <Table
+            shouldUpdateScroll={false}
+            hover={false}
+            autoHeight
+            rowHeight={65}
+            data={costBreakdown}
+          >
             <Column width={300} resizable>
               <HeaderCell>Company Name</HeaderCell>
               <Cell dataKey="companyName">
@@ -1014,7 +1127,7 @@ export default function CreateBookmark(props: Props) {
               </Cell>
             </Column>
 
-            <Column width={200} resizable>
+            <Column width={150} resizable>
               <HeaderCell>Company Code</HeaderCell>
               <Cell dataKey="companyCode">
                 {(rowData, index) => (
@@ -1030,7 +1143,7 @@ export default function CreateBookmark(props: Props) {
               </Cell>
             </Column>
 
-            <Column width={200} resizable>
+            <Column width={100} resizable>
               <HeaderCell>Country</HeaderCell>
               <Cell dataKey="country">
                 {(rowData, index) => (
@@ -1077,23 +1190,7 @@ export default function CreateBookmark(props: Props) {
                 )}
               </Cell>
             </Column>
-
-            <Column width={200} resizable>
-              <HeaderCell>Share (%)</HeaderCell>
-              <Cell dataKey="share">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.share}
-                    onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index].share = event.target.value;
-                      setCostBreakdown(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
+            <Column width={150} resizable>
               <HeaderCell>Budget Contribution</HeaderCell>
               <Cell dataKey="contribution">
                 {(rowData, index) => (
@@ -1108,7 +1205,7 @@ export default function CreateBookmark(props: Props) {
                 )}
               </Cell>
             </Column>
-            <Column width={250} resizable>
+            <Column width={200} resizable>
               <HeaderCell>Total Estimated Costs</HeaderCell>
               <Cell dataKey="estimatedCosts">
                 {(rowData, index) => (
@@ -1120,6 +1217,155 @@ export default function CreateBookmark(props: Props) {
                       setCostBreakdown(temp);
                     }}
                   />
+                )}
+              </Cell>
+            </Column>
+            <Column width={200} resizable>
+              <HeaderCell>Vendor Budget Currency</HeaderCell>
+              <Cell dataKey="budgetCurrency">
+                {(rowData, index) => (
+                  <Select
+                    styles={{
+                      menu: (provided) => ({
+                        ...provided,
+                        zIndex: 1000000000,
+                      }),
+                      singleValue: (provided) => ({
+                        ...provided,
+                        color: "#718196",
+                      }),
+                      control: (base, state) => ({
+                        ...base,
+                        minHeight: 40,
+                        border: "1px solid #E2E8F0",
+                        transition: "0.3s",
+                        "&:hover": {
+                          border: "1px solid #CBD5E0",
+                        },
+                      }),
+                    }}
+                    theme={(theme) => ({
+                      ...theme,
+                      borderRadius: 6,
+                      colors: {
+                        ...theme.colors,
+                        primary: "#3082CE",
+                      },
+                    })}
+                    menuPortalTarget={document.body}
+                    value={rowData.budgetCurrency}
+                    onChange={(value) => {
+                      var temp = [...costBreakdown];
+                      temp[index].budgetCurrency = value;
+                      setCostBreakdown(temp);
+                    }}
+                    placeholder=""
+                    classNamePrefix="select"
+                    isClearable={false}
+                    name="budgetCurrency"
+                    options={ExchangeRates}
+                  />
+                )}
+              </Cell>
+            </Column>
+            <Column width={200} resizable>
+              <HeaderCell>Vendor Budget Amount</HeaderCell>
+              <Cell dataKey="budgetAmount">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.budgetAmount}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].budgetAmount = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+            <Column width={200} resizable>
+              <HeaderCell>Vendor Budget in LC</HeaderCell>
+              <Cell dataKey="localBudget">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.localBudget}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].localBudget = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+            <Column width={200} resizable>
+              <HeaderCell>Vendor Budget in EUR</HeaderCell>
+              <Cell dataKey="eurBudget">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.eurBudget}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].eurBudget = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+            <Column width={100} resizable>
+              <HeaderCell>Share %</HeaderCell>
+              <Cell dataKey="share">
+                {(rowData, index) => (
+                  <Input disabled defaultValue={rowData.share} />
+                )}
+              </Cell>
+            </Column>
+            <Column width={300} resizable>
+              <HeaderCell>Vendor Estimated Costs in CC</HeaderCell>
+              <Cell dataKey="estimatedCostsCC">
+                {(rowData, index) => (
+                  <Input disabled defaultValue={rowData.estimatedCostsCC} />
+                )}
+              </Cell>
+            </Column>
+            <Column width={300} resizable>
+              <HeaderCell>Vendor Estimated Costs in LC</HeaderCell>
+              <Cell dataKey="estimatedCostsLC">
+                {(rowData, index) => (
+                  <Input disabled defaultValue={rowData.estimatedCostsLC} />
+                )}
+              </Cell>
+            </Column>
+            <Column width={300} resizable>
+              <HeaderCell>Vendor Estimated Costs in EUR</HeaderCell>
+              <Cell dataKey="estimatedCostsEUR">
+                {(rowData, index) => (
+                  <Input disabled defaultValue={rowData.estimatedCostsEUR} />
+                )}
+              </Cell>
+            </Column>
+            <Column width={300} resizable>
+              <HeaderCell>Net Profit Target in Vendor Currency</HeaderCell>
+              <Cell dataKey="netProfitTargetVC">
+                {(rowData, index) => (
+                  <Input disabled defaultValue={rowData.netProfitTargetVC} />
+                )}
+              </Cell>
+            </Column>
+            <Column width={300} resizable>
+              <HeaderCell>Net Profit Target in LC</HeaderCell>
+              <Cell dataKey="netProfitTargetLC">
+                {(rowData, index) => (
+                  <Input disabled defaultValue={rowData.netProfitTargetLC} />
+                )}
+              </Cell>
+            </Column>
+            <Column width={300} resizable>
+              <HeaderCell>Net Profit Target in EUR</HeaderCell>
+              <Cell dataKey="netProfitTargetEUR">
+                {(rowData, index) => (
+                  <Input disabled defaultValue={rowData.netProfitTargetEUR} />
                 )}
               </Cell>
             </Column>
