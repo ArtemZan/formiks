@@ -21,7 +21,7 @@ import Submission from "../../types/submission";
 import { API, RestAPI } from "../../api/rest";
 import { FiSettings, FiRefreshCw } from "react-icons/all";
 
-import Ermv, { ErmvProject } from "../../components/projects/ermv";
+import Ermv from "../../components/projects/ermv";
 
 interface Props {
   history: any;
@@ -49,10 +49,8 @@ export function Viewer(props: Props) {
   });
   useEffect(() => {
     if (props.match.params.id) {
-      if (props.match.params.id === "european-regional-multi-vendor") {
-        setProject(ErmvProject);
-        setPrefedinedProject(<Ermv />);
-        return;
+      if (props.match.params.id === "619515b754e61c8dd33daa52") {
+        setPrefedinedProject(<Ermv history={props.history} />);
       }
       RestAPI.getProject(props.match.params.id).then((response) => {
         setProject(response.data);

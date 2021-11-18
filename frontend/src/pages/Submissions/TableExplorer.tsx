@@ -28,6 +28,7 @@ import {
   NumberDecrementStepper,
   Tag,
   Divider,
+  Portal,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import Select from "react-select";
@@ -42,14 +43,14 @@ import {
   AiOutlinePlus,
   BiPlusMedical,
 } from "react-icons/all";
+import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState } from "react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { RestAPI } from "../../api/rest";
 import Project from "../../types/project";
 import Submission from "../../types/submission";
-import { ErmvProject } from "../../components/projects/ermv";
 
-const { Column, HeaderCell, Cell } = Table;
+const { ColumnGroup, Column, HeaderCell, Cell } = Table;
 
 interface Props {
   history: any;
@@ -81,74 +82,6 @@ const filterTypes = {
     { label: "Includes", value: "includes" },
   ],
   datetime: [{ label: "Range", value: "range" }],
-};
-
-const ExpandCell = ({
-  rowData,
-  dataKey,
-  expandedRowKeys,
-  onChange,
-  ...props
-}: any) => (
-  <Cell {...props}>
-    <RIconButton
-      appearance="subtle"
-      size="xs"
-      onClick={() => {
-        onChange(rowData);
-      }}
-      icon={
-        expandedRowKeys.some((key: string) => key === rowData["id"]) ? (
-          <AiOutlineMinus />
-        ) : (
-          <AiOutlinePlus />
-        )
-      }
-    />
-  </Cell>
-);
-
-const renderRowExpanded = (rowData: any) => {
-  return (
-    <Box overflow="scroll" w="100%" borderRadius="5px" h="380px">
-      <CTable>
-        <Thead>
-          <Tr>
-            <Th>To convert</Th>
-            <Th>into</Th>
-            <Th isNumeric>multiply by</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          <Tr>
-            <Td>inches</Td>
-            <Td>millimetres (mm)</Td>
-            <Td isNumeric>25.4</Td>
-          </Tr>
-          <Tr>
-            <Td>feet</Td>
-            <Td>centimetres (cm)</Td>
-            <Td isNumeric>30.48</Td>
-          </Tr>
-          <Tr>
-            <Td>yards</Td>
-            <Td>metres (m)</Td>
-            <Td isNumeric>0.91444</Td>
-          </Tr>
-          <Tr>
-            <Td>yards</Td>
-            <Td>metres (m)</Td>
-            <Td isNumeric>0.91444</Td>
-          </Tr>
-          <Tr>
-            <Td>yards</Td>
-            <Td>metres (m)</Td>
-            <Td isNumeric>0.91444</Td>
-          </Tr>
-        </Tbody>
-      </CTable>
-    </Box>
-  );
 };
 
 export function TableExplorer(props: Props) {
@@ -196,19 +129,35 @@ export function TableExplorer(props: Props) {
   useEffect(() => {
     if (project.id) {
       RestAPI.getSubmissions(project.id).then((response) => {
-        var submissions = response.data;
-        if (submissions == null) {
-          submissions = [];
+        var subm = response.data;
+        if (subm == null) {
+          subm = [];
         }
-        submissions.reverse();
-        setSubmissions(submissions);
-        setFilteredSubmissions(submissions);
+        subm.reverse();
+        setSubmissions(subm);
+        project.components.map((component: any) => {
+          if (component.type === "customTable") {
+            subm.map((sub) => {
+              if (sub.children === undefined) {
+                sub.children = [];
+              }
+              sub.data[component.key].map((tableRecord: any, index: number) => {
+                sub.children.push({
+                  id: uuidv4(),
+                  title: `[${index + 1}] ${component.label}`,
+                  data: tableRecord,
+                });
+              });
+            });
+          }
+        });
+        setFilteredSubmissions(subm);
       });
     }
   }, [project]);
+
   useEffect(() => {
     RestAPI.getProjects().then((response) => {
-      response.data.unshift(ErmvProject);
       setProjects(response.data);
     });
   }, []);
@@ -778,44 +727,44 @@ export function TableExplorer(props: Props) {
               items
             </Text>
             <Table
-              // isTree
-              // defaultExpandAllRows={false}
-              rowExpandedHeight={400}
+              headerHeight={80}
+              isTree
+              defaultExpandAllRows
+              bordered
+              cellBordered
               rowKey="id"
-              expandedRowKeys={expandedRowKeys}
-              renderRowExpanded={renderRowExpanded}
-              // height={800}
+              shouldUpdateScroll={false}
+              onExpandChange={(isOpen, rowData) => {
+                console.log(isOpen, rowData);
+              }}
+              renderTreeToggle={(icon, rowData) => {
+                return icon;
+              }}
               autoHeight
               data={filteredSubmissions}
             >
-              <Column width={50} fixed="left" align="center">
-                <HeaderCell>
-                  <Text></Text>
-                </HeaderCell>
-                <ExpandCell
-                  dataKey="id"
-                  expandedRowKeys={expandedRowKeys}
-                  onChange={handleExpanded}
-                />
-              </Column>
-              <Column width={200} fixed="left" align="center" resizable>
-                <HeaderCell>Title</HeaderCell>
+              <Column width={200} fixed="left" align="left" resizable>
+                <HeaderCell verticalAlign="middle">Title</HeaderCell>
                 <Cell dataKey="title" />
               </Column>
               <Column width={110} align="center" resizable>
-                <HeaderCell>Status</HeaderCell>
+                <HeaderCell verticalAlign="middle">Status</HeaderCell>
                 <Cell dataKey="status">
                   {(row: any, index: number) => {
-                    return <Tag colorScheme="cyan">{row.status}</Tag>;
+                    if (row.status) {
+                      return <Tag colorScheme="cyan">{row.status}</Tag>;
+                    }
                   }}
                 </Cell>
               </Column>
 
               <Column width={110} align="center" resizable>
-                <HeaderCell>Created</HeaderCell>
+                <HeaderCell verticalAlign="middle">Created</HeaderCell>
                 <Cell dataKey="created">
                   {(row: any, index: number) => {
-                    return moment(new Date(row.created)).fromNow();
+                    if (row.created) {
+                      return moment(new Date(row.created)).fromNow();
+                    }
                   }}
                 </Cell>
               </Column>
@@ -825,28 +774,70 @@ export function TableExplorer(props: Props) {
                   displayedColumns.length < 1 ||
                   displayedColumns.includes(component.key)
                 ) {
+                  if (component.type === "customTable") {
+                    var columns: any[] = [];
+                    Object.keys(component.columns).map((key) => {
+                      console.log(key);
+                      columns.push(
+                        <Column
+                          colSpan={0}
+                          width={200}
+                          align="center"
+                          resizable
+                        >
+                          <HeaderCell
+                            style={{
+                              backgroundColor: "#EDF2F6",
+                              color: "#718196",
+                            }}
+                          >
+                            {component.columns[key]}
+                          </HeaderCell>
+                          <Cell dataKey={key}>
+                            {(row: any, index: number) => {
+                              if (row.data && row.data[key]) {
+                                return row.data[key];
+                              }
+                            }}
+                          </Cell>
+                        </Column>
+                      );
+                    });
+                    return (
+                      <ColumnGroup
+                        align="left"
+                        header={<Text as="b">{component.label}</Text>}
+                      >
+                        {columns}
+                      </ColumnGroup>
+                    );
+                  }
                   if (component.type !== "button") {
                     return (
                       <Column width={200} align="center" resizable>
-                        <HeaderCell>{component.label}</HeaderCell>
+                        <HeaderCell verticalAlign="middle">
+                          {component.label}
+                        </HeaderCell>
                         <Cell dataKey={component.key}>
                           {(row: any, index: number) => {
-                            var value = row.data[component.key];
-                            switch (typeof value) {
-                              case "number":
-                                return value.toFixed(2);
-                              case "object":
-                                var tags: any[] = [];
-                                value.map((element: any) => {
-                                  tags.push(<Tag mr={"5px"}>{element}</Tag>);
-                                });
-                                return tags;
-                              default:
-                                if (component.type === "datetime") {
-                                  var d = new Date(value);
-                                  return d.toLocaleString();
-                                }
-                                return value;
+                            if (row.data) {
+                              var value = row.data[component.key];
+                              switch (typeof value) {
+                                case "number":
+                                  return value.toFixed(2);
+                                case "object":
+                                  var tags: any[] = [];
+                                  value.map((element: any) => {
+                                    tags.push(<Tag mr={"5px"}>{element}</Tag>);
+                                  });
+                                  return tags;
+                                default:
+                                  if (component.type === "datetime" && value) {
+                                    var d = new Date(value);
+                                    return d.toLocaleString();
+                                  }
+                                  return value;
+                              }
                             }
                           }}
                         </Cell>
@@ -856,7 +847,7 @@ export function TableExplorer(props: Props) {
                 }
               })}
               <Column width={150}>
-                <HeaderCell>Actions</HeaderCell>
+                <HeaderCell verticalAlign="middle">Actions</HeaderCell>
                 <Cell dataKey="actions">
                   {(row: any, index: number) => {
                     return (

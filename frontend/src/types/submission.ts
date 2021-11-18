@@ -7,4 +7,6 @@ export default interface Submission {
     status: string;
     author: string;
     data: any;
+    // children: string[];
+    [key: string]: any
   }

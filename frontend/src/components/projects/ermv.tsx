@@ -26,6 +26,8 @@ import isEqual from "lodash/isEqual";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { Table } from "rsuite";
+import Submission from "../../types/submission";
+import { RestAPI } from "../../api/rest";
 
 const PH1 = require("./ph.json");
 const Companies = require("./companies.json");
@@ -37,25 +39,8 @@ const ExchangeRates = require("./exchangeRates.json");
 
 const { Column, HeaderCell, Cell } = Table;
 
-export const ErmvProject = {
-  id: "european-regional-multi-vendor",
-  title: "Regional Multi Vendor",
-  created: new Date("2021-11-13 23:11"),
-  updated: new Date("2021-11-15 16:31"),
-  author: "sk@innovatio.lv",
-  description:
-    "European Regional Multi Vendor Form. Contact administrator if anything works incorrectly. Form is still under development and will be released soon. Form is available only for administrator accounts, visit formiks.innovatio.dev if you are looking for old version.",
-  statuses: ["New", "In Progress", "Completed", "On Hold", "Cancelled"],
-  defaultStatus: "New",
-  tags: ["dev", "testing", "marketing", "european regional"],
-  roles: ["administrator"],
-  components: [],
-  type: "code",
-  code: "",
-} as Project;
-
 interface Props {
-  //   onSubmit: any;
+  history: any;
 }
 
 export default function CreateBookmark(props: Props) {
@@ -1439,88 +1424,108 @@ export default function CreateBookmark(props: Props) {
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
         onClick={() => {
-          var submission: any = {};
-          submission.requestorsCompanyName = requestorsCompanyName.label;
-          submission.requestorsCompanyCode = requestorsCompanyName.value.code;
-          submission.requestorsCountry = requestorsCompanyName.value.country;
-          submission.campaignName = campaignName;
-          submission.campaignDescription = campaignDescription;
-          submission.targetAudience = targetAudience;
-          submission.campaignChannel = campaignChannel;
-          submission.vendorsNames = [];
+          var submission: Submission = {
+            project: "619515b754e61c8dd33daa52",
+            created: new Date(),
+            updated: new Date(),
+            title: campaignName,
+            author: requestorsName,
+            status: "New",
+            data: {} as any,
+          };
+          submission.data.requestorsCompanyName = requestorsCompanyName.label;
+          submission.data.requestorsCompanyCode =
+            requestorsCompanyName.value.code;
+          submission.data.requestorsCountry =
+            requestorsCompanyName.value.country;
+          submission.data.campaignName = campaignName;
+          submission.data.campaignDescription = campaignDescription;
+          submission.data.targetAudience = targetAudience;
+          submission.data.campaignChannel = campaignChannel;
+          submission.data.vendorsNames = [];
           vendorsNames.map((vendor: any) => {
-            submission.vendorsNames.push(vendor.label);
+            submission.data.vendorsNames.push(vendor.label);
           });
-          submission.vendors = [];
+          submission.data.vendors = [];
           vendors.map((vendor: any) => {
-            submission.vendors.push({
-              vendor: vendor.vendor,
-              projectManager: vendor.projectManager,
-              creditor: vendor.creditor,
-              debitor: vendor.debitor,
-              manufacturer: vendor.manufacturer,
-              bu: vendor.bu,
-              ph1: vendor.ph.label,
+            submission.data.vendors.push({
+              vvendor: vendor.vendor,
+              vprojectManager: vendor.projectManager,
+              vcreditor: vendor.creditor,
+              vdebitor: vendor.debitor,
+              vmanufacturer: vendor.manufacturer,
+              vbu: vendor.bu,
+              vph1: vendor.ph.label,
             });
           });
-          submission.year = year.label;
-          submission.projectStartQuarter = projectStartQuarter.label;
-          submission.projectNumber = projectNumber;
-          submission.requestorsName = requestorsName;
-          submission.projectApprover = "";
-          submission.projectApproval = projectApproval;
-          submission.manufacturersFiscalQuarter = fiscalQuarter.label;
-          submission.campaignStartDate = startDate;
-          submission.campaignEndDate = endDate;
-          submission.budgetSource = budgetSource.label;
-          submission.budgetApprovedByVendor = budgetApprovedByVendor;
-          submission.campaignBudgetsCurrency = exchangeRates.label;
-          submission.campaignEstimatedIncomeBudgetsCurrency = parseFloat(
+          submission.data.year = year.label;
+          submission.data.projectStartQuarter = projectStartQuarter.label;
+          submission.data.projectNumber = projectNumber;
+          submission.data.requestorsName = requestorsName;
+          submission.data.projectApprover = "";
+          submission.data.projectApproval = projectApproval;
+          submission.data.manufacturersFiscalQuarter = fiscalQuarter.label;
+          submission.data.campaignStartDate = startDate;
+          submission.data.campaignEndDate = endDate;
+          submission.data.budgetSource = budgetSource.label;
+          submission.data.budgetApprovedByVendor = budgetApprovedByVendor;
+          submission.data.campaignBudgetsCurrency = exchangeRates.label;
+          submission.data.campaignEstimatedIncomeBudgetsCurrency = parseFloat(
             estimatedIncomeBudgetCurrency
           );
-          submission.campaignEstimatedCostsBudgetsCurrency = parseFloat(
+          submission.data.campaignEstimatedCostsBudgetsCurrency = parseFloat(
             estimatedCostsBudgetCurrency
           );
-          submission.campaignNetProfitTargetBudgetsCurrency = parseFloat(
+          submission.data.campaignNetProfitTargetBudgetsCurrency = parseFloat(
             netProfitTargetBudgetCurrency
           );
-          submission.campaignEstimatedIncomeEur = parseFloat(estimatedIncome);
-          submission.campaignEstimatedCostsEur = parseFloat(estimatedCosts);
-          submission.campaignNetProfitTargetEur = parseFloat(netProfitTarget);
-          submission.totalEstimatedCostsCC = parseFloat(totalEstimatedCostsCC);
-          submission.totalEstimatedCostsLC = parseFloat(totalEstimatedCostsLC);
-          submission.totalEstimatedCostsEur = parseFloat(
+          submission.data.campaignEstimatedIncomeEur =
+            parseFloat(estimatedIncome);
+          submission.data.campaignEstimatedCostsEur =
+            parseFloat(estimatedCosts);
+          submission.data.campaignNetProfitTargetEur =
+            parseFloat(netProfitTarget);
+          submission.data.totalEstimatedCostsCC = parseFloat(
+            totalEstimatedCostsCC
+          );
+          submission.data.totalEstimatedCostsLC = parseFloat(
+            totalEstimatedCostsLC
+          );
+          submission.data.totalEstimatedCostsEur = parseFloat(
             totalEstimatedCostsEur
           );
 
-          submission.companiesParticipating = [];
+          submission.data.companiesParticipating = [];
           companiesParticipating.map((company: any) => {
-            submission.companiesParticipating.push(company.label);
+            submission.data.companiesParticipating.push(company.label);
           });
-          submission.costBreakdown = [];
+          submission.data.costBreakdown = [];
           costBreakdown.map((vendor: any) => {
-            submission.costBreakdown.push({
-              companyName: vendor.companyName,
-              companyCode: vendor.companyCode,
-              country: vendor.country,
-              contactEmail: vendor.contactEmail,
-              projectNumber: vendor.projectNumber,
-              budgetContribution: vendor.contribution,
-              totalEstimatedCosts: vendor.estimatedCosts,
-              budgetCurrency: vendor.budgetCurrency.label,
-              budgetAmount: parseFloat(vendor.budgetAmount),
-              budgetLC: parseFloat(vendor.localBudget),
-              budgetEur: parseFloat(vendor.eurBudget),
-              share: parseFloat(vendor.share),
-              estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
-              estimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-              estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
-              netProfitTargetVC: parseFloat(vendor.netProfitTargetVC),
-              netProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
-              netProfitTargetEur: parseFloat(vendor.netProfitTargetEUR),
+            submission.data.costBreakdown.push({
+              cbcompanyName: vendor.companyName,
+              cbcompanyCode: vendor.companyCode,
+              cbcountry: vendor.country,
+              cbcontactEmail: vendor.contactEmail,
+              cbprojectNumber: vendor.projectNumber,
+              cbbudgetContribution: vendor.contribution,
+              cbtotalEstimatedCosts: vendor.estimatedCosts,
+              cbbudgetCurrency: vendor.budgetCurrency.label,
+              cbbudgetAmount: parseFloat(vendor.budgetAmount),
+              cbbudgetLC: parseFloat(vendor.localBudget),
+              cbbudgetEur: parseFloat(vendor.eurBudget),
+              cbshare: parseFloat(vendor.share),
+              cbestimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
+              cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+              cbestimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
+              cbnetProfitTargetVC: parseFloat(vendor.netProfitTargetVC),
+              cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+              cbnetProfitTargetEur: parseFloat(vendor.netProfitTargetEUR),
             });
           });
-          submission.comments = comments;
+          submission.data.comments = comments;
+          RestAPI.createSubmission(submission).then((response) => {
+            props.history.push(`/submissions/view/${response.data.id}`);
+          });
           console.log(submission);
         }}
       >
