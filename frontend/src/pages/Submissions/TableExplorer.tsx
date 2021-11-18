@@ -249,7 +249,8 @@ export function TableExplorer(props: Props) {
 
   return (
     <>
-      <AuthenticatedTemplate>
+      {/* <AuthenticatedTemplate> */}
+      <div>
         <Box mb="3em" float="right" w={{ base: "100%", md: "400px" }}>
           <Select
             styles={{
@@ -712,7 +713,7 @@ export function TableExplorer(props: Props) {
             </VStack>
           </Box>
 
-          <Box
+          {/* <Box
             color={"gray.500"}
             w="100%"
             boxShadow={"md"}
@@ -865,12 +866,488 @@ export function TableExplorer(props: Props) {
                 </Cell>
               </Column>
             </Table>
+          </Box> */}
+          <Box
+            color={"gray.500"}
+            w="100%"
+            boxShadow={"md"}
+            rounded={"md"}
+            bg="white"
+            p="2em"
+          >
+            <Text mb={"40px"} color="gray.700" fontWeight={400} fontSize="sm">
+              <b>
+                {filteredSubmissions.length} of {submissions.length}
+              </b>{" "}
+              items
+            </Text>
+            <Table
+              // virtualized
+              headerHeight={80}
+              isTree
+              defaultExpandAllRows
+              bordered
+              cellBordered
+              rowKey="id"
+              shouldUpdateScroll={false}
+              onExpandChange={(isOpen, rowData) => {
+                console.log(isOpen, rowData);
+              }}
+              renderTreeToggle={(icon, rowData) => {
+                return icon;
+              }}
+              autoHeight
+              data={sampleData}
+            >
+              <ColumnGroup header={<Text as="b">General Information</Text>}>
+                <Column width={50} resizable>
+                  <HeaderCell
+                    style={{
+                      backgroundColor: "#EDF2F6",
+                      color: "#718196",
+                    }}
+                  >
+                    <div></div>
+                  </HeaderCell>
+                  <Cell dataKey="none" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>Company Code</HeaderCell>
+                  <Cell dataKey="companyCode" />
+                </Column>
+
+                <Column width={200} resizable>
+                  <HeaderCell>Project Number</HeaderCell>
+                  <Cell dataKey="projectNumber" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Campaign Start Date</HeaderCell>
+                  <Cell dataKey="campaignStartDate" />
+                </Column>
+                <Column width={250} resizable>
+                  <HeaderCell>Project Type</HeaderCell>
+                  <Cell dataKey="projectType" />
+                </Column>
+              </ColumnGroup>
+              <ColumnGroup header={<Text as="b">Project Information</Text>}>
+                <Column width={0} resizable>
+                  <HeaderCell
+                    style={{
+                      backgroundColor: "#f2f6ed",
+                      color: "#718196",
+                    }}
+                  >
+                    <div></div>
+                  </HeaderCell>
+                  <Cell dataKey="none" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>Country</HeaderCell>
+                  <Cell dataKey="country" />
+                </Column>
+
+                <Column width={150} resizable>
+                  <HeaderCell>Country Share %</HeaderCell>
+                  <Cell dataKey="countryShare" />
+                </Column>
+                <Column width={250} resizable>
+                  <HeaderCell>Country Budget Contribution (EUR)</HeaderCell>
+                  <Cell dataKey="countryBudgetContributionEur" />
+                </Column>
+                <Column width={250} resizable>
+                  <HeaderCell>Country Cost Estimation (EUR)</HeaderCell>
+                  <Cell dataKey="countryCostEstimationEur" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Manufacturer Number</HeaderCell>
+                  <Cell dataKey="manufacturerNumber" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Vendor Name</HeaderCell>
+                  <Cell dataKey="vendorName" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>SAP Debitor Number</HeaderCell>
+                  <Cell dataKey="sapDebitorNumber" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>SAP Creditor Number</HeaderCell>
+                  <Cell dataKey="sapCreditorNumber" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>MDF Level</HeaderCell>
+                  <Cell dataKey="mdfLevel" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>Budget Currency</HeaderCell>
+                  <Cell dataKey="budgetCurrency" />
+                </Column>
+                <Column width={250} resizable>
+                  <HeaderCell>Estimated Income (Budget Currency)</HeaderCell>
+                  <Cell dataKey="estimatedIncomeBC" />
+                </Column>
+                <Column width={250} resizable>
+                  <HeaderCell>Estimated Costs (Budget Currency)</HeaderCell>
+                  <Cell dataKey="estimatedCostsBC" />
+                </Column>
+                <Column width={250} resizable>
+                  <HeaderCell>Estimated Result (Budget Currency)</HeaderCell>
+                  <Cell dataKey="estimatedResultBC" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Estimated Income (EUR)</HeaderCell>
+                  <Cell dataKey="estimatedIncomeEur" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Estimated Costs (EUR)</HeaderCell>
+                  <Cell dataKey="estimatedCostsEur" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Estimated Result (EUR)</HeaderCell>
+                  <Cell dataKey="estimatedResultEur" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>Vendor Share %</HeaderCell>
+                  <Cell dataKey="vendorShare" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Business Unit</HeaderCell>
+                  <Cell dataKey="bu" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>PH1</HeaderCell>
+                  <Cell dataKey="ph1" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Campaign Channel</HeaderCell>
+                  <Cell dataKey="campaignChannel" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Target Audience</HeaderCell>
+                  <Cell dataKey="targetAudience" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Marketing Responsible</HeaderCell>
+                  <Cell dataKey="marketingResponsible" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Production Project Manager</HeaderCell>
+                  <Cell dataKey="productionProjectManager" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Project Approver</HeaderCell>
+                  <Cell dataKey="projectApprover" />
+                </Column>
+              </ColumnGroup>
+              <ColumnGroup header={<Text as="b">Purchase Order</Text>}>
+                <Column width={0} resizable>
+                  <HeaderCell
+                    style={{
+                      backgroundColor: "#f6edf2",
+                      color: "#718196",
+                    }}
+                  >
+                    <div></div>
+                  </HeaderCell>
+                  <Cell dataKey="none" />
+                </Column>
+                <Column width={250} resizable>
+                  <HeaderCell>Purchase Order Service Provider</HeaderCell>
+                  <Cell dataKey="purchaseOrderServiceProvider" />
+                </Column>
+                <Column width={250} resizable>
+                  <HeaderCell>Net Value of Service Ordered (LC)</HeaderCell>
+                  <Cell dataKey="netValueOfServiceOrderedLC" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>Local Currency</HeaderCell>
+                  <Cell dataKey="localCurrency" />
+                </Column>
+                <Column width={250} resizable>
+                  <HeaderCell>Net Value (Purchase Order Currency)</HeaderCell>
+                  <Cell dataKey="netValuePOC" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Purchase Order Currency</HeaderCell>
+                  <Cell dataKey="purchaseOrderCurrency" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Net Value (EUR)</HeaderCell>
+                  <Cell dataKey="netValueEur" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Purchase Order Status</HeaderCell>
+                  <Cell dataKey="purchaseOrderStatus" />
+                </Column>
+              </ColumnGroup>
+              <ColumnGroup header={<Text as="b">Cost Actuals</Text>}>
+                <Column width={0} resizable>
+                  <HeaderCell
+                    style={{
+                      backgroundColor: "#f1edf6",
+                      color: "#718196",
+                    }}
+                  >
+                    <div></div>
+                  </HeaderCell>
+                  <Cell dataKey="none" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Year / Month</HeaderCell>
+                  <Cell dataKey="yearMonth" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Type</HeaderCell>
+                  <Cell dataKey="documentType" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Posting Date</HeaderCell>
+                  <Cell dataKey="postingDate" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Date</HeaderCell>
+                  <Cell dataKey="documentDate" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Number</HeaderCell>
+                  <Cell dataKey="documentNumber" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Invoice Number</HeaderCell>
+                  <Cell dataKey="invoiceNumber" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Cost Account</HeaderCell>
+                  <Cell dataKey="costAccount" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Name 1</HeaderCell>
+                  <Cell dataKey="name1" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Cost Amount (LC)</HeaderCell>
+                  <Cell dataKey="costAmountLC" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Cost Amount (DC)</HeaderCell>
+                  <Cell dataKey="costAmountDC" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>DC</HeaderCell>
+                  <Cell dataKey="dc" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Cost Status</HeaderCell>
+                  <Cell dataKey="costStatus" />
+                </Column>
+              </ColumnGroup>
+              <ColumnGroup header={<Text as="b">Sales Actuals</Text>}>
+                <Column width={0} resizable>
+                  <HeaderCell
+                    style={{
+                      backgroundColor: "#f5f4ec",
+                      color: "#718196",
+                    }}
+                  >
+                    <div></div>
+                  </HeaderCell>
+                  <Cell dataKey="none" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Year / Month</HeaderCell>
+                  <Cell dataKey="yearMonthSA" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Type</HeaderCell>
+                  <Cell dataKey="documentTypeSA" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Posting Date</HeaderCell>
+                  <Cell dataKey="postingDateSA" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Date</HeaderCell>
+                  <Cell dataKey="documentDateSA" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Number</HeaderCell>
+                  <Cell dataKey="documentNumberSA" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Invoice Number</HeaderCell>
+                  <Cell dataKey="invoiceNumberSA" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Income Account</HeaderCell>
+                  <Cell dataKey="incomeAccount" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Name 1</HeaderCell>
+                  <Cell dataKey="name1" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Income Amount (LC)</HeaderCell>
+                  <Cell dataKey="incomeAmountLC" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Income Amount (DC)</HeaderCell>
+                  <Cell dataKey="incomeAmountDC" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Income Status</HeaderCell>
+                  <Cell dataKey="incomeStatus" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Actual Result (LC)</HeaderCell>
+                  <Cell dataKey="actualResult" />
+                </Column>
+              </ColumnGroup>
+              <ColumnGroup header={<Text as="b">Actuals in EUR</Text>}>
+                <Column width={0} resizable>
+                  <HeaderCell
+                    style={{
+                      backgroundColor: "#f5eced",
+                      color: "#718196",
+                    }}
+                  >
+                    <div></div>
+                  </HeaderCell>
+                  <Cell dataKey="none" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Income Amount (EUR)</HeaderCell>
+                  <Cell dataKey="incomeAmountEur" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Cost Amount (EUR)</HeaderCell>
+                  <Cell dataKey="costAmountEur" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Actual Result (EUR)</HeaderCell>
+                  <Cell dataKey="actualResult" />
+                </Column>
+              </ColumnGroup>
+              <ColumnGroup header={<Text as="b">Cost GL Postings</Text>}>
+                <Column width={0} resizable>
+                  <HeaderCell
+                    style={{
+                      backgroundColor: "#f0f0f0",
+                      color: "#718196",
+                    }}
+                  >
+                    <div></div>
+                  </HeaderCell>
+                  <Cell dataKey="none" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>Year / Month</HeaderCell>
+                  <Cell dataKey="yearMonthCostGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Type</HeaderCell>
+                  <Cell dataKey="documentTypeCostGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Posting Date</HeaderCell>
+                  <Cell dataKey="postingDateCostGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Date</HeaderCell>
+                  <Cell dataKey="documentDateCostGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Number</HeaderCell>
+                  <Cell dataKey="documentNumberCostGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Cost Account</HeaderCell>
+                  <Cell dataKey="costAccountCostGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Cost Amount (LC)</HeaderCell>
+                  <Cell dataKey="costAmountLCCostGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Cost Amount (DC)</HeaderCell>
+                  <Cell dataKey="costAmountDCCostGL" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>DC</HeaderCell>
+                  <Cell dataKey="dcCostGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Cost Amount (EUR)</HeaderCell>
+                  <Cell dataKey="costAmountEurCostGL" />
+                </Column>
+              </ColumnGroup>
+
+              <ColumnGroup header={<Text as="b">Income GL Postings</Text>}>
+                <Column width={0} resizable>
+                  <HeaderCell
+                    style={{
+                      backgroundColor: "#dceee4",
+                      color: "#718196",
+                    }}
+                  >
+                    <div></div>
+                  </HeaderCell>
+                  <Cell dataKey="none" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>Year / Month</HeaderCell>
+                  <Cell dataKey="yearMonthIncomeGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Type</HeaderCell>
+                  <Cell dataKey="documentTypeIncomeGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Posting Date</HeaderCell>
+                  <Cell dataKey="postingDateIncomeGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Date</HeaderCell>
+                  <Cell dataKey="documentDateIncomeGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Document Number</HeaderCell>
+                  <Cell dataKey="documentNumberIncomeGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Income Account</HeaderCell>
+                  <Cell dataKey="incomeAccountIncomeGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Income Amount (LC)</HeaderCell>
+                  <Cell dataKey="incomeAmountLCIncomeGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Income Amount (DC)</HeaderCell>
+                  <Cell dataKey="incomeAmountDCIncomeGL" />
+                </Column>
+                <Column width={150} resizable>
+                  <HeaderCell>DC</HeaderCell>
+                  <Cell dataKey="dcIncomeGL" />
+                </Column>
+                <Column width={200} resizable>
+                  <HeaderCell>Income Amount (EUR)</HeaderCell>
+                  <Cell dataKey="incomeAmountEurIncomeGL" />
+                </Column>
+              </ColumnGroup>
+              <Column width={0} align="left" resizable>
+                <HeaderCell verticalAlign="middle">
+                  <div></div>
+                </HeaderCell>
+                <Cell dataKey="none" />
+              </Column>
+            </Table>
           </Box>
         </VStack>
-      </AuthenticatedTemplate>
-      <UnauthenticatedTemplate>
+      </div>
+      {/* </AuthenticatedTemplate> */}
+      {/* <UnauthenticatedTemplate>
         <Box boxShadow="md" bg="white" p="2em" h="80vh"></Box>
-      </UnauthenticatedTemplate>
+      </UnauthenticatedTemplate> */}
     </>
   );
 }
