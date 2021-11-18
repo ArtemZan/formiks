@@ -897,7 +897,7 @@ export function TableExplorer(props: Props) {
                 return icon;
               }}
               autoHeight
-              data={sampleData}
+              data={[]}
             >
               <ColumnGroup header={<Text as="b">General Information</Text>}>
                 <Column width={50} resizable>
