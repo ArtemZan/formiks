@@ -31,11 +31,12 @@ func RegisterRoutes(r *gin.Engine) {
 	bookmarksGroup.POST("/", msal.Admin(), bookmarkHandler.Create)
 	bookmarksGroup.DELETE("/:id", msal.Admin(), bookmarkHandler.Delete)
 
-	submissionsGroup.GET("/", submissionHandler.Fetch)        // get all submissions available to user
-	submissionsGroup.GET("/:id", submissionHandler.FetchByID) // get submission
-	submissionsGroup.POST("/", submissionHandler.Create)      // create submission
-	submissionsGroup.PUT("/:id", submissionHandler.Update)    // update submission
-	submissionsGroup.DELETE("/:id", submissionHandler.Delete) // delete submission
+	submissionsGroup.GET("/", submissionHandler.Fetch)                       // get all submissions available to user
+	submissionsGroup.GET("/:id", submissionHandler.FetchByID)                // get submission
+	submissionsGroup.POST("/", submissionHandler.Create)                     // create submission
+	submissionsGroup.POST("/children", submissionHandler.CreateWithChildren) // create submission with children
+	submissionsGroup.PUT("/:id", submissionHandler.Update)                   // update submission
+	submissionsGroup.DELETE("/:id", submissionHandler.Delete)                // delete submission
 
 	usersGroup.GET("/", userHandler.Fetch)              // get all users with custom roles
 	usersGroup.GET("/:email", userHandler.FetchByEmail) // get roles for specific user

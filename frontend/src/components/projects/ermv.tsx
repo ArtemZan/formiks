@@ -26,8 +26,9 @@ import isEqual from "lodash/isEqual";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { Table } from "rsuite";
-import Submission from "../../types/submission";
+import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
+import { v4 as uuidv4 } from "uuid";
 
 const PH1 = require("./ph.json");
 const Companies = require("./companies.json");
@@ -41,6 +42,7 @@ const { Column, HeaderCell, Cell } = Table;
 
 interface Props {
   history: any;
+  project: Project;
 }
 
 export default function CreateBookmark(props: Props) {
@@ -399,7 +401,7 @@ export default function CreateBookmark(props: Props) {
             })}
             placeholder=""
             onChange={(value: any) => {
-              setTargetAudience(value.value);
+              setTargetAudience(value.label);
             }}
             classNamePrefix="select"
             isClearable={false}
@@ -439,7 +441,7 @@ export default function CreateBookmark(props: Props) {
             })}
             placeholder=""
             onChange={(value: any) => {
-              setCampaignChannel(value.value);
+              setCampaignChannel(value.label);
             }}
             classNamePrefix="select"
             isClearable={false}
@@ -1424,109 +1426,115 @@ export default function CreateBookmark(props: Props) {
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
         onClick={() => {
-          var submission: Submission = {
-            project: "619515b754e61c8dd33daa52",
+          var projectId =
+            props.project.id !== undefined ? props.project.id : "";
+
+          var parent: Submission = {
+            project: projectId,
+            title: campaignName,
+            parentId: null,
             created: new Date(),
             updated: new Date(),
-            title: campaignName,
+            status: props.project.defaultStatus,
             author: requestorsName,
-            status: "New",
-            data: {} as any,
+            data: {
+              requestorsCompanyName: requestorsCompanyName.label,
+              companyCode: requestorsCompanyName.value.code,
+              requestorsCountry: requestorsCompanyName.value.country,
+              campaignName: campaignName,
+              campaignDescription: campaignDescription,
+              targetAudience: targetAudience,
+              campaignChannel: campaignChannel,
+              year: year.label,
+              projectStartQuarter: projectStartQuarter.label,
+              projectNumber: projectNumber,
+              requestorsName: requestorsName,
+              projectApprover: "",
+              projectApproval: projectApproval,
+              manufacturersFiscalQuarter: fiscalQuarter.label,
+              campaignStartDate: startDate,
+              campaignEndDate: endDate,
+              budgetSource: budgetSource.label,
+              budgetApprovedByVendor: budgetApprovedByVendor,
+              campaignBudgetsCurrency: exchangeRates.label,
+              campaignEstimatedIncomeBudgetsCurrency: parseFloat(
+                estimatedIncomeBudgetCurrency
+              ),
+              campaignEstimatedCostsBudgetsCurrency: parseFloat(
+                estimatedCostsBudgetCurrency
+              ),
+              campaignNetProfitTargetBudgetsCurrency: parseFloat(
+                netProfitTargetBudgetCurrency
+              ),
+              campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
+              campaignEstimatedCostsEur: parseFloat(estimatedCosts),
+              campaignNetProfitTargetEur: parseFloat(netProfitTarget),
+              totalEstimatedCostsCC: parseFloat(totalEstimatedCostsCC),
+              totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
+              totalEstimatedCostsEur: parseFloat(totalEstimatedCostsEur),
+              comments: comments,
+              projectType: "Regional Multi Vendor",
+            },
           };
-          submission.data.requestorsCompanyName = requestorsCompanyName.label;
-          submission.data.requestorsCompanyCode =
-            requestorsCompanyName.value.code;
-          submission.data.requestorsCountry =
-            requestorsCompanyName.value.country;
-          submission.data.campaignName = campaignName;
-          submission.data.campaignDescription = campaignDescription;
-          submission.data.targetAudience = targetAudience;
-          submission.data.campaignChannel = campaignChannel;
-          submission.data.vendorsNames = [];
-          vendorsNames.map((vendor: any) => {
-            submission.data.vendorsNames.push(vendor.label);
-          });
-          submission.data.vendors = [];
+          var children: Submission[] = [];
           vendors.map((vendor: any) => {
-            submission.data.vendors.push({
-              vvendor: vendor.vendor,
-              vprojectManager: vendor.projectManager,
-              vcreditor: vendor.creditor,
-              vdebitor: vendor.debitor,
-              vmanufacturer: vendor.manufacturer,
-              vbu: vendor.bu,
-              vph1: vendor.ph.label,
+            children.push({
+              project: projectId,
+              title: "",
+              parentId: "",
+              created: new Date(),
+              updated: new Date(),
+              status: props.project.defaultStatus,
+              author: requestorsName,
+              data: {
+                vendorName: vendor.vendor,
+                productionProjectManager: vendor.projectManager,
+                sapCreditorNumber: vendor.creditor,
+                sapDebitorNumber: vendor.debitor,
+                manufacturerNumber: vendor.manufacturer,
+                bu: vendor.bu,
+                ph1: vendor.ph.label,
+              },
             });
           });
-          submission.data.year = year.label;
-          submission.data.projectStartQuarter = projectStartQuarter.label;
-          submission.data.projectNumber = projectNumber;
-          submission.data.requestorsName = requestorsName;
-          submission.data.projectApprover = "";
-          submission.data.projectApproval = projectApproval;
-          submission.data.manufacturersFiscalQuarter = fiscalQuarter.label;
-          submission.data.campaignStartDate = startDate;
-          submission.data.campaignEndDate = endDate;
-          submission.data.budgetSource = budgetSource.label;
-          submission.data.budgetApprovedByVendor = budgetApprovedByVendor;
-          submission.data.campaignBudgetsCurrency = exchangeRates.label;
-          submission.data.campaignEstimatedIncomeBudgetsCurrency = parseFloat(
-            estimatedIncomeBudgetCurrency
-          );
-          submission.data.campaignEstimatedCostsBudgetsCurrency = parseFloat(
-            estimatedCostsBudgetCurrency
-          );
-          submission.data.campaignNetProfitTargetBudgetsCurrency = parseFloat(
-            netProfitTargetBudgetCurrency
-          );
-          submission.data.campaignEstimatedIncomeEur =
-            parseFloat(estimatedIncome);
-          submission.data.campaignEstimatedCostsEur =
-            parseFloat(estimatedCosts);
-          submission.data.campaignNetProfitTargetEur =
-            parseFloat(netProfitTarget);
-          submission.data.totalEstimatedCostsCC = parseFloat(
-            totalEstimatedCostsCC
-          );
-          submission.data.totalEstimatedCostsLC = parseFloat(
-            totalEstimatedCostsLC
-          );
-          submission.data.totalEstimatedCostsEur = parseFloat(
-            totalEstimatedCostsEur
-          );
-
-          submission.data.companiesParticipating = [];
-          companiesParticipating.map((company: any) => {
-            submission.data.companiesParticipating.push(company.label);
-          });
-          submission.data.costBreakdown = [];
           costBreakdown.map((vendor: any) => {
-            submission.data.costBreakdown.push({
-              cbcompanyName: vendor.companyName,
-              cbcompanyCode: vendor.companyCode,
-              cbcountry: vendor.country,
-              cbcontactEmail: vendor.contactEmail,
-              cbprojectNumber: vendor.projectNumber,
-              cbbudgetContribution: vendor.contribution,
-              cbtotalEstimatedCosts: vendor.estimatedCosts,
-              cbbudgetCurrency: vendor.budgetCurrency.label,
-              cbbudgetAmount: parseFloat(vendor.budgetAmount),
-              cbbudgetLC: parseFloat(vendor.localBudget),
-              cbbudgetEur: parseFloat(vendor.eurBudget),
-              cbshare: parseFloat(vendor.share),
-              cbestimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
-              cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-              cbestimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
-              cbnetProfitTargetVC: parseFloat(vendor.netProfitTargetVC),
-              cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
-              cbnetProfitTargetEur: parseFloat(vendor.netProfitTargetEUR),
+            children.push({
+              project: projectId,
+              title: "",
+              parentId: "",
+              created: new Date(),
+              updated: new Date(),
+              status: props.project.defaultStatus,
+              author: requestorsName,
+              data: {
+                companyName: vendor.companyName,
+                companyCode: vendor.companyCode,
+                country: vendor.country,
+                cbcontactEmail: vendor.contactEmail,
+                projectNumber: vendor.projectNumber,
+                countryBudgetContributionEur: vendor.contribution,
+                countryCostEstimationEur: vendor.estimatedCosts,
+                budgetCurrency: vendor.budgetCurrency.label,
+                cbbudgetAmount: parseFloat(vendor.budgetAmount),
+                cbbudgetLC: parseFloat(vendor.localBudget),
+                cbbudgetEur: parseFloat(vendor.eurBudget),
+                countryShare: parseFloat(vendor.share),
+                cbestimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
+                cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+                estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
+                cbnetProfitTargetVC: parseFloat(vendor.netProfitTargetVC),
+                cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+                estimatedResultEur: parseFloat(vendor.netProfitTargetEUR),
+              },
             });
           });
-          submission.data.comments = comments;
-          RestAPI.createSubmission(submission).then((response) => {
-            props.history.push(`/submissions/view/${response.data.id}`);
+          var submission: SubmissionWithChildren = {
+            submission: parent,
+            children,
+          };
+          RestAPI.createSubmissionWithChildren(submission).then((response) => {
+            console.log(response.data);
           });
-          console.log(submission);
         }}
       >
         Submit

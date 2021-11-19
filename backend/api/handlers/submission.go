@@ -80,6 +80,38 @@ func (r *Submission) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, submission)
 }
 
+func (r *Submission) CreateWithChildren(c *gin.Context) {
+	email, emailExists := c.Get("Email")
+	if !emailExists {
+		c.Status(http.StatusForbidden)
+		return
+	}
+	var submissionWithChildren models.SubmissionWithChildrenRequest
+	err := c.BindJSON(&submissionWithChildren)
+	if err != nil {
+		logger.LogHandlerError(c, "Failed to bind request JSON", err)
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	submissionWithChildren.Submission.ID = primitive.NewObjectID()
+	submissionWithChildren.Submission.Created = time.Now()
+	submissionWithChildren.Submission.Updated = time.Now()
+	submissionWithChildren.Submission.Author = email.(string)
+	submissionWithChildren.Submission.ParentID = nil
+	for index, _ := range submissionWithChildren.Children {
+		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
+		submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
+		submissionWithChildren.Children[index].Created = time.Now()
+		submissionWithChildren.Children[index].Updated = time.Now()
+		submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
+	}
+	r.repo.Create(c.Request.Context(), submissionWithChildren.Submission)
+	for _, child := range submissionWithChildren.Children {
+		r.repo.Create(c.Request.Context(), child)
+	}
+	c.JSON(http.StatusOK, submissionWithChildren.Submission)
+}
+
 func (r *Submission) Update(c *gin.Context) {
 	var submission models.Submission
 	err := c.BindJSON(&submission)

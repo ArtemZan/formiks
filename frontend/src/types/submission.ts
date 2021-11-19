@@ -1,5 +1,6 @@
-export default interface Submission {
+export  interface Submission {
     id?: string;
+    parentId: "" | null,
     project: string;
     created: Date;
     updated: Date;
@@ -7,6 +8,9 @@ export default interface Submission {
     status: string;
     author: string;
     data: any;
-    // children: string[];
-    [key: string]: any
+  }
+
+  export interface SubmissionWithChildren {
+    submission: Submission,
+    children: Submission[];
   }

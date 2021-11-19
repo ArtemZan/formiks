@@ -17,7 +17,7 @@ import {
 import CreatableSelect from "react-select/creatable";
 import { useEffect, useState } from "react";
 import Project from "../../types/project";
-import Submission from "../../types/submission";
+import { Submission } from "../../types/submission";
 import { API, RestAPI } from "../../api/rest";
 import { FiSettings, FiRefreshCw } from "react-icons/all";
 
@@ -50,7 +50,9 @@ export function Viewer(props: Props) {
   useEffect(() => {
     if (props.match.params.id) {
       if (props.match.params.id === "619515b754e61c8dd33daa52") {
-        setPrefedinedProject(<Ermv history={props.history} />);
+        setPrefedinedProject(
+          <Ermv project={project} history={props.history} />
+        );
       }
       RestAPI.getProject(props.match.params.id).then((response) => {
         setProject(response.data);
@@ -143,6 +145,7 @@ export function Viewer(props: Props) {
             console.log(formio.data);
             var submission: Submission = {
               project: project.id ?? "",
+              parentId: null,
               created: new Date(),
               updated: new Date(),
               title: "",

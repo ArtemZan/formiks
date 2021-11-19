@@ -16,6 +16,8 @@ import ProjectViewer from "./pages/Projects/Viewer";
 
 import SubmissionsTableExplorer from "./pages/Submissions/TableExplorer";
 
+import VendorsTable from "./pages/Submissions/Vendors";
+
 import DropdownExplorer from "./pages/Dropdowns/Explorer";
 import DropdownEditor from "./pages/Dropdowns/Editor";
 import { RestAPI } from "./api/rest";
@@ -84,6 +86,11 @@ function App({ pca }: AppProps) {
             exact
             path="/submissions"
             render={(props) => <SubmissionsTableExplorer {...props} />}
+          />
+          <Route
+            exact
+            path="/vendors"
+            render={(props) => <VendorsTable {...props} />}
           />
           <Route
             exact

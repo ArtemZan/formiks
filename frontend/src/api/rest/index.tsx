@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import Bookmark from "../../types/bookmark";
 import Dropdown from "../../types/dropdown";
 import Project from "../../types/project";
-import Submission from "../../types/submission";
+import { Submission, SubmissionWithChildren } from "../../types/submission";
 
 export class API {
   public baseUrl =
@@ -60,6 +60,14 @@ export class API {
   createSubmission(submission: Submission): Promise<AxiosResponse<Submission>> {
     return axios.post<Submission>(
       `${this.submissionsUrl}`,
+      JSON.stringify(submission)
+    );
+  }
+  createSubmissionWithChildren(
+    submission: SubmissionWithChildren
+  ): Promise<AxiosResponse> {
+    return axios.post(
+      `${this.submissionsUrl}children`,
       JSON.stringify(submission)
     );
   }

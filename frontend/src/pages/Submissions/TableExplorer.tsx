@@ -48,7 +48,7 @@ import { useEffect, useState } from "react";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { RestAPI } from "../../api/rest";
 import Project from "../../types/project";
-import Submission from "../../types/submission";
+import { Submission } from "../../types/submission";
 
 const { ColumnGroup, Column, HeaderCell, Cell } = Table;
 
@@ -135,22 +135,22 @@ export function TableExplorer(props: Props) {
         }
         subm.reverse();
         setSubmissions(subm);
-        project.components.map((component: any) => {
-          if (component.type === "customTable") {
-            subm.map((sub) => {
-              if (sub.children === undefined) {
-                sub.children = [];
-              }
-              sub.data[component.key].map((tableRecord: any, index: number) => {
-                sub.children.push({
-                  id: uuidv4(),
-                  title: `[${index + 1}] ${component.label}`,
-                  data: tableRecord,
-                });
-              });
-            });
-          }
-        });
+        // project.components.map((component: any) => {
+        //   if (component.type === "customTable") {
+        //     subm.map((sub) => {
+        //       if (sub.children === undefined) {
+        //         sub.children = [];
+        //       }
+        //       sub.data[component.key].map((tableRecord: any, index: number) => {
+        //         sub.children.push({
+        //           id: uuidv4(),
+        //           title: `[${index + 1}] ${component.label}`,
+        //           data: tableRecord,
+        //         });
+        //       });
+        //     });
+        //   }
+        // });
         setFilteredSubmissions(subm);
       });
     }
