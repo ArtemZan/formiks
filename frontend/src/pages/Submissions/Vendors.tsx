@@ -1,15 +1,19 @@
-import { Box, Button, HStack } from "@chakra-ui/react";
+import { Box, Button, HStack, Tooltip } from "@chakra-ui/react";
 import {
   cloneElement,
+  createRef,
   ReactElement,
   ReactNode,
   useCallback,
   useEffect,
   useState,
 } from "react";
+
 import { Text } from "@chakra-ui/react";
 import Project from "../../types/project";
 import { Submission } from "../../types/submission";
+import { createGlobalStyle } from "styled-components";
+import styled from "styled-components";
 
 import BaseTable, {
   AutoResizer,
@@ -19,7 +23,6 @@ import BaseTable, {
 } from "react-base-table";
 import ContentEditable from "react-contenteditable";
 import "react-base-table/styles.css";
-import styled from "@emotion/styled";
 import { RestAPI } from "../../api/rest";
 import React from "react";
 import _ from "lodash";
@@ -39,8 +42,6 @@ const Overlay = styled.div`
   color: white;
 `;
 
-// frozen: Column.FrozenDirection.LEFT,
-
 // Use React.Component because of https://github.com/lovasoa/react-contenteditable/issues/161
 class Cell extends React.Component<
   {
@@ -54,13 +55,22 @@ class Cell extends React.Component<
 > {
   constructor(props: any) {
     super(props);
+
     this.state = {
       cellValue: props.initialValue ? props.initialValue.toString() : "",
     };
   }
+
   render() {
     return (
       <ContentEditable
+        onDoubleClick={() => {
+          console.log("double click");
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          console.log("right click");
+        }}
         html={this.state.cellValue}
         onChange={(event) => {
           this.setState({ cellValue: event.target.value });
