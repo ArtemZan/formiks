@@ -24,7 +24,6 @@ import { getAccountInfo } from "../../utils/MsGraphApiCall";
 import DatePicker from "react-datepicker";
 import isEqual from "lodash/isEqual";
 
-import "react-datepicker/dist/react-datepicker.css";
 import { Table } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";

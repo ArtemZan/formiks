@@ -8,6 +8,7 @@ import { mode } from "@chakra-ui/theme-tools";
 import "focus-visible/dist/focus-visible";
 import { Global, css } from "@emotion/react";
 import axios from "axios";
+import "react-datepicker/dist/react-datepicker.css";
 import "rsuite/dist/rsuite.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";

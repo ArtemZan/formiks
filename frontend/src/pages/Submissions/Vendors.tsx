@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Tooltip } from "@chakra-ui/react";
+import { Box, Button, HStack, Input, Tooltip } from "@chakra-ui/react";
 import {
   cloneElement,
   createRef,
@@ -14,6 +14,8 @@ import Project from "../../types/project";
 import { Submission } from "../../types/submission";
 import { createGlobalStyle } from "styled-components";
 import styled from "styled-components";
+import { Overlay } from "react-overlays";
+import DatePicker from "react-datepicker";
 
 import BaseTable, {
   AutoResizer,
@@ -31,7 +33,7 @@ interface Props {
   history: any;
 }
 
-const Overlay = styled.div`
+const DebugOverlay = styled.div`
   width: 300px;
   background: lightgray;
   position: absolute;
@@ -48,56 +50,85 @@ class Cell extends React.Component<
     onUpdate: any;
     rowIndex: number;
     columnKey: string | undefined;
-    // type: string;
+    type: string;
     initialValue: any;
   },
-  { cellValue: string }
+  {
+    cellValue: any;
+    editing: boolean;
+  }
 > {
   constructor(props: any) {
     super(props);
 
     this.state = {
-      cellValue: props.initialValue ? props.initialValue.toString() : "",
+      cellValue: props.initialValue ? props.initialValue : "",
+      editing: false,
     };
+    this.handleFocus = this.handleFocus.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
   }
+  handleFocus = () => this.setState({ editing: true });
+  handleBlur = () => this.setState({ editing: false });
 
   render() {
     return (
-      <ContentEditable
-        onDoubleClick={() => {
-          console.log("double click");
-        }}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          console.log("right click");
-        }}
-        html={this.state.cellValue}
-        onChange={(event) => {
-          this.setState({ cellValue: event.target.value });
-        }}
-        onFocus={() => {
-          setTimeout(() => {
-            document.execCommand("selectAll", false);
-          }, 0);
-        }}
-        //   onKeyPress={(event) => {
-        //     const keyCode = event.keyCode || event.which;
-        //     const string = String.fromCharCode(keyCode);
-        //     const regex = /[0-9,]|\./;
+      <div className="vendors-table-cell" onDoubleClick={this.handleFocus}>
+        {this.props.type === "text" || this.props.type === "number" ? (
+          <ContentEditable
+            onDoubleClick={() => {
+              console.log("double click");
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              console.log("right click");
+            }}
+            html={this.state.cellValue}
+            onChange={(event) => {
+              this.setState({ cellValue: event.target.value });
+            }}
+            onFocus={() => {
+              setTimeout(() => {
+                document.execCommand("selectAll", false);
+              }, 0);
+            }}
+            onKeyPress={
+              this.props.type === "number"
+                ? (event) => {
+                    const keyCode = event.keyCode || event.which;
+                    const string = String.fromCharCode(keyCode);
+                    const regex = /[0-9,]|\./;
 
-        //     if (!regex.test(string)) {
-        //       event.defaultPrevented = false;
-        //       if (event.preventDefault) event.preventDefault();
-        //     }
-        //   }}
-        onBlur={(event) => {
-          this.props.onUpdate(
-            `[${this.props.rowIndex}].${this.props.columnKey}`,
-            this.state.cellValue
-          );
-        }}
-        className="content-editable"
-      />
+                    if (!regex.test(string)) {
+                      event.defaultPrevented = false;
+                      if (event.preventDefault) event.preventDefault();
+                    }
+                  }
+                : undefined
+            }
+            onBlur={(event) => {
+              this.props.onUpdate(
+                `[${this.props.rowIndex}].${this.props.columnKey}`,
+                this.props.type === "number"
+                  ? Number(this.state.cellValue)
+                  : this.state.cellValue
+              );
+            }}
+            className="content-editable"
+          />
+        ) : this.props.type === "date" ? (
+          <DatePicker
+            customInput={<input className="datepicker-input"></input>}
+            selected={new Date()}
+            onChange={(date) => {
+              console.log(date);
+            }}
+            dateFormat="dd.MM.yyyy HH:mm"
+          />
+        ) : (
+          <div>unknown type</div>
+        )}
+      </div>
     );
   }
 }
@@ -204,11 +235,21 @@ export function VendorsTable(props: Props) {
           {({ width, height }) => (
             <BaseTable
               ignoreFunctionInColumnCompare={false}
-              expandColumnKey={"data.companyName"}
+              expandColumnKey={"__expand"}
               width={width}
               height={height}
               fixed
               columns={[
+                {
+                  key: "__expand",
+                  dataKey: "__expand",
+                  title: "",
+                  width: 50,
+                  frozen: Column.FrozenDirection.LEFT,
+                  resizable: false,
+                  cellRenderer: (props) => <div />,
+                  className: "expand",
+                },
                 {
                   key: "data.companyName",
                   dataKey: "data.companyName",
@@ -218,6 +259,7 @@ export function VendorsTable(props: Props) {
                   header: "General Information",
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -233,6 +275,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"number"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -248,6 +291,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -263,6 +307,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"date"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -278,6 +323,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -294,6 +340,7 @@ export function VendorsTable(props: Props) {
                   header: "Project Information",
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -309,6 +356,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -324,6 +372,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -339,6 +388,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -354,6 +404,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -369,6 +420,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -384,6 +436,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -399,6 +452,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -414,6 +468,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -429,6 +484,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -444,6 +500,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -459,6 +516,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -474,6 +532,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -489,6 +548,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -504,6 +564,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -519,6 +580,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -534,6 +596,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -549,6 +612,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -564,6 +628,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -579,6 +644,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -594,6 +660,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -609,6 +676,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -624,6 +692,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -639,6 +708,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -655,6 +725,7 @@ export function VendorsTable(props: Props) {
                   header: "Purchase Order",
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -670,6 +741,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -685,6 +757,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -700,6 +773,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -715,6 +789,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -730,6 +805,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -745,6 +821,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -761,6 +838,7 @@ export function VendorsTable(props: Props) {
                   header: "Cost Actuals",
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -776,6 +854,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -791,6 +870,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -806,6 +886,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -821,6 +902,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -836,6 +918,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -851,6 +934,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -866,6 +950,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -881,6 +966,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -896,6 +982,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -911,6 +998,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -926,6 +1014,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -942,6 +1031,7 @@ export function VendorsTable(props: Props) {
                   header: "Sales Actuals",
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -957,6 +1047,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -972,6 +1063,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -987,6 +1079,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1002,6 +1095,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1017,6 +1111,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1032,6 +1127,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1047,6 +1143,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1062,6 +1159,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1077,6 +1175,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1092,6 +1191,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1107,6 +1207,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1123,6 +1224,7 @@ export function VendorsTable(props: Props) {
                   header: "Actuals in EUR",
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1138,6 +1240,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1153,6 +1256,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1169,6 +1273,7 @@ export function VendorsTable(props: Props) {
                   header: "Cost GL Postings",
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1184,6 +1289,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1199,6 +1305,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1214,6 +1321,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1229,6 +1337,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1244,6 +1353,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1259,6 +1369,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1274,6 +1385,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1289,6 +1401,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1304,6 +1417,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1320,6 +1434,7 @@ export function VendorsTable(props: Props) {
                   header: "Income GL Postings",
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1335,6 +1450,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1350,6 +1466,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1365,6 +1482,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1380,6 +1498,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1395,6 +1514,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1410,6 +1530,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1425,6 +1546,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1440,6 +1562,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1455,6 +1578,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
+                      type={"text"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -1470,7 +1594,7 @@ export function VendorsTable(props: Props) {
               rowHeight={55}
               overlayRenderer={
                 <div>
-                  <Overlay>
+                  <DebugOverlay>
                     <HStack spacing={0}>
                       <Text w="120%" float="left">
                         Requested Heap Size:
@@ -1519,7 +1643,7 @@ export function VendorsTable(props: Props) {
                         editable
                       </Text>
                     </HStack>
-                  </Overlay>
+                  </DebugOverlay>
                 </div>
               }
               //   components={{ TableCell: TableCelll }}
