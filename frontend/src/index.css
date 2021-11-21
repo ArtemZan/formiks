@@ -161,3 +161,62 @@ button[name="data[submit]"]:hover {
 .datepicker-input[data-focus-visible-added=""] + .react-datepicker__close-icon {
   opacity: 1;
 }
+
+.header-cells {
+  font-weight: 600;
+  background-color: white;
+}
+
+.BaseTable__header-cell.green {
+  border-bottom: 3px solid;
+  border-color: #a8e6cf;
+}
+.BaseTable__header-cell.lgreen {
+  border-bottom: 3px solid;
+  border-color: #dbedc1;
+}
+.BaseTable__header-cell.lorange {
+  border-bottom: 3px solid;
+  border-color: #ffd4b6;
+}
+.BaseTable__header-cell.orange {
+  border-bottom: 3px solid;
+  border-color: #ffaaa4;
+}
+.BaseTable__header-cell.red {
+  border-bottom: 3px solid;
+  border-color: #ff8b94;
+}
+.BaseTable__header-cell.purple {
+  border-bottom: 3px solid;
+  border-color: #9e99d9;
+}
+.BaseTable__header-cell.lblue {
+  border-bottom: 3px solid;
+  border-color: #caeaf6;
+}
+.BaseTable__header-cell.blue {
+  border-bottom: 3px solid;
+  border-color: #a0bfe3;
+}
+
+.table-select__clear-indicator,
+.table-select__indicator-separator,
+.table-select__dropdown-indicator {
+  opacity: 0;
+}
+
+.table-select__control--is-focused .table-select__clear-indicator {
+  opacity: 1;
+}
+.table-select__control--is-focused .table-select__indicator-separator {
+  opacity: 1;
+}
+.table-select__control--is-focused .table-select__dropdown-indicator {
+  opacity: 1;
+}
+
+.table-select__control--is-focused {
+  border: 1px solid #4587ff !important;
+  border-radius: 2px !important;
+}

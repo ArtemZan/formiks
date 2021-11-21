@@ -22,3 +22,9 @@ type SubmissionWithChildrenRequest struct {
 	Submission Submission   `json:"submission"`
 	Children   []Submission `json:"children"`
 }
+
+type PartialUpdateRequest struct {
+	Submission primitive.ObjectID `bson:"submission" json:"submission"`
+	Path       string             `bson:"path" json:"path"`
+	Value      interface{}        `bson:"value" json:"value"`
+}

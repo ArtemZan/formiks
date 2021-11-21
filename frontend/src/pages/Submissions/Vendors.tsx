@@ -1,4 +1,14 @@
-import { Box, Button, HStack, Input, Tooltip } from "@chakra-ui/react";
+/* eslint-disable react-hooks/rules-of-hooks */
+import {
+  Box,
+  Button,
+  HStack,
+  Input,
+  Tooltip,
+  Text,
+  useColorModeValue,
+  Divider,
+} from "@chakra-ui/react";
 import {
   cloneElement,
   createRef,
@@ -9,7 +19,7 @@ import {
   useState,
 } from "react";
 
-import { Text } from "@chakra-ui/react";
+import Select from "react-select";
 import Project from "../../types/project";
 import { Submission } from "../../types/submission";
 import { createGlobalStyle } from "styled-components";
@@ -49,24 +59,23 @@ class Cell extends React.Component<
   {
     onUpdate: any;
     rowIndex: number;
+    rowData: any;
     columnKey: string | undefined;
     type: string;
     initialValue: any;
   },
   {
     cellValue: any;
-    editing: boolean;
+    options: any[];
   }
 > {
   constructor(props: any) {
     super(props);
 
     this.state = {
+      options: [],
       cellValue: undefined,
-      editing: false,
     };
-    this.handleFocus = this.handleFocus.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
   }
   componentDidMount() {
     var value: any = undefined;
@@ -83,26 +92,31 @@ class Cell extends React.Component<
             ? Date.parse(this.props.initialValue)
             : null;
         break;
+      case "dropdown":
+        value =
+          typeof this.props.initialValue === "string"
+            ? { label: this.props.initialValue, value: this.props.initialValue }
+            : { label: "", value: "" };
+        break;
+      case "multiple-dropdown":
+        value = [];
+        if (this.props.initialValue && Array.isArray(this.props.initialValue)) {
+          this.props.initialValue.map((value: any) => {
+            value.push({ label: value, value: value });
+          });
+        }
+        break;
       default:
         break;
     }
     this.setState({ cellValue: value });
   }
-  handleFocus = () => this.setState({ editing: true });
-  handleBlur = () => this.setState({ editing: false });
 
   render() {
     return (
-      <div className="vendors-table-cell" onDoubleClick={this.handleFocus}>
+      <div className="vendors-table-cell">
         {this.props.type === "text" || this.props.type === "number" ? (
           <ContentEditable
-            onDoubleClick={() => {
-              console.log("double click");
-            }}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              console.log("right click");
-            }}
             html={this.state.cellValue ?? ""}
             onChange={(event) => {
               this.setState({ cellValue: event.target.value });
@@ -128,6 +142,7 @@ class Cell extends React.Component<
             }
             onBlur={(event) => {
               this.props.onUpdate(
+                this.props.rowData.id,
                 `[${this.props.rowIndex}].${this.props.columnKey}`,
                 this.props.type === "number"
                   ? Number(this.state.cellValue)
@@ -138,13 +153,16 @@ class Cell extends React.Component<
           />
         ) : this.props.type === "date" ? (
           <DatePicker
+            showTimeInput
             isClearable
             customInput={<input className="datepicker-input"></input>}
             selected={this.state.cellValue}
             onChange={(date) => {
-              console.log(date);
               this.setState({ cellValue: date });
+            }}
+            onCalendarClose={() => {
               this.props.onUpdate(
+                this.props.rowData.id,
                 `[${this.props.rowIndex}].${this.props.columnKey}`,
                 this.state.cellValue !== null
                   ? this.state.cellValue.toString()
@@ -153,13 +171,87 @@ class Cell extends React.Component<
             }}
             dateFormat="dd.MM.yyyy HH:mm"
           />
+        ) : this.props.type === "dropdown" ||
+          this.props.type === "multiple-dropdown" ? (
+          //   FIXME: use http://bvaughn.github.io/react-virtualized-select/
+          <Select
+            isMulti={this.props.type === "multiple-dropdown"}
+            styles={{
+              menu: (provided) => ({
+                ...provided,
+                zIndex: 1000000,
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: "black",
+              }),
+              control: (base, state) => ({
+                ...base,
+                minHeight: 52,
+                backgroundColor: "transparent",
+                border: "1px solid transparent",
+                transition: "0.3s",
+                "&:hover": {
+                  border: "1px solid transparent",
+                },
+              }),
+            }}
+            theme={(theme) => ({
+              ...theme,
+              borderRadius: 0,
+              colors: {
+                ...theme.colors,
+                primary: "#3082CE",
+              },
+            })}
+            menuPortalTarget={document.body}
+            value={this.state.cellValue}
+            onChange={(value) => {
+              this.setState({
+                cellValue: value !== null ? value : { label: "", value: "" },
+              });
+              var v: any = "";
+              if (value !== null && Array.isArray(value)) {
+                v = [];
+                value.map((dv: any) => v.push(dv.label));
+              }
+              if (value !== null && !Array.isArray(value)) {
+                v = value.label;
+              }
+              this.props.onUpdate(
+                this.props.rowData.id,
+                `[${this.props.rowIndex}].${this.props.columnKey}`,
+                v
+              );
+            }}
+            onFocus={async () => {
+              this.setState({
+                options: loadOptions(this.props.columnKey ?? ""),
+              });
+            }}
+            onBlur={() => {
+              this.setState({
+                options: [],
+              });
+            }}
+            placeholder=""
+            classNamePrefix="table-select"
+            isClearable
+            isSearchable
+            options={this.state.options}
+          />
         ) : (
-          <div>unknown type</div>
+          <div>unknown</div>
         )}
       </div>
     );
   }
 }
+
+const loadOptions = (identifier: string) => {
+  console.log(identifier);
+  return [{ label: "test", value: "test" }];
+};
 
 function bytesToSize(bytes: number) {
   var sizes = ["Bytes", "KB", "MB", "GB", "TB"];
@@ -176,6 +268,7 @@ export function VendorsTable(props: Props) {
     current: 0,
     domSize: 0,
   });
+  const [totalRequests, setTotalRequests] = useState(1);
 
   useEffect(() => {
     getHeapInfo();
@@ -197,9 +290,30 @@ export function VendorsTable(props: Props) {
     setHeapInfo(info);
   };
 
-  function handleCellUpdate(path: string, value: any) {
-    _.set(submissions, path, value);
+  async function partialUpdate(submission: string, path: string, value: any) {
+    setTotalRequests(totalRequests + 1);
+    var s = path.split(".");
+    s.shift();
+    RestAPI.updateSubmissionPartial(submission, s.join("."), value);
   }
+
+  function handleCellUpdate(submission: string, path: string, value: any) {
+    if (_.get(submissions, path) !== value) {
+      _.set(submissions, path, value);
+      partialUpdate(submission, path, value);
+    }
+  }
+  //   async function saveCellWidth(cell: string, width: number) {
+  //     localStorage.setItem(cell, width.toString());
+  //   }
+  //   function getCellWidth(cell: string, defaultWidth: number) {
+  //     console.log("get");
+  //     var value = localStorage.getItem(cell);
+  //     if (value !== null) {
+  //       return Number(value);
+  //     }
+  //     return defaultWidth;
+  //   }
 
   useEffect(() => {
     RestAPI.getSubmissions().then((response) => {
@@ -224,16 +338,44 @@ export function VendorsTable(props: Props) {
     }) => {
       const { headerIndex, columns, cells } = props;
       if (headerIndex === 0) {
-        return cells.map((cell, index) =>
-          cloneElement(cell as ReactElement, {
-            // style: { background: "red" },
+        return cells.map((cell, index) => {
+          var colorClass: string = "";
+          switch (true) {
+            case index < 6:
+              colorClass = index === 0 ? "" : "green";
+              break;
+            case index < 30:
+              colorClass = "lgreen";
+              break;
+            case index < 37:
+              colorClass = "lorange";
+              break;
+            case index < 49:
+              colorClass = "orange";
+              break;
+            case index < 61:
+              colorClass = "red";
+              break;
+            case index < 64:
+              colorClass = "purple";
+              break;
+            case index < 74:
+              colorClass = "blue";
+              break;
+            default:
+              colorClass = "lblue";
+              break;
+          }
+
+          return cloneElement(cell as ReactElement, {
+            className: "BaseTable__header-cell " + colorClass,
             children: (
-              <span key={index}>
+              <span style={{ fontWeight: 650 }} key={index}>
                 {columns[index].header ? columns[index].header : ""}
               </span>
             ),
-          })
-        );
+          });
+        });
       }
       return cells;
     },
@@ -241,18 +383,10 @@ export function VendorsTable(props: Props) {
   );
   return (
     <div>
-      <Button
-        onClick={() => {
-          console.log(submissions);
-        }}
-        mb={5}
-      >
-        Extract State
-      </Button>
       <Box
         w={"100%"}
-        backgroundColor="white"
-        minH={"1000px"}
+        bg={useColorModeValue("white", "#21252A")}
+        minH={"85vh"}
         p={4}
         mb={5}
         border="1px"
@@ -262,6 +396,15 @@ export function VendorsTable(props: Props) {
         <AutoResizer>
           {({ width, height }) => (
             <BaseTable
+              //   onColumnResize={({
+              //     column,
+              //     width,
+              //   }: {
+              //     column: any;
+              //     width: number;
+              //   }) => saveCellWidth(column.key, width)}
+              bg="#21252A"
+              overscanRowCount={0}
               ignoreFunctionInColumnCompare={false}
               expandColumnKey={"__expand"}
               width={width}
@@ -291,6 +434,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -307,6 +451,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -323,6 +468,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -339,6 +485,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -351,10 +498,11 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
-                      type={"text"}
+                      type={"dropdown"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -372,6 +520,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -388,6 +537,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -404,6 +554,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -420,6 +571,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -436,6 +588,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -452,6 +605,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -468,6 +622,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -484,6 +639,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -500,6 +656,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -516,6 +673,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -532,6 +690,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -548,6 +707,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -564,6 +724,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -580,6 +741,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -596,6 +758,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -612,6 +775,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -628,6 +792,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -644,6 +809,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -660,6 +826,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -676,6 +843,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -692,6 +860,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -708,6 +877,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -724,6 +894,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -740,6 +911,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -757,6 +929,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -773,6 +946,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -789,6 +963,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -805,6 +980,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -821,6 +997,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -837,6 +1014,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -853,6 +1031,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -870,6 +1049,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -886,6 +1066,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -902,6 +1083,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -918,6 +1100,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -934,6 +1117,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -950,6 +1134,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -966,6 +1151,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -982,6 +1168,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -998,6 +1185,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1014,6 +1202,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1030,6 +1219,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1046,6 +1236,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1063,6 +1254,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1079,6 +1271,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1095,6 +1288,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1111,6 +1305,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1127,6 +1322,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1143,6 +1339,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1159,6 +1356,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1175,6 +1373,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1191,6 +1390,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1207,6 +1407,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1223,6 +1424,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1239,6 +1441,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1256,6 +1459,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1272,6 +1476,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1288,6 +1493,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1305,6 +1511,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1321,6 +1528,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1337,6 +1545,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1353,6 +1562,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1369,6 +1579,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1385,6 +1596,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1401,6 +1613,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1417,6 +1630,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1433,6 +1647,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1449,6 +1664,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1466,6 +1682,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1482,6 +1699,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1498,6 +1716,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1514,6 +1733,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1530,6 +1750,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1546,6 +1767,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1562,6 +1784,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1578,6 +1801,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1594,6 +1818,7 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
@@ -1610,12 +1835,14 @@ export function VendorsTable(props: Props) {
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
+                      rowData={props.rowData}
                       initialValue={props.cellData}
                     />
                   ),
                 },
               ]}
               headerRenderer={headerRendererForTable}
+              headerClassName="header-cells"
               data={unflatten([...submissions] as any[])}
               rowKey="id"
               headerHeight={[50, 50]}
@@ -1669,6 +1896,31 @@ export function VendorsTable(props: Props) {
                       </Text>
                       <Text w="80%" textAlign="right">
                         editable
+                      </Text>
+                    </HStack>
+                    <Divider mt={"10px"} />
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Active Sessions:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        1
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Total Requests:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {totalRequests}
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Sync Protocol:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        HTTP
                       </Text>
                     </HStack>
                   </DebugOverlay>

@@ -77,6 +77,20 @@ export class API {
       JSON.stringify(submission)
     );
   }
+  updateSubmissionPartial(
+    submission: string,
+    path: string,
+    value: any
+  ): Promise<AxiosResponse> {
+    return axios.post(
+      `${this.submissionsUrl}partial`,
+      JSON.stringify({
+        submission,
+        path,
+        value,
+      })
+    );
+  }
   deleteSubmission(id: string): Promise<AxiosResponse> {
     return axios.delete(`${this.submissionsUrl}${id}`);
   }

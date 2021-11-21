@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -12,16 +13,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func NewSubmissionHandler(db *driver.DB) *Submission {
 	return &Submission{
 		repo: submission.NewSubmissionRepo(db.Mongo),
+		db:   db.Mongo,
 	}
 }
 
 type Submission struct {
 	repo repositories.SubmissionRepo
+	db   *mongo.Database
 }
 
 func (r *Submission) Fetch(c *gin.Context) {
@@ -98,7 +102,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	submissionWithChildren.Submission.Updated = time.Now()
 	submissionWithChildren.Submission.Author = email.(string)
 	submissionWithChildren.Submission.ParentID = nil
-	for index, _ := range submissionWithChildren.Children {
+	for index := range submissionWithChildren.Children {
 		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
 		submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
 		submissionWithChildren.Children[index].Created = time.Now()
@@ -127,6 +131,16 @@ func (r *Submission) Update(c *gin.Context) {
 		status = http.StatusInternalServerError
 	}
 	c.Status(status)
+}
+func (r *Submission) PartialUpdate(c *gin.Context) {
+	var request models.PartialUpdateRequest
+	err := c.BindJSON(&request)
+	if err != nil {
+		logger.LogHandlerError(c, "Failed to bind request JSON", err)
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	r.db.Collection("submissions").UpdateOne(context.TODO(), bson.M{"_id": request.Submission}, bson.D{{Key: "$set", Value: bson.D{{request.Path, request.Value}}}})
 }
 
 func (r *Submission) Delete(c *gin.Context) {

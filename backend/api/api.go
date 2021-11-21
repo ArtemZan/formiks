@@ -35,6 +35,7 @@ func RegisterRoutes(r *gin.Engine) {
 	submissionsGroup.GET("/:id", submissionHandler.FetchByID)                // get submission
 	submissionsGroup.POST("/", submissionHandler.Create)                     // create submission
 	submissionsGroup.POST("/children", submissionHandler.CreateWithChildren) // create submission with children
+	submissionsGroup.POST("/partial", submissionHandler.PartialUpdate)       // update specific submission's field
 	submissionsGroup.PUT("/:id", submissionHandler.Update)                   // update submission
 	submissionsGroup.DELETE("/:id", submissionHandler.Delete)                // delete submission
 
