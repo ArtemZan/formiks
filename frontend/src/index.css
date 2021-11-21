@@ -155,3 +155,9 @@ button[name="data[submit]"]:hover {
   border-radius: 2px;
   background-color: transparent;
 }
+.react-datepicker__close-icon {
+  opacity: 0;
+}
+.datepicker-input[data-focus-visible-added=""] + .react-datepicker__close-icon {
+  opacity: 1;
+}

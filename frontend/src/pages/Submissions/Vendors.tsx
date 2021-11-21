@@ -62,11 +62,31 @@ class Cell extends React.Component<
     super(props);
 
     this.state = {
-      cellValue: props.initialValue ? props.initialValue : "",
+      cellValue: undefined,
       editing: false,
     };
     this.handleFocus = this.handleFocus.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
+  }
+  componentDidMount() {
+    var value: any = undefined;
+    switch (this.props.type) {
+      case "text":
+      case "number":
+        value = this.props.initialValue
+          ? this.props.initialValue.toString()
+          : "";
+        break;
+      case "date":
+        value =
+          this.props.initialValue && this.props.initialValue !== null
+            ? Date.parse(this.props.initialValue)
+            : null;
+        break;
+      default:
+        break;
+    }
+    this.setState({ cellValue: value });
   }
   handleFocus = () => this.setState({ editing: true });
   handleBlur = () => this.setState({ editing: false });
@@ -83,7 +103,7 @@ class Cell extends React.Component<
               e.preventDefault();
               console.log("right click");
             }}
-            html={this.state.cellValue}
+            html={this.state.cellValue ?? ""}
             onChange={(event) => {
               this.setState({ cellValue: event.target.value });
             }}
@@ -97,7 +117,7 @@ class Cell extends React.Component<
                 ? (event) => {
                     const keyCode = event.keyCode || event.which;
                     const string = String.fromCharCode(keyCode);
-                    const regex = /[0-9,]|\./;
+                    const regex = /[0-9]|\./;
 
                     if (!regex.test(string)) {
                       event.defaultPrevented = false;
@@ -118,10 +138,18 @@ class Cell extends React.Component<
           />
         ) : this.props.type === "date" ? (
           <DatePicker
+            isClearable
             customInput={<input className="datepicker-input"></input>}
-            selected={new Date()}
+            selected={this.state.cellValue}
             onChange={(date) => {
               console.log(date);
+              this.setState({ cellValue: date });
+              this.props.onUpdate(
+                `[${this.props.rowIndex}].${this.props.columnKey}`,
+                this.state.cellValue !== null
+                  ? this.state.cellValue.toString()
+                  : null
+              );
             }}
             dateFormat="dd.MM.yyyy HH:mm"
           />
