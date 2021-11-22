@@ -112,7 +112,7 @@ class Cell extends React.Component<
       case "date":
         value =
           this.props.initialValue && this.props.initialValue !== null
-            ? Date.parse(this.props.initialValue)
+            ? new Date(this.props.initialValue)
             : null;
         break;
       case "dropdown":
@@ -141,9 +141,10 @@ class Cell extends React.Component<
         className={
           this.state.editing ? "vendors-table-cell active" : "content-editable"
         }
-        onContextMenu={(e) => {
-          e.preventDefault();
-          this.setState({ editing: true });
+        onClick={() => {
+          if (!this.state.editing) {
+            this.setState({ editing: true });
+          }
         }}
       >
         {!this.state.editing ? (
@@ -206,16 +207,14 @@ class Cell extends React.Component<
             customInput={<input className="datepicker-input"></input>}
             selected={this.state.cellValue}
             onChange={(date) => {
-              this.setState({ cellValue: date });
-            }}
-            onCalendarClose={() => {
+              this.setState({ cellValue: date, editing: false });
               this.props.onUpdate(
                 this.props.rowData.id,
                 `[${this.props.rowIndex}].${this.props.columnKey}`,
-                this.state.cellValue !== null
-                  ? this.state.cellValue.toString()
-                  : null
+                date !== null ? date.toString() : null
               );
+            }}
+            onCalendarClose={() => {
               this.setState({ editing: false });
             }}
             dateFormat="dd.MM.yyyy HH:mm"
@@ -282,6 +281,7 @@ class Cell extends React.Component<
             onBlur={() => {
               this.setState({
                 options: [],
+                editing: false,
               });
             }}
             placeholder=""

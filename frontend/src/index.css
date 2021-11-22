@@ -151,15 +151,9 @@ button[name="data[submit]"]:hover {
 
 .datepicker-input[data-focus-visible-added=""] {
   outline-width: 0;
-  border: 1px solid #4587ff;
-  border-radius: 2px;
+  /* border: 1px solid #4587ff;
+  border-radius: 2px; */
   background-color: transparent;
-}
-.react-datepicker__close-icon {
-  opacity: 0;
-}
-.datepicker-input[data-focus-visible-added=""] + .react-datepicker__close-icon {
-  opacity: 1;
 }
 
 .header-cells {

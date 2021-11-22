@@ -1474,8 +1474,9 @@ export default function CreateBookmark(props: Props) {
               projectApprover: "",
               projectApproval: projectApproval,
               manufacturersFiscalQuarter: fiscalQuarter.label,
-              campaignStartDate: startDate,
-              campaignEndDate: endDate,
+              campaignStartDate:
+                startDate === null ? null : startDate.toString(),
+              campaignEndDate: endDate === null ? null : endDate.toString(),
               budgetSource: budgetSource.label,
               budgetApprovedByVendor: budgetApprovedByVendor,
               campaignBudgetsCurrency: exchangeRates.label,
