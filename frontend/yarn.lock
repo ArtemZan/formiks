@@ -10762,6 +10762,11 @@ react-focus-lock@2.5.0:
     use-callback-ref "^1.2.1"
     use-sidecar "^1.0.1"
 
+react-fps@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-fps/-/react-fps-1.0.4.tgz#d536c69a6f01828f3940d326fd4d4b3f6c524d4d"
+  integrity sha512-RIVe7iyfwNCcbglkW+WX4UZY3iXvn7n7vUcYeWj8xjVRTG5lh+NpFf+T9Djk9Oju6szwbg9qvAPXmJd7RnH7hg==
+
 react-icons@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.3.1.tgz#2fa92aebbbc71f43d2db2ed1aed07361124e91ca"

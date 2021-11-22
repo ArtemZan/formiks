@@ -19,7 +19,7 @@ import {
   useEffect,
   useState,
 } from "react";
-
+import { FpsView, useFps } from "react-fps";
 import Select from "react-select";
 import Project from "../../types/project";
 import { Submission } from "../../types/submission";
@@ -347,7 +347,18 @@ function bytesToSize(bytes: number) {
 }
 
 export function VendorsTable(props: Props) {
+  const { fps, avgFps, maxFps, currentFps } = useFps(20);
+  const [tableWidth, setTableWidth] = useState(1000);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [scrollLeft, setScrollLeft] = React.useState(0);
+  const onScroll = React.useCallback(
+    (args) => {
+      if (args.scrollLeft !== scrollLeft) {
+        setScrollLeft(args.scrollLeft);
+      }
+    },
+    [scrollLeft]
+  );
   const [heapInfo, setHeapInfo] = useState<any>({
     total: 0,
     allocated: 0,
@@ -375,6 +386,59 @@ export function VendorsTable(props: Props) {
     };
     setHeapInfo(info);
   };
+  const getVisibleColumnIndices = (offset: number, columns: any) => {
+    // build the net offset for each column
+    var netOffsets: any[] = [],
+      offsetSum = 0,
+      leftBound = offset,
+      rightBound = offset + tableWidth,
+      visibleIndices: any[] = [];
+
+    // derive the column net offsets
+    columns.forEach((col: any) => {
+      netOffsets.push(offsetSum); // the current offsetsum is the column offset
+      offsetSum += col.width; // increase the offset sum by the width of the column
+    });
+
+    // which column offsets are outside the left and right bounds?
+    netOffsets.forEach((columnOffset, colIdx) => {
+      var isOutside = columnOffset < leftBound || columnOffset > rightBound;
+      if (!isOutside) {
+        visibleIndices.push(colIdx);
+      }
+    });
+
+    return visibleIndices;
+  };
+  const rowRenderer = React.useCallback(
+    ({ cells, columns }) => {
+      // this could be rendering the table body row, the fixed columns row, the header row.
+      // if we have the full complement of columns in the cell array (which includes placeholders
+      // for frozen columns), then we have the header or body
+      // plus, only want to null out hidden content when scrolling vertically
+
+      if (cells.length === 84) {
+        const visibleIndices = getVisibleColumnIndices(scrollLeft, columns);
+        const startIndex = visibleIndices[0];
+        const visibleCells = visibleIndices.map((x) => cells[x]);
+
+        if (startIndex > 0) {
+          let width = 0;
+          for (let i = 0; i < visibleIndices[0]; i++) {
+            width += cells[i].props.style.width;
+          }
+
+          const placeholder = <div key="placeholder" style={{ width }} />;
+          return [placeholder, visibleCells];
+        }
+        return visibleCells;
+      }
+      //   console.log(cells);
+
+      return cells;
+    },
+    [scrollLeft]
+  );
 
   async function partialUpdate(submission: string, path: string, value: any) {
     setTotalRequests(totalRequests + 1);
@@ -492,7 +556,12 @@ export function VendorsTable(props: Props) {
         rounded="md"
         borderColor="gray.100"
       >
-        <AutoResizer>
+        {/* <FpsView /> */}
+        <AutoResizer
+          onResize={({ width, height }: { width: number; height: number }) => {
+            setTableWidth(width);
+          }}
+        >
           {({ width, height }) => (
             <BaseTable
               //   onColumnResize={({
@@ -502,6 +571,9 @@ export function VendorsTable(props: Props) {
               //     column: any;
               //     width: number;
               //   }) => saveCellWidth(column.key, width)}
+              scrollLeft={scrollLeft}
+              onScroll={onScroll}
+              rowRenderer={rowRenderer}
               overscanRowCount={0}
               ignoreFunctionInColumnCompare={false}
               expandColumnKey={"__expand"}
@@ -2011,6 +2083,22 @@ export function VendorsTable(props: Props) {
                       </Text>
                       <Text w="80%" textAlign="right">
                         editable
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Avg FPS:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {avgFps}
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        FPS:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {fps[fps.length - 1]}
                       </Text>
                     </HStack>
                     <Divider mt={"10px"} />
