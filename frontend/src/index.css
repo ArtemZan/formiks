@@ -243,3 +243,9 @@ button[name="data[submit]"]:hover {
 .table-button:hover {
   background-color: #6dd5ae !important;
 }
+
+.vendors-table-cell.active {
+  outline-width: 0 !important;
+  border: 1px solid #4587ff !important;
+  border-radius: 2px !important;
+}

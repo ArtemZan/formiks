@@ -41,6 +41,7 @@ import React from "react";
 import _ from "lodash";
 import { SearchIcon } from "@chakra-ui/icons";
 import { VscDebugRerun, VscDebugStart } from "react-icons/all";
+import moment from "moment";
 
 interface Props {
   history: any;
@@ -57,6 +58,17 @@ const DebugOverlay = styled.div`
   color: white;
 `;
 
+function getFormattedDate(date: any) {
+  if (date === null) {
+    return "";
+  }
+  let year = date.getFullYear();
+  let month = (1 + date.getMonth()).toString().padStart(2, "0");
+  let day = date.getDate().toString().padStart(2, "0");
+
+  return month + "/" + day + "/" + year;
+}
+
 // Use React.Component because of https://github.com/lovasoa/react-contenteditable/issues/161
 class Cell extends React.Component<
   {
@@ -70,6 +82,7 @@ class Cell extends React.Component<
   {
     cellValue: any;
     options: any[];
+    editing: boolean;
   }
 > {
   constructor(props: any) {
@@ -78,6 +91,7 @@ class Cell extends React.Component<
     this.state = {
       options: [],
       cellValue: undefined,
+      editing: false,
     };
   }
   //   componentDidUpdate(prevProps: any) {
@@ -123,8 +137,32 @@ class Cell extends React.Component<
 
   render() {
     return (
-      <div className="vendors-table-cell">
-        {this.props.type === "text" || this.props.type === "number" ? (
+      <div
+        className={
+          this.state.editing ? "vendors-table-cell active" : "content-editable"
+        }
+        onContextMenu={(e) => {
+          e.preventDefault();
+          this.setState({ editing: true });
+        }}
+      >
+        {!this.state.editing ? (
+          this.props.type === "date" ? (
+            this.state.cellValue && this.state.cellValue !== null ? (
+              moment(this.state.cellValue).format("DD.MM.yyyy HH:mm")
+            ) : (
+              ""
+            )
+          ) : typeof this.state.cellValue === "object" ? (
+            this.state.cellValue !== null ? (
+              `${this.state.cellValue.label}`
+            ) : (
+              ""
+            )
+          ) : (
+            `${this.state.cellValue}`
+          )
+        ) : this.props.type === "text" || this.props.type === "number" ? (
           <ContentEditable
             html={this.state.cellValue ?? ""}
             onChange={(event) => {
@@ -157,6 +195,7 @@ class Cell extends React.Component<
                   ? Number(this.state.cellValue)
                   : this.state.cellValue
               );
+              this.setState({ editing: false });
             }}
             className="content-editable"
           />
@@ -177,6 +216,7 @@ class Cell extends React.Component<
                   ? this.state.cellValue.toString()
                   : null
               );
+              this.setState({ editing: false });
             }}
             dateFormat="dd.MM.yyyy HH:mm"
           />
@@ -232,6 +272,7 @@ class Cell extends React.Component<
                 `[${this.props.rowIndex}].${this.props.columnKey}`,
                 v
               );
+              this.setState({ editing: false });
             }}
             onFocus={async () => {
               this.setState({
@@ -258,6 +299,7 @@ class Cell extends React.Component<
                   `[${this.props.rowIndex}].data.companyName`,
                   "Updated Name"
                 );
+                this.setState({ editing: false });
               }}
               size="sm"
               color="white"
@@ -378,13 +420,15 @@ export function VendorsTable(props: Props) {
 
   const getHeapInfo = () => {
     var memory = (window.performance as any).memory;
-    var info: any = {
-      total: memory.jsHeapSizeLimit,
-      allocated: memory.totalJSHeapSize,
-      current: memory.usedJSHeapSize,
-      domSize: document.getElementsByTagName("*").length,
-    };
-    setHeapInfo(info);
+    if (memory !== undefined) {
+      var info: any = {
+        total: memory.jsHeapSizeLimit,
+        allocated: memory.totalJSHeapSize,
+        current: memory.usedJSHeapSize,
+        domSize: document.getElementsByTagName("*").length,
+      };
+      setHeapInfo(info);
+    }
   };
   const getVisibleColumnIndices = (offset: number, columns: any) => {
     // build the net offset for each column
@@ -433,7 +477,6 @@ export function VendorsTable(props: Props) {
         }
         return visibleCells;
       }
-      //   console.log(cells);
 
       return cells;
     },
@@ -571,9 +614,10 @@ export function VendorsTable(props: Props) {
               //     column: any;
               //     width: number;
               //   }) => saveCellWidth(column.key, width)}
-              scrollLeft={scrollLeft}
-              onScroll={onScroll}
-              rowRenderer={rowRenderer}
+              //
+              //   scrollLeft={scrollLeft}
+              //   onScroll={onScroll}
+              //   rowRenderer={rowRenderer}
               overscanRowCount={0}
               ignoreFunctionInColumnCompare={false}
               expandColumnKey={"__expand"}
