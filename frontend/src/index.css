@@ -92,9 +92,31 @@ button[name="data[submit]"]:hover {
 } */
 
 .vendors-table-cell {
+  margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
+}
+
+.content-preview {
+  outline-width: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-height: 80px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+
+.content-preview:hover {
+  overflow: scroll;
+  text-overflow: unset;
+  white-space: normal;
+  border: 1px dashed #ccc;
+  border-radius: 2px;
 }
 
 .content-editable {
@@ -110,12 +132,6 @@ button[name="data[submit]"]:hover {
   border-radius: 2px;
 }
 
-.content-editable.focus-visible {
-  outline-width: 0;
-  border: 1px solid #4587ff;
-  border-radius: 2px;
-}
-
 .content-editable:hover {
   overflow: scroll;
   text-overflow: unset;
@@ -127,10 +143,10 @@ button[name="data[submit]"]:hover {
   border: 1px solid #f5f8fa;
 }
 
-.BaseTable__row-cell:hover {
+/* .BaseTable__row-cell:hover {
   border: 1px dashed #ccc;
   border-radius: 2px;
-}
+} */
 
 .BaseTable__row-cell.expand:hover {
   border: 1px solid #f5f8fa;
@@ -151,8 +167,6 @@ button[name="data[submit]"]:hover {
 
 .datepicker-input[data-focus-visible-added=""] {
   outline-width: 0;
-  /* border: 1px solid #4587ff;
-  border-radius: 2px; */
   background-color: transparent;
 }
 
@@ -192,27 +206,6 @@ button[name="data[submit]"]:hover {
 .BaseTable__header-cell.blue {
   border-bottom: 3px solid;
   border-color: #a0bfe3;
-}
-
-.table-select__clear-indicator,
-.table-select__indicator-separator,
-.table-select__dropdown-indicator {
-  opacity: 0;
-}
-
-.table-select__control--is-focused .table-select__clear-indicator {
-  opacity: 1;
-}
-.table-select__control--is-focused .table-select__indicator-separator {
-  opacity: 1;
-}
-.table-select__control--is-focused .table-select__dropdown-indicator {
-  opacity: 1;
-}
-
-.table-select__control--is-focused {
-  border: 1px solid #4587ff !important;
-  border-radius: 2px !important;
 }
 
 .BaseTable__row:hover,

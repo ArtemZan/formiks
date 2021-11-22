@@ -139,12 +139,16 @@ class Cell extends React.Component<
     return (
       <div
         className={
-          this.state.editing ? "vendors-table-cell active" : "content-editable"
+          this.state.editing ? "vendors-table-cell active" : "content-preview"
         }
         onClick={() => {
           if (!this.state.editing) {
             this.setState({ editing: true });
           }
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          this.setState({ editing: false });
         }}
       >
         {!this.state.editing ? (
@@ -164,12 +168,15 @@ class Cell extends React.Component<
             `${this.state.cellValue}`
           )
         ) : this.props.type === "text" || this.props.type === "number" ? (
-          <ContentEditable
-            html={this.state.cellValue ?? ""}
+          <textarea
+            autoFocus
+            style={{ resize: "none" }}
+            value={this.state.cellValue ?? ""}
             onChange={(event) => {
               this.setState({ cellValue: event.target.value });
             }}
-            onFocus={() => {
+            onFocus={(e) => {
+              console.log(e);
               setTimeout(() => {
                 document.execCommand("selectAll", false);
               }, 0);
@@ -202,6 +209,7 @@ class Cell extends React.Component<
           />
         ) : this.props.type === "date" ? (
           <DatePicker
+            autoFocus
             showTimeInput
             isClearable
             customInput={<input className="datepicker-input"></input>}
@@ -223,6 +231,8 @@ class Cell extends React.Component<
           this.props.type === "multiple-dropdown" ? (
           //   FIXME: use http://bvaughn.github.io/react-virtualized-select/
           <Select
+            menuIsOpen={this.state.editing}
+            autoFocus
             isMulti={this.props.type === "multiple-dropdown"}
             styles={{
               menu: (provided) => ({
@@ -235,13 +245,17 @@ class Cell extends React.Component<
               }),
               control: (base, state) => ({
                 ...base,
+                paddingLeft: "5px",
+                boxShadow: "none",
+                outlineWidth: 0,
+                border: 0,
                 minHeight: 52,
                 backgroundColor: "transparent",
-                border: "1px solid transparent",
+                // border: "1px solid transparent",
                 transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid transparent",
-                },
+                // "&:hover": {
+                //   border: "1px solid transparent",
+                // },
               }),
             }}
             theme={(theme) => ({
