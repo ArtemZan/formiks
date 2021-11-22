@@ -101,6 +101,9 @@ export class API {
   getDropdown(id: string): Promise<AxiosResponse<Dropdown>> {
     return axios.get<Dropdown>(`${this.dropdownsUrl}${id}`);
   }
+  getDropdownValues(id: string): Promise<AxiosResponse<any[]>> {
+    return axios.get<any[]>(`${this.dropdownsUrl}${id}/values`);
+  }
   syncDropdown(id: string): Promise<AxiosResponse> {
     return axios.get(`${this.dropdownsUrl}sync/${id}`);
   }

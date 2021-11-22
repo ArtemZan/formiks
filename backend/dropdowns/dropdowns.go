@@ -21,6 +21,7 @@ func SyncAll() error {
 	}
 	var dropdowns []models.Dropdown
 
+	// FIXME: find all where type != json
 	cursor, err := driver.Conn.Mongo.Collection("dropdowns").Find(context.TODO(), bson.M{})
 	if err != nil {
 		return err
@@ -30,7 +31,7 @@ func SyncAll() error {
 		return err
 	}
 	for _, dropdown := range dropdowns {
-		if time.Now().After(dropdown.LastSync.Add(time.Minute * time.Duration(dropdown.SyncInterval))) {
+		if strings.ToUpper(dropdown.Type) != "JSON" && time.Now().After(dropdown.LastSync.Add(time.Minute*time.Duration(dropdown.SyncInterval))) {
 			go SyncDropdown(isolate, dropdown)
 		}
 	}
@@ -38,6 +39,9 @@ func SyncAll() error {
 }
 
 func SyncDropdown(isolate *v8go.Isolate, dropdown models.Dropdown) {
+	if strings.ToUpper(dropdown.Type) == "JSON" {
+		return
+	}
 	if isolate == nil {
 		isolate, _ = jengine.CreateIsolate()
 	}

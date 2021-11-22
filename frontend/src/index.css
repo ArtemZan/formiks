@@ -220,3 +220,26 @@ button[name="data[submit]"]:hover {
   border: 1px solid #4587ff !important;
   border-radius: 2px !important;
 }
+
+.BaseTable__row:hover,
+.BaseTable__row--hovered {
+  background-color: white !important;
+}
+
+.table-button-container {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.table-button {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.table-button:hover {
+  background-color: #6dd5ae !important;
+}

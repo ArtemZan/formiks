@@ -29,13 +29,16 @@ import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 import { v4 as uuidv4 } from "uuid";
 
-const PH1 = require("./ph.json");
-const Companies = require("./companies.json");
-const VendorsNames = require("./vendors.json");
-const CampaignChannel = require("./campaignChannel.json");
-const TargetAudience = require("./targetAudience.json");
-const Budget = require("./budget.json");
-const ExchangeRates = require("./exchangeRates.json");
+var PH1: any[] = [];
+var Companies: any[] = [];
+var VendorsNames: any[] = [];
+var CampaignChannel: any[] = [];
+var TargetAudience: any[] = [];
+var Budget: any[] = [];
+var ExchangeRates: any[] = [];
+var FiscalQuarter: any[] = [];
+var Year: any[] = [];
+var ProjectStartQuarter: any[] = [];
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -101,12 +104,46 @@ export default function CreateBookmark(props: Props) {
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
   const [totalEstimatedCostsEur, setTotalEstimatedCostsEur] = useState("");
 
+  async function fetchDropdowns() {
+    RestAPI.getDropdownValues("619b630a9a5a2bb37a93b23b").then((response) => {
+      PH1 = response.data;
+    });
+    RestAPI.getDropdownValues("619b61419a5a2bb37a93b237").then((response) => {
+      Companies = response.data;
+    });
+    RestAPI.getDropdownValues("619b63429a5a2bb37a93b23d").then((response) => {
+      VendorsNames = response.data;
+    });
+    RestAPI.getDropdownValues("619b62d79a5a2bb37a93b239").then((response) => {
+      CampaignChannel = response.data;
+    });
+    RestAPI.getDropdownValues("619b632c9a5a2bb37a93b23c").then((response) => {
+      TargetAudience = response.data;
+    });
+    RestAPI.getDropdownValues("619b62959a5a2bb37a93b238").then((response) => {
+      Budget = response.data;
+    });
+    RestAPI.getDropdownValues("619b62f29a5a2bb37a93b23a").then((response) => {
+      ExchangeRates = response.data;
+    });
+    RestAPI.getDropdownValues("619b66defe27d06ad17d75ac").then((response) => {
+      FiscalQuarter = response.data;
+    });
+    RestAPI.getDropdownValues("619b6754fe27d06ad17d75ad").then((response) => {
+      Year = response.data;
+    });
+    RestAPI.getDropdownValues("619b6799fe27d06ad17d75ae").then((response) => {
+      ProjectStartQuarter = response.data;
+    });
+  }
+
   useEffect(() => {
     getAccountInfo().then((response) => {
       if (response) {
         setRequestorsName(response.mail);
       }
     });
+    fetchDropdowns();
   }, []);
 
   useEffect(() => {
@@ -682,11 +719,7 @@ export default function CreateBookmark(props: Props) {
             classNamePrefix="select"
             isClearable={false}
             name="year"
-            options={[
-              { label: "2019", value: "19" },
-              { label: "2020", value: "20" },
-              { label: "2021", value: "21" },
-            ]}
+            options={Year}
           />
         </Box>
         <Box w="100%">
@@ -730,12 +763,7 @@ export default function CreateBookmark(props: Props) {
             classNamePrefix="select"
             isClearable={false}
             name="projectStartQuarter"
-            options={[
-              { label: "Q1 (Jan. - March)", value: "Q1" },
-              { label: "Q2 (April - June)", value: "Q2" },
-              { label: "Q3 (July - Sep.)", value: "Q3" },
-              { label: "Q4 (Oct. - Dec.)", value: "Q4" },
-            ]}
+            options={ProjectStartQuarter}
           />
         </Box>
         <Box w="100%">
@@ -844,12 +872,7 @@ export default function CreateBookmark(props: Props) {
             classNamePrefix="select"
             isClearable={false}
             name="fiscalQuarter"
-            options={[
-              { label: "Q1", value: "Q1" },
-              { label: "Q2", value: "Q2" },
-              { label: "Q3", value: "Q3" },
-              { label: "Q4", value: "Q4" },
-            ]}
+            options={FiscalQuarter}
           />
         </Box>
 

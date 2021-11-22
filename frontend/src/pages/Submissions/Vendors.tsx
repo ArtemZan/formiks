@@ -8,6 +8,7 @@ import {
   Text,
   useColorModeValue,
   Divider,
+  IconButton,
 } from "@chakra-ui/react";
 import {
   cloneElement,
@@ -38,6 +39,8 @@ import "react-base-table/styles.css";
 import { RestAPI } from "../../api/rest";
 import React from "react";
 import _ from "lodash";
+import { SearchIcon } from "@chakra-ui/icons";
+import { VscDebugRerun, VscDebugStart } from "react-icons/all";
 
 interface Props {
   history: any;
@@ -77,6 +80,12 @@ class Cell extends React.Component<
       cellValue: undefined,
     };
   }
+  //   componentDidUpdate(prevProps: any) {
+  //     if (prevProps.initialValue !== this.props.initialValue) {
+  //       this.setState({ cellValue: this.props.initialValue });
+  //     }
+  //   }
+
   componentDidMount() {
     var value: any = undefined;
     switch (this.props.type) {
@@ -240,6 +249,26 @@ class Cell extends React.Component<
             isSearchable
             options={this.state.options}
           />
+        ) : this.props.type === "button" ? (
+          <div className="table-button-container">
+            <Button
+              onClick={() => {
+                this.props.onUpdate(
+                  this.props.rowData.id,
+                  `[${this.props.rowIndex}].data.companyName`,
+                  "Updated Name"
+                );
+              }}
+              size="sm"
+              color="white"
+              backgroundColor="#4dcc9d"
+              className="table-button"
+              //   aria-label="Search database"
+              //   icon={<VscDebugStart />}
+            >
+              update
+            </Button>
+          </div>
         ) : (
           <div>unknown</div>
         )}
@@ -248,9 +277,66 @@ class Cell extends React.Component<
   }
 }
 
+var ProjectType: any[] = [];
+var PH1: any[] = [];
+var Companies: any[] = [];
+var VendorsNames: any[] = [];
+var CampaignChannel: any[] = [];
+var TargetAudience: any[] = [];
+var Budget: any[] = [];
+var ExchangeRates: any[] = [];
+var FiscalQuarter: any[] = [];
+var Year: any[] = [];
+var ProjectStartQuarter: any[] = [];
+
+RestAPI.getDropdownValues("619b7b9efe27d06ad17d75af").then((response) => {
+  ProjectType = response.data;
+});
+RestAPI.getDropdownValues("619b630a9a5a2bb37a93b23b").then((response) => {
+  PH1 = response.data;
+});
+RestAPI.getDropdownValues("619b61419a5a2bb37a93b237").then((response) => {
+  Companies = response.data;
+});
+RestAPI.getDropdownValues("619b63429a5a2bb37a93b23d").then((response) => {
+  VendorsNames = response.data;
+});
+RestAPI.getDropdownValues("619b62d79a5a2bb37a93b239").then((response) => {
+  CampaignChannel = response.data;
+});
+RestAPI.getDropdownValues("619b632c9a5a2bb37a93b23c").then((response) => {
+  TargetAudience = response.data;
+});
+RestAPI.getDropdownValues("619b62959a5a2bb37a93b238").then((response) => {
+  Budget = response.data;
+});
+RestAPI.getDropdownValues("619b62f29a5a2bb37a93b23a").then((response) => {
+  ExchangeRates = response.data;
+});
+RestAPI.getDropdownValues("619b66defe27d06ad17d75ac").then((response) => {
+  FiscalQuarter = response.data;
+});
+RestAPI.getDropdownValues("619b6754fe27d06ad17d75ad").then((response) => {
+  Year = response.data;
+});
+RestAPI.getDropdownValues("619b6799fe27d06ad17d75ae").then((response) => {
+  ProjectStartQuarter = response.data;
+});
+
 const loadOptions = (identifier: string) => {
-  console.log(identifier);
-  return [{ label: "test", value: "test" }];
+  switch (identifier) {
+    case "data.projectType":
+      return ProjectType;
+    case "data.ph1":
+      return PH1;
+    case "data.campaignChannel":
+      return CampaignChannel;
+    case "data.targetAudience":
+      return TargetAudience;
+    case "data.budgetCurrency":
+      return ExchangeRates;
+  }
+  return [];
 };
 
 function bytesToSize(bytes: number) {
@@ -302,6 +388,19 @@ export function VendorsTable(props: Props) {
       _.set(submissions, path, value);
       partialUpdate(submission, path, value);
     }
+  }
+  function handleCellUpdateRedraw(
+    submission: string,
+    path: string,
+    value: any
+  ) {
+    var temp = [...submissions];
+    _.set(temp, path, value);
+    setSubmissions(temp);
+    // if (_.get(submissions, path) !== value) {
+    //   _.set(submissions, path, value);
+    //   partialUpdate(submission, path, value);
+    // }
   }
   //   async function saveCellWidth(cell: string, width: number) {
   //     localStorage.setItem(cell, width.toString());
@@ -387,7 +486,7 @@ export function VendorsTable(props: Props) {
         w={"100%"}
         bg={useColorModeValue("white", "#21252A")}
         minH={"85vh"}
-        p={4}
+        // p={4}
         mb={5}
         border="1px"
         rounded="md"
@@ -403,7 +502,6 @@ export function VendorsTable(props: Props) {
               //     column: any;
               //     width: number;
               //   }) => saveCellWidth(column.key, width)}
-              bg="#21252A"
               overscanRowCount={0}
               ignoreFunctionInColumnCompare={false}
               expandColumnKey={"__expand"}
@@ -439,6 +537,23 @@ export function VendorsTable(props: Props) {
                     />
                   ),
                 },
+                // {
+                //   key: "__action",
+                //   dataKey: "__action",
+                //   title: "Action",
+                //   width: 100,
+                //   resizable: true,
+                //   cellRenderer: (props) => (
+                //     <Cell
+                //       type={"button"}
+                //       onUpdate={handleCellUpdateRedraw}
+                //       rowIndex={props.rowIndex}
+                //       columnKey={props.column.dataKey}
+                //       rowData={props.rowData}
+                //       initialValue={props.cellData}
+                //     />
+                //   ),
+                // },
                 {
                   key: "data.companyCode",
                   dataKey: "data.companyCode",
@@ -669,7 +784,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
-                      type={"text"}
+                      type={"dropdown"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -822,7 +937,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
-                      type={"text"}
+                      type={"dropdown"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -839,7 +954,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
-                      type={"text"}
+                      type={"dropdown"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
@@ -856,7 +971,7 @@ export function VendorsTable(props: Props) {
                   resizable: true,
                   cellRenderer: (props) => (
                     <Cell
-                      type={"text"}
+                      type={"dropdown"}
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}

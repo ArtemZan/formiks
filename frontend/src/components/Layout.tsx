@@ -479,10 +479,15 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Submissions",
     children: [
       {
-        label: "Classic Viewer",
-        subLabel: "Default submission explorer and viewer",
-        href: "/submissions",
+        label: "Vendors Viewer",
+        subLabel: "View and edit vendors with table view",
+        href: "/vendors",
       },
+      // {
+      //   label: "Classic Viewer",
+      //   subLabel: "Default submission explorer and viewer",
+      //   href: "/submissions",
+      // },
       {
         label: "Table Viewer",
         subLabel: "Filter and sort submissions with table view",
@@ -490,10 +495,20 @@ const NAV_ITEMS: Array<NavItem> = [
       },
     ],
   },
-
   {
     label: "Dropdowns",
-    href: "/dropdowns",
+    children: [
+      {
+        label: "Existing Dropdowns",
+        subLabel: "Explore existing adaptive dropdown",
+        href: "/dropdowns",
+      },
+      {
+        label: "New Dropdown",
+        subLabel: "Create new adaptive dropdown",
+        href: "/dropdowns/create",
+      },
+    ],
   },
   {
     label: "Pipelines",

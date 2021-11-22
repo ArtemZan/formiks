@@ -45,6 +45,7 @@ interface Props {
 export function Editor(props: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [debug, setDebug] = useState("");
+  const [rawValues, setRawValues] = useState("");
   const [dropdown, setDropdown] = useState<Dropdown>({
     title: "",
     created: new Date(),
@@ -59,9 +60,10 @@ export function Editor(props: Props) {
   });
   useEffect(() => {
     if (!props.create && props.match.params.id) {
-      RestAPI.getDropdown(props.match.params.id).then((response) =>
-        setDropdown(response.data)
-      );
+      RestAPI.getDropdown(props.match.params.id).then((response) => {
+        setDropdown(response.data);
+        setRawValues(JSON.stringify(response.data.values, null, 2));
+      });
     }
   }, []);
 
@@ -111,11 +113,49 @@ export function Editor(props: Props) {
           </Box>
           <Box w="100%">
             <Text mb="8px">Type</Text>
-            <Input
-              defaultValue={dropdown.type}
-              disabled
-              bg={useColorModeValue("white", "#2C313C")}
-              color={useColorModeValue("gray.800", "#ABB2BF")}
+            <Select
+              styles={{
+                menu: (provided) => ({
+                  ...provided,
+                  zIndex: 1000000,
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  color: "#718196",
+                }),
+                control: (base, state) => ({
+                  ...base,
+                  minHeight: 40,
+                  border: "1px solid #E2E8F0",
+                  transition: "0.3s",
+                  "&:hover": {
+                    border: "1px solid #CBD5E0",
+                  },
+                }),
+              }}
+              theme={(theme) => ({
+                ...theme,
+                borderRadius: 6,
+                colors: {
+                  ...theme.colors,
+                  primary: "#3082CE",
+                },
+              })}
+              placeholder=""
+              onChange={(value: any) => {
+                setDropdown((prev) => ({
+                  ...prev,
+                  type: value.value,
+                }));
+              }}
+              value={{ label: dropdown.type, value: dropdown.type }}
+              classNamePrefix="select"
+              isClearable={false}
+              name="dropdownType"
+              options={[
+                { label: "js", value: "js" },
+                { label: "json", value: "json" },
+              ]}
             />
           </Box>
           <Box w="100%">
@@ -154,7 +194,38 @@ export function Editor(props: Props) {
           ></Textarea>
         </Box>
       </Box>
-      <Stack spacing={4} mb={4} direction={{ base: "column", xl: "row" }}>
+      <Box mb={5} display={dropdown.type === "json" ? "flex" : "none"} w="100%">
+        <AceEditor
+          width="100%"
+          height="900px"
+          style={{
+            borderRadius: "5px",
+          }}
+          mode="json"
+          theme="tomorrow"
+          name="json-editor"
+          onChange={(value) => {
+            setRawValues(value);
+          }}
+          fontSize={14}
+          showPrintMargin={false}
+          showGutter={true}
+          highlightActiveLine={true}
+          value={rawValues}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            showLineNumbers: true,
+            tabSize: 2,
+          }}
+        />
+      </Box>
+      <Stack
+        display={dropdown.type === "js" ? "flex" : "none"}
+        spacing={4}
+        mb={4}
+        direction={{ base: "column", xl: "row" }}
+      >
         <Box w="100%">
           <AceEditor
             width="100%"
@@ -164,7 +235,7 @@ export function Editor(props: Props) {
             }}
             mode="javascript"
             theme="tomorrow"
-            name="editor"
+            name="js-editor"
             onChange={(value) => {
               setDropdown((prev) => ({
                 ...prev,
@@ -172,7 +243,7 @@ export function Editor(props: Props) {
               }));
             }}
             fontSize={14}
-            showPrintMargin={true}
+            showPrintMargin={false}
             showGutter={true}
             highlightActiveLine={true}
             value={dropdown.processor}
@@ -207,7 +278,13 @@ export function Editor(props: Props) {
           />
         </Box>
       </Stack>
-      <Center mt={"10px"} mb="60px" h="60px" w="100%">
+      <Center
+        display={dropdown.type === "js" ? "flex" : "none"}
+        mt={"10px"}
+        mb="60px"
+        h="60px"
+        w="100%"
+      >
         <IconButton
           color={"white"}
           bg={useColorModeValue("blue.400", "#4D97E2")}
@@ -247,6 +324,9 @@ export function Editor(props: Props) {
           }}
           isLoading={isSubmitting}
           onClick={async () => {
+            if (dropdown.type === "json") {
+              dropdown.values = JSON.parse(rawValues);
+            }
             setIsSubmitting(true);
             if (props.create) {
               var response = await RestAPI.createDropdown(dropdown);

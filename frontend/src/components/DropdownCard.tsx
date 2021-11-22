@@ -94,7 +94,12 @@ export default function DropdownCard(props: Props) {
           hasArrow
           label={moment(props.dropdown.created).format("DD.MM.YYYY HH:mm")}
         >
-          <Text>Last Sync: {moment(props.dropdown.created).fromNow()}</Text>
+          <Text>
+            Last Sync:{" "}
+            {props.dropdown.type === "json"
+              ? "manual"
+              : moment(props.dropdown.lastSync).fromNow()}
+          </Text>
         </Tooltip>
       </Stack>
     </Box>
