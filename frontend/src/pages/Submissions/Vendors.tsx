@@ -632,7 +632,7 @@ export function VendorsTable(props: Props) {
               //   scrollLeft={scrollLeft}
               //   onScroll={onScroll}
               //   rowRenderer={rowRenderer}
-              overscanRowCount={0}
+              overscanRowCount={1} // Number of rows to render above/below the visible bounds of the list
               ignoreFunctionInColumnCompare={false}
               expandColumnKey={"__expand"}
               width={width}

@@ -1448,8 +1448,7 @@ export default function CreateBookmark(props: Props) {
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
         onClick={() => {
-          var projectId =
-            props.project.id !== undefined ? props.project.id : "";
+          var projectId = "619515b754e61c8dd33daa52";
 
           var parent: Submission = {
             project: projectId,
@@ -1457,7 +1456,7 @@ export default function CreateBookmark(props: Props) {
             parentId: null,
             created: new Date(),
             updated: new Date(),
-            status: props.project.defaultStatus,
+            status: "New",
             author: requestorsName,
             data: {
               requestorsCompanyName: requestorsCompanyName.label,
@@ -1507,7 +1506,7 @@ export default function CreateBookmark(props: Props) {
               parentId: "",
               created: new Date(),
               updated: new Date(),
-              status: props.project.defaultStatus,
+              status: "New",
               author: requestorsName,
               data: {
                 vendorName: vendor.vendor,
@@ -1527,7 +1526,7 @@ export default function CreateBookmark(props: Props) {
               parentId: "",
               created: new Date(),
               updated: new Date(),
-              status: props.project.defaultStatus,
+              status: "New",
               author: requestorsName,
               data: {
                 companyName: vendor.companyName,

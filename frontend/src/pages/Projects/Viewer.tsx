@@ -1,4 +1,6 @@
 import { Form } from "@formio/react";
+import { renderToString } from "react-dom/server";
+
 import {
   Text,
   Box,
@@ -49,17 +51,23 @@ export function Viewer(props: Props) {
   });
   useEffect(() => {
     if (props.match.params.id) {
-      if (props.match.params.id === "619515b754e61c8dd33daa52") {
-        setPrefedinedProject(
-          <Ermv project={project} history={props.history} />
-        );
-      }
       RestAPI.getProject(props.match.params.id).then((response) => {
         setProject(response.data);
         setForm({ display: "form", components: response.data.components });
+        if (props.match.params.id === "619515b754e61c8dd33daa52") {
+          setPrefedinedProject(
+            <Ermv project={project} history={props.history} />
+          );
+        }
       });
     }
   }, []);
+
+  // useEffect(() => {
+  //   console.log(
+  //     renderToString(<Ermv project={project} history={props.history} />)
+  //   );
+  // }, []);
 
   return (
     <Box mx={{ base: 0, xl: "5em" }}>
