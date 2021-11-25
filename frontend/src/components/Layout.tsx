@@ -65,7 +65,7 @@ function Layout(props: any) {
       setCookieConsent(true);
     }
     RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (

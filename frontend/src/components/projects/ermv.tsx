@@ -55,7 +55,10 @@ export default function CreateBookmark(props: Props) {
   const [campaignName, setCampaignName] = useState("");
   const [campaignDescription, setCampaignDescription] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
-  const [campaignChannel, setCampaignChannel] = useState("");
+  const [campaignChannel, setCampaignChannel] = useState<any>({
+    label: "",
+    value: "",
+  });
   const [vendorsNames, setVendorsNames] = useState<any>([]);
   const [year, setYear] = useState<any>({
     label: "",
@@ -241,7 +244,7 @@ export default function CreateBookmark(props: Props) {
           ? "??"
           : requestorsCompanyName.value.country) +
         (year.value === "" ? "??" : year.value) +
-        (campaignChannel === "" ? "?" : campaignChannel) +
+        (campaignChannel.value === "" ? "?" : campaignChannel.value) +
         (projectStartQuarter.value === ""
           ? "?"
           : projectStartQuarter.value.slice(1)) +
@@ -477,7 +480,7 @@ export default function CreateBookmark(props: Props) {
             })}
             placeholder=""
             onChange={(value: any) => {
-              setCampaignChannel(value.label);
+              setCampaignChannel(value);
             }}
             classNamePrefix="select"
             isClearable={false}
@@ -526,6 +529,79 @@ export default function CreateBookmark(props: Props) {
             name="vendorsName"
             options={VendorsNames}
           />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Vendors (new)</Text>
+          <Table
+            shouldUpdateScroll={false}
+            hover={false}
+            autoHeight
+            rowHeight={65}
+            data={costBreakdown}
+          >
+            <Column width={200} resizable>
+              <HeaderCell>Country</HeaderCell>
+              <Cell dataKey="country">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.companyName}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].companyName = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+            <Column width={200} resizable>
+              <HeaderCell>Share %</HeaderCell>
+              <Cell dataKey="share">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.creditor}
+                    onChange={(event) => {
+                      var temp = [...vendors];
+                      temp[index].creditor = event.target.value;
+                      setVendors(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+
+            <Column width={200} resizable>
+              <HeaderCell>Budget Contribution (EUR)</HeaderCell>
+              <Cell dataKey="debitor">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.debitor}
+                    onChange={(event) => {
+                      var temp = [...vendors];
+                      temp[index].debitor = event.target.value;
+                      setVendors(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+
+            <Column width={200} resizable>
+              <HeaderCell>Cost Estimation (EUR)</HeaderCell>
+              <Cell dataKey="manufacturer">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.manufacturer}
+                    onChange={(event) => {
+                      var temp = [...vendors];
+                      temp[index].manufacturer = event.target.value;
+                      setVendors(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+          </Table>
         </Box>
         <Box w="100%">
           <Text mb="8px">Vendors</Text>
@@ -1465,7 +1541,7 @@ export default function CreateBookmark(props: Props) {
               campaignName: campaignName,
               campaignDescription: campaignDescription,
               targetAudience: targetAudience,
-              campaignChannel: campaignChannel,
+              campaignChannel: campaignChannel.label,
               year: year.label,
               projectStartQuarter: projectStartQuarter.label,
               projectNumber: projectNumber,

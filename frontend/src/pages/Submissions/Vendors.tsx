@@ -47,6 +47,8 @@ interface Props {
   history: any;
 }
 
+const numRegex = /[0-9]|\./;
+
 const DebugOverlay = styled.div`
   width: 300px;
   background: lightgray;
@@ -94,17 +96,18 @@ class Cell extends React.Component<
       editing: false,
     };
   }
-  //   componentDidUpdate(prevProps: any) {
-  //     if (prevProps.initialValue !== this.props.initialValue) {
-  //       this.setState({ cellValue: this.props.initialValue });
-  //     }
-  //   }
+  componentDidUpdate(prevProps: any) {
+    if (prevProps.initialValue !== this.props.initialValue) {
+      this.setState({ cellValue: this.props.initialValue });
+    }
+  }
 
   componentDidMount() {
     var value: any = undefined;
     switch (this.props.type) {
       case "text":
       case "number":
+      case "button":
         value = this.props.initialValue
           ? this.props.initialValue.toString()
           : "";
@@ -176,7 +179,6 @@ class Cell extends React.Component<
               this.setState({ cellValue: event.target.value });
             }}
             onFocus={(e) => {
-              console.log(e);
               setTimeout(() => {
                 document.execCommand("selectAll", false);
               }, 0);
@@ -186,9 +188,7 @@ class Cell extends React.Component<
                 ? (event) => {
                     const keyCode = event.keyCode || event.which;
                     const string = String.fromCharCode(keyCode);
-                    const regex = /[0-9]|\./;
-
-                    if (!regex.test(string)) {
+                    if (!numRegex.test(string)) {
                       event.defaultPrevented = false;
                       if (event.preventDefault) event.preventDefault();
                     }
@@ -308,6 +308,7 @@ class Cell extends React.Component<
           <div className="table-button-container">
             <Button
               onClick={() => {
+                console.log("button click");
                 this.props.onUpdate(
                   this.props.rowData.id,
                   `[${this.props.rowIndex}].data.companyName`,
@@ -322,7 +323,7 @@ class Cell extends React.Component<
               //   aria-label="Search database"
               //   icon={<VscDebugStart />}
             >
-              update
+              {this.state.cellValue}
             </Button>
           </div>
         ) : (
@@ -632,7 +633,7 @@ export function VendorsTable(props: Props) {
               //   scrollLeft={scrollLeft}
               //   onScroll={onScroll}
               //   rowRenderer={rowRenderer}
-              overscanRowCount={1} // Number of rows to render above/below the visible bounds of the list
+              overscanRowCount={10} // Number of rows to render above/below the visible bounds of the list
               ignoreFunctionInColumnCompare={false}
               expandColumnKey={"__expand"}
               width={width}
@@ -667,23 +668,23 @@ export function VendorsTable(props: Props) {
                     />
                   ),
                 },
-                // {
-                //   key: "__action",
-                //   dataKey: "__action",
-                //   title: "Action",
-                //   width: 100,
-                //   resizable: true,
-                //   cellRenderer: (props) => (
-                //     <Cell
-                //       type={"button"}
-                //       onUpdate={handleCellUpdateRedraw}
-                //       rowIndex={props.rowIndex}
-                //       columnKey={props.column.dataKey}
-                //       rowData={props.rowData}
-                //       initialValue={props.cellData}
-                //     />
-                //   ),
-                // },
+                {
+                  key: "__action",
+                  dataKey: "__action",
+                  title: "Action",
+                  width: 100,
+                  resizable: true,
+                  cellRenderer: (props) => (
+                    <Cell
+                      type={"button"}
+                      onUpdate={handleCellUpdate}
+                      rowIndex={props.rowIndex}
+                      columnKey={props.column.dataKey}
+                      rowData={props.rowData}
+                      initialValue={"update"}
+                    />
+                  ),
+                },
                 {
                   key: "data.companyCode",
                   dataKey: "data.companyCode",
@@ -2100,7 +2101,9 @@ export function VendorsTable(props: Props) {
                         Requested Heap Size:
                       </Text>
                       <Text w="80%" textAlign="right">
-                        {bytesToSize(heapInfo.total)}
+                        {heapInfo.total > 0
+                          ? bytesToSize(heapInfo.total)
+                          : "none"}
                       </Text>
                     </HStack>
                     <HStack spacing={0}>
@@ -2108,7 +2111,9 @@ export function VendorsTable(props: Props) {
                         Allocated Heap Size:
                       </Text>
                       <Text w="80%" textAlign="right">
-                        {bytesToSize(heapInfo.allocated)}
+                        {heapInfo.total > 0
+                          ? bytesToSize(heapInfo.allocated)
+                          : "none"}
                       </Text>
                     </HStack>
                     <HStack spacing={0}>
@@ -2116,7 +2121,9 @@ export function VendorsTable(props: Props) {
                         Active Heap Size:
                       </Text>
                       <Text w="80%" textAlign="right">
-                        {bytesToSize(heapInfo.current)}
+                        {heapInfo.total > 0
+                          ? bytesToSize(heapInfo.current)
+                          : "none"}
                       </Text>
                     </HStack>
                     <HStack spacing={0}>

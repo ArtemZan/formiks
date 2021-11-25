@@ -236,3 +236,22 @@ button[name="data[submit]"]:hover {
   border: 1px solid #4587ff !important;
   border-radius: 2px !important;
 }
+
+.BaseTable__body::-webkit-scrollbar {
+  -webkit-appearance: none;
+  background-color: #e3e3e3;
+}
+
+.BaseTable__body::-webkit-scrollbar:vertical {
+  width: 13px;
+}
+
+.BaseTable__body::-webkit-scrollbar:horizontal {
+  height: 13px;
+}
+
+.BaseTable__body::-webkit-scrollbar-thumb {
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  background-color: white;
+}

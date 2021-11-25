@@ -150,7 +150,6 @@ export function Viewer(props: Props) {
           // }}
           onSubmit={(formio: any) => {
             delete formio.data["submit"];
-            console.log(formio.data);
             var submission: Submission = {
               project: project.id ?? "",
               parentId: null,
