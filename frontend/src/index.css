@@ -233,8 +233,14 @@ button[name="data[submit]"]:hover {
 
 .vendors-table-cell.active {
   outline-width: 0 !important;
-  border: 1px solid #4587ff !important;
+  border: 1px solid #a0bfe3 !important;
   border-radius: 2px !important;
+}
+.react-datepicker__day--selected {
+  background-color: #a5bfe0;
+}
+.react-datepicker__close-icon::after {
+  background-color: #a5bfe0;
 }
 
 .BaseTable__body::-webkit-scrollbar {
@@ -255,3 +261,10 @@ button[name="data[submit]"]:hover {
   border-radius: 2px;
   background-color: white;
 }
+
+/* .BaseTable__header-cell,
+.BaseTable__row-cell,
+.BaseTable__body {
+  background-color: #21252a !important;
+  border: 1px solid #3a414b;
+} */

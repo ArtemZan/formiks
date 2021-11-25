@@ -157,7 +157,7 @@ class Cell extends React.Component<
         {!this.state.editing ? (
           this.props.type === "date" ? (
             this.state.cellValue && this.state.cellValue !== null ? (
-              moment(this.state.cellValue).format("DD.MM.yyyy HH:mm")
+              moment(this.state.cellValue).format("DD.MM.yyyy")
             ) : (
               ""
             )
@@ -198,7 +198,7 @@ class Cell extends React.Component<
             onBlur={(event) => {
               this.props.onUpdate(
                 this.props.rowData.id,
-                `[${this.props.rowIndex}].${this.props.columnKey}`,
+                this.props.columnKey,
                 this.props.type === "number"
                   ? Number(this.state.cellValue)
                   : this.state.cellValue
@@ -210,7 +210,7 @@ class Cell extends React.Component<
         ) : this.props.type === "date" ? (
           <DatePicker
             autoFocus
-            showTimeInput
+            // showTimeInput
             isClearable
             customInput={<input className="datepicker-input"></input>}
             selected={this.state.cellValue}
@@ -218,14 +218,14 @@ class Cell extends React.Component<
               this.setState({ cellValue: date, editing: false });
               this.props.onUpdate(
                 this.props.rowData.id,
-                `[${this.props.rowIndex}].${this.props.columnKey}`,
+                this.props.columnKey,
                 date !== null ? date.toString() : null
               );
             }}
             onCalendarClose={() => {
               this.setState({ editing: false });
             }}
-            dateFormat="dd.MM.yyyy HH:mm"
+            dateFormat="dd.MM.yyyy"
           />
         ) : this.props.type === "dropdown" ||
           this.props.type === "multiple-dropdown" ? (
@@ -263,7 +263,7 @@ class Cell extends React.Component<
               borderRadius: 0,
               colors: {
                 ...theme.colors,
-                primary: "#3082CE",
+                primary: "#a0bfe3",
               },
             })}
             menuPortalTarget={document.body}
@@ -282,7 +282,7 @@ class Cell extends React.Component<
               }
               this.props.onUpdate(
                 this.props.rowData.id,
-                `[${this.props.rowIndex}].${this.props.columnKey}`,
+                this.props.columnKey,
                 v
               );
               this.setState({ editing: false });
@@ -311,7 +311,7 @@ class Cell extends React.Component<
                 console.log("button click");
                 this.props.onUpdate(
                   this.props.rowData.id,
-                  `[${this.props.rowIndex}].data.companyName`,
+                  "data.companyName",
                   "Updated Name"
                 );
                 this.setState({ editing: false });
@@ -506,9 +506,13 @@ export function VendorsTable(props: Props) {
   }
 
   function handleCellUpdate(submission: string, path: string, value: any) {
-    if (_.get(submissions, path) !== value) {
-      _.set(submissions, path, value);
-      partialUpdate(submission, path, value);
+    var submissionIndex = submissions.findIndex((s) => s.id === submission);
+    if (submissionIndex > -1) {
+      path = `[${submissionIndex}].${path}`;
+      if (_.get(submissions, path) !== value) {
+        _.set(submissions, path, value);
+        partialUpdate(submission, path, value);
+      }
     }
   }
   function handleCellUpdateRedraw(
@@ -516,13 +520,17 @@ export function VendorsTable(props: Props) {
     path: string,
     value: any
   ) {
-    var temp = [...submissions];
-    _.set(temp, path, value);
-    setSubmissions(temp);
-    // if (_.get(submissions, path) !== value) {
-    //   _.set(submissions, path, value);
-    //   partialUpdate(submission, path, value);
-    // }
+    var submissionIndex = submissions.findIndex((s) => s.id === submission);
+    console.log(submissionIndex);
+    if (submissionIndex > -1) {
+      path = `[${submissionIndex}].${path}`;
+      if (_.get(submissions, path) !== value) {
+        var temp = [...submissions];
+        _.set(temp, path, value);
+        setSubmissions(temp);
+        partialUpdate(submission, path, value);
+      }
+    }
   }
   //   async function saveCellWidth(cell: string, width: number) {
   //     localStorage.setItem(cell, width.toString());
@@ -677,7 +685,7 @@ export function VendorsTable(props: Props) {
                   cellRenderer: (props) => (
                     <Cell
                       type={"button"}
-                      onUpdate={handleCellUpdate}
+                      onUpdate={handleCellUpdateRedraw}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}
                       rowData={props.rowData}
