@@ -487,7 +487,7 @@ export function VendorsTable(props: Props) {
       // for frozen columns), then we have the header or body
       // plus, only want to null out hidden content when scrolling vertically
 
-      if (cells.length === 84) {
+      if (cells.length === 89) {
         const visibleIndices = getVisibleColumnIndices(scrollLeft, columns);
         const startIndex = visibleIndices[0];
         const visibleCells = visibleIndices.map((x) => cells[x]);
@@ -646,28 +646,28 @@ export function VendorsTable(props: Props) {
         return cells.map((cell, index) => {
           var colorClass: string = "";
           switch (true) {
-            case index < 6:
+            case index < 7:
               colorClass = index === 0 ? "" : "green";
               break;
-            case index < 30:
+            case index < 31:
               colorClass = "lgreen";
               break;
-            case index < 37:
+            case index < 38:
               colorClass = "lorange";
               break;
-            case index < 49:
+            case index < 50:
               colorClass = "orange";
               break;
-            case index < 61:
+            case index < 62:
               colorClass = "red";
               break;
-            case index < 64:
+            case index < 65:
               colorClass = "purple";
               break;
-            case index < 74:
+            case index < 75:
               colorClass = "blue";
               break;
-            case index < 84:
+            case index < 85:
               colorClass = "lblue";
               break;
             default:
@@ -844,8 +844,9 @@ export function VendorsTable(props: Props) {
                   key: "data.sapStatus",
                   dataKey: "data.sapStatus",
                   title: "SAP Status",
-                  width: 150,
+                  width: 120,
                   resizable: true,
+                  align: "center",
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
