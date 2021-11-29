@@ -27,6 +27,7 @@ import { createGlobalStyle } from "styled-components";
 import styled from "styled-components";
 import { Overlay } from "react-overlays";
 import DatePicker from "react-datepicker";
+import Toast from "../../components/Toast";
 
 import BaseTable, {
   AutoResizer,
@@ -42,6 +43,7 @@ import _ from "lodash";
 import { SearchIcon } from "@chakra-ui/icons";
 import { VscDebugRerun, VscDebugStart } from "react-icons/all";
 import moment from "moment";
+import { toast } from "react-toastify";
 
 interface Props {
   history: any;
@@ -80,6 +82,7 @@ class Cell extends React.Component<
     columnKey: string | undefined;
     type: string;
     initialValue: any;
+    textColor?: any;
   },
   {
     cellValue: any;
@@ -142,7 +145,11 @@ class Cell extends React.Component<
     return (
       <div
         className={
-          this.state.editing ? "vendors-table-cell active" : "content-preview"
+          this.state.editing
+            ? "vendors-table-cell active"
+            : `content-preview ${
+                this.props.textColor ? this.props.textColor : ""
+              }`
         }
         onClick={() => {
           if (!this.state.editing) {
@@ -307,8 +314,8 @@ class Cell extends React.Component<
         ) : this.props.type === "button" ? (
           <div className="table-button-container">
             <Button
+              colorScheme={this.props.textColor}
               onClick={() => {
-                console.log("button click");
                 this.props.onUpdate(
                   this.props.rowData.id,
                   "data.companyName",
@@ -318,10 +325,7 @@ class Cell extends React.Component<
               }}
               size="sm"
               color="white"
-              backgroundColor="#4dcc9d"
               className="table-button"
-              //   aria-label="Search database"
-              //   icon={<VscDebugStart />}
             >
               {this.state.cellValue}
             </Button>
@@ -500,9 +504,12 @@ export function VendorsTable(props: Props) {
 
   async function partialUpdate(submission: string, path: string, value: any) {
     setTotalRequests(totalRequests + 1);
-    var s = path.split(".");
-    s.shift();
-    RestAPI.updateSubmissionPartial(submission, s.join("."), value);
+    if (path.includes("[")) {
+      var s = path.split(".");
+      s.shift();
+      path = s.join(".");
+    }
+    RestAPI.updateSubmissionPartial(submission, path, value);
   }
 
   function handleCellUpdate(submission: string, path: string, value: any) {
@@ -515,13 +522,52 @@ export function VendorsTable(props: Props) {
       }
     }
   }
+  function deleteSubmission(submissionId: string) {
+    var tbd: string[] = [submissionId];
+    var submissionIndex = submissions.findIndex((s) => s.id === submissionId);
+    if (submissionIndex > -1) {
+      var temp = [...submissions];
+      temp.splice(submissionIndex, 1);
+      temp.map((s, index) => {
+        if (s.parentId !== null && s.parentId === submissionId) {
+          if (s.id) {
+            temp.splice(index, 1);
+            tbd.push(s.id);
+          }
+        }
+      });
+      setSubmissions(temp);
+      tbd.forEach((ds) => {
+        RestAPI.deleteSubmission(ds);
+      });
+    }
+  }
+  function parentizeSubmission(submissionId: string) {
+    var submissionIndex = submissions.findIndex((s) => s.id === submissionId);
+    if (submissionIndex > -1) {
+      var temp = [...submissions];
+      temp[submissionIndex].parentId = null;
+      partialUpdate(submissionId, "parentId", null);
+      setSubmissions(temp);
+    }
+  }
+  function callSap(submissionId: string) {
+    RestAPI.callSapSubmission(submissionId).then((response) => {
+      toast(
+        <Toast
+          title={"SAP Response"}
+          message={<div dangerouslySetInnerHTML={{ __html: response.data }} />}
+          type={"success"}
+        />
+      );
+    });
+  }
   function handleCellUpdateRedraw(
     submission: string,
     path: string,
     value: any
   ) {
     var submissionIndex = submissions.findIndex((s) => s.id === submission);
-    console.log(submissionIndex);
     if (submissionIndex > -1) {
       path = `[${submissionIndex}].${path}`;
       if (_.get(submissions, path) !== value) {
@@ -591,8 +637,11 @@ export function VendorsTable(props: Props) {
             case index < 74:
               colorClass = "blue";
               break;
-            default:
+            case index < 84:
               colorClass = "lblue";
+              break;
+            default:
+              colorClass = "red";
               break;
           }
 
@@ -676,23 +725,23 @@ export function VendorsTable(props: Props) {
                     />
                   ),
                 },
-                {
-                  key: "__action",
-                  dataKey: "__action",
-                  title: "Action",
-                  width: 100,
-                  resizable: true,
-                  cellRenderer: (props) => (
-                    <Cell
-                      type={"button"}
-                      onUpdate={handleCellUpdateRedraw}
-                      rowIndex={props.rowIndex}
-                      columnKey={props.column.dataKey}
-                      rowData={props.rowData}
-                      initialValue={"update"}
-                    />
-                  ),
-                },
+                // {
+                //   key: "__action",
+                //   dataKey: "__action",
+                //   title: "Action",
+                //   width: 100,
+                //   resizable: true,
+                //   cellRenderer: (props) => (
+                //     <Cell
+                //       type={"button"}
+                //       onUpdate={handleCellUpdateRedraw}
+                //       rowIndex={props.rowIndex}
+                //       columnKey={props.column.dataKey}
+                //       rowData={props.rowData}
+                //       initialValue={"update"}
+                //     />
+                //   ),
+                // },
                 {
                   key: "data.companyCode",
                   dataKey: "data.companyCode",
@@ -2091,6 +2140,86 @@ export function VendorsTable(props: Props) {
                       columnKey={props.column.dataKey}
                       rowData={props.rowData}
                       initialValue={props.cellData}
+                    />
+                  ),
+                },
+                {
+                  key: "__actions.sap",
+                  dataKey: "__actions.sap",
+                  title: "SAP",
+                  width: 100,
+                  resizable: true,
+                  header: "Actions",
+                  align: "center",
+                  cellRenderer: (props) =>
+                    props.rowData.parentId === null ? (
+                      <Cell
+                        type={"button"}
+                        textColor={"green"}
+                        onUpdate={callSap}
+                        rowIndex={props.rowIndex}
+                        columnKey={props.column.dataKey}
+                        rowData={props.rowData}
+                        initialValue={"submit"}
+                      />
+                    ) : null,
+                },
+                {
+                  key: "__actions.edit",
+                  dataKey: "__actions.edit",
+                  title: "Edit",
+                  width: 100,
+                  resizable: true,
+                  align: "center",
+                  cellRenderer: (props) =>
+                    props.rowData.parentId === null ? (
+                      <Cell
+                        type={"button"}
+                        textColor={"yellow"}
+                        onUpdate={handleCellUpdate}
+                        rowIndex={props.rowIndex}
+                        columnKey={props.column.dataKey}
+                        rowData={props.rowData}
+                        initialValue={"edit"}
+                      />
+                    ) : null,
+                },
+                {
+                  key: "__actions.parentize",
+                  dataKey: "__actions.parentize",
+                  title: "Parentize",
+                  width: 100,
+                  resizable: true,
+                  align: "center",
+                  cellRenderer: (props) =>
+                    props.rowData.parentId === null ? null : (
+                      <Cell
+                        type={"button"}
+                        textColor={"blue"}
+                        onUpdate={parentizeSubmission}
+                        rowIndex={props.rowIndex}
+                        columnKey={props.column.dataKey}
+                        rowData={props.rowData}
+                        initialValue={"parentize"}
+                      />
+                    ),
+                },
+                {
+                  key: "__actions.delete",
+                  dataKey: "__actions.delete",
+                  title: "Delete",
+                  width: 100,
+                  resizable: true,
+                  align: "center",
+                  cellRenderer: (props) => (
+                    <Cell
+                      type={"button"}
+                      textColor={"red"}
+                      onUpdate={deleteSubmission}
+                      rowIndex={props.rowIndex}
+                      columnKey={props.column.dataKey}
+                      rowData={props.rowData}
+                      initialValue={"delete"}
                     />
                   ),
                 },

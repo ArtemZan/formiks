@@ -10,6 +10,7 @@ import (
 	"github.com/doublegrey/formiks/backend/models"
 	"github.com/doublegrey/formiks/backend/repositories"
 	"github.com/doublegrey/formiks/backend/repositories/submission"
+	"github.com/doublegrey/formiks/backend/sap"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -140,7 +141,24 @@ func (r *Submission) PartialUpdate(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	r.db.Collection("submissions").UpdateOne(context.TODO(), bson.M{"_id": request.Submission}, bson.D{{Key: "$set", Value: bson.D{{request.Path, request.Value}}}})
+	r.db.Collection("submissions").UpdateOne(context.TODO(), bson.M{"_id": request.Submission}, bson.D{{Key: "$set", Value: bson.D{{Key: request.Path, Value: request.Value}, {Key: "updated", Value: time.Now()}}}})
+}
+
+func (r *Submission) CallSap(c *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		logger.LogHandlerError(c, "Failed to convert hex to ObjectID", err)
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	submission, err := r.repo.FetchByID(c.Request.Context(), id)
+	if err != nil {
+		logger.LogHandlerError(c, "Failed to fetch submission", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	c.String(http.StatusOK, sap.ZsdMdfOrder(submission))
+
 }
 
 func (r *Submission) Delete(c *gin.Context) {

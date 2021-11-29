@@ -19,12 +19,12 @@ var SapConnectionParameters = gorfc.ConnectionParameters{
 	"lang":   "EN",
 }
 
-type FCall struct {
+type FRequest struct {
 	Function string                 `json:"function"`
 	Data     map[string]interface{} `json:"data"`
 }
 
-type SapResponse struct {
+type FResponse struct {
 	EXORDERID  string `json:"EX_ORDERID"`
 	EXSUBRC    int    `json:"EX_SUBRC"`
 	ITMESSAGES []struct {
@@ -39,12 +39,12 @@ type SapResponse struct {
 	} `json:"IT_MESSAGES"`
 }
 
-func (m *FCall) Decode(data []byte) error {
+func (m *FRequest) Decode(data []byte) error {
 	// FIXME: use parseParams from https://github.com/doublegrey/wrike/blob/master/main.go to parse RFCTYPE_DATE and RFCTYPE_INT
 	return json.Unmarshal(data, m)
 }
 
-func (m FCall) Execute() (map[string]interface{}, error) {
+func (m FRequest) Execute() (map[string]interface{}, error) {
 	c, err := gorfc.ConnectionFromParams(SapConnectionParameters)
 	if err != nil {
 		return nil, err
@@ -83,13 +83,13 @@ func main() {
 			record := iter.Next()
 			log.Println(string(record.Value))
 
-			var call FCall
-			err = call.Decode(record.Value)
+			var request FRequest
+			err = request.Decode(record.Value)
 			if err != nil {
 				log.Println(err)
 				continue
 			}
-			call.Execute()
+			request.Execute()
 		}
 	}
 }

@@ -110,6 +110,18 @@ button[name="data[submit]"]:hover {
   border: 1px solid transparent;
   border-radius: 2px;
 }
+.content-preview.green {
+  color: #7cc63e;
+}
+.content-preview.blue {
+  color: #6597d2;
+}
+.content-preview.yellow {
+  color: #e1ac07;
+}
+.content-preview.red {
+  color: #ff8b94;
+}
 
 .content-preview:hover {
   overflow: scroll;
@@ -225,10 +237,6 @@ button[name="data[submit]"]:hover {
   top: 50%;
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
-}
-
-.table-button:hover {
-  background-color: #6dd5ae !important;
 }
 
 .vendors-table-cell.active {

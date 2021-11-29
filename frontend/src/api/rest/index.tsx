@@ -91,6 +91,9 @@ export class API {
       })
     );
   }
+  callSapSubmission(submission: string): Promise<AxiosResponse> {
+    return axios.get(`${this.submissionsUrl}${submission}/sap`);
+  }
   deleteSubmission(id: string): Promise<AxiosResponse> {
     return axios.delete(`${this.submissionsUrl}${id}`);
   }
