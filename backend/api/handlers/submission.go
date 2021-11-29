@@ -157,7 +157,7 @@ func (r *Submission) CallSap(c *gin.Context) {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-	c.String(http.StatusOK, sap.ZsdMdfOrder(submission))
+	c.String(sap.ZsdMdfOrder(submission))
 
 }
 

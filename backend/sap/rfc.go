@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/doublegrey/formiks/backend/models"
 )
 
-func ZsdMdfOrder(submission models.Submission) string {
+func ZsdMdfOrder(submission models.Submission) (int, string) {
 	var r FRequest
 	r.Request.FUNCTION = "ZSD_MDF_INT_ORDER"
 	r.Request.IM_ORDER = submission.Data["projectNumber"]
@@ -47,9 +48,13 @@ func ZsdMdfOrder(submission models.Submission) string {
 		} `json:"body"`
 	}
 	json.Unmarshal(b, &response)
-	fmt.Println(response.Header)
+	fmt.Println(response.Header.Status)
 	if len(response.Header.Lines.Message) > 0 {
 		comment = response.Header.Lines.Message
 	}
-	return comment
+	statusCode, _ := strconv.Atoi(response.Header.Status)
+	if statusCode < 200 {
+		statusCode = 200
+	}
+	return statusCode, comment
 }

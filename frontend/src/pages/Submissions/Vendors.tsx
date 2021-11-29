@@ -83,6 +83,7 @@ class Cell extends React.Component<
     type: string;
     initialValue: any;
     textColor?: any;
+    readonly?: boolean;
   },
   {
     cellValue: any;
@@ -149,10 +150,10 @@ class Cell extends React.Component<
             ? "vendors-table-cell active"
             : `content-preview ${
                 this.props.textColor ? this.props.textColor : ""
-              }`
+              } ${this.props.readonly ? "readonly" : ""}`
         }
         onClick={() => {
-          if (!this.state.editing) {
+          if (!this.state.editing && !this.props.readonly) {
             this.setState({ editing: true });
           }
         }}
@@ -349,6 +350,10 @@ var ExchangeRates: any[] = [];
 var FiscalQuarter: any[] = [];
 var Year: any[] = [];
 var ProjectStartQuarter: any[] = [];
+var SapStatus: any[] = [
+  { label: "Created", value: "created" },
+  { label: "None", value: "none" },
+];
 
 RestAPI.getDropdownValues("619b7b9efe27d06ad17d75af").then((response) => {
   ProjectType = response.data;
@@ -396,6 +401,8 @@ const loadOptions = (identifier: string) => {
       return TargetAudience;
     case "data.budgetCurrency":
       return ExchangeRates;
+    case "data.sapStatus":
+      return SapStatus;
   }
   return [];
 };
@@ -552,15 +559,38 @@ export function VendorsTable(props: Props) {
     }
   }
   function callSap(submissionId: string) {
-    RestAPI.callSapSubmission(submissionId).then((response) => {
-      toast(
-        <Toast
-          title={"SAP Response"}
-          message={<div dangerouslySetInnerHTML={{ __html: response.data }} />}
-          type={"success"}
-        />
-      );
-    });
+    RestAPI.callSapSubmission(submissionId)
+      .then((response) => {
+        toast(
+          <Toast
+            title={"SAP Response"}
+            message={
+              <div dangerouslySetInnerHTML={{ __html: response.data }} />
+            }
+            type={"success"}
+          />
+        );
+        var submissionIndex = submissions.findIndex(
+          (s) => s.id === submissionId
+        );
+        if (submissionIndex > -1) {
+          var temp = [...submissions];
+          temp[submissionIndex].data["sapStatus"] = "created";
+          partialUpdate(submissionId, "data.sapStatus", "created");
+          setSubmissions(temp);
+        }
+      })
+      .catch((error) => {
+        toast(
+          <Toast
+            title={"SAP Response"}
+            message={
+              <div dangerouslySetInnerHTML={{ __html: error.response.data }} />
+            }
+            type={"error"}
+          />
+        );
+      });
   }
   function handleCellUpdateRedraw(
     submission: string,
@@ -802,6 +832,24 @@ export function VendorsTable(props: Props) {
                   cellRenderer: (props) => (
                     <Cell
                       type={"dropdown"}
+                      onUpdate={handleCellUpdate}
+                      rowIndex={props.rowIndex}
+                      columnKey={props.column.dataKey}
+                      rowData={props.rowData}
+                      initialValue={props.cellData}
+                    />
+                  ),
+                },
+                {
+                  key: "data.sapStatus",
+                  dataKey: "data.sapStatus",
+                  title: "SAP Status",
+                  width: 150,
+                  resizable: true,
+                  cellRenderer: (props) => (
+                    <Cell
+                      type={"text"}
+                      readonly
                       onUpdate={handleCellUpdate}
                       rowIndex={props.rowIndex}
                       columnKey={props.column.dataKey}

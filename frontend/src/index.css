@@ -123,6 +123,13 @@ button[name="data[submit]"]:hover {
   color: #ff8b94;
 }
 
+.content-preview.readonly {
+  background-color: #f7fafc;
+}
+.content-preview.readonly:hover {
+  border: 1px dashed transparent;
+}
+
 .content-preview:hover {
   overflow: scroll;
   text-overflow: unset;
