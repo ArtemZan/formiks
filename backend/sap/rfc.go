@@ -14,15 +14,16 @@ import (
 func ZsdMdfOrder(submission models.Submission) (int, string) {
 	var r FRequest
 	r.Request.FUNCTION = "ZSD_MDF_INT_ORDER"
-	r.Request.IM_ORDER = submission.Data["projectNumber"]
+	r.Request.IM_ORDER = fmt.Sprintf("%v", submission.Data["projectNumber"])
 	r.Request.IM_ORDER_TYPE = "ZMDE"
-	r.Request.IM_ORDER_NAME = submission.Data["campaignName"]
+	r.Request.IM_ORDER_NAME = fmt.Sprintf("%v", submission.Data["campaignName"])
 	r.Request.IM_COMP_CODE = fmt.Sprintf("%v", submission.Data["companyCode"])
-	r.Request.IM_PERSON_RESP = submission.Data["budgetApprovedByVendor"]
-	r.Request.IM_CURRENCY = submission.Data["campaignBudgetsCurrency"]
+	r.Request.IM_PERSON_RESP = fmt.Sprintf("%v", submission.Data["budgetApprovedByVendor"])
+	r.Request.IM_CURRENCY = fmt.Sprintf("%v", submission.Data["campaignBudgetsCurrency"])
 	r.Request.IM_CO_AREA = "A001"
 
 	bs, _ := json.Marshal(r)
+	fmt.Println(string(bs))
 	client := &http.Client{}
 	req, _ := http.NewRequest(http.MethodPost, "https://b2b-test.also.com/rad/ActWebServices.Wrike:api/receive", bytes.NewReader(bs))
 	req.SetBasicAuth("WRIKE", "mMvnfh67#hhz")
@@ -48,7 +49,7 @@ func ZsdMdfOrder(submission models.Submission) (int, string) {
 		} `json:"body"`
 	}
 	json.Unmarshal(b, &response)
-	fmt.Println(response.Header.Status)
+	fmt.Println(response.Header.Lines.Message)
 	if len(response.Header.Lines.Message) > 0 {
 		comment = response.Header.Lines.Message
 	}

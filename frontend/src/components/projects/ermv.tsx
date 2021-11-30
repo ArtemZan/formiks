@@ -1632,6 +1632,7 @@ export default function CreateBookmark(props: Props) {
           };
           RestAPI.createSubmissionWithChildren(submission).then((response) => {
             console.log(response.data);
+            props.history.push("/vendors");
           });
         }}
       >
