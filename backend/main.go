@@ -11,6 +11,7 @@ import (
 	"github.com/doublegrey/formiks/backend/dropdowns"
 	"github.com/doublegrey/formiks/backend/middlewares"
 	"github.com/doublegrey/formiks/backend/middlewares/msal"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -44,5 +45,8 @@ func main() {
 	r := gin.Default()
 	middlewares.Setup(r)
 	api.RegisterRoutes(r)
+
+	r.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
+
 	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
