@@ -8,7 +8,7 @@ export class API {
   public baseUrl =
     process.env.NODE_ENV === "production"
       ? "/api"
-      : "http://localhost:8000/api";
+      : "http://localhost:7000/api";
   public usersUrl = `${this.baseUrl}/users/`;
   public projectsUrl = `${this.baseUrl}/projects/`;
   public bookmarksUrl = `${this.baseUrl}/bookmarks/`;
