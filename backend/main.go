@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/doublegrey/formiks/backend/api"
@@ -47,6 +49,16 @@ func main() {
 	api.RegisterRoutes(r)
 
 	r.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
+	r.NoRoute(func(c *gin.Context) {
+		dir, file := path.Split(c.Request.RequestURI)
+		ext := filepath.Ext(file)
+		if file == "" || ext == "" {
+			c.File("../frontend/build")
+		} else {
+			c.File("../frontend/build" + path.Join(dir, file))
+		}
+
+	})
 
 	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
