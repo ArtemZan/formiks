@@ -9,6 +9,14 @@ import {
   useColorModeValue,
   Divider,
   IconButton,
+  Stack,
+  VStack,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  CloseButton,
 } from "@chakra-ui/react";
 import {
   cloneElement,
@@ -40,10 +48,12 @@ import "react-base-table/styles.css";
 import { RestAPI } from "../../api/rest";
 import React from "react";
 import _ from "lodash";
-import { SearchIcon } from "@chakra-ui/icons";
-import { VscDebugRerun, VscDebugStart } from "react-icons/all";
+import { ArrowForwardIcon, SearchIcon } from "@chakra-ui/icons";
+import { BiPlusMedical, VscDebugRerun, VscDebugStart } from "react-icons/all";
 import moment from "moment";
 import { toast } from "react-toastify";
+import { CheckTreePicker, TagPicker } from "rsuite";
+import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
 
 interface Props {
   history: any;
@@ -414,7 +424,82 @@ function bytesToSize(bytes: number) {
   return (bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
 }
 
+interface FilterField {
+  column: string;
+  type: string;
+  filter: string;
+  values: any[];
+  selectedValues: any[];
+}
+const filterTypes = {
+  textfield: [
+    { label: "Exact", value: "exact" },
+    { label: "Includes", value: "includes" },
+  ],
+  textarea: [
+    { label: "Exact", value: "exact" },
+    { label: "Includes", value: "includes" },
+  ],
+  number: [
+    { label: "Exact", value: "exact" },
+    { label: "Range", value: "range" },
+  ],
+  select: [
+    { label: "Exact", value: "exact" },
+    { label: "Includes", value: "includes" },
+  ],
+  datetime: [{ label: "Range", value: "range" }],
+};
+
+const DisplayedColumnsList = [
+  {
+    label: "General Information",
+    value: "generalInformation",
+    // children: [
+    //   { label: "Company Name", value: "companyName" },
+    //   { label: "Company Code", value: "companyCode" },
+    //   { label: "Project Number", value: "projectNumber" },
+    //   {
+    //     label: "Campaign Start Date",
+    //     value: "campaignStartDate",
+    //   },
+    //   { label: "Project Type", value: "projectType" },
+    //   { label: "SAP Status", value: "sapStatus" },
+    // ],
+  },
+  {
+    label: "Project Information",
+    value: "projectInformation",
+  },
+  {
+    label: "Purchase Order",
+    value: "purchaseOrder",
+  },
+  {
+    label: "Cost Actuals",
+    value: "costActuals",
+  },
+  {
+    label: "Sales Actuals",
+    value: "salesActuals",
+  },
+  {
+    label: "Actuals in EUR",
+    value: "actualsInEur",
+  },
+  {
+    label: "Cost GL Postings",
+    value: "costGlPostings",
+  },
+  {
+    label: "Income GL Postings",
+    value: "incomeGlPostings",
+  },
+];
+
 export function VendorsTable(props: Props) {
+  const [filters, setFilters] = useState<FilterField[]>([]);
+  const [displayedColumns, setDisplayedColumns] = useState<string[]>([]);
   const { fps, avgFps, maxFps, currentFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -694,14 +779,399 @@ export function VendorsTable(props: Props) {
       <Box
         w={"100%"}
         bg={useColorModeValue("white", "#21252A")}
+        p={4}
+        mb={5}
+        border="1px"
+        rounded="md"
+        borderColor="gray.100"
+        color={"gray.500"}
+      >
+        <Box mb={"1em"} w="100%">
+          <Text mb="8px">Displayed Columns</Text>
+          <CheckTreePicker
+            cleanable
+            defaultExpandAll={false}
+            block
+            onChange={(value) => {
+              var values: string[] = [];
+              value.map((v) => {
+                values.push(v.toString());
+              });
+              setDisplayedColumns(values);
+            }}
+            value={displayedColumns}
+            data={DisplayedColumnsList}
+            placeholder="Groups"
+            size="lg"
+          />
+        </Box>
+        <Stack
+          mb={"1em"}
+          w="100%"
+          spacing={"2em"}
+          direction={{ base: "column", lg: "row" }}
+        >
+          <Box w="100%">
+            <Text mb="8px">Statuses</Text>
+            <TagPicker
+              cleanable
+              style={{
+                minHeight: "40px",
+                paddingTop: "2px",
+              }}
+              data={[]}
+              block
+            />
+          </Box>
+          <Box w="100%">
+            <Text mb="8px">Authors</Text>
+            <TagPicker
+              cleanable
+              style={{
+                minHeight: "40px",
+                paddingTop: "2px",
+              }}
+              data={[]}
+              block
+            />
+          </Box>
+        </Stack>
+      </Box>
+      <Box
+        shadow="md"
+        color="gray.600"
+        backgroundColor="white"
+        mb={10}
+        p={8}
+        pb={0}
+        rounded="md"
+        w={"100%"}
+      >
+        <VStack spacing={8} fontSize="md" align="stretch" color={"gray.500"}>
+          <Box w={"100%"}>
+            <Box w={"100%"}>
+              {filters.map((filter, index) => {
+                var valuesField: JSX.Element = <div></div>;
+
+                switch (filter.type) {
+                  case "textfield":
+                  case "textarea":
+                    valuesField = (
+                      <Input
+                        onChange={(event) => {
+                          var temp = [...filters];
+                          temp[index].selectedValues[0] = event.target.value;
+                          setFilters(temp);
+                        }}
+                        value={filter.selectedValues[0]}
+                      />
+                    );
+                    break;
+                  case "number":
+                    switch (filter.filter) {
+                      case "exact":
+                        valuesField = (
+                          <NumberInput
+                            onChange={(_, value) => {
+                              var temp = [...filters];
+                              temp[index].selectedValues[0] = value;
+                              setFilters(temp);
+                            }}
+                            value={filter.selectedValues[0]}
+                            w="100%"
+                          >
+                            <NumberInputField />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        );
+                        break;
+                      case "range":
+                        valuesField = (
+                          <Stack direction={{ base: "column", md: "row" }}>
+                            <NumberInput
+                              w="100%"
+                              onChange={(_, value) => {
+                                var temp = [...filters];
+                                temp[index].selectedValues[0] = value;
+                                setFilters(temp);
+                              }}
+                              value={filter.selectedValues[0]}
+                            >
+                              <NumberInputField />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                            <Box textAlign="center" w="20px">
+                              <ArrowForwardIcon
+                                alignSelf="center"
+                                w={5}
+                                h="100%"
+                              />
+                            </Box>
+                            <NumberInput
+                              w="100%"
+                              onChange={(_, value) => {
+                                var temp = [...filters];
+                                temp[index].selectedValues[1] = value;
+                                setFilters(temp);
+                              }}
+                              value={filter.selectedValues[1]}
+                            >
+                              <NumberInputField />
+                              <NumberInputStepper>
+                                <NumberIncrementStepper />
+                                <NumberDecrementStepper />
+                              </NumberInputStepper>
+                            </NumberInput>
+                          </Stack>
+                        );
+                        break;
+                    }
+                    break;
+                  case "select":
+                    valuesField = (
+                      <TagPicker
+                        cleanable
+                        style={{
+                          minHeight: "40px",
+                          paddingTop: "2px",
+                        }}
+                        onChange={(value) => {
+                          var temp = [...filters];
+                          temp[index].selectedValues = value;
+                          setFilters(temp);
+                        }}
+                        data={filter.selectedValues}
+                        block
+                      />
+                    );
+                    break;
+                  case "datetime":
+                    valuesField = (
+                      <DateRangeInput
+                        allowEditableInputs={true}
+                        displayFormat="dd.MM.yyyy"
+                      />
+                    );
+                }
+
+                return (
+                  <Box
+                    w={"100%"}
+                    backgroundColor="white"
+                    p={4}
+                    mb={5}
+                    border="1px"
+                    rounded="md"
+                    borderColor="gray.100"
+                  >
+                    <CloseButton
+                      onClick={() => {
+                        var temp = [...filters];
+                        temp.splice(index, 1);
+                        setFilters(temp);
+                      }}
+                      float="right"
+                    />
+                    <VStack
+                      mt={"20px"}
+                      spacing={8}
+                      fontSize="md"
+                      align="stretch"
+                      color={"gray.500"}
+                    >
+                      <Box>
+                        <Stack
+                          direction={{ base: "column", xl: "row" }}
+                          w="100%"
+                          spacing={{ base: "20px", xl: "50px" }}
+                        >
+                          <Box w="100%">
+                            <Text mb="8px">Column</Text>
+                            <Select
+                              styles={{
+                                menu: (provided) => ({
+                                  ...provided,
+                                  zIndex: 1000000,
+                                }),
+                                singleValue: (provided) => ({
+                                  ...provided,
+                                  color: "#718196",
+                                }),
+                                control: (base, state) => ({
+                                  ...base,
+                                  minHeight: 40,
+                                  border: "1px solid #E2E8F0",
+                                  transition: "0.3s",
+                                  "&:hover": {
+                                    border: "1px solid #CBD5E0",
+                                  },
+                                }),
+                              }}
+                              theme={(theme) => ({
+                                ...theme,
+                                borderRadius: 6,
+                                colors: {
+                                  ...theme.colors,
+                                  primary: "#3082CE",
+                                },
+                              })}
+                              value={{
+                                label: filter.column,
+                                value: filter.column,
+                              }}
+                              onChange={(value: any) => {
+                                var temp = [...filters];
+                                temp[index].column = value.value;
+                                temp[index].type = value.type;
+                                var tv: any = [];
+                                switch (value.type) {
+                                  case "textfield":
+                                  case "textarea":
+                                    tv = [""];
+                                    break;
+                                  case "number":
+                                    if (temp[index].filter === "exact") {
+                                      tv = [0];
+                                    } else {
+                                      tv = [0, 0];
+                                    }
+                                    break;
+                                }
+                                temp[index].selectedValues = tv;
+                                setFilters(temp);
+                              }}
+                              classNamePrefix="select"
+                              isClearable={false}
+                              name="color"
+                              options={[]}
+                              // options={project.components
+                              //   .filter(
+                              //     (component: any) =>
+                              //       component.input &&
+                              //       component.type !== "button"
+                              //   )
+                              //   .map((component: any) => {
+                              //     return {
+                              //       label: component.label,
+                              //       value: component.key,
+                              //       type: component.type,
+                              //     };
+                              //   })}
+                            />
+                          </Box>
+                          <Box w="100%">
+                            <Text mb="8px">Type</Text>
+                            <Input
+                              onChange={() => {}}
+                              value={filter.type}
+                              readOnly
+                            />
+                          </Box>
+                          <Box w="100%">
+                            <Text mb="8px">Filter</Text>
+                            <Select
+                              styles={{
+                                menu: (provided) => ({
+                                  ...provided,
+                                  zIndex: 1000000,
+                                }),
+                                singleValue: (provided) => ({
+                                  ...provided,
+                                  color: "#718196",
+                                }),
+                                control: (base, state) => ({
+                                  ...base,
+                                  minHeight: 40,
+                                  border: "1px solid #E2E8F0",
+                                  transition: "0.3s",
+                                  "&:hover": {
+                                    border: "1px solid #CBD5E0",
+                                  },
+                                }),
+                              }}
+                              theme={(theme) => ({
+                                ...theme,
+                                borderRadius: 6,
+                                colors: {
+                                  ...theme.colors,
+                                  primary: "#3082CE",
+                                },
+                              })}
+                              value={{
+                                label:
+                                  filter.filter.charAt(0).toUpperCase() +
+                                  filter.filter.slice(1),
+                                value: filter.filter,
+                              }}
+                              onChange={(value: any) => {
+                                var temp = [...filters];
+                                temp[index].filter = value.value;
+                                setFilters(temp);
+                              }}
+                              classNamePrefix="select"
+                              isClearable={false}
+                              name="filter"
+                              options={
+                                filterTypes[
+                                  filter.type as keyof typeof filterTypes
+                                ]
+                              }
+                            />
+                          </Box>
+                        </Stack>
+                      </Box>
+                      <Stack
+                        direction={{ base: "column", xl: "row" }}
+                        w="100%"
+                        spacing={{ base: "20px", xl: "50px" }}
+                      >
+                        <Box w="100%">
+                          <Text mb="8px">Values</Text>
+                          {valuesField}
+                        </Box>
+                      </Stack>
+                    </VStack>
+                  </Box>
+                );
+              })}
+              <IconButton
+                onClick={() => {
+                  setFilters([
+                    ...filters,
+                    {
+                      column: "",
+                      type: "",
+                      filter: "exact",
+                      values: [],
+                      selectedValues: [],
+                    } as FilterField,
+                  ]);
+                }}
+                my={5}
+                float="right"
+                variant="outline"
+                aria-label="add-port"
+                icon={<BiPlusMedical />}
+              />
+            </Box>
+          </Box>
+        </VStack>
+      </Box>
+      <Box
+        w={"100%"}
+        bg={useColorModeValue("white", "#21252A")}
         minH={"85vh"}
-        // p={4}
         mb={5}
         border="1px"
         rounded="md"
         borderColor="gray.100"
       >
-        {/* <FpsView /> */}
         <AutoResizer
           onResize={({ width, height }: { width: number; height: number }) => {
             setTableWidth(width);
@@ -709,18 +1179,10 @@ export function VendorsTable(props: Props) {
         >
           {({ width, height }) => (
             <BaseTable
-              //   onColumnResize={({
-              //     column,
-              //     width,
-              //   }: {
-              //     column: any;
-              //     width: number;
-              //   }) => saveCellWidth(column.key, width)}
-              //
-              //   scrollLeft={scrollLeft}
-              //   onScroll={onScroll}
-              //   rowRenderer={rowRenderer}
-              overscanRowCount={10} // Number of rows to render above/below the visible bounds of the list
+              // scrollLeft={scrollLeft}
+              // onScroll={onScroll}
+              // rowRenderer={rowRenderer}
+              // overscanRowCount={10}
               ignoreFunctionInColumnCompare={false}
               expandColumnKey={"__expand"}
               width={width}
@@ -741,8 +1203,10 @@ export function VendorsTable(props: Props) {
                   key: "data.companyName",
                   dataKey: "data.companyName",
                   title: "Company Name",
+                  // hidden: true,
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("generalInformation"),
                   header: "General Information",
                   cellRenderer: (props) => (
                     <Cell
@@ -755,29 +1219,13 @@ export function VendorsTable(props: Props) {
                     />
                   ),
                 },
-                // {
-                //   key: "__action",
-                //   dataKey: "__action",
-                //   title: "Action",
-                //   width: 100,
-                //   resizable: true,
-                //   cellRenderer: (props) => (
-                //     <Cell
-                //       type={"button"}
-                //       onUpdate={handleCellUpdateRedraw}
-                //       rowIndex={props.rowIndex}
-                //       columnKey={props.column.dataKey}
-                //       rowData={props.rowData}
-                //       initialValue={"update"}
-                //     />
-                //   ),
-                // },
                 {
                   key: "data.companyCode",
                   dataKey: "data.companyCode",
                   title: "Company Code",
                   width: 150,
                   resizable: true,
+                  hidden: !displayedColumns.includes("generalInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"number"}
@@ -795,6 +1243,7 @@ export function VendorsTable(props: Props) {
                   title: "Project Number",
                   width: 150,
                   resizable: true,
+                  hidden: !displayedColumns.includes("generalInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -812,6 +1261,7 @@ export function VendorsTable(props: Props) {
                   title: "Campaign Start Date",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("generalInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"date"}
@@ -829,6 +1279,7 @@ export function VendorsTable(props: Props) {
                   title: "Project Type",
                   width: 250,
                   resizable: true,
+                  hidden: !displayedColumns.includes("generalInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"dropdown"}
@@ -847,6 +1298,7 @@ export function VendorsTable(props: Props) {
                   width: 120,
                   resizable: true,
                   align: "center",
+                  hidden: !displayedColumns.includes("generalInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -866,6 +1318,7 @@ export function VendorsTable(props: Props) {
                   width: 200,
                   resizable: true,
                   header: "Project Information",
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -883,6 +1336,7 @@ export function VendorsTable(props: Props) {
                   title: "Country Share %",
                   width: 150,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -900,6 +1354,7 @@ export function VendorsTable(props: Props) {
                   title: "Country Budget Contribution (EUR)",
                   width: 250,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -917,6 +1372,7 @@ export function VendorsTable(props: Props) {
                   title: "Country Cost Estimation (EUR)",
                   width: 250,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -934,6 +1390,7 @@ export function VendorsTable(props: Props) {
                   title: "Manufacturer Number",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -951,6 +1408,7 @@ export function VendorsTable(props: Props) {
                   title: "Vendor Name",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -968,6 +1426,7 @@ export function VendorsTable(props: Props) {
                   title: "SAP Debitor Number",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -985,6 +1444,7 @@ export function VendorsTable(props: Props) {
                   title: "SAP Creditor Number",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1002,6 +1462,7 @@ export function VendorsTable(props: Props) {
                   title: "MDF Level",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1019,6 +1480,7 @@ export function VendorsTable(props: Props) {
                   title: "Budget Currency",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"dropdown"}
@@ -1036,6 +1498,7 @@ export function VendorsTable(props: Props) {
                   title: "Estimated Income (Budget Currency)",
                   width: 300,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1053,6 +1516,7 @@ export function VendorsTable(props: Props) {
                   title: "Estimated Costs (Budget Currency)",
                   width: 250,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1070,6 +1534,7 @@ export function VendorsTable(props: Props) {
                   title: "Estimated Result (Budget Currency)",
                   width: 250,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1087,6 +1552,7 @@ export function VendorsTable(props: Props) {
                   title: "Estimated Income (EUR)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1104,6 +1570,7 @@ export function VendorsTable(props: Props) {
                   title: "Estimated Costs (EUR)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1121,6 +1588,7 @@ export function VendorsTable(props: Props) {
                   title: "Estimated Result (EUR)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1138,6 +1606,7 @@ export function VendorsTable(props: Props) {
                   title: "Vendor Share %",
                   width: 150,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1155,6 +1624,7 @@ export function VendorsTable(props: Props) {
                   title: "Business Unit",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1172,6 +1642,7 @@ export function VendorsTable(props: Props) {
                   title: "PH1",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"dropdown"}
@@ -1189,6 +1660,7 @@ export function VendorsTable(props: Props) {
                   title: "Campaign Channel",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"dropdown"}
@@ -1206,6 +1678,7 @@ export function VendorsTable(props: Props) {
                   title: "Target Audience",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"dropdown"}
@@ -1223,6 +1696,7 @@ export function VendorsTable(props: Props) {
                   title: "Marketing Responsible",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1240,6 +1714,7 @@ export function VendorsTable(props: Props) {
                   title: "Production Project Manager",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1257,6 +1732,7 @@ export function VendorsTable(props: Props) {
                   title: "Project Approver",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("projectInformation"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1275,6 +1751,7 @@ export function VendorsTable(props: Props) {
                   width: 250,
                   resizable: true,
                   header: "Purchase Order",
+                  hidden: !displayedColumns.includes("purchaseOrder"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1292,6 +1769,7 @@ export function VendorsTable(props: Props) {
                   title: "Net Value of Service Ordered (LC)",
                   width: 250,
                   resizable: true,
+                  hidden: !displayedColumns.includes("purchaseOrder"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1309,6 +1787,7 @@ export function VendorsTable(props: Props) {
                   title: "Local Currency",
                   width: 150,
                   resizable: true,
+                  hidden: !displayedColumns.includes("purchaseOrder"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1326,6 +1805,7 @@ export function VendorsTable(props: Props) {
                   title: "Net Value (Purchase Order Currency)",
                   width: 300,
                   resizable: true,
+                  hidden: !displayedColumns.includes("purchaseOrder"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1343,6 +1823,7 @@ export function VendorsTable(props: Props) {
                   title: "Purchase Order Currency",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("purchaseOrder"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1360,6 +1841,7 @@ export function VendorsTable(props: Props) {
                   title: "Net Value (EUR)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("purchaseOrder"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1377,6 +1859,7 @@ export function VendorsTable(props: Props) {
                   title: "Purchase Order Status",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("purchaseOrder"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1395,6 +1878,7 @@ export function VendorsTable(props: Props) {
                   width: 200,
                   resizable: true,
                   header: "Cost Actuals",
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1412,6 +1896,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Type",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1429,6 +1914,7 @@ export function VendorsTable(props: Props) {
                   title: "Posting Date",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1446,6 +1932,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Date",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1463,6 +1950,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Number",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1480,6 +1968,7 @@ export function VendorsTable(props: Props) {
                   title: "Invoice Number",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1497,6 +1986,7 @@ export function VendorsTable(props: Props) {
                   title: "Cost Account",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1514,6 +2004,7 @@ export function VendorsTable(props: Props) {
                   title: "Name 1",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1531,6 +2022,7 @@ export function VendorsTable(props: Props) {
                   title: "Cost Amount (LC)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1548,6 +2040,7 @@ export function VendorsTable(props: Props) {
                   title: "Cost Amount (DC)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1565,6 +2058,7 @@ export function VendorsTable(props: Props) {
                   title: "DC",
                   width: 150,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1582,6 +2076,7 @@ export function VendorsTable(props: Props) {
                   title: "Cost Status",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1600,6 +2095,7 @@ export function VendorsTable(props: Props) {
                   width: 200,
                   resizable: true,
                   header: "Sales Actuals",
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1617,6 +2113,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Type",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1634,6 +2131,7 @@ export function VendorsTable(props: Props) {
                   title: "Posting Date",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1651,6 +2149,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Date",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1668,6 +2167,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Number",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1685,6 +2185,7 @@ export function VendorsTable(props: Props) {
                   title: "Invoice Number",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1702,6 +2203,7 @@ export function VendorsTable(props: Props) {
                   title: "Income Account",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1719,6 +2221,7 @@ export function VendorsTable(props: Props) {
                   title: "Name 1",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1736,6 +2239,7 @@ export function VendorsTable(props: Props) {
                   title: "Income Amount (LC)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1753,6 +2257,7 @@ export function VendorsTable(props: Props) {
                   title: "Income Amount (DC)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1770,6 +2275,7 @@ export function VendorsTable(props: Props) {
                   title: "Income Status",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1787,6 +2293,7 @@ export function VendorsTable(props: Props) {
                   title: "Actual Result (LC)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("salesActuals"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1805,6 +2312,7 @@ export function VendorsTable(props: Props) {
                   width: 200,
                   resizable: true,
                   header: "Actuals in EUR",
+                  hidden: !displayedColumns.includes("actualsInEur"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1822,6 +2330,7 @@ export function VendorsTable(props: Props) {
                   title: "Cost Amount (EUR)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("actualsInEur"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1839,6 +2348,7 @@ export function VendorsTable(props: Props) {
                   title: "Actual Result (EUR)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("actualsInEur"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1857,6 +2367,7 @@ export function VendorsTable(props: Props) {
                   width: 200,
                   resizable: true,
                   header: "Cost GL Postings",
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1874,6 +2385,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Type",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1891,6 +2403,7 @@ export function VendorsTable(props: Props) {
                   title: "Posting Date",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1908,6 +2421,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Date",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1925,6 +2439,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Number",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1942,6 +2457,7 @@ export function VendorsTable(props: Props) {
                   title: "Cost Account",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1959,6 +2475,7 @@ export function VendorsTable(props: Props) {
                   title: "Cost Amount (LC)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1976,6 +2493,7 @@ export function VendorsTable(props: Props) {
                   title: "Cost Amount (DC)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -1993,6 +2511,7 @@ export function VendorsTable(props: Props) {
                   title: "DC",
                   width: 150,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2010,6 +2529,7 @@ export function VendorsTable(props: Props) {
                   title: "Cost Amount (EUR)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("costGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2028,6 +2548,7 @@ export function VendorsTable(props: Props) {
                   width: 200,
                   resizable: true,
                   header: "Income GL Postings",
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2045,6 +2566,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Type",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2062,6 +2584,7 @@ export function VendorsTable(props: Props) {
                   title: "Posting Date",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2079,6 +2602,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Date",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2096,6 +2620,7 @@ export function VendorsTable(props: Props) {
                   title: "Document Number",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2113,6 +2638,7 @@ export function VendorsTable(props: Props) {
                   title: "Income Account",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2130,6 +2656,7 @@ export function VendorsTable(props: Props) {
                   title: "Income Amount (LC)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2147,6 +2674,7 @@ export function VendorsTable(props: Props) {
                   title: "Income Amount (DC)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2164,6 +2692,7 @@ export function VendorsTable(props: Props) {
                   title: "DC",
                   width: 150,
                   resizable: true,
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2181,6 +2710,7 @@ export function VendorsTable(props: Props) {
                   title: "Income Amount (EUR)",
                   width: 200,
                   resizable: true,
+                  hidden: !displayedColumns.includes("incomeGlPostings"),
                   cellRenderer: (props) => (
                     <Cell
                       type={"text"}
@@ -2281,7 +2811,7 @@ export function VendorsTable(props: Props) {
               rowHeight={55}
               overlayRenderer={
                 <div>
-                  <DebugOverlay>
+                  <DebugOverlay hidden={true}>
                     <HStack spacing={0}>
                       <Text w="120%" float="left">
                         Requested Heap Size:
@@ -2380,8 +2910,6 @@ export function VendorsTable(props: Props) {
                   </DebugOverlay>
                 </div>
               }
-              //   components={{ TableCell: TableCelll }}
-              //   estimatedRowHeight={50}
             ></BaseTable>
           )}
         </AutoResizer>
