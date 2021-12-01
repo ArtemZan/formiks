@@ -72,17 +72,6 @@ const DebugOverlay = styled.div`
   color: white;
 `;
 
-function getFormattedDate(date: any) {
-  if (date === null) {
-    return "";
-  }
-  let year = date.getFullYear();
-  let month = (1 + date.getMonth()).toString().padStart(2, "0");
-  let day = date.getDate().toString().padStart(2, "0");
-
-  return month + "/" + day + "/" + year;
-}
-
 // Use React.Component because of https://github.com/lovasoa/react-contenteditable/issues/161
 class Cell extends React.Component<
   {
@@ -155,6 +144,9 @@ class Cell extends React.Component<
   render() {
     return (
       <div
+        style={{
+          textAlign: this.props.type === "button" ? "center" : "inherit",
+        }}
         className={
           this.state.editing
             ? "vendors-table-cell active"
@@ -231,7 +223,7 @@ class Cell extends React.Component<
             // showTimeInput
             isClearable
             customInput={<input className="datepicker-input"></input>}
-            selected={this.state.cellValue}
+            // selected={this.state.cellValue}
             onChange={(date) => {
               this.setState({ cellValue: date, editing: false });
               this.props.onUpdate(
@@ -554,8 +546,11 @@ export function VendorsTable(props: Props) {
             filter.selectedValues !== null &&
             filter.selectedValues.length > 0
           ) {
-            // filter
-            var value = _.get(submission, filter.columnValue); // submission.data[filter.column];
+            var value = _.get(submission, filter.columnValue);
+            if (value === undefined) {
+              valid = false;
+              return;
+            }
             switch (filter.type) {
               case "text":
                 switch (filter.filter) {
@@ -587,35 +582,41 @@ export function VendorsTable(props: Props) {
               case "dropdown":
               case "multiple-dropdown":
                 switch (filter.filter) {
-                  case "exact":
+                  case "includes":
+                    var exists = false;
                     filter.selectedValues.map((filterValue) => {
-                      var exists = false;
-                      value.map((v: any) => {
-                        if (v.toString() === filterValue) {
-                          exists = true;
-                        }
-                      });
-                      if (!exists) {
-                        valid = false;
+                      if (filterValue.toString() === value) {
+                        exists = true;
                       }
                     });
+                    if (!exists) {
+                      valid = false;
+                    }
                     break;
-                  case "includes":
-                    valid = filter.selectedValues.some((fv) =>
-                      value.includes(fv)
-                    );
+                  case "exact":
+                    valid = false;
                     break;
                 }
                 break;
               case "date":
+                var v = new Date(value).setHours(0, 0, 0, 0);
                 if (
+                  v !== null &&
                   filter.filter === "range" &&
-                  filter.selectedValues.length === 2
+                  filter.selectedValues.length === 2 &&
+                  filter.selectedValues[0] !== null &&
+                  filter.selectedValues[1] !== null
                 ) {
-                  var v = new Date(value);
                   valid =
-                    v >= filter.selectedValues[0] &&
-                    v <= filter.selectedValues[1];
+                    v >= filter.selectedValues[0].setHours(0, 0, 0, 0) &&
+                    v <= filter.selectedValues[1].setHours(0, 0, 0, 0);
+                } else if (
+                  v !== null &&
+                  filter.selectedValues[0] !== null &&
+                  filter.filter === "exact" &&
+                  filter.selectedValues.length === 1
+                ) {
+                  valid = v === filter.selectedValues[0].setHours(0, 0, 0, 0);
                 }
                 break;
             }
@@ -626,6 +627,8 @@ export function VendorsTable(props: Props) {
         }
       });
       setFilteredSubmissions(filtered);
+    } else {
+      setFilteredSubmissions([...submissions]);
     }
   }, [filters, submissions]);
 
@@ -2374,7 +2377,7 @@ export function VendorsTable(props: Props) {
             rowIndex={props.rowIndex}
             columnKey={props.column.dataKey}
             rowData={props.rowData}
-            initialValue={"submit"}
+            initialValue={"create"}
           />
         ) : null,
     },
@@ -2674,22 +2677,50 @@ export function VendorsTable(props: Props) {
                           paddingTop: "2px",
                         }}
                         onChange={(value) => {
+                          console.log(value);
                           var temp = [...filters];
                           temp[index].selectedValues = value;
                           setFilters(temp);
                         }}
-                        data={filter.selectedValues}
+                        data={loadOptions(filter.columnValue)}
                         block
                       />
                     );
                     break;
                   case "date":
-                    valuesField = (
-                      <DateRangeInput
-                        allowEditableInputs={true}
-                        displayFormat="dd.MM.yyyy"
-                      />
-                    );
+                    switch (filter.filter) {
+                      case "exact":
+                        valuesField = (
+                          <DateSingleInput
+                            allowEditableInputs={true}
+                            displayFormat="dd.MM.yyyy"
+                            onChange={(value) => {
+                              if (value !== filters[index].selectedValues[0]) {
+                                var temp = [...filters];
+                                temp[index].selectedValues = [value];
+                                setFilters(temp);
+                              }
+                            }}
+                          />
+                        );
+                        break;
+                      case "range":
+                        valuesField = (
+                          <DateRangeInput
+                            allowEditableInputs={true}
+                            displayFormat="dd.MM.yyyy"
+                            onDatesChange={(value) => {
+                              var temp = [...filters];
+                              temp[index].selectedValues = [
+                                value.startDate,
+                                value.endDate,
+                              ];
+                              setFilters(temp);
+                            }}
+                          />
+                        );
+                        break;
+                    }
                 }
 
                 return (
