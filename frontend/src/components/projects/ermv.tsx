@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React from "react";
+import React, { useReducer } from "react";
 import { useEffect, useState } from "react";
 import {
   useColorModeValue,
@@ -107,37 +107,36 @@ export default function CreateBookmark(props: Props) {
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
   const [totalEstimatedCostsEur, setTotalEstimatedCostsEur] = useState("");
 
+  const [render, rerender] = useState(0);
+
   async function fetchDropdowns() {
-    RestAPI.getDropdownValues("619b630a9a5a2bb37a93b23b").then((response) => {
-      PH1 = response.data;
-    });
-    RestAPI.getDropdownValues("619b61419a5a2bb37a93b237").then((response) => {
-      Companies = response.data;
-    });
-    RestAPI.getDropdownValues("619b63429a5a2bb37a93b23d").then((response) => {
-      VendorsNames = response.data;
-    });
-    RestAPI.getDropdownValues("619b62d79a5a2bb37a93b239").then((response) => {
-      CampaignChannel = response.data;
-    });
-    RestAPI.getDropdownValues("619b632c9a5a2bb37a93b23c").then((response) => {
-      TargetAudience = response.data;
-    });
-    RestAPI.getDropdownValues("619b62959a5a2bb37a93b238").then((response) => {
-      Budget = response.data;
-    });
-    RestAPI.getDropdownValues("619b62f29a5a2bb37a93b23a").then((response) => {
-      ExchangeRates = response.data;
-    });
-    RestAPI.getDropdownValues("619b66defe27d06ad17d75ac").then((response) => {
-      FiscalQuarter = response.data;
-    });
-    RestAPI.getDropdownValues("619b6754fe27d06ad17d75ad").then((response) => {
-      Year = response.data;
-    });
-    RestAPI.getDropdownValues("619b6799fe27d06ad17d75ae").then((response) => {
-      ProjectStartQuarter = response.data;
-    });
+    var dropdownsIds: string[] = [
+      "619b630a9a5a2bb37a93b23b",
+      "619b61419a5a2bb37a93b237",
+      "619b63429a5a2bb37a93b23d",
+      "619b62d79a5a2bb37a93b239",
+      "619b632c9a5a2bb37a93b23c",
+      "619b62959a5a2bb37a93b238",
+      "619b62f29a5a2bb37a93b23a",
+      "619b66defe27d06ad17d75ac",
+      "619b6754fe27d06ad17d75ad",
+      "619b6799fe27d06ad17d75ae",
+    ];
+    var responses = await Promise.all(
+      dropdownsIds.map((di) => {
+        return RestAPI.getDropdownValues(di);
+      })
+    );
+    PH1 = responses[0].data;
+    Companies = responses[1].data;
+    VendorsNames = responses[2].data;
+    CampaignChannel = responses[3].data;
+    TargetAudience = responses[4].data;
+    Budget = responses[5].data;
+    ExchangeRates = responses[6].data;
+    FiscalQuarter = responses[7].data;
+    Year = responses[8].data;
+    ProjectStartQuarter = responses[9].data;
   }
 
   useEffect(() => {
@@ -146,8 +145,9 @@ export default function CreateBookmark(props: Props) {
         setRequestorsName(response.mail);
       }
     });
-    fetchDropdowns();
+    fetchDropdowns().then(() => forceUpdate());
   }, []);
+  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
     var data: any = [];
