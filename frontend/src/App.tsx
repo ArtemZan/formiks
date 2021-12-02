@@ -22,6 +22,7 @@ import DropdownExplorer from "./pages/Dropdowns/Explorer";
 import DropdownEditor from "./pages/Dropdowns/Editor";
 import { RestAPI } from "./api/rest";
 import { ToastContainer, Slide } from "react-toastify";
+import SVendorsTable from "./pages/Submissions/SVendors";
 
 type AppProps = {
   pca: IPublicClientApplication;
@@ -96,6 +97,11 @@ function App({ pca }: AppProps) {
             exact
             path="/vendors"
             render={(props) => <VendorsTable {...props} />}
+          />
+          <Route
+            exact
+            path="/vendors/new"
+            render={(props) => <SVendorsTable {...props} />}
           />
           <Route
             exact
