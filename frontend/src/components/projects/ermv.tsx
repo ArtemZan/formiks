@@ -186,6 +186,7 @@ export default function CreateBookmark(props: Props) {
         projectNumber: "",
         contribution: "",
         estimatedCosts: "",
+        share: "",
       });
     });
     setCostBreakdown(data);
@@ -1409,6 +1410,21 @@ export default function CreateBookmark(props: Props) {
                 )}
               </Cell>
             </Column>
+            <Column flexGrow={1}>
+              <HeaderCell>Share %</HeaderCell>
+              <Cell dataKey="share">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.share}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].share = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
             <Column flexGrow={2}>
               <HeaderCell>Budget Contribution</HeaderCell>
               <Cell dataKey="contribution">
@@ -1533,10 +1549,21 @@ export default function CreateBookmark(props: Props) {
                 manufacturerNumber: vendor.manufacturer,
                 bu: vendor.bu,
                 ph1: vendor.ph.label,
+                budgetCurrency: vendor.budgetCurrency.label,
+                estimatedIncomeEur: parseFloat(vendor.budgetAmount),
+                estimatedIncomeBC: parseFloat(vendor.localBudget),
+                // cbbudgetEur: parseFloat(vendor.eurBudget),
+                vendorShare: parseFloat(vendor.share),
+                estimatedCostsBC: parseFloat(vendor.estimatedCostsCC),
+                // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+                estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
+                estimatedResultBC: parseFloat(vendor.netProfitTargetVC),
+                // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+                estimatedResultEur: parseFloat(vendor.netProfitTargetEUR),
               },
             });
           });
-          costBreakdown.map((vendor: any) => {
+          costBreakdown.map((company: any) => {
             children.push({
               project: projectId,
               title: "",
@@ -1546,24 +1573,14 @@ export default function CreateBookmark(props: Props) {
               status: "New",
               author: requestorsName,
               data: {
-                companyName: vendor.companyName,
-                companyCode: vendor.companyCode,
-                country: vendor.country,
-                cbcontactEmail: vendor.contactEmail,
-                projectNumber: vendor.projectNumber,
-                countryBudgetContributionEur: vendor.contribution,
-                countryCostEstimationEur: vendor.estimatedCosts,
-                budgetCurrency: vendor.budgetCurrency.label,
-                cbbudgetAmount: parseFloat(vendor.budgetAmount),
-                cbbudgetLC: parseFloat(vendor.localBudget),
-                cbbudgetEur: parseFloat(vendor.eurBudget),
-                countryShare: parseFloat(vendor.share),
-                cbestimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
-                cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-                estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
-                cbnetProfitTargetVC: parseFloat(vendor.netProfitTargetVC),
-                cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
-                estimatedResultEur: parseFloat(vendor.netProfitTargetEUR),
+                companyName: company.companyName,
+                companyCode: company.companyCode,
+                country: company.country,
+                productionProjectManager: company.contactEmail,
+                projectNumber: company.projectNumber,
+                countryShare: parseFloat(company.share),
+                countryBudgetContributionEur: company.contribution,
+                countryCostEstimationEur: company.estimatedCosts,
               },
             });
           });

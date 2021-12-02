@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Switch, Route, useHistory } from "react-router-dom";
+import { Switch, Route, useHistory, Redirect } from "react-router-dom";
 
 import { MsalProvider } from "@azure/msal-react";
 import { IPublicClientApplication } from "@azure/msal-browser";
@@ -56,7 +56,12 @@ function App({ pca }: AppProps) {
       />
       <Switch>
         <Layout>
-          <Route exact path="/" component={Dashboard} />
+          {/* <Route exact path="/" component={Dashboard} /> */}
+          <Route
+            exact
+            path="/"
+            render={(props) => <ProjectExplorer isAdmin={isAdmin} {...props} />}
+          />
           <Route path="/profile">
             <Profile />
           </Route>

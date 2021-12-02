@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"go.kuoruan.net/v8go-polyfills/fetch"
 	v8 "rogchap.com/v8go"
 )
 
@@ -19,6 +20,11 @@ func CreateContext(iso *v8.Isolate) (*v8.Context, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+	global, _ := v8.NewObjectTemplate(isolate)
+
+	if err := fetch.InjectTo(isolate, global); err != nil {
+		return nil, err
 	}
 	return v8.NewContext(isolate)
 }

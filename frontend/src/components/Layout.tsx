@@ -132,7 +132,7 @@ function Layout(props: any) {
               color={useColorModeValue("gray.800", "#ABB2BF")}
               cursor="pointer"
               onClick={() => {
-                history.push("/");
+                history.push("/projects");
               }}
               fontSize="lg"
             >
@@ -456,10 +456,6 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Dashboard",
-    href: "/",
-  },
-  {
     label: "Projects",
     children: [
       {
@@ -516,10 +512,6 @@ const NAV_ITEMS: Array<NavItem> = [
   },
 ];
 const GUEST_NAV_ITEMS: Array<NavItem> = [
-  {
-    label: "Dashboard",
-    href: "/",
-  },
   {
     label: "Projects",
     href: "/projects",

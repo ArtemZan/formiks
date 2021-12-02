@@ -70,9 +70,15 @@ export function Explorer(props: Props) {
                       onContextMenu={(e) => {
                         e.preventDefault();
                         console.log(bookmark.id);
-                        // FIXME: delete bookmark
+                        if (bookmark.id) {
+                          RestAPI.deleteBookmark(bookmark.id);
+                          setBookmarks(
+                            bookmarks.filter((b) => b.id !== bookmark.id)
+                          );
+                        }
                       }}
                       onClick={() => {
+                        // FIXME: filter projects
                         console.log(bookmark.tags);
                       }}
                     >
