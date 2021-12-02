@@ -160,6 +160,17 @@ export default function CreateBookmark(props: Props) {
         manufacturer: vendor.value.hersteller,
         bu: vendor.value.bu,
         ph: { label: "", value: "" },
+        budgetCurrency: { label: "", value: "" },
+        budgetAmount: "",
+        localBudget: "",
+        eurBudget: "",
+        share: "",
+        estimatedCostsCC: "",
+        estimatedCostsLC: "",
+        estimatedCostsEUR: "",
+        netProfitTargetVC: "",
+        netProfitTargetLC: "",
+        netProfitTargetEUR: "",
       });
     });
     setVendors(data);
@@ -175,17 +186,6 @@ export default function CreateBookmark(props: Props) {
         projectNumber: "",
         contribution: "",
         estimatedCosts: "",
-        budgetCurrency: { label: "", value: "" },
-        budgetAmount: "",
-        localBudget: "",
-        eurBudget: "",
-        share: "",
-        estimatedCostsCC: "",
-        estimatedCostsLC: "",
-        estimatedCostsEUR: "",
-        netProfitTargetVC: "",
-        netProfitTargetLC: "",
-        netProfitTargetEUR: "",
       });
     });
     setCostBreakdown(data);
@@ -261,7 +261,7 @@ export default function CreateBookmark(props: Props) {
     var netProfitEur = parseFloat(netProfitTarget);
     var netProfiLC = parseFloat(netProfitTargetBudgetCurrency);
 
-    var temp = [...costBreakdown];
+    var temp = [...vendors];
     temp.map((row: any) => {
       var eb = parseFloat(row.eurBudget);
       var lb = parseFloat(row.localBudget);
@@ -305,11 +305,11 @@ export default function CreateBookmark(props: Props) {
     });
     setTotalVendorBudgetInEUR(totalBudgetEur);
     setTotalVendorBudgetInLC(totalBudgetLC);
-    if (!isEqual(costBreakdown, temp)) {
-      setCostBreakdown(temp);
+    if (!isEqual(vendors, temp)) {
+      setVendors(temp);
     }
   }, [
-    costBreakdown,
+    vendors,
     totalEstimatedCostsCC,
     totalEstimatedCostsLC,
     totalEstimatedCostsEur,
@@ -322,6 +322,7 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">Requestor`s Company Name</Text>
           <Select
+            menuPortalTarget={document.body}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -411,6 +412,7 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">Target Audience</Text>
           <Select
+            menuPortalTarget={document.body}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -451,6 +453,7 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">Campaign Channel</Text>
           <Select
+            menuPortalTarget={document.body}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -488,278 +491,11 @@ export default function CreateBookmark(props: Props) {
             options={CampaignChannel}
           />
         </Box>
-        <Box w="100%">
-          <Text mb="8px">Vendor`s Names</Text>
-          <Select
-            isMulti
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 6,
-              colors: {
-                ...theme.colors,
-                primary: "#3082CE",
-              },
-            })}
-            value={vendorsNames}
-            placeholder=""
-            onChange={(value: any) => {
-              setVendorsNames(value);
-            }}
-            classNamePrefix="select"
-            isClearable={false}
-            name="vendorsName"
-            options={VendorsNames}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Vendors (new)</Text>
-          <Table
-            shouldUpdateScroll={false}
-            hover={false}
-            autoHeight
-            rowHeight={65}
-            data={costBreakdown}
-          >
-            <Column width={200} resizable>
-              <HeaderCell>Country</HeaderCell>
-              <Cell dataKey="country">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.companyName}
-                    onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index].companyName = event.target.value;
-                      setCostBreakdown(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Share %</HeaderCell>
-              <Cell dataKey="share">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.creditor}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].creditor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
 
-            <Column width={200} resizable>
-              <HeaderCell>Budget Contribution (EUR)</HeaderCell>
-              <Cell dataKey="debitor">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.debitor}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].debitor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={200} resizable>
-              <HeaderCell>Cost Estimation (EUR)</HeaderCell>
-              <Cell dataKey="manufacturer">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.manufacturer}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].manufacturer = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-          </Table>
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Vendors</Text>
-          <Table
-            shouldUpdateScroll={false}
-            hover={false}
-            autoHeight
-            rowHeight={65}
-            data={vendors}
-          >
-            <Column flexGrow={2}>
-              <HeaderCell>Vendor</HeaderCell>
-              <Cell dataKey="vendor">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.vendor}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].vendor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column flexGrow={1}>
-              <HeaderCell>ALSO Project Manager</HeaderCell>
-              <Cell dataKey="projectManager">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.projectManager}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].projectManager = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column flexGrow={1}>
-              <HeaderCell>Creditor</HeaderCell>
-              <Cell dataKey="creditor">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.creditor}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].creditor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column flexGrow={1}>
-              <HeaderCell>Debitor</HeaderCell>
-              <Cell dataKey="debitor">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.debitor}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].debitor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column flexGrow={1}>
-              <HeaderCell>Manufacturer</HeaderCell>
-              <Cell dataKey="manufacturer">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.manufacturer}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].manufacturer = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column flexGrow={2}>
-              <HeaderCell>Business Unit</HeaderCell>
-              <Cell dataKey="bu">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.bu}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].bu = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column flexGrow={1}>
-              <HeaderCell>PH1</HeaderCell>
-              <Cell dataKey="ph">
-                {(rowData, index) => (
-                  <Select
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        zIndex: 1000000000,
-                      }),
-                      singleValue: (provided) => ({
-                        ...provided,
-                        color: "#718196",
-                      }),
-                      control: (base, state) => ({
-                        ...base,
-                        minHeight: 40,
-                        border: "1px solid #E2E8F0",
-                        transition: "0.3s",
-                        "&:hover": {
-                          border: "1px solid #CBD5E0",
-                        },
-                      }),
-                    }}
-                    theme={(theme) => ({
-                      ...theme,
-                      borderRadius: 6,
-                      colors: {
-                        ...theme.colors,
-                        primary: "#3082CE",
-                      },
-                    })}
-                    menuPortalTarget={document.body}
-                    value={rowData.ph}
-                    onChange={(value) => {
-                      var temp = [...vendors];
-                      temp[index].ph = value;
-                      setVendors(temp);
-                    }}
-                    placeholder=""
-                    classNamePrefix="select"
-                    isClearable={false}
-                    name="PH1"
-                    options={PH1}
-                  />
-                )}
-              </Cell>
-            </Column>
-          </Table>
-        </Box>
         <Box w="100%">
           <Text mb="8px">Year</Text>
           <Select
+            menuPortalTarget={document.body}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -801,6 +537,7 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">Campaign/Project Start Quarter (ALSO Quarter)</Text>
           <Select
+            menuPortalTarget={document.body}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -864,6 +601,7 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">ALSO Project Approver</Text>
           <Select
+            menuPortalTarget={document.body}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -913,6 +651,7 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">Manufacturer`s Fiscal Quarter</Text>
           <Select
+            menuPortalTarget={document.body}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -990,6 +729,7 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">Budget Source</Text>
           <Select
+            menuPortalTarget={document.body}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -1042,6 +782,7 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">Campaign Budget`s Currency / Campaign Currency</Text>
           <Select
+            menuPortalTarget={document.body}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -1190,8 +931,9 @@ export default function CreateBookmark(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Companies Participating</Text>
+          <Text mb="8px">Vendor`s Names</Text>
           <Select
+            // menuPortalTarget={document.body}
             isMulti
             styles={{
               menu: (provided) => ({
@@ -1220,84 +962,37 @@ export default function CreateBookmark(props: Props) {
                 primary: "#3082CE",
               },
             })}
-            value={companiesParticipating}
+            value={vendorsNames}
             placeholder=""
             onChange={(value: any) => {
-              setCompaniesParticipating(value);
+              setVendorsNames(value);
             }}
             classNamePrefix="select"
             isClearable={false}
-            name="companiesParticipating"
-            options={Companies}
+            name="vendorsName"
+            options={VendorsNames}
           />
         </Box>
+
         <Box w="100%">
-          <Text mb="8px">Cost Breakdown</Text>
+          <Text mb="8px">Vendors</Text>
           <Table
             shouldUpdateScroll={false}
             hover={false}
             autoHeight
             rowHeight={65}
-            data={costBreakdown}
+            data={vendors}
           >
-            <Column width={300} resizable>
-              <HeaderCell>Company Name</HeaderCell>
-              <Cell dataKey="companyName">
+            <Column width={200} resizable>
+              <HeaderCell>Vendor</HeaderCell>
+              <Cell dataKey="vendor">
                 {(rowData, index) => (
                   <Input
-                    value={rowData.companyName}
+                    value={rowData.vendor}
                     onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index].companyName = event.target.value;
-                      setCostBreakdown(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={150} resizable>
-              <HeaderCell>Company Code</HeaderCell>
-              <Cell dataKey="companyCode">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.companyCode}
-                    onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index].companyCode = event.target.value;
-                      setCostBreakdown(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={100} resizable>
-              <HeaderCell>Country</HeaderCell>
-              <Cell dataKey="country">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.country}
-                    onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index].country = event.target.value;
-                      setCostBreakdown(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={250} resizable>
-              <HeaderCell>Contact Person's Email</HeaderCell>
-              <Cell dataKey="contactEmail">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.contactEmail}
-                    onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index].contactEmail = event.target.value;
-                      setCostBreakdown(temp);
+                      var temp = [...vendors];
+                      temp[index].vendor = event.target.value;
+                      setVendors(temp);
                     }}
                   />
                 )}
@@ -1305,46 +1000,128 @@ export default function CreateBookmark(props: Props) {
             </Column>
 
             <Column width={200} resizable>
-              <HeaderCell>Local Project Number</HeaderCell>
-              <Cell dataKey="projectNumber">
+              <HeaderCell>ALSO Project Manager</HeaderCell>
+              <Cell dataKey="projectManager">
                 {(rowData, index) => (
                   <Input
-                    value={rowData.projectNumber}
+                    value={rowData.projectManager}
                     onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index].projectNumber = event.target.value;
-                      setCostBreakdown(temp);
+                      var temp = [...vendors];
+                      temp[index].projectManager = event.target.value;
+                      setVendors(temp);
                     }}
                   />
                 )}
               </Cell>
             </Column>
-            <Column width={150} resizable>
-              <HeaderCell>Budget Contribution</HeaderCell>
-              <Cell dataKey="contribution">
+
+            <Column width={200} resizable>
+              <HeaderCell>Creditor</HeaderCell>
+              <Cell dataKey="creditor">
                 {(rowData, index) => (
                   <Input
-                    value={rowData.contribution}
+                    value={rowData.creditor}
                     onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index].contribution = event.target.value;
-                      setCostBreakdown(temp);
+                      var temp = [...vendors];
+                      temp[index].creditor = event.target.value;
+                      setVendors(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+
+            <Column width={200} resizable>
+              <HeaderCell>Debitor</HeaderCell>
+              <Cell dataKey="debitor">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.debitor}
+                    onChange={(event) => {
+                      var temp = [...vendors];
+                      temp[index].debitor = event.target.value;
+                      setVendors(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+
+            <Column width={200} resizable>
+              <HeaderCell>Manufacturer</HeaderCell>
+              <Cell dataKey="manufacturer">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.manufacturer}
+                    onChange={(event) => {
+                      var temp = [...vendors];
+                      temp[index].manufacturer = event.target.value;
+                      setVendors(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+
+            <Column width={200} resizable>
+              <HeaderCell>Business Unit</HeaderCell>
+              <Cell dataKey="bu">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.bu}
+                    onChange={(event) => {
+                      var temp = [...vendors];
+                      temp[index].bu = event.target.value;
+                      setVendors(temp);
                     }}
                   />
                 )}
               </Cell>
             </Column>
             <Column width={200} resizable>
-              <HeaderCell>Total Estimated Costs</HeaderCell>
-              <Cell dataKey="estimatedCosts">
+              <HeaderCell>PH1</HeaderCell>
+              <Cell dataKey="ph">
                 {(rowData, index) => (
-                  <Input
-                    value={rowData.estimatedCosts}
-                    onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index].estimatedCosts = event.target.value;
-                      setCostBreakdown(temp);
+                  <Select
+                    styles={{
+                      menu: (provided) => ({
+                        ...provided,
+                        zIndex: 1000000000,
+                      }),
+                      singleValue: (provided) => ({
+                        ...provided,
+                        color: "#718196",
+                      }),
+                      control: (base, state) => ({
+                        ...base,
+                        minHeight: 40,
+                        border: "1px solid #E2E8F0",
+                        transition: "0.3s",
+                        "&:hover": {
+                          border: "1px solid #CBD5E0",
+                        },
+                      }),
                     }}
+                    theme={(theme) => ({
+                      ...theme,
+                      borderRadius: 6,
+                      colors: {
+                        ...theme.colors,
+                        primary: "#3082CE",
+                      },
+                    })}
+                    menuPortalTarget={document.body}
+                    value={rowData.ph}
+                    onChange={(value) => {
+                      var temp = [...vendors];
+                      temp[index].ph = value;
+                      setVendors(temp);
+                    }}
+                    placeholder=""
+                    classNamePrefix="select"
+                    isClearable={false}
+                    name="PH1"
+                    options={PH1}
                   />
                 )}
               </Cell>
@@ -1384,9 +1161,9 @@ export default function CreateBookmark(props: Props) {
                     menuPortalTarget={document.body}
                     value={rowData.budgetCurrency}
                     onChange={(value) => {
-                      var temp = [...costBreakdown];
+                      var temp = [...vendors];
                       temp[index].budgetCurrency = value;
-                      setCostBreakdown(temp);
+                      setVendors(temp);
                     }}
                     placeholder=""
                     classNamePrefix="select"
@@ -1404,9 +1181,9 @@ export default function CreateBookmark(props: Props) {
                   <Input
                     value={rowData.budgetAmount}
                     onChange={(event) => {
-                      var temp = [...costBreakdown];
+                      var temp = [...vendors];
                       temp[index].budgetAmount = event.target.value;
-                      setCostBreakdown(temp);
+                      setVendors(temp);
                     }}
                   />
                 )}
@@ -1419,9 +1196,9 @@ export default function CreateBookmark(props: Props) {
                   <Input
                     value={rowData.localBudget}
                     onChange={(event) => {
-                      var temp = [...costBreakdown];
+                      var temp = [...vendors];
                       temp[index].localBudget = event.target.value;
-                      setCostBreakdown(temp);
+                      setVendors(temp);
                     }}
                   />
                 )}
@@ -1434,9 +1211,9 @@ export default function CreateBookmark(props: Props) {
                   <Input
                     value={rowData.eurBudget}
                     onChange={(event) => {
-                      var temp = [...costBreakdown];
+                      var temp = [...vendors];
                       temp[index].eurBudget = event.target.value;
-                      setCostBreakdown(temp);
+                      setVendors(temp);
                     }}
                   />
                 )}
@@ -1495,6 +1272,170 @@ export default function CreateBookmark(props: Props) {
               <Cell dataKey="netProfitTargetEUR">
                 {(rowData, index) => (
                   <Input disabled defaultValue={rowData.netProfitTargetEUR} />
+                )}
+              </Cell>
+            </Column>
+          </Table>
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Companies Participating</Text>
+          <Select
+            menuPortalTarget={document.body}
+            isMulti
+            styles={{
+              menu: (provided) => ({
+                ...provided,
+                zIndex: 1000000,
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: "#718196",
+              }),
+              control: (base, state) => ({
+                ...base,
+                minHeight: 40,
+                border: "1px solid #E2E8F0",
+                transition: "0.3s",
+                "&:hover": {
+                  border: "1px solid #CBD5E0",
+                },
+              }),
+            }}
+            theme={(theme) => ({
+              ...theme,
+              borderRadius: 6,
+              colors: {
+                ...theme.colors,
+                primary: "#3082CE",
+              },
+            })}
+            value={companiesParticipating}
+            placeholder=""
+            onChange={(value: any) => {
+              setCompaniesParticipating(value);
+            }}
+            classNamePrefix="select"
+            isClearable={false}
+            name="companiesParticipating"
+            options={Companies}
+          />
+        </Box>
+
+        <Box w="100%">
+          <Text mb="8px">Cost Breakdown</Text>
+          <Table
+            shouldUpdateScroll={false}
+            hover={false}
+            autoHeight
+            rowHeight={65}
+            data={costBreakdown}
+          >
+            <Column flexGrow={2}>
+              <HeaderCell>Company Name</HeaderCell>
+              <Cell dataKey="companyName">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.companyName}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].companyName = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+
+            <Column flexGrow={1}>
+              <HeaderCell>Company Code</HeaderCell>
+              <Cell dataKey="companyCode">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.companyCode}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].companyCode = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+
+            <Column flexGrow={1}>
+              <HeaderCell>Country</HeaderCell>
+              <Cell dataKey="country">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.country}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].country = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+
+            <Column flexGrow={2}>
+              <HeaderCell>Contact Person's Email</HeaderCell>
+              <Cell dataKey="contactEmail">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.contactEmail}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].contactEmail = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+
+            <Column flexGrow={2}>
+              <HeaderCell>Local Project Number</HeaderCell>
+              <Cell dataKey="projectNumber">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.projectNumber}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].projectNumber = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+            <Column flexGrow={2}>
+              <HeaderCell>Budget Contribution</HeaderCell>
+              <Cell dataKey="contribution">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.contribution}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].contribution = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+            <Column flexGrow={2}>
+              <HeaderCell>Total Estimated Costs</HeaderCell>
+              <Cell dataKey="estimatedCosts">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.estimatedCosts}
+                    onChange={(event) => {
+                      var temp = [...costBreakdown];
+                      temp[index].estimatedCosts = event.target.value;
+                      setCostBreakdown(temp);
+                    }}
+                  />
                 )}
               </Cell>
             </Column>

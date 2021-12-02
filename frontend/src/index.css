@@ -283,3 +283,7 @@ button[name="data[submit]"]:hover {
   background-color: #21252a !important;
   border: 1px solid #3a414b;
 } */
+
+.rs-table-row-header {
+  z-index: 100 !important;
+}
