@@ -14,24 +14,6 @@ export function PurchaseOrderTable(gprops: any) {
       className: "expand",
     },
     {
-      key: "data.country",
-      dataKey: "data.country",
-      title: "Country",
-      width: 200,
-      resizable: true,
-      header: "Project Information",
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          onUpdate={gprops.handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
       key: "data.purchaseOrderServiceProvider",
       dataKey: "data.purchaseOrderServiceProvider",
       title: "Purchase Order Service Provider",

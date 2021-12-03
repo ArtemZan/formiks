@@ -475,15 +475,15 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Submissions",
     children: [
       {
+        label: "Vendors Viewer (concept)",
+        subLabel: "View and edit vendors with multiple tables",
+        href: "/vendors/new",
+      },
+      {
         label: "Vendors Viewer",
         subLabel: "View and edit vendors with table view",
         href: "/vendors",
       },
-      // {
-      //   label: "Classic Viewer",
-      //   subLabel: "Default submission explorer and viewer",
-      //   href: "/submissions",
-      // },
       {
         label: "Table Viewer",
         subLabel: "Filter and sort submissions with table view",
@@ -515,6 +515,26 @@ const GUEST_NAV_ITEMS: Array<NavItem> = [
   {
     label: "Projects",
     href: "/projects",
+  },
+  {
+    label: "Submissions",
+    children: [
+      {
+        label: "Vendors Viewer (concept)",
+        subLabel: "View and edit vendors with multiple tables",
+        href: "/vendors/new",
+      },
+      {
+        label: "Vendors Viewer",
+        subLabel: "View and edit vendors with table view",
+        href: "/vendors",
+      },
+      {
+        label: "Table Viewer",
+        subLabel: "Filter and sort submissions with table view",
+        href: "/submissions",
+      },
+    ],
   },
   {
     label: "Documentation",

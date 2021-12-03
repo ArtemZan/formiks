@@ -544,7 +544,7 @@ export function SVendorsTable(props: Props) {
           </TabPanels>
         </Tabs>
       </Box>
-      <Box
+      {/* <Box
         shadow="md"
         color="gray.600"
         backgroundColor="white"
@@ -894,7 +894,7 @@ export function SVendorsTable(props: Props) {
             </Box>
           </Box>
         </VStack>
-      </Box>
+      </Box> */}
     </div>
   );
 }
