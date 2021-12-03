@@ -21,6 +21,11 @@ import {
   Menu,
   MenuList,
   MenuItem,
+  TabList,
+  Tabs,
+  Tab,
+  TabPanels,
+  TabPanel,
 } from "@chakra-ui/react";
 import {
   cloneElement,
@@ -59,315 +64,12 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
 import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
+import EditableTableCell from "../../components/EditableTableCell";
+import { ProjectInformationTable } from "./Tables/ProjectInformation";
+import { PurchaseOrderTable } from "./Tables/PurchaseOrder";
 
 interface Props {
   history: any;
-}
-
-const numRegex = /[0-9]|\./;
-
-// Use React.Component because of https://github.com/lovasoa/react-contenteditable/issues/161
-class Cell extends React.Component<
-  {
-    onUpdate: any;
-    rowIndex: number;
-    rowData: any;
-    columnKey: string | undefined;
-    type: string;
-    initialValue: any;
-    textColor?: any;
-    readonly?: boolean;
-  },
-  {
-    cellValue: any;
-    options: any[];
-    editing: boolean;
-  }
-> {
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      options: [],
-      cellValue: undefined,
-      editing: false,
-    };
-  }
-  componentDidUpdate(prevProps: any) {
-    if (prevProps.initialValue !== this.props.initialValue) {
-      this.setState({ cellValue: this.props.initialValue });
-    }
-  }
-
-  componentDidMount() {
-    var value: any = undefined;
-    switch (this.props.type) {
-      case "text":
-      case "number":
-      case "button":
-        value = this.props.initialValue
-          ? this.props.initialValue.toString()
-          : "";
-        break;
-      case "date":
-        value =
-          this.props.initialValue && this.props.initialValue !== null
-            ? new Date(this.props.initialValue)
-            : null;
-        break;
-      case "dropdown":
-        value =
-          typeof this.props.initialValue === "string"
-            ? { label: this.props.initialValue, value: this.props.initialValue }
-            : { label: "", value: "" };
-        break;
-      case "multiple-dropdown":
-        value = [];
-        if (this.props.initialValue && Array.isArray(this.props.initialValue)) {
-          this.props.initialValue.map((value: any) => {
-            value.push({ label: value, value: value });
-          });
-        }
-        break;
-      case "menu":
-        value = this.props.initialValue
-          ? this.props.initialValue.toString()
-          : "";
-        break;
-      default:
-        break;
-    }
-    this.setState({ cellValue: value });
-  }
-
-  render() {
-    return (
-      <div
-        style={{
-          textAlign: this.props.type === "button" ? "center" : "inherit",
-        }}
-        className={
-          this.state.editing
-            ? "vendors-table-cell active"
-            : `content-preview ${
-                this.props.textColor ? this.props.textColor : ""
-              } ${this.props.readonly ? "readonly" : ""}`
-        }
-        onClick={() => {
-          if (!this.state.editing && !this.props.readonly) {
-            this.setState({ editing: true });
-          }
-        }}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          this.setState({ editing: false });
-        }}
-      >
-        {!this.state.editing ? (
-          this.props.type === "date" ? (
-            this.state.cellValue && this.state.cellValue !== null ? (
-              moment(this.state.cellValue).format("DD.MM.yyyy")
-            ) : (
-              ""
-            )
-          ) : typeof this.state.cellValue === "object" ? (
-            this.state.cellValue !== null ? (
-              `${this.state.cellValue.label}`
-            ) : (
-              ""
-            )
-          ) : (
-            `${this.state.cellValue}`
-          )
-        ) : this.props.type === "text" || this.props.type === "number" ? (
-          <textarea
-            autoFocus
-            style={{ resize: "none" }}
-            value={this.state.cellValue ?? ""}
-            onChange={(event) => {
-              this.setState({ cellValue: event.target.value });
-            }}
-            onFocus={(e) => {
-              setTimeout(() => {
-                document.execCommand("selectAll", false);
-              }, 0);
-            }}
-            onKeyPress={
-              this.props.type === "number"
-                ? (event) => {
-                    const keyCode = event.keyCode || event.which;
-                    const string = String.fromCharCode(keyCode);
-                    if (!numRegex.test(string)) {
-                      event.defaultPrevented = false;
-                      if (event.preventDefault) event.preventDefault();
-                    }
-                  }
-                : undefined
-            }
-            onBlur={(event) => {
-              this.props.onUpdate(
-                this.props.rowData.id,
-                this.props.columnKey,
-                this.props.type === "number"
-                  ? Number(this.state.cellValue)
-                  : this.state.cellValue
-              );
-              this.setState({ editing: false });
-            }}
-            className="content-editable"
-          />
-        ) : this.props.type === "date" ? (
-          <DatePicker
-            autoFocus
-            // showTimeInput
-            isClearable
-            customInput={<input className="datepicker-input"></input>}
-            // selected={this.state.cellValue}
-            onChange={(date) => {
-              this.setState({ cellValue: date, editing: false });
-              this.props.onUpdate(
-                this.props.rowData.id,
-                this.props.columnKey,
-                date !== null ? date.toString() : null
-              );
-            }}
-            onCalendarClose={() => {
-              this.setState({ editing: false });
-            }}
-            dateFormat="dd.MM.yyyy"
-          />
-        ) : this.props.type === "dropdown" ||
-          this.props.type === "multiple-dropdown" ? (
-          //   FIXME: use http://bvaughn.github.io/react-virtualized-select/
-          <Select
-            menuIsOpen={this.state.editing}
-            autoFocus
-            isMulti={this.props.type === "multiple-dropdown"}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-                minWidth: "200px",
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "black",
-              }),
-              control: (base, state) => ({
-                ...base,
-                paddingLeft: "5px",
-                boxShadow: "none",
-                outlineWidth: 0,
-                border: 0,
-                minHeight: 52,
-                backgroundColor: "transparent",
-                // border: "1px solid transparent",
-                transition: "0.3s",
-                // "&:hover": {
-                //   border: "1px solid transparent",
-                // },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 0,
-              colors: {
-                ...theme.colors,
-                primary: "#a0bfe3",
-              },
-            })}
-            menuPortalTarget={document.body}
-            value={this.state.cellValue}
-            onChange={(value) => {
-              this.setState({
-                cellValue: value !== null ? value : { label: "", value: "" },
-              });
-              var v: any = "";
-              if (value !== null && Array.isArray(value)) {
-                v = [];
-                value.map((dv: any) => v.push(dv.label));
-              }
-              if (value !== null && !Array.isArray(value)) {
-                v = value.label;
-              }
-              this.props.onUpdate(
-                this.props.rowData.id,
-                this.props.columnKey,
-                v
-              );
-              this.setState({ editing: false });
-            }}
-            onFocus={async () => {
-              this.setState({
-                options: loadOptions(this.props.columnKey ?? ""),
-              });
-            }}
-            onBlur={() => {
-              this.setState({
-                options: [],
-                editing: false,
-              });
-            }}
-            placeholder=""
-            classNamePrefix="table-select"
-            isClearable
-            isSearchable
-            options={this.state.options}
-          />
-        ) : this.props.type === "button" ? (
-          <div className="table-button-container">
-            <Button
-              colorScheme={this.props.textColor}
-              onClick={() => {
-                this.props.onUpdate(
-                  this.props.rowData.id,
-                  "data.companyName",
-                  "Updated Name"
-                );
-                this.setState({ editing: false });
-              }}
-              size="sm"
-              color="white"
-              className="table-button"
-            >
-              {this.state.cellValue}
-            </Button>
-          </div>
-        ) : this.props.type === "menu" ? (
-          <Menu
-            placement="bottom"
-            onClose={() => {
-              this.setState({ editing: false });
-            }}
-            defaultIsOpen
-          >
-            <MenuButton>
-              <div
-                className={`content-preview ${
-                  this.props.textColor ? this.props.textColor : ""
-                }`}
-              >
-                {this.state.cellValue}
-              </div>
-            </MenuButton>
-            <MenuList>
-              {TableCategories.map((category) => (
-                <MenuItem
-                  onClick={() => {
-                    console.log(category.value);
-                  }}
-                >
-                  {category.label}
-                </MenuItem>
-              ))}
-            </MenuList>
-          </Menu>
-        ) : (
-          <div>unknown</div>
-        )}
-      </div>
-    );
-  }
 }
 
 var ProjectType: any[] = [];
@@ -384,16 +86,6 @@ var ProjectStartQuarter: any[] = [];
 var SapStatus: any[] = [
   { label: "Created", value: "created" },
   { label: "None", value: "none" },
-];
-var TableCategories: any[] = [
-  //   { label: "Full Table", value: "full" },
-  { label: "Project Information", value: "projectInfo" },
-  { label: "Purchase Order", value: "purchaseOrder" },
-  { label: "Cost Actuals", value: "costActuals" },
-  { label: "Sales Actuals", value: "salesActuals" },
-  { label: "Actuals in EUR", value: "actualsInEur" },
-  { label: "Cost GL Postings", value: "costGlPostings" },
-  { label: "Income GL Postings", value: "incomeGlPostings" },
 ];
 
 async function fetchDropdowns() {
@@ -477,100 +169,24 @@ const filterTypes = {
   ],
 };
 
-const DisplayedColumnsList = [
-  {
-    label: "General Information",
-    value: "generalInformation",
-    // children: [
-    //   { label: "Company Name", value: "companyName" },
-    //   { label: "Company Code", value: "companyCode" },
-    //   { label: "Project Number", value: "projectNumber" },
-    //   {
-    //     label: "Campaign Start Date",
-    //     value: "campaignStartDate",
-    //   },
-    //   { label: "Project Type", value: "projectType" },
-    //   { label: "SAP Status", value: "sapStatus" },
-    // ],
-  },
-  {
-    label: "Project Information",
-    value: "projectInformation",
-  },
-  {
-    label: "Purchase Order",
-    value: "purchaseOrder",
-  },
-  {
-    label: "Cost Actuals",
-    value: "costActuals",
-  },
-  {
-    label: "Sales Actuals",
-    value: "salesActuals",
-  },
-  {
-    label: "Actuals in EUR",
-    value: "actualsInEur",
-  },
-  {
-    label: "Cost GL Postings",
-    value: "costGlPostings",
-  },
-  {
-    label: "Income GL Postings",
-    value: "incomeGlPostings",
-  },
-];
-
 export function SVendorsTable(props: Props) {
+  const [selectedSubmission, setSelectedSubmission] = useState<null | string>(
+    null
+  );
   const [filters, setFilters] = useState<FilterField[]>([]);
-  const [displayedColumns, setDisplayedColumns] = useState<string[]>([
-    "generalInformation",
-    "projectInformation",
-    "purchaseOrder",
-    "costActuals",
-    "salesActuals",
-    "actualsInEur",
-    "costGlPostings",
-    "incomeGlPostings",
-  ]);
-  const { fps, avgFps, maxFps, currentFps } = useFps(20);
-  const [tableWidth, setTableWidth] = useState(1000);
+
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
     []
   );
-  const [scrollLeft, setScrollLeft] = React.useState(0);
-  const onScroll = React.useCallback(
-    (args) => {
-      if (args.scrollLeft !== scrollLeft) {
-        setScrollLeft(args.scrollLeft);
-      }
-    },
-    [scrollLeft]
-  );
-  const [heapInfo, setHeapInfo] = useState<any>({
-    total: 0,
-    allocated: 0,
-    current: 0,
-    domSize: 0,
-  });
+
   const [totalRequests, setTotalRequests] = useState(1);
 
   useEffect(() => {
     fetchDropdowns().then(() => forceUpdate());
   }, []);
-  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
+  const [forceUpdateCount, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  useEffect(() => {
-    getHeapInfo();
-    const interval = setInterval(() => {
-      getHeapInfo();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
   useEffect(() => {
     var filtered: Submission[] = [];
     if (filters.length > 0 && submissions.length > 0) {
@@ -667,71 +283,6 @@ export function SVendorsTable(props: Props) {
     }
   }, [filters, submissions]);
 
-  const getHeapInfo = () => {
-    var memory = (window.performance as any).memory;
-    if (memory !== undefined) {
-      var info: any = {
-        total: memory.jsHeapSizeLimit,
-        allocated: memory.totalJSHeapSize,
-        current: memory.usedJSHeapSize,
-        domSize: document.getElementsByTagName("*").length,
-      };
-      setHeapInfo(info);
-    }
-  };
-  const getVisibleColumnIndices = (offset: number, columns: any) => {
-    // build the net offset for each column
-    var netOffsets: any[] = [],
-      offsetSum = 0,
-      leftBound = offset,
-      rightBound = offset + tableWidth,
-      visibleIndices: any[] = [];
-
-    // derive the column net offsets
-    columns.forEach((col: any) => {
-      netOffsets.push(offsetSum); // the current offsetsum is the column offset
-      offsetSum += col.width; // increase the offset sum by the width of the column
-    });
-
-    // which column offsets are outside the left and right bounds?
-    netOffsets.forEach((columnOffset, colIdx) => {
-      var isOutside = columnOffset < leftBound || columnOffset > rightBound;
-      if (!isOutside) {
-        visibleIndices.push(colIdx);
-      }
-    });
-
-    return visibleIndices;
-  };
-  const rowRenderer = React.useCallback(
-    ({ cells, columns }) => {
-      // this could be rendering the table body row, the fixed columns row, the header row.
-      // if we have the full complement of columns in the cell array (which includes placeholders
-      // for frozen columns), then we have the header or body
-      // plus, only want to null out hidden content when scrolling vertically
-
-      if (cells.length === 89) {
-        const visibleIndices = getVisibleColumnIndices(scrollLeft, columns);
-        const startIndex = visibleIndices[0];
-        const visibleCells = visibleIndices.map((x) => cells[x]);
-
-        if (startIndex > 0) {
-          let width = 0;
-          for (let i = 0; i < visibleIndices[0]; i++) {
-            width += cells[i].props.style.width;
-          }
-
-          const placeholder = <div key="placeholder" style={{ width }} />;
-          return [placeholder, visibleCells];
-        }
-        return visibleCells;
-      }
-
-      return cells;
-    },
-    [scrollLeft]
-  );
-
   async function partialUpdate(submission: string, path: string, value: any) {
     setTotalRequests(totalRequests + 1);
     if (path.includes("[")) {
@@ -772,65 +323,6 @@ export function SVendorsTable(props: Props) {
       });
     }
   }
-  function parentizeSubmission(submissionId: string) {
-    var submissionIndex = submissions.findIndex((s) => s.id === submissionId);
-    if (submissionIndex > -1) {
-      var temp = [...submissions];
-      temp[submissionIndex].parentId = null;
-      partialUpdate(submissionId, "parentId", null);
-      setSubmissions(temp);
-    }
-  }
-  function callSap(submissionId: string) {
-    RestAPI.callSapSubmission(submissionId)
-      .then((response) => {
-        toast(
-          <Toast
-            title={"SAP Response"}
-            message={
-              <div dangerouslySetInnerHTML={{ __html: response.data }} />
-            }
-            type={"success"}
-          />
-        );
-        var submissionIndex = submissions.findIndex(
-          (s) => s.id === submissionId
-        );
-        if (submissionIndex > -1) {
-          var temp = [...submissions];
-          temp[submissionIndex].data["sapStatus"] = "created";
-          partialUpdate(submissionId, "data.sapStatus", "created");
-          setSubmissions(temp);
-        }
-      })
-      .catch((error) => {
-        toast(
-          <Toast
-            title={"SAP Response"}
-            message={
-              <div dangerouslySetInnerHTML={{ __html: error.response.data }} />
-            }
-            type={"error"}
-          />
-        );
-      });
-  }
-  function handleCellUpdateRedraw(
-    submission: string,
-    path: string,
-    value: any
-  ) {
-    var submissionIndex = submissions.findIndex((s) => s.id === submission);
-    if (submissionIndex > -1) {
-      path = `[${submissionIndex}].${path}`;
-      if (_.get(submissions, path) !== value) {
-        var temp = [...submissions];
-        _.set(temp, path, value);
-        setSubmissions(temp);
-        partialUpdate(submission, path, value);
-      }
-    }
-  }
 
   useEffect(() => {
     RestAPI.getSubmissions().then((response) => {
@@ -853,10 +345,9 @@ export function SVendorsTable(props: Props) {
       title: "Company Name",
       width: 200,
       resizable: true,
-      hidden: !displayedColumns.includes("generalInformation"),
       header: "General Information",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -872,10 +363,9 @@ export function SVendorsTable(props: Props) {
       title: "Company Code",
       width: 150,
       resizable: true,
-      hidden: !displayedColumns.includes("generalInformation"),
       type: "number",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"number"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -891,9 +381,8 @@ export function SVendorsTable(props: Props) {
       title: "Project Number",
       width: 150,
       resizable: true,
-      hidden: !displayedColumns.includes("generalInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -909,10 +398,9 @@ export function SVendorsTable(props: Props) {
       title: "Campaign Start Date",
       width: 200,
       resizable: true,
-      hidden: !displayedColumns.includes("generalInformation"),
       type: "date",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"date"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -928,11 +416,11 @@ export function SVendorsTable(props: Props) {
       title: "Project Type",
       width: 250,
       resizable: true,
-      hidden: !displayedColumns.includes("generalInformation"),
       type: "dropdown",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"dropdown"}
+          loadOptions={loadOptions}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -950,10 +438,12 @@ export function SVendorsTable(props: Props) {
       header: "Actions",
       cellRenderer: (props: any) =>
         props.rowData.parentId === null ? (
-          <Cell
-            type={"menu"}
+          <EditableTableCell
+            type={"button"}
             textColor={"blue"}
-            onUpdate={() => {}}
+            onUpdate={(submission: string) => {
+              setSelectedSubmission(submission);
+            }}
             rowIndex={props.rowIndex}
             columnKey={props.column.dataKey}
             rowData={props.rowData}
@@ -962,33 +452,13 @@ export function SVendorsTable(props: Props) {
         ) : null,
     },
     {
-      key: "__actions.edit",
-      dataKey: "__actions.edit",
-      title: "Edit",
-      width: 100,
-      resizable: true,
-      cellRenderer: (props: any) =>
-        props.rowData.parentId === null ? (
-          <Cell
-            type={"button"}
-            textColor={"yellow"}
-            onUpdate={handleCellUpdate}
-            rowIndex={props.rowIndex}
-            columnKey={props.column.dataKey}
-            rowData={props.rowData}
-            initialValue={"edit"}
-          />
-        ) : null,
-    },
-
-    {
       key: "__actions.delete",
       dataKey: "__actions.delete",
       title: "Delete",
       width: 100,
       resizable: true,
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"button"}
           textColor={"red"}
           onUpdate={deleteSubmission}
@@ -1001,138 +471,78 @@ export function SVendorsTable(props: Props) {
     },
   ];
 
-  const headerRendererForTable = useCallback(
-    (props: {
-      cells: ReactNode[];
-      columns: ColumnShape<{
-        [k: string]: string;
-      }>;
-      headerIndex: number;
-    }) => {
-      const { headerIndex, columns, cells } = props;
-      if (headerIndex === 0) {
-        return cells.map((cell, index) => {
-          var colorClass: string = "";
-          switch (true) {
-            case index < 7:
-              colorClass = index === 0 ? "" : "green";
-              break;
-            case index < 31:
-              colorClass = "lgreen";
-              break;
-            case index < 38:
-              colorClass = "lorange";
-              break;
-            case index < 50:
-              colorClass = "orange";
-              break;
-            case index < 62:
-              colorClass = "red";
-              break;
-            case index < 65:
-              colorClass = "purple";
-              break;
-            case index < 75:
-              colorClass = "blue";
-              break;
-            case index < 85:
-              colorClass = "lblue";
-              break;
-            default:
-              colorClass = "red";
-              break;
-          }
-
-          return cloneElement(cell as ReactElement, {
-            className: "BaseTable__header-cell " + colorClass,
-            children: (
-              <span style={{ fontWeight: 650 }} key={index}>
-                {columns[index].header ? columns[index].header : ""}
-              </span>
-            ),
-          });
-        });
-      }
-      return cells;
-    },
-    []
-  );
   return (
     <div>
       <Box
         w={"100%"}
         bg={useColorModeValue("white", "#21252A")}
-        p={4}
+        minH={"85vh"}
         mb={5}
         border="1px"
         rounded="md"
         borderColor="gray.100"
-        color={"gray.500"}
+        p={"20px"}
       >
-        <Box mb={"1em"} w="100%">
-          <Text mb="8px">Displayed Columns</Text>
-          <CheckTreePicker
-            cleanable
-            defaultExpandAll={false}
-            block
-            onChange={(value) => {
-              var values: string[] = [];
-              if (value.length < 1) {
-                values = [
-                  "generalInformation",
-                  "projectInformation",
-                  "purchaseOrder",
-                  "costActuals",
-                  "salesActuals",
-                  "actualsInEur",
-                  "costGlPostings",
-                  "incomeGlPostings",
-                ];
-              } else {
-                value.map((v) => {
-                  values.push(v.toString());
-                });
-              }
-
-              setDisplayedColumns(values);
-            }}
-            value={displayedColumns}
-            data={DisplayedColumnsList}
-            placeholder="Groups"
-            size="lg"
-          />
-        </Box>
-        <Stack
-          mb={"1em"}
-          w="100%"
-          spacing={"2em"}
-          direction={{ base: "column", lg: "row" }}
-        >
-          <Box w="100%">
-            <Text mb="8px">Statuses</Text>
-            <TagPicker
-              cleanable
-              style={{
-                minHeight: "40px",
-                paddingTop: "2px",
-              }}
-              data={[]}
-              block
-            />
-          </Box>
-          <Box w="100%">
-            <Text mb="8px">Authors</Text>
-            <TagPicker
-              cleanable
-              style={{
-                minHeight: "40px",
-                paddingTop: "2px",
-              }}
-              data={[]}
-              block
-            />
-          </Box>
-        </Stack>
+        <Tabs variant="enclosed" w={"100%"}>
+          <TabList align="start">
+            <Tab>General Information</Tab>
+            <Tab hidden={selectedSubmission === null}>Project Information</Tab>
+            <Tab hidden={selectedSubmission === null}>Purchase Order</Tab>
+            <Tab hidden={selectedSubmission === null}>Cost Actuals</Tab>
+            <Tab hidden={selectedSubmission === null}>Sales Actuals</Tab>
+            <Tab hidden={selectedSubmission === null}>Actuals in EUR</Tab>
+            <Tab hidden={selectedSubmission === null}>Cost GL Postings</Tab>
+            <Tab hidden={selectedSubmission === null}>Income GL Postings</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel w="100%" h="80vh">
+              <AutoResizer>
+                {({ width, height }) => (
+                  <BaseTable
+                    ignoreFunctionInColumnCompare={false}
+                    width={width}
+                    height={height}
+                    fixed
+                    columns={tableCells}
+                    headerClassName="header-cells"
+                    data={unflatten([...filteredSubmissions] as any[])}
+                    rowKey="id"
+                    headerHeight={50}
+                    rowHeight={55}
+                  ></BaseTable>
+                )}
+              </AutoResizer>
+            </TabPanel>
+            <TabPanel w="100%" h="80vh">
+              <ProjectInformationTable
+                submissions={unflatten([
+                  ...filteredSubmissions.filter(
+                    (s) =>
+                      //   s.group === "projectInformation" &&
+                      s.id === selectedSubmission ||
+                      s.parentId === selectedSubmission
+                  ),
+                ] as any[])}
+                handleCellUpdate={handleCellUpdate}
+                selectedSubmission={selectedSubmission}
+              />
+            </TabPanel>
+            <TabPanel w="100%" h="80vh">
+              <PurchaseOrderTable
+                submissions={unflatten([
+                  ...filteredSubmissions.filter(
+                    (s) =>
+                      //   s.group === "projectInformation" &&
+                      s.id === selectedSubmission ||
+                      s.parentId === selectedSubmission
+                  ),
+                ] as any[])}
+                handleCellUpdate={handleCellUpdate}
+                selectedSubmission={selectedSubmission}
+              />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </Box>
       <Box
         shadow="md"
@@ -1168,7 +578,7 @@ export function SVendorsTable(props: Props) {
                       case "exact":
                         valuesField = (
                           <NumberInput
-                            onChange={(_, value) => {
+                            onChange={(vstring, value) => {
                               var temp = [...filters];
                               temp[index].selectedValues[0] = value;
                               setFilters(temp);
@@ -1189,7 +599,7 @@ export function SVendorsTable(props: Props) {
                           <Stack direction={{ base: "column", md: "row" }}>
                             <NumberInput
                               w="100%"
-                              onChange={(_, value) => {
+                              onChange={(vstring, value) => {
                                 var temp = [...filters];
                                 temp[index].selectedValues[0] = value;
                                 setFilters(temp);
@@ -1211,7 +621,7 @@ export function SVendorsTable(props: Props) {
                             </Box>
                             <NumberInput
                               w="100%"
-                              onChange={(_, value) => {
+                              onChange={(vstring, value) => {
                                 var temp = [...filters];
                                 temp[index].selectedValues[1] = value;
                                 setFilters(temp);
@@ -1484,36 +894,6 @@ export function SVendorsTable(props: Props) {
             </Box>
           </Box>
         </VStack>
-      </Box>
-      <Box
-        w={"100%"}
-        bg={useColorModeValue("white", "#21252A")}
-        minH={"85vh"}
-        mb={5}
-        border="1px"
-        rounded="md"
-        borderColor="gray.100"
-      >
-        <AutoResizer
-          onResize={({ width, height }: { width: number; height: number }) => {
-            setTableWidth(width);
-          }}
-        >
-          {({ width, height }) => (
-            <BaseTable
-              ignoreFunctionInColumnCompare={false}
-              width={width}
-              height={height}
-              fixed
-              columns={tableCells}
-              headerClassName="header-cells"
-              data={unflatten([...filteredSubmissions] as any[])}
-              rowKey="id"
-              headerHeight={50}
-              rowHeight={55}
-            ></BaseTable>
-          )}
-        </AutoResizer>
       </Box>
     </div>
   );

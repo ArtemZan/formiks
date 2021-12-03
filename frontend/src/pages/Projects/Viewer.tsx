@@ -153,6 +153,7 @@ export function Viewer(props: Props) {
             var submission: Submission = {
               project: project.id ?? "",
               parentId: null,
+              group: null,
               created: new Date(),
               updated: new Date(),
               title: "",

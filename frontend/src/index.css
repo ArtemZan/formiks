@@ -284,6 +284,18 @@ button[name="data[submit]"]:hover {
   border: 1px solid #3a414b;
 } */
 
-.rs-table-row-header {
-  z-index: 100 !important;
+.BaseTable {
+  box-shadow: none !important;
+}
+
+.BaseTable__row-cell {
+  padding: 0 !important;
+}
+
+.chakra-tabs__tab:disabled {
+  color: #a0afbf !important;
+}
+
+.BaseTable .expand {
+  padding-left: 15px !important;
 }
