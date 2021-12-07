@@ -67,6 +67,11 @@ import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
 import EditableTableCell from "../../components/EditableTableCell";
 import { ProjectInformationTable } from "./Tables/ProjectInformation";
 import { PurchaseOrderTable } from "./Tables/PurchaseOrder";
+import { CostActualsTable } from "./Tables/CostActuals";
+import { SalesActualsTable } from "./Tables/SalesActuals";
+import { EurActualsTable } from "./Tables/EurActuals";
+import { CostGlPostingsTable } from "./Tables/CostGlPostings";
+import { IncomeGlPostingsTable } from "./Tables/IncomeGlPostings";
 
 interface Props {
   history: any;
@@ -393,6 +398,23 @@ export function SVendorsTable(props: Props) {
       ),
     },
     {
+      key: "data.projectName",
+      dataKey: "data.projectName",
+      title: "Project Name",
+      width: 150,
+      resizable: true,
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
       key: "data.campaignStartDate",
       dataKey: "data.campaignStartDate",
       title: "Campaign Start Date",
@@ -426,6 +448,52 @@ export function SVendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "__summary.countries",
+      dataKey: "__summary.countries",
+      title: "Countries",
+      width: 200,
+      resizable: true,
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"tags"}
+          readonly
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          textColor="red"
+          initialValue={submissions.map((submission) => {
+            if (submission.parentId === props.rowData.id) {
+              return submission.data.country;
+            }
+          })}
+        />
+      ),
+    },
+    {
+      key: "__summary.vendors",
+      dataKey: "__summary.vendors",
+      title: "Vendors",
+      width: 200,
+      resizable: true,
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"tags"}
+          readonly
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          textColor="blue"
+          initialValue={submissions.map((submission) => {
+            if (submission.parentId === props.rowData.id) {
+              return submission.data.vendorName;
+            }
+          })}
         />
       ),
     },
@@ -483,7 +551,7 @@ export function SVendorsTable(props: Props) {
         borderColor="gray.100"
         p={"20px"}
       >
-        <Tabs variant="enclosed" w={"100%"}>
+        <Tabs isLazy variant="enclosed" w={"100%"}>
           <TabList align="start">
             <Tab>General Information</Tab>
             <Tab hidden={selectedSubmission === null}>Project Information</Tab>
@@ -515,14 +583,17 @@ export function SVendorsTable(props: Props) {
             </TabPanel>
             <TabPanel w="100%" h="80vh">
               <ProjectInformationTable
-                submissions={unflatten([
-                  ...filteredSubmissions.filter(
-                    (s) =>
-                      //   s.group === "projectInformation" &&
-                      s.id === selectedSubmission ||
-                      s.parentId === selectedSubmission
-                  ),
-                ] as any[])}
+                submissions={
+                  [
+                    ...filteredSubmissions.filter((s) => {
+                      return (
+                        s.id === selectedSubmission ||
+                        (s.parentId === selectedSubmission &&
+                          s.group === "projectInformation")
+                      );
+                    }),
+                  ] as any[]
+                }
                 handleCellUpdate={handleCellUpdate}
                 selectedSubmission={selectedSubmission}
               />
@@ -532,8 +603,78 @@ export function SVendorsTable(props: Props) {
                 submissions={unflatten([
                   ...filteredSubmissions.filter(
                     (s) =>
-                      //   s.group === "projectInformation" &&
-                      s.id === selectedSubmission ||
+                      (s.group === "puchaseOrder" &&
+                        s.id === selectedSubmission) ||
+                      s.parentId === selectedSubmission
+                  ),
+                ] as any[])}
+                handleCellUpdate={handleCellUpdate}
+                selectedSubmission={selectedSubmission}
+              />
+            </TabPanel>
+            <TabPanel w="100%" h="80vh">
+              <CostActualsTable
+                submissions={unflatten([
+                  ...filteredSubmissions.filter(
+                    (s) =>
+                      (s.group === "costActuals" &&
+                        s.id === selectedSubmission) ||
+                      s.parentId === selectedSubmission
+                  ),
+                ] as any[])}
+                handleCellUpdate={handleCellUpdate}
+                selectedSubmission={selectedSubmission}
+              />
+            </TabPanel>
+            <TabPanel w="100%" h="80vh">
+              <SalesActualsTable
+                submissions={unflatten([
+                  ...filteredSubmissions.filter(
+                    (s) =>
+                      (s.group === "salesActuals" &&
+                        s.id === selectedSubmission) ||
+                      s.parentId === selectedSubmission
+                  ),
+                ] as any[])}
+                handleCellUpdate={handleCellUpdate}
+                selectedSubmission={selectedSubmission}
+              />
+            </TabPanel>
+            <TabPanel w="100%" h="80vh">
+              <EurActualsTable
+                submissions={unflatten([
+                  ...filteredSubmissions.filter(
+                    (s) =>
+                      (s.group === "actualsInEur" &&
+                        s.id === selectedSubmission) ||
+                      s.parentId === selectedSubmission
+                  ),
+                ] as any[])}
+                handleCellUpdate={handleCellUpdate}
+                selectedSubmission={selectedSubmission}
+              />
+            </TabPanel>
+            <TabPanel w="100%" h="80vh">
+              <CostGlPostingsTable
+                submissions={unflatten([
+                  ...filteredSubmissions.filter(
+                    (s) =>
+                      (s.group === "costGlPostings" &&
+                        s.id === selectedSubmission) ||
+                      s.parentId === selectedSubmission
+                  ),
+                ] as any[])}
+                handleCellUpdate={handleCellUpdate}
+                selectedSubmission={selectedSubmission}
+              />
+            </TabPanel>
+            <TabPanel w="100%" h="80vh">
+              <IncomeGlPostingsTable
+                submissions={unflatten([
+                  ...filteredSubmissions.filter(
+                    (s) =>
+                      (s.group === "incomeGlPostings" &&
+                        s.id === selectedSubmission) ||
                       s.parentId === selectedSubmission
                   ),
                 ] as any[])}

@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import BaseTable, { AutoResizer, Column, unflatten } from "react-base-table";
 import EditableTableCell from "../../../components/EditableTableCell";
 
 export function ProjectInformationTable(gprops: any) {
+  useEffect(() => {});
   const tableCells = [
     {
       key: "__expand",
@@ -413,9 +415,9 @@ export function ProjectInformationTable(gprops: any) {
       ),
     },
     {
-      key: "data.productionProjectManager",
-      dataKey: "data.productionProjectManager",
-      title: "Production Project Manager",
+      key: "data.projectApprover",
+      dataKey: "data.projectApprover",
+      title: "Project Approver",
       width: 200,
       resizable: true,
 
@@ -431,10 +433,10 @@ export function ProjectInformationTable(gprops: any) {
       ),
     },
     {
-      key: "data.projectApprover",
-      dataKey: "data.projectApprover",
-      title: "Project Approver",
-      width: 200,
+      key: "data.additionalInformation",
+      dataKey: "data.additionalInformation",
+      title: "Additional Information",
+      width: 300,
       resizable: true,
 
       cellRenderer: (props: any) => (

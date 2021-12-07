@@ -15,6 +15,7 @@ type Submission struct {
 	Title    string                 `json:"title" bson:"title"`
 	Status   string                 `json:"status" bson:"status"`
 	Author   string                 `json:"author" bson:"author"`
+	Group    interface{}            `bson:"group" json:"group"`
 	Data     map[string]interface{} `json:"data" bson:"data"`
 }
 

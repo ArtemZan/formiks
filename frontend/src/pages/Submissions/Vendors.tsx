@@ -28,6 +28,8 @@ import {
   useReducer,
   useState,
 } from "react";
+import EditableTableCell from "../../components/EditableTableCell";
+
 import { FpsView, useFps } from "react-fps";
 import Select from "react-select";
 import Project from "../../types/project";
@@ -357,6 +359,11 @@ var SapStatus: any[] = [
   { label: "Created", value: "created" },
   { label: "None", value: "none" },
 ];
+var CostStatuses: any[] = [
+  { label: "Cost Invoiced", value: "Cost Invoiced" },
+  { label: "Cost Not Invoiced", value: "Cost Not Invoiced" },
+  { label: "Not Relevant", value: "Not Relevant" },
+];
 
 async function fetchDropdowns() {
   var dropdownsIds: string[] = [
@@ -370,6 +377,7 @@ async function fetchDropdowns() {
     "619b66defe27d06ad17d75ac",
     "619b6754fe27d06ad17d75ad",
     "619b6799fe27d06ad17d75ae",
+    "619b7b9efe27d06ad17d75af",
     "619b7b9efe27d06ad17d75af",
   ];
   var responses = await Promise.all(
@@ -404,6 +412,11 @@ const loadOptions = (identifier: string) => {
       return ExchangeRates;
     case "data.sapStatus":
       return SapStatus;
+    case "data.caVendorName":
+    case "data.vendorName":
+      return VendorsNames;
+    case "data.costStatus":
+      return CostStatuses;
   }
   return [];
 };
@@ -846,7 +859,7 @@ export function VendorsTable(props: Props) {
       hidden: !displayedColumns.includes("generalInformation"),
       header: "General Information",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -865,7 +878,7 @@ export function VendorsTable(props: Props) {
       hidden: !displayedColumns.includes("generalInformation"),
       type: "number",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"number"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -883,7 +896,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("generalInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -902,7 +915,7 @@ export function VendorsTable(props: Props) {
       hidden: !displayedColumns.includes("generalInformation"),
       type: "date",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"date"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -921,9 +934,10 @@ export function VendorsTable(props: Props) {
       hidden: !displayedColumns.includes("generalInformation"),
       type: "dropdown",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"dropdown"}
           onUpdate={handleCellUpdate}
+          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -939,7 +953,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("generalInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           readonly
           onUpdate={handleCellUpdate}
@@ -959,7 +973,7 @@ export function VendorsTable(props: Props) {
       header: "Project Information",
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -977,7 +991,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -995,7 +1009,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1013,7 +1027,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1031,7 +1045,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1045,12 +1059,13 @@ export function VendorsTable(props: Props) {
       key: "data.vendorName",
       dataKey: "data.vendorName",
       title: "Vendor Name",
-      width: 200,
+      width: 250,
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
-          type={"text"}
+        <EditableTableCell
+          type={"dropdown"}
+          loadOptions={loadOptions}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1067,7 +1082,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1085,7 +1100,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1103,7 +1118,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1122,9 +1137,10 @@ export function VendorsTable(props: Props) {
       hidden: !displayedColumns.includes("projectInformation"),
       type: "dropdown",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"dropdown"}
           onUpdate={handleCellUpdate}
+          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -1140,7 +1156,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1158,7 +1174,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1176,7 +1192,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1194,7 +1210,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1212,7 +1228,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1230,7 +1246,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1248,7 +1264,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1266,7 +1282,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1285,9 +1301,10 @@ export function VendorsTable(props: Props) {
       hidden: !displayedColumns.includes("projectInformation"),
       type: "dropdown",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"dropdown"}
           onUpdate={handleCellUpdate}
+          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -1304,9 +1321,10 @@ export function VendorsTable(props: Props) {
       hidden: !displayedColumns.includes("projectInformation"),
       type: "dropdown",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"dropdown"}
           onUpdate={handleCellUpdate}
+          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -1323,9 +1341,10 @@ export function VendorsTable(props: Props) {
       hidden: !displayedColumns.includes("projectInformation"),
       type: "dropdown",
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"dropdown"}
           onUpdate={handleCellUpdate}
+          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -1341,7 +1360,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1351,24 +1370,7 @@ export function VendorsTable(props: Props) {
         />
       ),
     },
-    {
-      key: "data.productionProjectManager",
-      dataKey: "data.productionProjectManager",
-      title: "Production Project Manager",
-      width: 200,
-      resizable: true,
-      hidden: !displayedColumns.includes("projectInformation"),
-      cellRenderer: (props: any) => (
-        <Cell
-          type={"text"}
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
+
     {
       key: "data.projectApprover",
       dataKey: "data.projectApprover",
@@ -1377,7 +1379,25 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("projectInformation"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
+          type={"text"}
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.additionalInformation",
+      dataKey: "data.additionalInformation",
+      title: "Additional Information",
+      width: 250,
+      resizable: true,
+      hidden: !displayedColumns.includes("projectInformation"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1396,7 +1416,7 @@ export function VendorsTable(props: Props) {
       header: "Purchase Order",
       hidden: !displayedColumns.includes("purchaseOrder"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1414,7 +1434,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("purchaseOrder"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1432,7 +1452,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("purchaseOrder"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1450,7 +1470,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("purchaseOrder"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1468,7 +1488,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("purchaseOrder"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1486,7 +1506,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("purchaseOrder"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1504,7 +1524,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("purchaseOrder"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1523,7 +1543,7 @@ export function VendorsTable(props: Props) {
       header: "Cost Actuals",
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1541,7 +1561,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1559,7 +1579,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1577,7 +1597,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1595,7 +1615,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1613,7 +1633,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1631,7 +1651,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1649,8 +1669,27 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.caVendorName",
+      dataKey: "data.caVendorName",
+      title: "Vendor Name",
+      width: 250,
+      resizable: true,
+      hidden: !displayedColumns.includes("costActuals"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"dropdown"}
+          loadOptions={loadOptions}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1667,7 +1706,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1685,7 +1724,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1703,7 +1742,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1721,9 +1760,10 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costActuals"),
       cellRenderer: (props: any) => (
-        <Cell
-          type={"text"}
+        <EditableTableCell
+          type={"dropdown"}
           onUpdate={handleCellUpdate}
+          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -1740,7 +1780,7 @@ export function VendorsTable(props: Props) {
       header: "Sales Actuals",
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1758,7 +1798,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1776,7 +1816,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1794,7 +1834,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1812,7 +1852,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1830,7 +1870,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1848,7 +1888,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1866,7 +1906,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1884,7 +1924,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1902,7 +1942,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1920,7 +1960,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1938,7 +1978,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("salesActuals"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1957,7 +1997,7 @@ export function VendorsTable(props: Props) {
       header: "Actuals in EUR",
       hidden: !displayedColumns.includes("actualsInEur"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1975,7 +2015,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("actualsInEur"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1993,7 +2033,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("actualsInEur"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2012,7 +2052,7 @@ export function VendorsTable(props: Props) {
       header: "Cost GL Postings",
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2030,7 +2070,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2048,7 +2088,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2066,7 +2106,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2084,7 +2124,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2102,7 +2142,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2120,7 +2160,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2138,7 +2178,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2156,7 +2196,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2174,7 +2214,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("costGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2193,7 +2233,7 @@ export function VendorsTable(props: Props) {
       header: "Income GL Postings",
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2211,7 +2251,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2229,7 +2269,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2247,7 +2287,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2265,7 +2305,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2283,7 +2323,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2301,7 +2341,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2319,7 +2359,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2337,7 +2377,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2355,7 +2395,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: !displayedColumns.includes("incomeGlPostings"),
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"text"}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2374,7 +2414,7 @@ export function VendorsTable(props: Props) {
       header: "Actions",
       cellRenderer: (props: any) =>
         props.rowData.parentId === null ? (
-          <Cell
+          <EditableTableCell
             type={"button"}
             textColor={"green"}
             onUpdate={callSap}
@@ -2393,7 +2433,7 @@ export function VendorsTable(props: Props) {
       resizable: true,
       cellRenderer: (props: any) =>
         props.rowData.parentId === null ? (
-          <Cell
+          <EditableTableCell
             type={"button"}
             textColor={"yellow"}
             onUpdate={handleCellUpdate}
@@ -2404,25 +2444,25 @@ export function VendorsTable(props: Props) {
           />
         ) : null,
     },
-    {
-      key: "__actions.parentize",
-      dataKey: "__actions.parentize",
-      title: "Parentize",
-      width: 100,
-      resizable: true,
-      cellRenderer: (props: any) =>
-        props.rowData.parentId === null ? null : (
-          <Cell
-            type={"button"}
-            textColor={"blue"}
-            onUpdate={parentizeSubmission}
-            rowIndex={props.rowIndex}
-            columnKey={props.column.dataKey}
-            rowData={props.rowData}
-            initialValue={"parentize"}
-          />
-        ),
-    },
+    // {
+    //   key: "__actions.parentize",
+    //   dataKey: "__actions.parentize",
+    //   title: "Parentize",
+    //   width: 100,
+    //   resizable: true,
+    //   cellRenderer: (props: any) =>
+    //     props.rowData.parentId === null ? null : (
+    //       <EditableTableCell
+    //         type={"button"}
+    //         textColor={"blue"}
+    //         onUpdate={parentizeSubmission}
+    //         rowIndex={props.rowIndex}
+    //         columnKey={props.column.dataKey}
+    //         rowData={props.rowData}
+    //         initialValue={"parentize"}
+    //       />
+    //     ),
+    // },
     {
       key: "__actions.delete",
       dataKey: "__actions.delete",
@@ -2430,7 +2470,7 @@ export function VendorsTable(props: Props) {
       width: 100,
       resizable: true,
       cellRenderer: (props: any) => (
-        <Cell
+        <EditableTableCell
           type={"button"}
           textColor={"red"}
           onUpdate={deleteSubmission}
@@ -2465,19 +2505,19 @@ export function VendorsTable(props: Props) {
             case index < 38:
               colorClass = "lorange";
               break;
-            case index < 50:
+            case index < 51:
               colorClass = "orange";
               break;
-            case index < 62:
+            case index < 63:
               colorClass = "red";
               break;
-            case index < 65:
+            case index < 66:
               colorClass = "purple";
               break;
-            case index < 75:
+            case index < 76:
               colorClass = "blue";
               break;
-            case index < 85:
+            case index < 86:
               colorClass = "lblue";
               break;
             default:

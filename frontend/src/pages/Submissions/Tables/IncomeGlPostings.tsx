@@ -1,7 +1,7 @@
 import BaseTable, { AutoResizer, Column, unflatten } from "react-base-table";
 import EditableTableCell from "../../../components/EditableTableCell";
 
-export function PurchaseOrderTable(gprops: any) {
+export function IncomeGlPostingsTable(gprops: any) {
   const tableCells = [
     {
       key: "__expand",
@@ -13,12 +13,14 @@ export function PurchaseOrderTable(gprops: any) {
       cellRenderer: () => <div />,
       className: "expand",
     },
+
     {
-      key: "data.purchaseOrderServiceProvider",
-      dataKey: "data.purchaseOrderServiceProvider",
-      title: "Purchase Order Service Provider",
-      width: 250,
+      key: "data.yearMonthIncomeGL",
+      dataKey: "data.yearMonthIncomeGL",
+      title: "Year / Month",
+      width: 200,
       resizable: true,
+
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -31,11 +33,12 @@ export function PurchaseOrderTable(gprops: any) {
       ),
     },
     {
-      key: "data.netValueOfServiceOrderedLC",
-      dataKey: "data.netValueOfServiceOrderedLC",
-      title: "Net Value of Service Ordered (LC)",
-      width: 250,
+      key: "data.documentTypeIncomeGL",
+      dataKey: "data.documentTypeIncomeGL",
+      title: "Document Type",
+      width: 200,
       resizable: true,
+
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -48,11 +51,120 @@ export function PurchaseOrderTable(gprops: any) {
       ),
     },
     {
-      key: "data.localCurrency",
-      dataKey: "data.localCurrency",
-      title: "Local Currency",
+      key: "data.postingDateIncomeGL",
+      dataKey: "data.postingDateIncomeGL",
+      title: "Posting Date",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.documentDateIncomeGL",
+      dataKey: "data.documentDateIncomeGL",
+      title: "Document Date",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.documentNumberIncomeGL",
+      dataKey: "data.documentNumberIncomeGL",
+      title: "Document Number",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.incomeAccountIncomeGL",
+      dataKey: "data.incomeAccountIncomeGL",
+      title: "Income Account",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.incomeAmountLCIncomeGL",
+      dataKey: "data.incomeAmountLCIncomeGL",
+      title: "Income Amount (LC)",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.incomeAmountDCIncomeGL",
+      dataKey: "data.incomeAmountDCIncomeGL",
+      title: "Income Amount (DC)",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.dcIncomeGL",
+      dataKey: "data.dcIncomeGL",
+      title: "DC",
       width: 150,
       resizable: true,
+
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -65,62 +177,12 @@ export function PurchaseOrderTable(gprops: any) {
       ),
     },
     {
-      key: "data.netValuePOC",
-      dataKey: "data.netValuePOC",
-      title: "Net Value (Purchase Order Currency)",
-      width: 300,
-      resizable: true,
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          onUpdate={gprops.handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.purchaseOrderCurrency",
-      dataKey: "data.purchaseOrderCurrency",
-      title: "Purchase Order Currency",
+      key: "data.incomeAmountEurIncomeGL",
+      dataKey: "data.incomeAmountEurIncomeGL",
+      title: "Income Amount (EUR)",
       width: 200,
       resizable: true,
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          onUpdate={gprops.handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.netValueEur",
-      dataKey: "data.netValueEur",
-      title: "Net Value (EUR)",
-      width: 200,
-      resizable: true,
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          onUpdate={gprops.handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.purchaseOrderStatus",
-      dataKey: "data.purchaseOrderStatus",
-      title: "Purchase Order Status",
-      width: 200,
-      resizable: true,
+
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}

@@ -1,7 +1,7 @@
 import BaseTable, { AutoResizer, Column, unflatten } from "react-base-table";
 import EditableTableCell from "../../../components/EditableTableCell";
 
-export function PurchaseOrderTable(gprops: any) {
+export function CostActualsTable(gprops: any) {
   const tableCells = [
     {
       key: "__expand",
@@ -13,11 +13,12 @@ export function PurchaseOrderTable(gprops: any) {
       cellRenderer: () => <div />,
       className: "expand",
     },
+
     {
-      key: "data.purchaseOrderServiceProvider",
-      dataKey: "data.purchaseOrderServiceProvider",
-      title: "Purchase Order Service Provider",
-      width: 250,
+      key: "data.yearMonth",
+      dataKey: "data.yearMonth",
+      title: "Year / Month",
+      width: 200,
       resizable: true,
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -31,11 +32,12 @@ export function PurchaseOrderTable(gprops: any) {
       ),
     },
     {
-      key: "data.netValueOfServiceOrderedLC",
-      dataKey: "data.netValueOfServiceOrderedLC",
-      title: "Net Value of Service Ordered (LC)",
-      width: 250,
+      key: "data.documentType",
+      dataKey: "data.documentType",
+      title: "Document Type",
+      width: 200,
       resizable: true,
+
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -48,11 +50,156 @@ export function PurchaseOrderTable(gprops: any) {
       ),
     },
     {
-      key: "data.localCurrency",
-      dataKey: "data.localCurrency",
-      title: "Local Currency",
+      key: "data.postingDate",
+      dataKey: "data.postingDate",
+      title: "Posting Date",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.documentDate",
+      dataKey: "data.documentDate",
+      title: "Document Date",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.documentNumber",
+      dataKey: "data.documentNumber",
+      title: "Document Number",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.invoiceNumber",
+      dataKey: "data.invoiceNumber",
+      title: "Invoice Number",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.costAccount",
+      dataKey: "data.costAccount",
+      title: "Cost Account",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.name1",
+      dataKey: "data.name1",
+      title: "Name 1",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.costAmountLC",
+      dataKey: "data.costAmountLC",
+      title: "Cost Amount (LC)",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.costAmountDC",
+      dataKey: "data.costAmountDC",
+      title: "Cost Amount (DC)",
+      width: 200,
+      resizable: true,
+
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          onUpdate={gprops.handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.dc",
+      dataKey: "data.dc",
+      title: "DC",
       width: 150,
       resizable: true,
+
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -65,62 +212,12 @@ export function PurchaseOrderTable(gprops: any) {
       ),
     },
     {
-      key: "data.netValuePOC",
-      dataKey: "data.netValuePOC",
-      title: "Net Value (Purchase Order Currency)",
-      width: 300,
-      resizable: true,
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          onUpdate={gprops.handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.purchaseOrderCurrency",
-      dataKey: "data.purchaseOrderCurrency",
-      title: "Purchase Order Currency",
+      key: "data.costStatus",
+      dataKey: "data.costStatus",
+      title: "Cost Status",
       width: 200,
       resizable: true,
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          onUpdate={gprops.handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.netValueEur",
-      dataKey: "data.netValueEur",
-      title: "Net Value (EUR)",
-      width: 200,
-      resizable: true,
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          onUpdate={gprops.handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.purchaseOrderStatus",
-      dataKey: "data.purchaseOrderStatus",
-      title: "Purchase Order Status",
-      width: 200,
-      resizable: true,
+
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}

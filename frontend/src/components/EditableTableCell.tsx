@@ -8,6 +8,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Tag,
   useColorModeValue,
 } from "@chakra-ui/react";
 import moment from "moment";
@@ -19,7 +20,7 @@ import {
   MdError,
 } from "react-icons/all";
 import DatePicker from "react-datepicker";
-import Select from "react-select";
+import Creatable from "react-select/creatable";
 
 const numRegex = /[0-9]|\./;
 
@@ -65,6 +66,9 @@ class EditableTableCell extends React.Component<
         value = this.props.initialValue
           ? this.props.initialValue.toString()
           : "";
+        break;
+      case "tags":
+        value = this.props.initialValue;
         break;
       case "date":
         value =
@@ -121,7 +125,21 @@ class EditableTableCell extends React.Component<
         }}
       >
         {!this.state.editing ? (
-          this.props.type === "date" ? (
+          this.props.type === "tags" ? (
+            this.state.cellValue ? (
+              this.state.cellValue.map((cv: any) => {
+                if (cv) {
+                  return (
+                    <Tag colorScheme={this.props.textColor} mb="5px" mr={"5px"}>
+                      {cv}
+                    </Tag>
+                  );
+                }
+              })
+            ) : (
+              ""
+            )
+          ) : this.props.type === "date" ? (
             this.state.cellValue && this.state.cellValue !== null ? (
               moment(this.state.cellValue).format("DD.MM.yyyy")
             ) : (
@@ -195,7 +213,7 @@ class EditableTableCell extends React.Component<
           />
         ) : this.props.type === "dropdown" ||
           this.props.type === "multiple-dropdown" ? (
-          <Select
+          <Creatable
             menuIsOpen={this.state.editing}
             autoFocus
             isMulti={this.props.type === "multiple-dropdown"}
