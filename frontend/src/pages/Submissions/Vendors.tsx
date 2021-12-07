@@ -17,6 +17,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   CloseButton,
+  Checkbox,
 } from "@chakra-ui/react";
 import {
   cloneElement,
@@ -57,6 +58,7 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
 import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
+import { SubmissionsTransformer } from "../../utils/SubmissionsTransformer";
 
 interface Props {
   history: any;
@@ -506,6 +508,7 @@ const DisplayedColumnsList = [
 ];
 
 export function VendorsTable(props: Props) {
+  const [debugOverlayHidden, hideDebugOverlay] = useState(false);
   const [filters, setFilters] = useState<FilterField[]>([]);
   const [displayedColumns, setDisplayedColumns] = useState<string[]>([
     "generalInformation",
@@ -643,9 +646,9 @@ export function VendorsTable(props: Props) {
           filtered.push(submission);
         }
       });
-      setFilteredSubmissions(filtered);
+      setFilteredSubmissions(SubmissionsTransformer(filtered));
     } else {
-      setFilteredSubmissions([...submissions]);
+      setFilteredSubmissions(SubmissionsTransformer([...submissions]));
     }
   }, [filters, submissions]);
 
@@ -662,20 +665,17 @@ export function VendorsTable(props: Props) {
     }
   };
   const getVisibleColumnIndices = (offset: number, columns: any) => {
-    // build the net offset for each column
     var netOffsets: any[] = [],
       offsetSum = 0,
       leftBound = offset,
       rightBound = offset + tableWidth,
       visibleIndices: any[] = [];
 
-    // derive the column net offsets
     columns.forEach((col: any) => {
-      netOffsets.push(offsetSum); // the current offsetsum is the column offset
-      offsetSum += col.width; // increase the offset sum by the width of the column
+      netOffsets.push(offsetSum);
+      offsetSum += col.width;
     });
 
-    // which column offsets are outside the left and right bounds?
     netOffsets.forEach((columnOffset, colIdx) => {
       var isOutside = columnOffset < leftBound || columnOffset > rightBound;
       if (!isOutside) {
@@ -687,11 +687,7 @@ export function VendorsTable(props: Props) {
   };
   const rowRenderer = React.useCallback(
     ({ cells, columns }) => {
-      // this could be rendering the table body row, the fixed columns row, the header row.
-      // if we have the full complement of columns in the cell array (which includes placeholders
-      // for frozen columns), then we have the header or body
-      // plus, only want to null out hidden content when scrolling vertically
-
+      // null out hidden content on scroll
       if (cells.length === 89) {
         const visibleIndices = getVisibleColumnIndices(scrollLeft, columns);
         const startIndex = visibleIndices[0];
@@ -834,8 +830,9 @@ export function VendorsTable(props: Props) {
           vSubs.push(sub);
         }
       });
-      setSubmissions(vSubs);
-      setFilteredSubmissions(vSubs);
+      var transformed = SubmissionsTransformer(vSubs);
+      setSubmissions(transformed);
+      setFilteredSubmissions(transformed);
     });
   }, []);
 
@@ -2423,7 +2420,15 @@ export function VendorsTable(props: Props) {
             rowData={props.rowData}
             initialValue={"create"}
           />
-        ) : null,
+        ) : (
+          <div
+            style={{
+              backgroundColor: "#F7FAFC",
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        ),
     },
     {
       key: "__actions.edit",
@@ -2442,7 +2447,15 @@ export function VendorsTable(props: Props) {
             rowData={props.rowData}
             initialValue={"edit"}
           />
-        ) : null,
+        ) : (
+          <div
+            style={{
+              backgroundColor: "#F7FAFC",
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        ),
     },
     // {
     //   key: "__actions.parentize",
@@ -2983,10 +2996,10 @@ export function VendorsTable(props: Props) {
         >
           {({ width, height }) => (
             <BaseTable
-              // scrollLeft={scrollLeft}
-              // onScroll={onScroll}
-              // rowRenderer={rowRenderer}
-              // overscanRowCount={10}
+              scrollLeft={scrollLeft}
+              onScroll={onScroll}
+              rowRenderer={rowRenderer}
+              overscanRowCount={10}
               ignoreFunctionInColumnCompare={false}
               expandColumnKey={"__expand"}
               width={width}
@@ -3001,7 +3014,16 @@ export function VendorsTable(props: Props) {
               rowHeight={55}
               overlayRenderer={
                 <div>
-                  <DebugOverlay hidden={true}>
+                  <DebugOverlay hidden={debugOverlayHidden}>
+                    <Box h="40px" w="100%">
+                      <CloseButton
+                        onClick={() => {
+                          hideDebugOverlay(true);
+                        }}
+                        mr="-10px"
+                        float="right"
+                      />
+                    </Box>
                     <HStack spacing={0}>
                       <Text w="120%" float="left">
                         Requested Heap Size:

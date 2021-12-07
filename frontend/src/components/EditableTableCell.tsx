@@ -112,10 +112,16 @@ class EditableTableCell extends React.Component<
             ? "vendors-table-cell active"
             : `content-preview ${
                 this.props.textColor ? this.props.textColor : ""
-              } ${this.props.readonly ? "readonly" : ""}`
+              } ${this.props.readonly ? "readonly" : ""} ${
+                this.props.rowData.parentId !== null ? "readonly" : ""
+              }`
         }
         onClick={() => {
-          if (!this.state.editing && !this.props.readonly) {
+          if (
+            !this.state.editing &&
+            !this.props.readonly &&
+            this.props.rowData.parentId === null
+          ) {
             this.setState({ editing: true });
           }
         }}

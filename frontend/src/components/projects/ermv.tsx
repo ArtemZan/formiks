@@ -15,6 +15,7 @@ import {
   ModalFooter,
   ModalBody,
   Button,
+  Tooltip,
 } from "@chakra-ui/react";
 import CreatableSelect from "react-select/creatable";
 import Project from "../../types/project";
@@ -385,17 +386,21 @@ export default function CreateBookmark(props: Props) {
           </Box>
         </HStack>
         <Text as="b">Campaign`s Details</Text>
-        <Box w="100%">
-          <Text mb="8px">Campaign Name</Text>
-          <Input
-            value={campaignName}
-            onChange={(event) => {
-              setCampaignName(event.target.value);
-            }}
-            bg={useColorModeValue("white", "#2C313C")}
-            color={useColorModeValue("gray.800", "#ABB2BF")}
-          />
-        </Box>
+        <Tooltip label="Naming Convention: 'Vendor Name 1' 'Vendor Name 2'... 'Campaign Name'">
+          <Box w="100%">
+            <Text mb="8px">Campaign Name (40 characters limit)</Text>
+            <Input
+              maxLength={40}
+              value={campaignName}
+              onChange={(event) => {
+                setCampaignName(event.target.value);
+              }}
+              bg={useColorModeValue("white", "#2C313C")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
+            />
+          </Box>
+        </Tooltip>
+
         <Box w="100%">
           <Text mb="8px">Campaign Description</Text>
           <Textarea
@@ -1538,7 +1543,7 @@ export default function CreateBookmark(props: Props) {
               project: projectId,
               title: "",
               parentId: "",
-              group: "projectInformation",
+              group: "vendor",
               created: new Date(),
               updated: new Date(),
               status: "New",
@@ -1570,7 +1575,7 @@ export default function CreateBookmark(props: Props) {
               project: projectId,
               title: "",
               parentId: "",
-              group: "projectInformation",
+              group: "country",
               created: new Date(),
               updated: new Date(),
               status: "New",
