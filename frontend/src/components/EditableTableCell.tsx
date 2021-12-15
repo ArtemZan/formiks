@@ -21,6 +21,7 @@ import {
 } from "react-icons/all";
 import DatePicker from "react-datepicker";
 import Creatable from "react-select/creatable";
+import { shadeColor } from "../utils/Color";
 
 const numRegex = /[0-9]|\./;
 
@@ -110,6 +111,9 @@ class EditableTableCell extends React.Component<
           backgroundColor: this.props.backgroundColor
             ? this.props.backgroundColor
             : "",
+          // borderRight: this.props.backgroundColor
+          //   ? `1px solid ${shadeColor(this.props.backgroundColor, -20)}`
+          //   : "",
         }}
         className={
           this.state.editing

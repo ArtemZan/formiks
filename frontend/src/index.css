@@ -108,17 +108,22 @@ button[name="data[submit]"]:hover {
   white-space: nowrap;
   max-height: 80px;
   border: 1px solid transparent;
+  /* border: 1px solid rgba(0, 0, 0, 0.1); */
   border-radius: 2px;
 }
+
 .content-preview.green {
   color: #7cc63e;
 }
+
 .content-preview.blue {
   color: #6597d2;
 }
+
 .content-preview.yellow {
   color: #e1ac07;
 }
+
 .content-preview.red {
   color: #ff8b94;
 }
@@ -160,6 +165,18 @@ button[name="data[submit]"]:hover {
 .BaseTable__row-cell {
   padding: 0;
   border: 1px solid #f5f8fa;
+  /* border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-right: 1px solid rgba(0, 0, 0, 0.1); */
+}
+
+.BaseTable__row-cell.red-border {
+  border-left: 1px solid #ffbbca;
+}
+.BaseTable__row-cell.light-blue-border {
+  border-left: 1px solid #c2f1f1;
+}
+.BaseTable__row-cell.blue-border {
+  border-left: 1px solid #ccdef1;
 }
 
 /* .BaseTable__row-cell:hover {

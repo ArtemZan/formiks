@@ -1,1 +1,1 @@
-export type InputDate = Date | null
+export type InputDate = Date | null;

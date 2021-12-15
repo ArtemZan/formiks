@@ -386,20 +386,22 @@ export default function CreateBookmark(props: Props) {
           </Box>
         </HStack>
         <Text as="b">Campaign`s Details</Text>
-        <Tooltip label="Naming Convention: 'Vendor Name 1' 'Vendor Name 2'... 'Campaign Name'">
-          <Box w="100%">
-            <Text mb="8px">Campaign Name (40 characters limit)</Text>
-            <Input
-              maxLength={40}
-              value={campaignName}
-              onChange={(event) => {
-                setCampaignName(event.target.value);
-              }}
-              bg={useColorModeValue("white", "#2C313C")}
-              color={useColorModeValue("gray.800", "#ABB2BF")}
-            />
-          </Box>
-        </Tooltip>
+
+        <Box w="100%">
+          <Text mb="8px">
+            Campaign Name (40 characters limit. Naming Convention: 'Vendor Name
+            1' 'Vendor Name 2'... 'Campaign Name')
+          </Text>
+          <Input
+            maxLength={40}
+            value={campaignName}
+            onChange={(event) => {
+              setCampaignName(event.target.value);
+            }}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
+          />
+        </Box>
 
         <Box w="100%">
           <Text mb="8px">Campaign Description</Text>
@@ -589,7 +591,8 @@ export default function CreateBookmark(props: Props) {
           <Text mb="8px">Project Number</Text>
           <Input
             placeholder="____________"
-            defaultValue={projectNumber}
+            value={projectNumber}
+            onChange={(event) => setProjectNumber(event.target.value)}
             disabled
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -1328,7 +1331,7 @@ export default function CreateBookmark(props: Props) {
         </Box>
 
         <Box w="100%">
-          <Text mb="8px">Cost Breakdown</Text>
+          <Text mb="8px">Country Breakdown</Text>
           <Table
             shouldUpdateScroll={false}
             hover={false}
@@ -1431,7 +1434,7 @@ export default function CreateBookmark(props: Props) {
               </Cell>
             </Column>
             <Column flexGrow={2}>
-              <HeaderCell>Budget Contribution</HeaderCell>
+              <HeaderCell>Budget Contribution in Campaign Currency</HeaderCell>
               <Cell dataKey="contribution">
                 {(rowData, index) => (
                   <Input
@@ -1446,7 +1449,9 @@ export default function CreateBookmark(props: Props) {
               </Cell>
             </Column>
             <Column flexGrow={2}>
-              <HeaderCell>Total Estimated Costs</HeaderCell>
+              <HeaderCell>
+                Total Estimated Costs in Campaign Currency
+              </HeaderCell>
               <Cell dataKey="estimatedCosts">
                 {(rowData, index) => (
                   <Input
