@@ -1047,10 +1047,11 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: visibilityController("generalInformation", "data.companyName"),
       header: "General Information",
+      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f4fcf9"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1067,10 +1068,11 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: visibilityController("generalInformation", "data.companyCode"),
       type: "number",
+      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
-          backgroundColor="#f4fcf9"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1086,10 +1088,11 @@ export function VendorsTable(props: Props) {
       width: columnWidth("data.projectNumber", 150),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.projectNumber"),
+      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f4fcf9"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1105,10 +1108,11 @@ export function VendorsTable(props: Props) {
       width: columnWidth("data.projectName", 200),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.projectName"),
+      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f4fcf9"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1128,10 +1132,11 @@ export function VendorsTable(props: Props) {
         "data.campaignStartDate"
       ),
       type: "date",
+      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#f4fcf9"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1148,10 +1153,11 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: visibilityController("generalInformation", "data.projectType"),
       type: "dropdown",
+      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#f4fcf9"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
           rowIndex={props.rowIndex}
@@ -1168,10 +1174,12 @@ export function VendorsTable(props: Props) {
       width: columnWidth("data.sapStatus", 120),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.sapStatus"),
+      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
           readonly
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1191,11 +1199,12 @@ export function VendorsTable(props: Props) {
         "generalInformation",
         "data.campaignChannel"
       ),
+      className: "dark-green-3-border",
       type: "dropdown",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#f5faef"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
           rowIndex={props.rowIndex}
@@ -1212,11 +1221,12 @@ export function VendorsTable(props: Props) {
       width: columnWidth("data.targetAudience", 200),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.targetAudience"),
+      className: "dark-green-3-border",
       type: "dropdown",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#f5faef"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
           rowIndex={props.rowIndex}
@@ -1231,6 +1241,7 @@ export function VendorsTable(props: Props) {
       dataKey: "data.marketingResponsible",
       title: "Marketing Responsible",
       width: columnWidth("data.marketingResponsible", 200),
+      className: "dark-green-3-border",
       resizable: true,
       hidden: visibilityController(
         "generalInformation",
@@ -1239,7 +1250,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1254,6 +1265,7 @@ export function VendorsTable(props: Props) {
       dataKey: "data.projectApprover",
       title: "Project Approver",
       width: columnWidth("data.projectApprover", 200),
+      className: "dark-green-3-border",
       resizable: true,
       hidden: visibilityController(
         "generalInformation",
@@ -1262,7 +1274,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1276,6 +1288,7 @@ export function VendorsTable(props: Props) {
       dataKey: "data.additionalInformation",
       title: "Additional Information",
       width: columnWidth("data.additionalInformation", 250),
+      className: "dark-green-3-border",
       resizable: true,
       hidden: visibilityController(
         "generalInformation",
@@ -1284,7 +1297,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#e7f1f3"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1304,7 +1317,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1323,7 +1336,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1345,7 +1358,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1367,7 +1380,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1388,7 +1401,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           loadOptions={loadOptions}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1408,7 +1421,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1427,7 +1440,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1446,7 +1459,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1465,7 +1478,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1485,7 +1498,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
           rowIndex={props.rowIndex}
@@ -1505,7 +1518,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1524,7 +1537,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1543,7 +1556,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1562,7 +1575,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1581,7 +1594,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1600,7 +1613,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1619,7 +1632,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1638,7 +1651,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1658,7 +1671,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#f5faef"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
           rowIndex={props.rowIndex}
@@ -1823,7 +1836,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1842,7 +1855,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1861,7 +1874,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1880,7 +1893,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1899,7 +1912,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1918,7 +1931,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1937,7 +1950,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1956,7 +1969,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1975,7 +1988,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           loadOptions={loadOptions}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1995,7 +2008,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2014,7 +2027,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2033,7 +2046,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2052,7 +2065,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#e8effe"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
           rowIndex={props.rowIndex}
@@ -2073,7 +2086,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2092,7 +2105,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2111,7 +2124,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2130,7 +2143,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2149,7 +2162,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2168,7 +2181,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2187,7 +2200,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2206,7 +2219,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2225,7 +2238,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
           rowIndex={props.rowIndex}
@@ -2245,7 +2258,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2264,7 +2277,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2283,7 +2296,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2302,7 +2315,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2322,7 +2335,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fefffa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2341,7 +2354,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fefffa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2360,7 +2373,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fefffa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2381,7 +2394,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2401,7 +2414,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2421,7 +2434,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2441,7 +2454,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2464,7 +2477,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2484,7 +2497,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2504,7 +2517,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2524,7 +2537,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2544,7 +2557,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2567,7 +2580,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f3efff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2591,7 +2604,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2614,7 +2627,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2637,7 +2650,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2660,7 +2673,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2683,7 +2696,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2706,7 +2719,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2729,7 +2742,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2752,7 +2765,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2772,7 +2785,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2795,7 +2808,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2816,7 +2829,7 @@ export function VendorsTable(props: Props) {
         props.rowData.parentId === null ? (
           <EditableTableCell
             type={"button"}
-            backgroundColor="#fff7f8"
+            backgroundColor="#fef9fa"
             textColor={"green"}
             onUpdate={callSap}
             rowIndex={props.rowIndex}
@@ -2845,7 +2858,7 @@ export function VendorsTable(props: Props) {
         props.rowData.parentId === null ? (
           <EditableTableCell
             type={"button"}
-            backgroundColor="#fff7f8"
+            backgroundColor="#fef9fa"
             textColor={"yellow"}
             onUpdate={handleCellUpdate}
             rowIndex={props.rowIndex}
@@ -2874,7 +2887,7 @@ export function VendorsTable(props: Props) {
         <EditableTableCell
           type={"button"}
           textColor={"red"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#fef9fa"
           onUpdate={deleteSubmission}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2898,29 +2911,32 @@ export function VendorsTable(props: Props) {
         return cells.map((cell, index) => {
           var colorClass: string = "";
           switch (true) {
-            case index < 7:
-              colorClass = index === 0 ? "" : "green";
+            case index < 13:
+              colorClass = index === 0 ? "" : "dark-green-3";
               break;
-            case index < 31:
-              colorClass = "lgreen";
+            case index < 17:
+              colorClass = "white";
               break;
-            case index < 38:
-              colorClass = "lorange";
+            case index < 32:
+              colorClass = "white";
               break;
-            case index < 51:
+            case index < 39:
               colorClass = "orange";
               break;
-            case index < 63:
-              colorClass = "red";
+            case index < 52:
+              colorClass = "blue-2";
               break;
-            case index < 66:
+            case index < 65:
+              colorClass = "warm-gray";
+              break;
+            case index < 68:
+              colorClass = "yellow";
+              break;
+            case index < 78:
               colorClass = "purple";
               break;
-            case index < 76:
-              colorClass = "blue";
-              break;
-            case index < 86:
-              colorClass = "lblue";
+            case index < 88:
+              colorClass = "salmon";
               break;
             default:
               colorClass = "red";
@@ -3553,17 +3569,30 @@ export function VendorsTable(props: Props) {
                         HTTP
                       </Text>
                     </HStack>
-                    <Button
-                      onClick={() => {
-                        localStorage.removeItem("vendors.displayedColumns");
-                        localStorage.removeItem("vendors.columns");
-                        window.location.reload();
-                      }}
-                      mt="10px"
-                      colorScheme="red"
-                    >
-                      clear cache
-                    </Button>
+                    <HStack spacing={0}>
+                      <Button
+                        float="left"
+                        onClick={() => {
+                          localStorage.removeItem("vendors.displayedColumns");
+                          localStorage.removeItem("vendors.columns");
+                          window.location.reload();
+                        }}
+                        colorScheme="red"
+                      >
+                        clear cache
+                      </Button>
+                      <Button
+                        float="right"
+                        onClick={() => {
+                          localStorage.removeItem("vendors.displayedColumns");
+                          localStorage.removeItem("vendors.columns");
+                          window.location.reload();
+                        }}
+                        colorScheme="blue"
+                      >
+                        set default
+                      </Button>
+                    </HStack>
                   </DebugOverlay>
                 </div>
               }
