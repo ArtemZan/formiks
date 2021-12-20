@@ -691,12 +691,13 @@ export function VendorsTable(props: Props) {
     RestAPI.getVendorTableDefaultConfig().then((response) => {
       if (response.data.columnsWidth !== null) {
         setDefaultColumnsWidth(response.data.columnsWidth);
-      
       }
       if (response.data.displayedColumns !== null) {
-        setDisplayedColumns(response.data.displayedColumns);
-      } 
-     
+        if (response.data.displayedColumns.length > 0) {
+          setDisplayedColumns(response.data.displayedColumns);
+        }
+      }
+
       var cw = localStorage.getItem("vendors.columns");
       if (cw !== null) {
         setDefaultColumnsWidth(JSON.parse(cw));
