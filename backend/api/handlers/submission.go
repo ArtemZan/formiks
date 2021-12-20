@@ -29,6 +29,27 @@ type Submission struct {
 	db   *mongo.Database
 }
 
+func (r *Submission) FetchVendorTable(c *gin.Context) {
+	response, _ := r.repo.FetchVendorTable(context.TODO())
+	c.JSON(http.StatusOK, response)
+}
+func (r *Submission) UpdateVendorTable(c *gin.Context) {
+	var data models.VendorTable
+	err := c.BindJSON(&data)
+	if err != nil {
+		logger.LogHandlerError(c, "Failed to bind request JSON", err)
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	err = r.repo.UpdateVendorTable(c.Request.Context(), data)
+	status := http.StatusOK
+	if err != nil {
+		logger.LogHandlerError(c, "Failed to update vendor table", err)
+		status = http.StatusInternalServerError
+	}
+	c.Status(status)
+}
+
 func (r *Submission) Fetch(c *gin.Context) {
 	filter := bson.M{}
 	if len(c.Query("project")) > 0 {

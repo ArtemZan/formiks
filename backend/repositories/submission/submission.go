@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func NewSubmissionRepo(Conn *mongo.Database) repositories.SubmissionRepo {
@@ -18,6 +19,20 @@ func NewSubmissionRepo(Conn *mongo.Database) repositories.SubmissionRepo {
 
 type submissionRepo struct {
 	Conn *mongo.Database
+}
+
+func (r *submissionRepo) FetchVendorTable(ctx context.Context) (models.VendorTable, error) {
+	var response models.VendorTable
+	result := r.Conn.Collection("config").FindOne(ctx, bson.M{"name": "vendorTable"})
+	err := result.Decode(&response)
+	return response, err
+}
+
+func (r *submissionRepo) UpdateVendorTable(ctx context.Context, data models.VendorTable) error {
+	upsert := true
+	data.Name = "vendorTable"
+	_, err := r.Conn.Collection("config").ReplaceOne(ctx, bson.M{"name": "vendorTable"}, data, &options.ReplaceOptions{Upsert: &upsert})
+	return err
 }
 
 func (r *submissionRepo) Fetch(ctx context.Context, filter interface{}) ([]models.Submission, error) {

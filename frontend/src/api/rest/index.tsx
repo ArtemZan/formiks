@@ -126,6 +126,23 @@ export class API {
     return axios.delete(`${this.dropdownsUrl}${id}`);
   }
 
+  getVendorTableDefaultConfig(): Promise<AxiosResponse<any>> {
+    return axios.get<any>(`${this.submissionsUrl}vendorTable`);
+  }
+
+  updateVendorTableDefaultConfig(
+    displayedColumns: string[],
+    columnsWidth: any
+  ): Promise<AxiosResponse> {
+    return axios.put<any>(
+      `${this.submissionsUrl}vendorTable`,
+      JSON.stringify({
+        displayedColumns: displayedColumns,
+        columnsWidth: columnsWidth,
+      })
+    );
+  }
+
   getEntityIdFromUrl(url: string): number {
     const urlSegments = url.split("/").filter((x) => x !== "");
     return parseInt(urlSegments[urlSegments.length - 1]);

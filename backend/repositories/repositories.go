@@ -16,6 +16,8 @@ type ProjectRepo interface {
 }
 
 type SubmissionRepo interface {
+	FetchVendorTable(ctx context.Context) (models.VendorTable, error)
+	UpdateVendorTable(ctx context.Context, data models.VendorTable) error
 	Fetch(ctx context.Context, filter interface{}) ([]models.Submission, error)
 	FetchByID(ctx context.Context, id primitive.ObjectID) (models.Submission, error)
 	Create(ctx context.Context, submission models.Submission) (models.Submission, error)

@@ -677,16 +677,7 @@ export function VendorsTable(props: Props) {
   }, []);
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  useEffect(() => {
-    var dc = localStorage.getItem("vendors.displayedColumns");
-    if (dc !== null) {
-      setDisplayedColumns(JSON.parse(dc));
-    }
-    var cw = localStorage.getItem("vendors.columns");
-    if (cw !== null) {
-      setDefaultColumnsWidth(JSON.parse(cw));
-    }
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     getHeapInfo();
@@ -695,6 +686,20 @@ export function VendorsTable(props: Props) {
     }, 5000);
 
     return () => clearInterval(interval);
+  }, []);
+  useEffect(() => {
+    RestAPI.getVendorTableDefaultConfig().then((response) => {
+      setDefaultColumnsWidth(response.data.columnsWidth);
+      setDisplayedColumns(response.data.displayedColumns);
+      var cw = localStorage.getItem("vendors.columns");
+      if (cw !== null) {
+        setDefaultColumnsWidth(JSON.parse(cw));
+      }
+      var dc = localStorage.getItem("vendors.displayedColumns");
+      if (dc !== null) {
+        setDisplayedColumns(JSON.parse(dc));
+      }
+    });
   }, []);
   useEffect(() => {
     var filtered: Submission[] = [];
@@ -3584,9 +3589,16 @@ export function VendorsTable(props: Props) {
                       <Button
                         float="right"
                         onClick={() => {
-                          localStorage.removeItem("vendors.displayedColumns");
-                          localStorage.removeItem("vendors.columns");
-                          window.location.reload();
+                          RestAPI.updateVendorTableDefaultConfig(
+                            JSON.parse(
+                              localStorage.getItem(
+                                "vendors.displayedColumns"
+                              ) || "[]"
+                            ),
+                            JSON.parse(
+                              localStorage.getItem("vendors.columns") || "{}"
+                            )
+                          );
                         }}
                         colorScheme="blue"
                       >

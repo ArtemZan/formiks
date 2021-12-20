@@ -40,6 +40,9 @@ func RegisterRoutes(r *gin.Engine) {
 	submissionsGroup.PUT("/:id", submissionHandler.Update)                   // update submission
 	submissionsGroup.DELETE("/:id", submissionHandler.Delete)                // delete submission
 
+	submissionsGroup.GET("/vendorTable", submissionHandler.FetchVendorTable)
+	submissionsGroup.PUT("/vendorTable", submissionHandler.UpdateVendorTable)
+
 	usersGroup.GET("/", userHandler.Fetch)              // get all users with custom roles
 	usersGroup.GET("/:email", userHandler.FetchByEmail) // get roles for specific user
 	usersGroup.GET("/roles", userHandler.Roles)         // get current user roles
