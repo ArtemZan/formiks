@@ -995,7 +995,7 @@ export function VendorsTable(props: Props) {
 
   function columnWidth(column: string, dw: number) {
     var sd = (defaultColumnsWidth as any)[column];
-    return sd ? sd : dw;
+    return sd ? sd : 150;
   }
   //   async function saveCellWidth(cell: string, width: number) {
   //     localStorage.setItem(cell, width.toString());
@@ -1043,7 +1043,7 @@ export function VendorsTable(props: Props) {
       key: "data.companyName",
       dataKey: "data.companyName",
       title: "Company Name",
-      width: columnWidth("data.companyName", 200),
+      width: columnWidth("data.companyName", 150),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.companyName"),
       header: "General Information",
@@ -3553,6 +3553,17 @@ export function VendorsTable(props: Props) {
                         HTTP
                       </Text>
                     </HStack>
+                    <Button
+                      onClick={() => {
+                        localStorage.removeItem("vendors.displayedColumns");
+                        localStorage.removeItem("vendors.columns");
+                        window.location.reload();
+                      }}
+                      mt="10px"
+                      colorScheme="red"
+                    >
+                      clear cache
+                    </Button>
                   </DebugOverlay>
                 </div>
               }
