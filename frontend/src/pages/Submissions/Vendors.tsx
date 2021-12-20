@@ -689,8 +689,14 @@ export function VendorsTable(props: Props) {
   }, []);
   useEffect(() => {
     RestAPI.getVendorTableDefaultConfig().then((response) => {
-      setDefaultColumnsWidth(response.data.columnsWidth);
-      setDisplayedColumns(response.data.displayedColumns);
+      if (response.data.columnsWidth !== null) {
+        setDefaultColumnsWidth(response.data.columnsWidth);
+      
+      }
+      if (response.data.displayedColumns !== null) {
+        setDisplayedColumns(response.data.displayedColumns);
+      } 
+     
       var cw = localStorage.getItem("vendors.columns");
       if (cw !== null) {
         setDefaultColumnsWidth(JSON.parse(cw));
