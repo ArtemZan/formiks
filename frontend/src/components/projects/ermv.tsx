@@ -25,7 +25,7 @@ import { getAccountInfo } from "../../utils/MsGraphApiCall";
 import DatePicker from "react-datepicker";
 import isEqual from "lodash/isEqual";
 
-import { Table } from "rsuite";
+import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 import { v4 as uuidv4 } from "uuid";
@@ -167,6 +167,7 @@ export default function CreateBookmark(props: Props) {
         eurBudget: "",
         share: "",
         estimatedCostsCC: "",
+        estimatedIncomeCC: "",
         estimatedCostsLC: "",
         estimatedCostsEUR: "",
         netProfitTargetVC: "",
@@ -258,6 +259,7 @@ export default function CreateBookmark(props: Props) {
     var totalBudgetEur = 0;
     var totalBudgetLC = 0;
     var totalCostsCC = parseFloat(totalEstimatedCostsCC);
+    var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
     var totalCostsLC = parseFloat(totalEstimatedCostsLC);
     var totalCostsEur = parseFloat(totalEstimatedCostsEur);
     var netProfitEur = parseFloat(netProfitTarget);
@@ -283,6 +285,9 @@ export default function CreateBookmark(props: Props) {
 
         if (!isNaN(totalCostsCC)) {
           row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
+        }
+        if (!isNaN(totalIncomeCC)) {
+          row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
         }
         if (!isNaN(totalCostsLC)) {
           row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
@@ -658,7 +663,15 @@ export default function CreateBookmark(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Manufacturer`s Fiscal Quarter</Text>
+          <Text mb="8px">ALSO Project Approval (attachments)</Text>
+          <Uploader draggable>
+            <div style={{ lineHeight: "200px" }}>
+              Click or Drag files to this area to upload
+            </div>
+          </Uploader>
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Manufacturer`s Fiscal Period</Text>
           <Select
             menuPortalTarget={document.body}
             styles={{
@@ -789,7 +802,15 @@ export default function CreateBookmark(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Campaign Budget`s Currency / Campaign Currency</Text>
+          <Text mb="8px">Budget Approved by Vendor (attachments)</Text>
+          <Uploader draggable>
+            <div style={{ lineHeight: "200px" }}>
+              Click or Drag files to this area to upload
+            </div>
+          </Uploader>
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Campaign Currency</Text>
           <Select
             menuPortalTarget={document.body}
             styles={{
@@ -831,7 +852,7 @@ export default function CreateBookmark(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Campaign Estimated Income in Budget`s currency</Text>
+          <Text mb="8px">Campaign Estimated Income in Campaign Currency</Text>
           <Input
             value={estimatedIncomeBudgetCurrency}
             onChange={(event) => {
@@ -842,7 +863,7 @@ export default function CreateBookmark(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Campaign Estimated Costs in Budget`s currency</Text>
+          <Text mb="8px">Campaign Estimated Costs in Campaign Currency</Text>
           <Input
             value={estimatedCostsBudgetCurrency}
             onChange={(event) => {
@@ -906,7 +927,7 @@ export default function CreateBookmark(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
-        <Box w="100%">
+        {/* <Box w="100%">
           <Text mb="8px">Total Estimated Costs in Campaign Currency</Text>
           <Input
             value={totalEstimatedCostsCC}
@@ -916,7 +937,7 @@ export default function CreateBookmark(props: Props) {
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
-        </Box>
+        </Box> */}
         <Box w="100%">
           <Text mb="8px">Total Estimated Costs in Local Currency</Text>
           <Input
@@ -1236,8 +1257,21 @@ export default function CreateBookmark(props: Props) {
                 )}
               </Cell>
             </Column>
+            {/* FIXME: calculate */}
             <Column width={300} resizable>
-              <HeaderCell>Vendor Estimated Costs in CC</HeaderCell>
+              <HeaderCell>
+                Vendor Estimated Income in Campaign Currency
+              </HeaderCell>
+              <Cell dataKey="estimatedIncomeCC">
+                {(rowData, index) => (
+                  <Input disabled defaultValue={rowData.estimatedIncomeCC} />
+                )}
+              </Cell>
+            </Column>
+            <Column width={300} resizable>
+              <HeaderCell>
+                Vendor Estimated Costs in Campaign Currency
+              </HeaderCell>
               <Cell dataKey="estimatedCostsCC">
                 {(rowData, index) => (
                   <Input disabled defaultValue={rowData.estimatedCostsCC} />
@@ -1261,7 +1295,7 @@ export default function CreateBookmark(props: Props) {
               </Cell>
             </Column>
             <Column width={300} resizable>
-              <HeaderCell>Net Profit Target in Vendor Currency</HeaderCell>
+              <HeaderCell>Net Profit Target in Campaign Currency</HeaderCell>
               <Cell dataKey="netProfitTargetVC">
                 {(rowData, index) => (
                   <Input disabled defaultValue={rowData.netProfitTargetVC} />
@@ -1566,7 +1600,8 @@ export default function CreateBookmark(props: Props) {
                 estimatedIncomeBC: parseFloat(vendor.localBudget),
                 // cbbudgetEur: parseFloat(vendor.eurBudget),
                 vendorShare: parseFloat(vendor.share),
-                estimatedCostsBC: parseFloat(vendor.estimatedCostsCC),
+                estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
+                estimatedIncomeCC: parseFloat(vendor.estimatedIncomeCC),
                 // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
                 estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
                 estimatedResultBC: parseFloat(vendor.netProfitTargetVC),

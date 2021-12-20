@@ -416,6 +416,7 @@ const loadOptions = (identifier: string) => {
       return SapStatus;
     case "data.caVendorName":
     case "data.vendorName":
+    case "data.vendorNameSA":
       return VendorsNames;
     case "data.costStatus":
       return CostStatuses;
@@ -583,6 +584,7 @@ const DisplayedColumnsList = [
       { label: "Invoice Number", value: "data.invoiceNumberSA" },
       { label: "Income Account", value: "data.incomeAccountSA" },
       { label: "Name 1", value: "data.name1SA" },
+      { label: "Vendor Name", value: "data.vendorNameSA" },
       { label: "Income Amount (LC)", value: "data.incomeAmountLC" },
       { label: "Income Amount (DC)", value: "data.incomeAmountDC" },
       { label: "Income Status", value: "data.incomeStatus" },
@@ -2206,6 +2208,26 @@ export function VendorsTable(props: Props) {
           type={"text"}
           backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.vendorNameSA",
+      dataKey: "data.vendorNameSA",
+      title: "Vendor Name",
+      width: columnWidth("data.vendorNameSA", 200),
+      resizable: true,
+      hidden: visibilityController("salesActuals", "data.vendorNameSA"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"dropdown"}
+          backgroundColor="#fff7f8"
+          onUpdate={handleCellUpdate}
+          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
