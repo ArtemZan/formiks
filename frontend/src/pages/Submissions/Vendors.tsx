@@ -4,7 +4,6 @@ import {
   Button,
   HStack,
   Input,
-  Tooltip,
   Text,
   useColorModeValue,
   Divider,
@@ -17,11 +16,9 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   CloseButton,
-  Checkbox,
 } from "@chakra-ui/react";
 import {
   cloneElement,
-  createRef,
   ReactElement,
   ReactNode,
   useCallback,
@@ -31,13 +28,10 @@ import {
 } from "react";
 import EditableTableCell from "../../components/EditableTableCell";
 
-import { FpsView, useFps } from "react-fps";
+import { useFps } from "react-fps";
 import Select from "react-select";
-import Project from "../../types/project";
 import { Submission } from "../../types/submission";
-import { createGlobalStyle } from "styled-components";
 import styled from "styled-components";
-import { Overlay } from "react-overlays";
 import DatePicker from "react-datepicker";
 import Toast from "../../components/Toast";
 
@@ -47,13 +41,12 @@ import BaseTable, {
   ColumnShape,
   unflatten,
 } from "react-base-table";
-import ContentEditable from "react-contenteditable";
 import "react-base-table/styles.css";
 import { RestAPI } from "../../api/rest";
 import React from "react";
 import _ from "lodash";
-import { ArrowForwardIcon, SearchIcon } from "@chakra-ui/icons";
-import { BiPlusMedical, VscDebugRerun, VscDebugStart } from "react-icons/all";
+import { ArrowForwardIcon } from "@chakra-ui/icons";
+import { BiPlusMedical } from "react-icons/all";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
@@ -76,275 +69,6 @@ const DebugOverlay = styled.div`
   border-radius: 10px;
   color: white;
 `;
-
-// Use React.Component because of https://github.com/lovasoa/react-contenteditable/issues/161
-class Cell extends React.Component<
-  {
-    onUpdate: any;
-    rowIndex: number;
-    rowData: any;
-    columnKey: string | undefined;
-    type: string;
-    initialValue: any;
-    textColor?: any;
-    readonly?: boolean;
-  },
-  {
-    cellValue: any;
-    options: any[];
-    editing: boolean;
-  }
-> {
-  constructor(props: any) {
-    super(props);
-
-    this.state = {
-      options: [],
-      cellValue: undefined,
-      editing: false,
-    };
-  }
-  componentDidUpdate(prevProps: any) {
-    if (prevProps.initialValue !== this.props.initialValue) {
-      this.setState({ cellValue: this.props.initialValue });
-    }
-  }
-
-  componentDidMount() {
-    var value: any = undefined;
-    switch (this.props.type) {
-      case "text":
-      case "number":
-      case "button":
-        value = this.props.initialValue
-          ? this.props.initialValue.toString()
-          : "";
-        break;
-      case "date":
-        value =
-          this.props.initialValue && this.props.initialValue !== null
-            ? new Date(this.props.initialValue)
-            : null;
-        break;
-      case "dropdown":
-        value =
-          typeof this.props.initialValue === "string"
-            ? { label: this.props.initialValue, value: this.props.initialValue }
-            : { label: "", value: "" };
-        break;
-      case "multiple-dropdown":
-        value = [];
-        if (this.props.initialValue && Array.isArray(this.props.initialValue)) {
-          this.props.initialValue.map((value: any) => {
-            value.push({ label: value, value: value });
-          });
-        }
-        break;
-      default:
-        break;
-    }
-    this.setState({ cellValue: value });
-  }
-
-  render() {
-    return (
-      <div
-        style={{
-          textAlign: this.props.type === "button" ? "center" : "inherit",
-        }}
-        className={
-          this.state.editing
-            ? "vendors-table-cell active"
-            : `content-preview ${
-                this.props.textColor ? this.props.textColor : ""
-              } ${this.props.readonly ? "readonly" : ""}`
-        }
-        onClick={() => {
-          if (!this.state.editing && !this.props.readonly) {
-            this.setState({ editing: true });
-          }
-        }}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          this.setState({ editing: false });
-        }}
-      >
-        {!this.state.editing ? (
-          this.props.type === "date" ? (
-            this.state.cellValue && this.state.cellValue !== null ? (
-              moment(this.state.cellValue).format("DD.MM.yyyy")
-            ) : (
-              ""
-            )
-          ) : typeof this.state.cellValue === "object" ? (
-            this.state.cellValue !== null ? (
-              `${this.state.cellValue.label}`
-            ) : (
-              ""
-            )
-          ) : (
-            `${this.state.cellValue}`
-          )
-        ) : this.props.type === "text" || this.props.type === "number" ? (
-          <textarea
-            autoFocus
-            style={{ resize: "none" }}
-            value={this.state.cellValue ?? ""}
-            onChange={(event) => {
-              this.setState({ cellValue: event.target.value });
-            }}
-            onFocus={(e) => {
-              setTimeout(() => {
-                document.execCommand("selectAll", false);
-              }, 0);
-            }}
-            onKeyPress={
-              this.props.type === "number"
-                ? (event) => {
-                    const keyCode = event.keyCode || event.which;
-                    const string = String.fromCharCode(keyCode);
-                    if (!numRegex.test(string)) {
-                      event.defaultPrevented = false;
-                      if (event.preventDefault) event.preventDefault();
-                    }
-                  }
-                : undefined
-            }
-            onBlur={(event) => {
-              this.props.onUpdate(
-                this.props.rowData.id,
-                this.props.columnKey,
-                this.props.type === "number"
-                  ? Number(this.state.cellValue)
-                  : this.state.cellValue
-              );
-              this.setState({ editing: false });
-            }}
-            className="content-editable"
-          />
-        ) : this.props.type === "date" ? (
-          <DatePicker
-            autoFocus
-            // showTimeInput
-            isClearable
-            customInput={<input className="datepicker-input"></input>}
-            // selected={this.state.cellValue}
-            onChange={(date) => {
-              this.setState({ cellValue: date, editing: false });
-              this.props.onUpdate(
-                this.props.rowData.id,
-                this.props.columnKey,
-                date !== null ? date.toString() : null
-              );
-            }}
-            onCalendarClose={() => {
-              this.setState({ editing: false });
-            }}
-            dateFormat="dd.MM.yyyy"
-          />
-        ) : this.props.type === "dropdown" ||
-          this.props.type === "multiple-dropdown" ? (
-          //   FIXME: use http://bvaughn.github.io/react-virtualized-select/
-          <Select
-            menuIsOpen={this.state.editing}
-            autoFocus
-            isMulti={this.props.type === "multiple-dropdown"}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "black",
-              }),
-              control: (base, state) => ({
-                ...base,
-                paddingLeft: "5px",
-                boxShadow: "none",
-                outlineWidth: 0,
-                border: 0,
-                minHeight: 52,
-                backgroundColor: "transparent",
-                // border: "1px solid transparent",
-                transition: "0.3s",
-                // "&:hover": {
-                //   border: "1px solid transparent",
-                // },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 0,
-              colors: {
-                ...theme.colors,
-                primary: "#a0bfe3",
-              },
-            })}
-            menuPortalTarget={document.body}
-            value={this.state.cellValue}
-            onChange={(value) => {
-              this.setState({
-                cellValue: value !== null ? value : { label: "", value: "" },
-              });
-              var v: any = "";
-              if (value !== null && Array.isArray(value)) {
-                v = [];
-                value.map((dv: any) => v.push(dv.label));
-              }
-              if (value !== null && !Array.isArray(value)) {
-                v = value.label;
-              }
-              this.props.onUpdate(
-                this.props.rowData.id,
-                this.props.columnKey,
-                v
-              );
-              this.setState({ editing: false });
-            }}
-            onFocus={async () => {
-              this.setState({
-                options: loadOptions(this.props.columnKey ?? ""),
-              });
-            }}
-            onBlur={() => {
-              this.setState({
-                options: [],
-                editing: false,
-              });
-            }}
-            placeholder=""
-            classNamePrefix="table-select"
-            isClearable
-            isSearchable
-            options={this.state.options}
-          />
-        ) : this.props.type === "button" ? (
-          <div className="table-button-container">
-            <Button
-              colorScheme={this.props.textColor}
-              onClick={() => {
-                this.props.onUpdate(
-                  this.props.rowData.id,
-                  "data.companyName",
-                  "Updated Name"
-                );
-                this.setState({ editing: false });
-              }}
-              size="sm"
-              color="white"
-              className="table-button"
-            >
-              {this.state.cellValue}
-            </Button>
-          </div>
-        ) : (
-          <div>unknown</div>
-        )}
-      </div>
-    );
-  }
-}
 
 var ProjectType: any[] = [];
 var PH1: any[] = [];
@@ -648,7 +372,7 @@ export function VendorsTable(props: Props) {
     "costGlPostings",
     "incomeGlPostings",
   ]);
-  const { fps, avgFps, maxFps, currentFps } = useFps(20);
+  const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
@@ -711,9 +435,9 @@ export function VendorsTable(props: Props) {
   useEffect(() => {
     var filtered: Submission[] = [];
     if (filters.length > 0 && submissions.length > 0) {
-      submissions.map((submission) => {
+      submissions.forEach((submission) => {
         var valid = true;
-        filters.map((filter) => {
+        filters.forEach((filter) => {
           if (
             filter.selectedValues !== null &&
             filter.selectedValues.length > 0
@@ -978,22 +702,6 @@ export function VendorsTable(props: Props) {
         );
       });
   }
-  function handleCellUpdateRedraw(
-    submission: string,
-    path: string,
-    value: any
-  ) {
-    var submissionIndex = submissions.findIndex((s) => s.id === submission);
-    if (submissionIndex > -1) {
-      path = `[${submissionIndex}].${path}`;
-      if (_.get(submissions, path) !== value) {
-        var temp = [...submissions];
-        _.set(temp, path, value);
-        setSubmissions(temp);
-        partialUpdate(submission, path, value);
-      }
-    }
-  }
 
   async function handleResize(column: string, width: number) {
     var c = localStorage.getItem("vendors.columns");
@@ -1025,7 +733,7 @@ export function VendorsTable(props: Props) {
     RestAPI.getSubmissions().then((response) => {
       var vSubs: Submission[] = [];
       var subs = response.data;
-      subs.map((sub) => {
+      subs.forEach((sub) => {
         if (sub.project === "619515b754e61c8dd33daa52") {
           vSubs.push(sub);
         }
@@ -2923,31 +2631,31 @@ export function VendorsTable(props: Props) {
         return cells.map((cell, index) => {
           var colorClass: string = "";
           switch (true) {
-            case index < 13:
+            case index < 12:
               colorClass = index === 0 ? "" : "dark-green-3";
               break;
-            case index < 17:
+            case index < 16:
               colorClass = "white";
               break;
-            case index < 32:
+            case index < 31:
               colorClass = "white";
               break;
-            case index < 39:
+            case index < 38:
               colorClass = "orange";
               break;
-            case index < 52:
+            case index < 51:
               colorClass = "blue-2";
               break;
-            case index < 65:
+            case index < 64:
               colorClass = "warm-gray";
               break;
-            case index < 68:
+            case index < 67:
               colorClass = "yellow";
               break;
-            case index < 78:
+            case index < 77:
               colorClass = "purple";
               break;
-            case index < 88:
+            case index < 87:
               colorClass = "salmon";
               break;
             default:
