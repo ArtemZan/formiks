@@ -191,7 +191,6 @@ const DisplayedColumnsList = [
     label: "General Information",
     value: "generalInformation",
     children: [
-      { label: "Company Name", value: "data.companyName" },
       { label: "Company Code", value: "data.companyCode" },
       { label: "Project Number", value: "data.projectNumber" },
       { label: "Project Name", value: "data.projectName" },
@@ -200,41 +199,28 @@ const DisplayedColumnsList = [
         value: "data.campaignStartDate",
       },
       { label: "Project Type", value: "data.projectType" },
-      { label: "SAP Status", value: "data.sapStatus" },
-      { label: "Campaign Channel", value: "data.campaignChannel" },
-      { label: "Target Audience", value: "data.targetAudience" },
-      { label: "Marketing Responsible", value: "data.marketingResponsible" },
-      { label: "Project Approver", value: "data.projectApprover" },
-      { label: "Additional Information", value: "data.additionalInformation" },
     ],
   },
-
   {
-    label: "Countries Participating",
-    value: "countries",
+    label: "Project Information",
+    value: "projectInformation",
     children: [
-      { label: "Country", value: "data.country" },
-      { label: "Country Share %", value: "data.countryShare" },
+      { label: "Countries EMEA", value: "data.countriesEMEA" },
+      { label: "% Country Share", value: "data.countryShare" },
       {
         label: "Country Budget Contribution (EUR)",
-        value: "data.countryBudgetContributionEur",
+        value: "data.countryBudgetContributionEUR",
       },
       {
         label: "Country Cost Estimation (EUR)",
-        value: "data.manufacturerNumber",
+        value: "data.countryCostEstimationEUR",
       },
-    ],
-  },
-  {
-    label: "Vendors Participating",
-    value: "vendors",
-    children: [
-      { label: "Vendor Name", value: "data.vendorName" },
-      { label: "SAP Debitor Number", value: "data.sapDebitorNumber" },
-      { label: "SAP Creditor Number", value: "data.sapCreditorNumber" },
       { label: "Manufacturer Number", value: "data.manufacturerNumber" },
+      { label: "Vendor Name", value: "data.vendorName" },
+      { label: "SAP Debitor Number", value: "data.debitorNumber" },
+      { label: "SAP Creditor Number", value: "data.creditorNumber" },
       { label: "MDF Level", value: "data.mdfLevel" },
-      { label: "Budget Currency", value: "data.budgetCurrency" },
+      { label: "Vendor Budget Currency", value: "data.vendorBudgetCurrency" },
       {
         label: "Estimated Income (Budget Currency)",
         value: "data.estimatedIncomeBC",
@@ -247,12 +233,17 @@ const DisplayedColumnsList = [
         label: "Estimated Result (Budget Currency)",
         value: "data.estimatedResultBC",
       },
-      { label: "Estimated Income (EUR)", value: "data.estimatedIncomeEur" },
-      { label: "Estimated Costs (EUR)", value: "data.estimatedCostsEur" },
-      { label: "Estimated Result (EUR)", value: "data.estimatedResultEur" },
-      { label: "Vendor Share %", value: "data.vendorShare" },
-      { label: "Business Unit", value: "data.bu" },
-      { label: "PH1", value: "data.ph1" },
+      { label: "Estimated Income EUR", value: "data.estimatedIncomeEUR" },
+      { label: "Estimated Costs EUR", value: "data.estimatedCostsEUR" },
+      { label: "Estimated Result EUR", value: "data.estimatedResultEUR" },
+      { label: "% Vendor Share", value: "data.vendorShare" },
+      { label: "Business Unit", value: "data.businessUnit" },
+      { label: "PH1", value: "data.PH1" },
+      { label: "Campaign Channel", value: "data.campaignChannel" },
+      { label: "Target Audience", value: "data.targetAudience" },
+      { label: "Marketing Responsible", value: "data.marketingResponsible" },
+      { label: "Project Approver", value: "data.projectApprover" },
+      { label: "Additional Information", value: "data.additionalInformation" },
     ],
   },
   {
@@ -278,8 +269,8 @@ const DisplayedColumnsList = [
     ],
   },
   {
-    label: "Cost Actuals",
-    value: "costActuals",
+    label: "Cost Invoices",
+    value: "costInvoices",
     children: [
       { label: "Year / Month", value: "data.yearMonth" },
       { label: "Document Type", value: "data.documentType" },
@@ -297,31 +288,21 @@ const DisplayedColumnsList = [
     ],
   },
   {
-    label: "Sales Actuals",
-    value: "salesActuals",
+    label: "Sales Invoices",
+    value: "salesInvoices",
     children: [
-      { label: "Year / Month", value: "data.yearMonthSA" },
-      { label: "Document Type", value: "data.documentTypeSA" },
-      { label: "Posting Date", value: "data.postingDateSA" },
-      { label: "Document Date", value: "data.documentDateSA" },
-      { label: "Document Number", value: "data.documentNumberSA" },
-      { label: "Invoice Number", value: "data.invoiceNumberSA" },
-      { label: "Income Account", value: "data.incomeAccountSA" },
-      { label: "Name 1", value: "data.name1SA" },
-      { label: "Vendor Name", value: "data.vendorNameSA" },
-      { label: "Income Amount (LC)", value: "data.incomeAmountLC" },
-      { label: "Income Amount (DC)", value: "data.incomeAmountDC" },
-      { label: "Income Status", value: "data.incomeStatus" },
-      { label: "Actual Result (LC)", value: "data.actualResultLC" },
-    ],
-  },
-  {
-    label: "Actuals in EUR",
-    value: "actualsInEur",
-    children: [
-      { label: "Income Amount (EUR)", value: "data.incomeAmountEur" },
-      { label: "Cost Amount (EUR)", value: "data.costAmountEur" },
-      { label: "Actual Result (EUR)", value: "data.actualResultEur" },
+      { label: "Year / Month", value: "data.yearMonthSI" },
+      { label: "Document Type", value: "data.documentTypeSI" },
+      { label: "Posting Date", value: "data.postingDateSI" },
+      { label: "Document Date", value: "data.documentDateSI" },
+      { label: "Document Number", value: "data.documentNumberSI" },
+      { label: "Invoice Number", value: "data.invoiceNumberSI" },
+      { label: "Income Account", value: "data.incomeAccountSI" },
+      { label: "Name 1", value: "data.name1SI" },
+      { label: "Vendor Name", value: "data.vendorNameSI" },
+      { label: "Income Amount (LC)", value: "data.incomeAmountLCSI" },
+      { label: "Income Amount (DC)", value: "data.incomeAmountDCSI" },
+      { label: "Income Status", value: "data.incomeStatusSI" },
     ],
   },
   {
@@ -337,7 +318,6 @@ const DisplayedColumnsList = [
       { label: "Cost Amount (LC)", value: "data.costAmountLCCostGL" },
       { label: "Cost Amount (DC)", value: "data.costAmountDCCostGL" },
       { label: "DC", value: "data.dcCostGL" },
-      { label: "Cost Amount (EUR)", value: "data.costAmountEurCostGL" },
     ],
   },
   {
@@ -356,6 +336,24 @@ const DisplayedColumnsList = [
       { label: "Income Amount (EUR)", value: "data.incomeAmountEurIncomeGL" },
     ],
   },
+  {
+    label: "Project Results",
+    value: "projectResults",
+    children: [
+      { label: "Result (LC)", value: "data.resultLCPR" },
+      { label: "Result (EUR)", value: "data.resultEURPR" },
+    ],
+  },
+  {
+    label: "Control Checks",
+    value: "controlChecks",
+    children: [
+      { label: "Total Costs in Tool", value: "data.totalCostsInTool" },
+      { label: "Total Costs in SAP", value: "data.totalCostsInSAP" },
+      { label: "Total Income in Tool", value: "data.totalIncomeInTool" },
+      { label: "Total Income in SAP", value: "data.totalIncomeInSAP" },
+    ],
+  },
 ];
 
 export function VendorsTable(props: Props) {
@@ -363,14 +361,14 @@ export function VendorsTable(props: Props) {
   const [filters, setFilters] = useState<FilterField[]>([]);
   const [displayedColumns, setDisplayedColumns] = useState<string[]>([
     "generalInformation",
-    "countries",
-    "vendors",
+    "projectInformation",
     "purchaseOrder",
-    "costActuals",
-    "salesActuals",
-    "actualsInEur",
+    "costInvoices",
+    "salesInvoices",
     "costGlPostings",
     "incomeGlPostings",
+    "projectResults",
+    "controlChecks",
   ]);
   const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
@@ -480,7 +478,7 @@ export function VendorsTable(props: Props) {
                 switch (filter.filter) {
                   case "includes":
                     var exists = false;
-                    filter.selectedValues.map((filterValue) => {
+                    filter.selectedValues.forEach((filterValue) => {
                       if (filterValue.toString() === value) {
                         exists = true;
                       }
@@ -760,39 +758,19 @@ export function VendorsTable(props: Props) {
       className: "expand",
     },
     {
-      key: "data.companyName",
-      dataKey: "data.companyName",
-      title: "Company Name",
-      width: columnWidth("data.companyName", 150),
-      resizable: true,
-      hidden: visibilityController("generalInformation", "data.companyName"),
-      header: "General Information",
-      className: "dark-green-3-border",
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#e7f1f3"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
       key: "data.companyCode",
       dataKey: "data.companyCode",
       title: "Company Code",
+      header: "General Information",
       width: columnWidth("data.companyCode", 150),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.companyCode"),
       type: "number",
-      className: "dark-green-3-border",
+      // className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
-          backgroundColor="#e7f1f3"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -808,11 +786,10 @@ export function VendorsTable(props: Props) {
       width: columnWidth("data.projectNumber", 150),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.projectNumber"),
-      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e7f1f3"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -828,11 +805,10 @@ export function VendorsTable(props: Props) {
       width: columnWidth("data.projectName", 200),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.projectName"),
-      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e7f1f3"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -852,11 +828,10 @@ export function VendorsTable(props: Props) {
         "data.campaignStartDate"
       ),
       type: "date",
-      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#e7f1f3"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -873,11 +848,10 @@ export function VendorsTable(props: Props) {
       resizable: true,
       hidden: visibilityController("generalInformation", "data.projectType"),
       type: "dropdown",
-      className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          backgroundColor="#e7f1f3"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
           rowIndex={props.rowIndex}
@@ -888,152 +862,13 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.sapStatus",
-      dataKey: "data.sapStatus",
-      title: "SAP Status",
-      width: columnWidth("data.sapStatus", 120),
+      key: "data.countriesEMEA",
+      dataKey: "data.countriesEMEA",
+      title: "Countries EMEA",
+      header: "Project Information",
+      width: columnWidth("data.countriesEMEA", 250),
       resizable: true,
-      hidden: visibilityController("generalInformation", "data.sapStatus"),
-      className: "dark-green-3-border",
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          readonly
-          backgroundColor="#e7f1f3"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-
-    {
-      key: "data.campaignChannel",
-      dataKey: "data.campaignChannel",
-      title: "Campaign Channel",
-      width: columnWidth("data.campaignChannel", 200),
-      resizable: true,
-      hidden: visibilityController(
-        "generalInformation",
-        "data.campaignChannel"
-      ),
-      className: "dark-green-3-border",
-      type: "dropdown",
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          backgroundColor="#e7f1f3"
-          onUpdate={handleCellUpdate}
-          loadOptions={loadOptions}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.data.targetAudience",
-      dataKey: "data.targetAudience",
-      title: "Target Audience",
-      width: columnWidth("data.targetAudience", 200),
-      resizable: true,
-      hidden: visibilityController("generalInformation", "data.targetAudience"),
-      className: "dark-green-3-border",
-      type: "dropdown",
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          backgroundColor="#e7f1f3"
-          onUpdate={handleCellUpdate}
-          loadOptions={loadOptions}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.marketingResponsible",
-      dataKey: "data.marketingResponsible",
-      title: "Marketing Responsible",
-      width: columnWidth("data.marketingResponsible", 200),
-      className: "dark-green-3-border",
-      resizable: true,
-      hidden: visibilityController(
-        "generalInformation",
-        "data.marketingResponsible"
-      ),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#e7f1f3"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-
-    {
-      key: "data.projectApprover",
-      dataKey: "data.projectApprover",
-      title: "Project Approver",
-      width: columnWidth("data.projectApprover", 200),
-      className: "dark-green-3-border",
-      resizable: true,
-      hidden: visibilityController(
-        "generalInformation",
-        "data.projectApprover"
-      ),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#e7f1f3"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.additionalInformation",
-      dataKey: "data.additionalInformation",
-      title: "Additional Information",
-      width: columnWidth("data.additionalInformation", 250),
-      className: "dark-green-3-border",
-      resizable: true,
-      hidden: visibilityController(
-        "generalInformation",
-        "data.additionalInformation"
-      ),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#e7f1f3"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.country",
-      dataKey: "data.country",
-      title: "Country",
-      width: columnWidth("data.country", 200),
-      resizable: true,
-      header: "Countries Participating",
-      hidden: visibilityController("countries", "data.country"),
+      hidden: visibilityController("projectInformation", "data.countriesEMEA"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1049,10 +884,10 @@ export function VendorsTable(props: Props) {
     {
       key: "data.countryShare",
       dataKey: "data.countryShare",
-      title: "Country Share %",
-      width: columnWidth("data.countryShare", 150),
+      title: "% Country Share",
+      width: columnWidth("data.countryShare", 200),
       resizable: true,
-      hidden: visibilityController("countries", "data.countryShare"),
+      hidden: visibilityController("projectInformation", "data.countryShare"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1066,14 +901,14 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.countryBudgetContributionEur",
-      dataKey: "data.countryBudgetContributionEur",
+      key: "data.countryBudgetContributionEUR",
+      dataKey: "data.countryBudgetContributionEUR",
       title: "Country Budget Contribution (EUR)",
-      width: columnWidth("data.countryBudgetContributionEur", 250),
+      width: columnWidth("data.countryBudgetContributionEUR", 250),
       resizable: true,
       hidden: visibilityController(
-        "countries",
-        "data.countryBudgetContributionEur"
+        "projectInformation",
+        "data.countryBudgetContributionEUR"
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -1088,75 +923,15 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.countryCostEstimationEur",
-      dataKey: "data.countryCostEstimationEur",
+      key: "data.countryCostEstimationEUR",
+      dataKey: "data.countryCostEstimationEUR",
       title: "Country Cost Estimation (EUR)",
-      width: columnWidth("data.countryCostEstimationEur", 250),
+      width: columnWidth("data.countryCostEstimationEUR", 250),
       resizable: true,
       hidden: visibilityController(
-        "countries",
-        "data.countryCostEstimationEur"
+        "projectInformation",
+        "data.countryCostEstimationEUR"
       ),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#f9f8f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    //
-    {
-      key: "data.vendorName",
-      dataKey: "data.vendorName",
-      title: "Vendor Name",
-      width: columnWidth("data.vendorName", 250),
-      resizable: true,
-      hidden: visibilityController("vendors", "data.vendorName"),
-      header: "Vendors Participating",
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          backgroundColor="#f9f8f8"
-          loadOptions={loadOptions}
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.sapDebitorNumber",
-      dataKey: "data.sapDebitorNumber",
-      title: "SAP Debitor Number",
-      width: columnWidth("data.sapDebitorNumber", 200),
-      resizable: true,
-      hidden: visibilityController("vendors", "data.sapDebitorNumber"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#f9f8f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.sapCreditorNumber",
-      dataKey: "data.sapCreditorNumber",
-      title: "SAP Creditor Number",
-      width: columnWidth("data.sapCreditorNumber", 200),
-      resizable: true,
-      hidden: visibilityController("vendors", "data.sapCreditorNumber"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1175,7 +950,67 @@ export function VendorsTable(props: Props) {
       title: "Manufacturer Number",
       width: columnWidth("data.manufacturerNumber", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.manufacturerNumber"),
+      hidden: visibilityController(
+        "projectInformation",
+        "data.manufacturerNumber"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.vendorName",
+      dataKey: "data.vendorName",
+      title: "Vendor Name",
+      width: columnWidth("data.vendorName", 200),
+      resizable: true,
+      hidden: visibilityController("projectInformation", "data.vendorName"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.debitorNumber",
+      dataKey: "data.debitorNumber",
+      title: "SAP Debitor Number",
+      width: columnWidth("data.debitorNumber", 200),
+      resizable: true,
+      hidden: visibilityController("projectInformation", "data.debitorNumber"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.creditorNumber",
+      dataKey: "data.creditorNumber",
+      title: "SAP Creditor Number",
+      width: columnWidth("data.creditorNumber", 200),
+      resizable: true,
+      hidden: visibilityController("projectInformation", "data.creditorNumber"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1194,7 +1029,7 @@ export function VendorsTable(props: Props) {
       title: "MDF Level",
       width: columnWidth("data.mdfLevel", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.mdfLevel"),
+      hidden: visibilityController("projectInformation", "data.mdfLevel"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1208,19 +1043,20 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.budgetCurrency",
-      dataKey: "data.budgetCurrency",
-      title: "Budget Currency",
-      width: columnWidth("data.budgetCurrency", 200),
+      key: "data.vendorBudgetCurrency",
+      dataKey: "data.vendorBudgetCurrency",
+      title: "Vendor Budget Currency",
+      width: columnWidth("data.vendorBudgetCurrency", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.budgetCurrency"),
-      type: "dropdown",
+      hidden: visibilityController(
+        "projectInformation",
+        "data.vendorBudgetCurrency"
+      ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"dropdown"}
+          type={"text"}
           backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
-          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -1232,9 +1068,12 @@ export function VendorsTable(props: Props) {
       key: "data.estimatedIncomeBC",
       dataKey: "data.estimatedIncomeBC",
       title: "Estimated Income (Budget Currency)",
-      width: columnWidth("data.estimatedIncomeBC", 300),
+      width: columnWidth("data.estimatedIncomeBC", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.estimatedIncomeBC"),
+      hidden: visibilityController(
+        "projectInformation",
+        "data.estimatedIncomeBC"
+      ),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1251,9 +1090,12 @@ export function VendorsTable(props: Props) {
       key: "data.estimatedCostsBC",
       dataKey: "data.estimatedCostsBC",
       title: "Estimated Costs (Budget Currency)",
-      width: columnWidth("data.estimatedCostsBC", 250),
+      width: columnWidth("data.estimatedCostsBC", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.estimatedCostsBC"),
+      hidden: visibilityController(
+        "projectInformation",
+        "data.estimatedCostsBC"
+      ),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1270,9 +1112,12 @@ export function VendorsTable(props: Props) {
       key: "data.estimatedResultBC",
       dataKey: "data.estimatedResultBC",
       title: "Estimated Result (Budget Currency)",
-      width: columnWidth("data.estimatedResultBC", 250),
+      width: columnWidth("data.estimatedResultBC", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.estimatedResultBC"),
+      hidden: visibilityController(
+        "projectInformation",
+        "data.estimatedResultBC"
+      ),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1286,12 +1131,15 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.estimatedIncomeEur",
-      dataKey: "data.estimatedIncomeEur",
-      title: "Estimated Income (EUR)",
-      width: columnWidth("data.estimatedIncomeEur", 200),
+      key: "data.estimatedIncomeEUR",
+      dataKey: "data.estimatedIncomeEUR",
+      title: "Estimated Income EUR",
+      width: columnWidth("data.estimatedIncomeEUR", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.estimatedIncomeEur"),
+      hidden: visibilityController(
+        "projectInformation",
+        "data.estimatedIncomeEUR"
+      ),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1305,12 +1153,15 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.estimatedCostsEur",
-      dataKey: "data.estimatedCostsEur",
-      title: "Estimated Costs (EUR)",
-      width: columnWidth("data.estimatedCostsEur", 200),
+      key: "data.estimatedCostsEUR",
+      dataKey: "data.estimatedCostsEUR",
+      title: "Estimated Costs EUR",
+      width: columnWidth("data.estimatedCostsEUR", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.estimatedCostsEur"),
+      hidden: visibilityController(
+        "projectInformation",
+        "data.estimatedCostsEUR"
+      ),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1324,12 +1175,15 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.estimatedResultEur",
-      dataKey: "data.estimatedResultEur",
-      title: "Estimated Result (EUR)",
-      width: columnWidth("data.estimatedResultEur", 200),
+      key: "data.estimatedResultEUR",
+      dataKey: "data.estimatedResultEUR",
+      title: "Estimated Result EUR",
+      width: columnWidth("data.estimatedResultEUR", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.estimatedResultEur"),
+      hidden: visibilityController(
+        "projectInformation",
+        "data.estimatedResultEUR"
+      ),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1345,10 +1199,10 @@ export function VendorsTable(props: Props) {
     {
       key: "data.vendorShare",
       dataKey: "data.vendorShare",
-      title: "Vendor Share %",
-      width: columnWidth("data.vendorShare", 150),
+      title: "% Vendor Share",
+      width: columnWidth("data.vendorShare", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.vendorShare"),
+      hidden: visibilityController("projectInformation", "data.vendorShare"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1362,12 +1216,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.bu",
-      dataKey: "data.bu",
+      key: "data.businessUnit",
+      dataKey: "data.businessUnit",
       title: "Business Unit",
-      width: columnWidth("data.bu", 200),
+      width: columnWidth("data.businessUnit", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.bu"),
+      hidden: visibilityController("projectInformation", "data.businessUnit"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1381,19 +1235,17 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.ph1",
-      dataKey: "data.ph1",
+      key: "data.PH1",
+      dataKey: "data.PH1",
       title: "PH1",
-      width: columnWidth("data.ph1", 200),
+      width: columnWidth("data.PH1", 200),
       resizable: true,
-      hidden: visibilityController("vendors", "data.ph1"),
-      type: "dropdown",
+      hidden: visibilityController("projectInformation", "data.PH1"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"dropdown"}
+          type={"text"}
           backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
-          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -1401,14 +1253,120 @@ export function VendorsTable(props: Props) {
         />
       ),
     },
-    //
+    {
+      key: "data.campaignChannel",
+      dataKey: "data.campaignChannel",
+      title: "Campaign Channel",
+      width: columnWidth("data.campaignChannel", 200),
+      resizable: true,
+      hidden: visibilityController(
+        "projectInformation",
+        "data.campaignChannel"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.targetAudience",
+      dataKey: "data.targetAudience",
+      title: "Target Audience",
+      width: columnWidth("data.targetAudience", 200),
+      resizable: true,
+      hidden: visibilityController("projectInformation", "data.targetAudience"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.marketingResponsible",
+      dataKey: "data.marketingResponsible",
+      title: "Marketing Responsible",
+      width: columnWidth("data.marketingResponsible", 200),
+      resizable: true,
+      hidden: visibilityController(
+        "projectInformation",
+        "data.marketingResponsible"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.projectApprover",
+      dataKey: "data.projectApprover",
+      title: "Project Approver",
+      width: columnWidth("data.projectApprover", 200),
+      resizable: true,
+      hidden: visibilityController(
+        "projectInformation",
+        "data.projectApprover"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.additionalInformation",
+      dataKey: "data.additionalInformation",
+      title: "Additional Information",
+      width: columnWidth("data.additionalInformation", 200),
+      resizable: true,
+      hidden: visibilityController(
+        "projectInformation",
+        "data.additionalInformation"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
     {
       key: "data.purchaseOrderServiceProvider",
       dataKey: "data.purchaseOrderServiceProvider",
       title: "Purchase Order Service Provider",
-      width: columnWidth("data.purchaseOrderServiceProvider", 250),
-      resizable: true,
       header: "Purchase Order",
+      width: columnWidth("data.purchaseOrderServiceProvider", 200),
+      resizable: true,
       hidden: visibilityController(
         "purchaseOrder",
         "data.purchaseOrderServiceProvider"
@@ -1416,7 +1374,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1429,7 +1387,7 @@ export function VendorsTable(props: Props) {
       key: "data.netValueOfServiceOrderedLC",
       dataKey: "data.netValueOfServiceOrderedLC",
       title: "Net Value of Service Ordered (LC)",
-      width: columnWidth("data.netValueOfServiceOrderedLC", 250),
+      width: columnWidth("data.netValueOfServiceOrderedLC", 200),
       resizable: true,
       hidden: visibilityController(
         "purchaseOrder",
@@ -1438,7 +1396,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1451,13 +1409,13 @@ export function VendorsTable(props: Props) {
       key: "data.localCurrency",
       dataKey: "data.localCurrency",
       title: "Local Currency",
-      width: columnWidth("data.localCurrency", 150),
+      width: columnWidth("data.localCurrency", 200),
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.localCurrency"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1470,13 +1428,13 @@ export function VendorsTable(props: Props) {
       key: "data.netValuePOC",
       dataKey: "data.netValuePOC",
       title: "Net Value (Purchase Order Currency)",
-      width: columnWidth("data.netValuePOC", 300),
+      width: columnWidth("data.netValuePOC", 200),
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.netValuePOC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1498,7 +1456,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1517,7 +1475,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1536,7 +1494,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1549,14 +1507,14 @@ export function VendorsTable(props: Props) {
       key: "data.yearMonth",
       dataKey: "data.yearMonth",
       title: "Year / Month",
+      header: "Cost Invoices",
       width: columnWidth("data.yearMonth", 200),
       resizable: true,
-      header: "Cost Actuals",
-      hidden: visibilityController("costActuals", "data.yearMonth"),
+      hidden: visibilityController("costInvoices", "data.yearMonth"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1571,11 +1529,11 @@ export function VendorsTable(props: Props) {
       title: "Document Type",
       width: columnWidth("data.documentType", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.documentType"),
+      hidden: visibilityController("costInvoices", "data.documentType"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1590,11 +1548,11 @@ export function VendorsTable(props: Props) {
       title: "Posting Date",
       width: columnWidth("data.postingDate", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.postingDate"),
+      hidden: visibilityController("costInvoices", "data.postingDate"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1609,11 +1567,11 @@ export function VendorsTable(props: Props) {
       title: "Document Date",
       width: columnWidth("data.documentDate", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.documentDate"),
+      hidden: visibilityController("costInvoices", "data.documentDate"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1628,11 +1586,11 @@ export function VendorsTable(props: Props) {
       title: "Document Number",
       width: columnWidth("data.documentNumber", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.documentNumber"),
+      hidden: visibilityController("costInvoices", "data.documentNumber"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1647,11 +1605,11 @@ export function VendorsTable(props: Props) {
       title: "Invoice Number",
       width: columnWidth("data.invoiceNumber", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.invoiceNumber"),
+      hidden: visibilityController("costInvoices", "data.invoiceNumber"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1666,11 +1624,11 @@ export function VendorsTable(props: Props) {
       title: "Cost Account",
       width: columnWidth("data.costAccount", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.costAccount"),
+      hidden: visibilityController("costInvoices", "data.costAccount"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1685,11 +1643,11 @@ export function VendorsTable(props: Props) {
       title: "Name 1",
       width: columnWidth("data.name1", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.name1"),
+      hidden: visibilityController("costInvoices", "data.name1"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1702,14 +1660,13 @@ export function VendorsTable(props: Props) {
       key: "data.caVendorName",
       dataKey: "data.caVendorName",
       title: "Vendor Name",
-      width: columnWidth("data.caVendorName", 250),
+      width: columnWidth("data.caVendorName", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.caVendorName"),
+      hidden: visibilityController("costInvoices", "data.caVendorName"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"dropdown"}
-          backgroundColor="#e8effe"
-          loadOptions={loadOptions}
+          type={"text"}
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1724,11 +1681,11 @@ export function VendorsTable(props: Props) {
       title: "Cost Amount (LC)",
       width: columnWidth("data.costAmountLC", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.costAmountLC"),
+      hidden: visibilityController("costInvoices", "data.costAmountLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1743,11 +1700,11 @@ export function VendorsTable(props: Props) {
       title: "Cost Amount (DC)",
       width: columnWidth("data.costAmountDC", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.costAmountDC"),
+      hidden: visibilityController("costInvoices", "data.costAmountDC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1762,11 +1719,11 @@ export function VendorsTable(props: Props) {
       title: "DC",
       width: columnWidth("data.dc", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.dc"),
+      hidden: visibilityController("costInvoices", "data.dc"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#e8effe"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1781,13 +1738,12 @@ export function VendorsTable(props: Props) {
       title: "Cost Status",
       width: columnWidth("data.costStatus", 200),
       resizable: true,
-      hidden: visibilityController("costActuals", "data.costStatus"),
+      hidden: visibilityController("costInvoices", "data.costStatus"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"dropdown"}
-          backgroundColor="#e8effe"
+          type={"text"}
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
-          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -1796,13 +1752,13 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.yearMonthSA",
-      dataKey: "data.yearMonthSA",
+      key: "data.yearMonthSI",
+      dataKey: "data.yearMonthSI",
       title: "Year / Month",
-      width: columnWidth("data.yearMonthSA", 200),
+      width: columnWidth("data.yearMonthSI", 200),
+      header: "Sales Invoices",
       resizable: true,
-      header: "Sales Actuals",
-      hidden: visibilityController("salesActuals", "data.yearMonthSA"),
+      hidden: visibilityController("salesInvoices", "data.yearMonthSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1816,12 +1772,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.documentTypeSA",
-      dataKey: "data.documentTypeSA",
+      key: "data.documentTypeSI",
+      dataKey: "data.documentTypeSI",
       title: "Document Type",
-      width: columnWidth("data.documentTypeSA", 200),
+      width: columnWidth("data.documentTypeSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.documentTypeSA"),
+      hidden: visibilityController("salesInvoices", "data.documentTypeSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1835,12 +1791,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.postingDateSA",
-      dataKey: "data.postingDateSA",
+      key: "data.postingDateSI",
+      dataKey: "data.postingDateSI",
       title: "Posting Date",
-      width: columnWidth("data.postingDateSA", 200),
+      width: columnWidth("data.postingDateSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.postingDateSA"),
+      hidden: visibilityController("salesInvoices", "data.postingDateSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1854,12 +1810,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.documentDateSA",
-      dataKey: "data.documentDateSA",
+      key: "data.documentDateSI",
+      dataKey: "data.documentDateSI",
       title: "Document Date",
-      width: columnWidth("data.documentDateSA", 200),
+      width: columnWidth("data.documentDateSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.documentDateSA"),
+      hidden: visibilityController("salesInvoices", "data.documentDateSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1873,12 +1829,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.documentNumberSA",
-      dataKey: "data.documentNumberSA",
+      key: "data.documentNumberSI",
+      dataKey: "data.documentNumberSI",
       title: "Document Number",
-      width: columnWidth("data.documentNumberSA", 200),
+      width: columnWidth("data.documentNumberSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.documentNumberSA"),
+      hidden: visibilityController("salesInvoices", "data.documentNumberSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1892,12 +1848,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.invoiceNumberSA",
-      dataKey: "data.invoiceNumberSA",
+      key: "data.invoiceNumberSI",
+      dataKey: "data.invoiceNumberSI",
       title: "Invoice Number",
-      width: columnWidth("data.invoiceNumberSA", 200),
+      width: columnWidth("data.invoiceNumberSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.invoiceNumberSA"),
+      hidden: visibilityController("salesInvoices", "data.invoiceNumberSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1911,12 +1867,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.incomeAccountSA",
-      dataKey: "data.incomeAccountSA",
+      key: "data.incomeAccountSI",
+      dataKey: "data.incomeAccountSI",
       title: "Income Account",
-      width: columnWidth("data.incomeAccountSA", 200),
+      width: columnWidth("data.incomeAccountSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.incomeAccountSA"),
+      hidden: visibilityController("salesInvoices", "data.incomeAccountSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1930,12 +1886,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.name1SA",
-      dataKey: "data.name1SA",
+      key: "data.name1SI",
+      dataKey: "data.name1SI",
       title: "Name 1",
-      width: columnWidth("data.name1SA", 200),
+      width: columnWidth("data.name1SI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.name1SA"),
+      hidden: visibilityController("salesInvoices", "data.name1SI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1949,18 +1905,17 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.vendorNameSA",
-      dataKey: "data.vendorNameSA",
+      key: "data.vendorNameSI",
+      dataKey: "data.vendorNameSI",
       title: "Vendor Name",
-      width: columnWidth("data.vendorNameSA", 200),
+      width: columnWidth("data.vendorNameSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.vendorNameSA"),
+      hidden: visibilityController("salesInvoices", "data.vendorNameSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"dropdown"}
+          type={"text"}
           backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
-          loadOptions={loadOptions}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -1969,12 +1924,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.incomeAmountLC",
-      dataKey: "data.incomeAmountLC",
+      key: "data.incomeAmountLCSI",
+      dataKey: "data.incomeAmountLCSI",
       title: "Income Amount (LC)",
-      width: columnWidth("data.incomeAmountLC", 200),
+      width: columnWidth("data.incomeAmountLCSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.incomeAmountLC"),
+      hidden: visibilityController("salesInvoices", "data.incomeAmountLCSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -1988,12 +1943,12 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.incomeAmountDC",
-      dataKey: "data.incomeAmountDC",
+      key: "data.incomeAmountDCSI",
+      dataKey: "data.incomeAmountDCSI",
       title: "Income Amount (DC)",
-      width: columnWidth("data.incomeAmountDC", 200),
+      width: columnWidth("data.incomeAmountDCSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.incomeAmountDC"),
+      hidden: visibilityController("salesInvoices", "data.incomeAmountDCSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -2007,93 +1962,16 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.incomeStatus",
-      dataKey: "data.incomeStatus",
+      key: "data.incomeStatusSI",
+      dataKey: "data.incomeStatusSI",
       title: "Income Status",
-      width: columnWidth("data.incomeStatus", 200),
+      width: columnWidth("data.incomeStatusSI", 200),
       resizable: true,
-      hidden: visibilityController("salesActuals", "data.incomeStatus"),
+      hidden: visibilityController("salesInvoices", "data.incomeStatusSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
           backgroundColor="#f9f8f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.actualResultLC",
-      dataKey: "data.actualResultLC",
-      title: "Actual Result (LC)",
-      width: columnWidth("data.actualResultLC", 200),
-      resizable: true,
-      hidden: visibilityController("salesActuals", "data.actualResultLC"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#f9f8f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.incomeAmountEur",
-      dataKey: "data.incomeAmountEur",
-      title: "Income Amount (EUR)",
-      width: columnWidth("data.incomeAmountEur", 200),
-      resizable: true,
-      header: "Actuals in EUR",
-      hidden: visibilityController("actualsInEur", "data.incomeAmountEur"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#fefffa"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.costAmountEur",
-      dataKey: "data.costAmountEur",
-      title: "Cost Amount (EUR)",
-      width: columnWidth("data.costAmountEur", 200),
-      resizable: true,
-      hidden: visibilityController("actualsInEur", "data.costAmountEur"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#fefffa"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.actualResultEur",
-      dataKey: "data.actualResultEur",
-      title: "Actual Result (EUR)",
-      width: columnWidth("data.actualResultEur", 200),
-      resizable: true,
-      hidden: visibilityController("actualsInEur", "data.actualResultEur"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#fefffa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2108,13 +1986,11 @@ export function VendorsTable(props: Props) {
       title: "Year / Month",
       width: columnWidth("data.yearMonthCostGL", 200),
       resizable: true,
-      header: "Cost GL Postings",
-      className: "blue-border",
       hidden: visibilityController("costGlPostings", "data.yearMonthCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f3efff"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2129,12 +2005,11 @@ export function VendorsTable(props: Props) {
       title: "Document Type",
       width: columnWidth("data.documentTypeCostGL", 200),
       resizable: true,
-      className: "blue-border",
       hidden: visibilityController("costGlPostings", "data.documentTypeCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f3efff"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2149,12 +2024,11 @@ export function VendorsTable(props: Props) {
       title: "Posting Date",
       width: columnWidth("data.postingDateCostGL", 200),
       resizable: true,
-      className: "blue-border",
       hidden: visibilityController("costGlPostings", "data.postingDateCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f3efff"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2169,12 +2043,11 @@ export function VendorsTable(props: Props) {
       title: "Document Date",
       width: columnWidth("data.documentDateCostGL", 200),
       resizable: true,
-      className: "blue-border",
       hidden: visibilityController("costGlPostings", "data.documentDateCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f3efff"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2189,7 +2062,6 @@ export function VendorsTable(props: Props) {
       title: "Document Number",
       width: columnWidth("data.documentNumberCostGL", 200),
       resizable: true,
-      className: "blue-border",
       hidden: visibilityController(
         "costGlPostings",
         "data.documentNumberCostGL"
@@ -2197,7 +2069,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f3efff"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2212,12 +2084,11 @@ export function VendorsTable(props: Props) {
       title: "Cost Account",
       width: columnWidth("data.costAccountCostGL", 200),
       resizable: true,
-      className: "blue-border",
       hidden: visibilityController("costGlPostings", "data.costAccountCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f3efff"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2232,12 +2103,11 @@ export function VendorsTable(props: Props) {
       title: "Cost Amount (LC)",
       width: columnWidth("data.costAmountLCCostGL", 200),
       resizable: true,
-      className: "blue-border",
       hidden: visibilityController("costGlPostings", "data.costAmountLCCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f3efff"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2252,12 +2122,11 @@ export function VendorsTable(props: Props) {
       title: "Cost Amount (DC)",
       width: columnWidth("data.costAmountDCCostGL", 200),
       resizable: true,
-      className: "blue-border",
       hidden: visibilityController("costGlPostings", "data.costAmountDCCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f3efff"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2270,37 +2139,13 @@ export function VendorsTable(props: Props) {
       key: "data.dcCostGL",
       dataKey: "data.dcCostGL",
       title: "DC",
-      width: columnWidth("data.dcCostGL", 150),
+      width: columnWidth("data.dcCostGL", 200),
       resizable: true,
-      className: "blue-border",
       hidden: visibilityController("costGlPostings", "data.dcCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f3efff"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.costAmountEurCostGL",
-      dataKey: "data.costAmountEurCostGL",
-      title: "Cost Amount (EUR)",
-      width: columnWidth("data.costAmountEurCostGL", 200),
-      resizable: true,
-      className: "blue-border",
-      hidden: visibilityController(
-        "costGlPostings",
-        "data.costAmountEurCostGL"
-      ),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#f3efff"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2314,9 +2159,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.yearMonthIncomeGL",
       title: "Year / Month",
       width: columnWidth("data.yearMonthIncomeGL", 200),
-      resizable: true,
       header: "Income GL Postings",
-      className: "light-blue-border",
+      resizable: true,
       hidden: visibilityController(
         "incomeGlPostings",
         "data.yearMonthIncomeGL"
@@ -2324,7 +2168,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2339,7 +2183,6 @@ export function VendorsTable(props: Props) {
       title: "Document Type",
       width: columnWidth("data.documentTypeIncomeGL", 200),
       resizable: true,
-      className: "light-blue-border",
       hidden: visibilityController(
         "incomeGlPostings",
         "data.documentTypeIncomeGL"
@@ -2347,7 +2190,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2362,7 +2205,6 @@ export function VendorsTable(props: Props) {
       title: "Posting Date",
       width: columnWidth("data.postingDateIncomeGL", 200),
       resizable: true,
-      className: "light-blue-border",
       hidden: visibilityController(
         "incomeGlPostings",
         "data.postingDateIncomeGL"
@@ -2370,7 +2212,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2385,7 +2227,6 @@ export function VendorsTable(props: Props) {
       title: "Document Date",
       width: columnWidth("data.documentDateIncomeGL", 200),
       resizable: true,
-      className: "light-blue-border",
       hidden: visibilityController(
         "incomeGlPostings",
         "data.documentDateIncomeGL"
@@ -2393,7 +2234,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2408,7 +2249,6 @@ export function VendorsTable(props: Props) {
       title: "Document Number",
       width: columnWidth("data.documentNumberIncomeGL", 200),
       resizable: true,
-      className: "light-blue-border",
       hidden: visibilityController(
         "incomeGlPostings",
         "data.documentNumberIncomeGL"
@@ -2416,7 +2256,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2431,7 +2271,6 @@ export function VendorsTable(props: Props) {
       title: "Income Account",
       width: columnWidth("data.incomeAccountIncomeGL", 200),
       resizable: true,
-      className: "light-blue-border",
       hidden: visibilityController(
         "incomeGlPostings",
         "data.incomeAccountIncomeGL"
@@ -2439,7 +2278,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2454,7 +2293,6 @@ export function VendorsTable(props: Props) {
       title: "Income Amount (LC)",
       width: columnWidth("data.incomeAmountLCIncomeGL", 200),
       resizable: true,
-      className: "light-blue-border",
       hidden: visibilityController(
         "incomeGlPostings",
         "data.incomeAmountLCIncomeGL"
@@ -2462,7 +2300,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2477,7 +2315,6 @@ export function VendorsTable(props: Props) {
       title: "Income Amount (DC)",
       width: columnWidth("data.incomeAmountDCIncomeGL", 200),
       resizable: true,
-      className: "light-blue-border",
       hidden: visibilityController(
         "incomeGlPostings",
         "data.incomeAmountDCIncomeGL"
@@ -2485,7 +2322,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2498,14 +2335,13 @@ export function VendorsTable(props: Props) {
       key: "data.dcIncomeGL",
       dataKey: "data.dcIncomeGL",
       title: "DC",
-      width: columnWidth("data.dcIncomeGL", 150),
+      width: columnWidth("data.dcIncomeGL", 200),
       resizable: true,
-      className: "light-blue-border",
       hidden: visibilityController("incomeGlPostings", "data.dcIncomeGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2524,11 +2360,10 @@ export function VendorsTable(props: Props) {
         "incomeGlPostings",
         "data.incomeAmountEurIncomeGL"
       ),
-      className: "light-blue-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f1"
+          backgroundColor="#f9f8f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2537,6 +2372,124 @@ export function VendorsTable(props: Props) {
         />
       ),
     },
+    {
+      key: "data.resultLCPR",
+      dataKey: "data.resultLCPR",
+      title: "Result (LC)",
+      header: "Project Results",
+      width: columnWidth("data.resultLCPR", 200),
+      resizable: true,
+      hidden: visibilityController("projectResults", "data.resultLCPR"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.resultEURPR",
+      dataKey: "data.resultEURPR",
+      title: "Result (EUR)",
+      width: columnWidth("data.resultEURPR", 200),
+      resizable: true,
+      hidden: visibilityController("projectResults", "data.resultEURPR"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.totalCostsInTool",
+      dataKey: "data.totalCostsInTool",
+      title: "Total Costs in Tool",
+      header: "Control Checks",
+      width: columnWidth("data.totalCostsInTool", 200),
+      resizable: true,
+      hidden: visibilityController("controlChecks", "data.totalCostsInTool"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.totalCostsInSAP",
+      dataKey: "data.totalCostsInSAP",
+      title: "Total Costs in SAP",
+      width: columnWidth("data.totalCostsInSAP", 200),
+      resizable: true,
+      hidden: visibilityController("controlChecks", "data.totalCostsInSAP"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.totalIncomeInTool",
+      dataKey: "data.totalIncomeInTool",
+      title: "Total Income in Tool",
+      width: columnWidth("data.totalIncomeInTool", 200),
+      resizable: true,
+      hidden: visibilityController("controlChecks", "data.totalIncomeInTool"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.totalIncomeInSAP",
+      dataKey: "data.totalIncomeInSAP",
+      title: "Total Income in SAP",
+      width: columnWidth("data.totalIncomeInSAP", 200),
+      resizable: true,
+      hidden: visibilityController("controlChecks", "data.totalIncomeInSAP"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f8f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    ///
+
     {
       key: "__actions.sap",
       dataKey: "__actions.sap",
@@ -2630,38 +2583,38 @@ export function VendorsTable(props: Props) {
       if (headerIndex === 0) {
         return cells.map((cell, index) => {
           var colorClass: string = "";
-          switch (true) {
-            case index < 12:
-              colorClass = index === 0 ? "" : "dark-green-3";
-              break;
-            case index < 16:
-              colorClass = "white";
-              break;
-            case index < 31:
-              colorClass = "white";
-              break;
-            case index < 38:
-              colorClass = "orange";
-              break;
-            case index < 51:
-              colorClass = "blue-2";
-              break;
-            case index < 64:
-              colorClass = "warm-gray";
-              break;
-            case index < 67:
-              colorClass = "yellow";
-              break;
-            case index < 77:
-              colorClass = "purple";
-              break;
-            case index < 87:
-              colorClass = "salmon";
-              break;
-            default:
-              colorClass = "red";
-              break;
-          }
+          // switch (true) {
+          //   case index < 12:
+          //     colorClass = index === 0 ? "" : "dark-green-3";
+          //     break;
+          //   case index < 16:
+          //     colorClass = "white";
+          //     break;
+          //   case index < 31:
+          //     colorClass = "white";
+          //     break;
+          //   case index < 38:
+          //     colorClass = "orange";
+          //     break;
+          //   case index < 51:
+          //     colorClass = "blue-2";
+          //     break;
+          //   case index < 64:
+          //     colorClass = "warm-gray";
+          //     break;
+          //   case index < 67:
+          //     colorClass = "yellow";
+          //     break;
+          //   case index < 77:
+          //     colorClass = "purple";
+          //     break;
+          //   case index < 87:
+          //     colorClass = "salmon";
+          //     break;
+          //   default:
+          //     colorClass = "red";
+          //     break;
+          // }
 
           return cloneElement(cell as ReactElement, {
             className: "BaseTable__header-cell " + colorClass,
