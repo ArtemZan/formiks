@@ -2697,7 +2697,7 @@ export function VendorsTable(props: Props) {
             />
           </Box>
           <Box w="100%">
-            <Text mb="8px">Template</Text>
+            <Text mb="8px">Preset</Text>
             <Select
               menuPortalTarget={document.body}
               styles={{
@@ -2734,7 +2734,7 @@ export function VendorsTable(props: Props) {
               onChange={(value: any) => {}}
               classNamePrefix="select"
               isClearable={false}
-              name="templates"
+              name="presets"
               options={[]}
             />
           </Box>
@@ -3242,18 +3242,7 @@ export function VendorsTable(props: Props) {
                         HTTP
                       </Text>
                     </HStack>
-                    <HStack spacing={0}>
-                      <Button
-                        float="left"
-                        onClick={() => {
-                          localStorage.removeItem("vendors.displayedColumns");
-                          localStorage.removeItem("vendors.columns");
-                          window.location.reload();
-                        }}
-                        colorScheme="red"
-                      >
-                        clear cache
-                      </Button>
+                    <VStack align="end" mt="10px">
                       <Button
                         float="right"
                         onClick={() => {
@@ -3270,9 +3259,20 @@ export function VendorsTable(props: Props) {
                         }}
                         colorScheme="blue"
                       >
-                        set default
+                        update preset
                       </Button>
-                    </HStack>
+                      <Button
+                        float="left"
+                        onClick={() => {
+                          localStorage.removeItem("vendors.displayedColumns");
+                          localStorage.removeItem("vendors.columns");
+                          window.location.reload();
+                        }}
+                        colorScheme="red"
+                      >
+                        clear cache
+                      </Button>
+                    </VStack>
                   </DebugOverlay>
                 </div>
               }
