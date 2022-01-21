@@ -598,7 +598,7 @@ export default function CreateBookmark(props: Props) {
             placeholder="____________"
             value={projectNumber}
             onChange={(event) => setProjectNumber(event.target.value)}
-            disabled
+            // disabled
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />

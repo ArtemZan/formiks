@@ -27,3 +27,28 @@ type FResponse struct {
 		MSGV4   string `json:"MSGV4"`
 	} `json:"IT_MESSAGES"`
 }
+
+type AccountLineRecord struct {
+	CompanyCode          string      `json:"CompanyCode"`
+	YearMonth            string      `json:"YearMonth"`
+	PostingDate          string      `json:"PostingDate"`
+	DocumentDate         string      `json:"DocumentDate"`
+	DocumentType         string      `json:"DocumentType"`
+	InvoiceNumber        string      `json:"InvoiceNumber"`
+	DocumentNumber       string      `json:"DocumentNumber"`
+	Text                 string      `json:"Text"`
+	Account              string      `json:"Account"`
+	ProjectNumber        string      `json:"ProjectNumber"`
+	Name1                interface{} `json:"Name1"`
+	CostAmountInLC       string      `json:"CostAmountInLC"`
+	LocalCurrency        string      `json:"LocalCurrency"`
+	CostAmountInDC       string      `json:"CostAmountInDC"`
+	DocumentCurrency     string      `json:"DocumentCurrency"`
+	DebitCreditIndicator string      `json:"DebitCreditIndicator"`
+}
+
+type AccountLinesResponse struct {
+	GetGLAccountLinesOutput struct {
+		Rs []AccountLineRecord `json:"rs"`
+	} `json:"GetGLAccountLinesOutput"`
+}

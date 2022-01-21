@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/doublegrey/formiks/backend/driver"
@@ -131,6 +133,80 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		submissionWithChildren.Children[index].Updated = time.Now()
 		submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
 	}
+	glChildren := sap.AccountLines[submissionWithChildren.Submission.Data["projectNumber"].(string)]
+
+	fmt.Println(submissionWithChildren.Submission.Data["projectNumber"].(string))
+	fmt.Println(len(glChildren))
+
+	for _, glChild := range glChildren {
+		glSub := models.Submission{
+			ID:       primitive.NewObjectID(),
+			ParentID: submissionWithChildren.Submission.ID.Hex(),
+			Created:  time.Now(),
+			Updated:  time.Now(),
+			Project:  submissionWithChildren.Submission.Project,
+			Data:     make(map[string]interface{}),
+		}
+		dt := strings.ToUpper(glChild.DocumentType)
+		empty := true
+		if dt == "DR" || dt == "RV" || dt == "WK" || dt == "ZV" {
+			empty = false
+			glSub.Title = "Sales Invoices"
+			glSub.Data["yearMonthSI"] = glChild.YearMonth
+			glSub.Data["documentTypeSI"] = glChild.DocumentType
+			glSub.Data["postingDateSI"] = glChild.PostingDate
+			glSub.Data["documentDateSI"] = glChild.DocumentDate
+			glSub.Data["documentNumberSI"] = glChild.DocumentNumber
+			glSub.Data["invoiceNumberSI"] = glChild.InvoiceNumber
+			glSub.Data["incomeAccountSI"] = glChild.Account
+			glSub.Data["name1SI"] = glChild.Name1
+			glSub.Data["incomeAmountLCSI"] = glChild.CostAmountInLC
+			glSub.Data["incomeAmountDCSI"] = glChild.CostAmountInDC
+			glSub.Data["dcSI"] = glChild.DocumentCurrency
+		}
+		if dt == "SW" || dt == "SA" || dt == "SL" {
+			empty = false
+			glSub.Title = "Income GL Postings"
+			glSub.Data["yearMonthIncomeGL"] = glChild.YearMonth
+			glSub.Data["documentTypeIncomeGL"] = glChild.DocumentType
+			glSub.Data["postingDateIncomeGL"] = glChild.PostingDate
+			glSub.Data["documentDateIncomeGL"] = glChild.DocumentDate
+			glSub.Data["documentNumberIncomeGL"] = glChild.DocumentNumber
+			glSub.Data["incomeAccountIncomeGL"] = glChild.Account
+			glSub.Data["incomeAmountLCIncomeGL"] = glChild.CostAmountInLC
+			glSub.Data["incomeAmountDCIncomeGL"] = glChild.CostAmountInDC
+		}
+		if dt == "KX" || dt == "KW" || dt == "ZV" {
+			empty = false
+			glSub.Title = "Cost Invoices"
+			glSub.Data["yearMonth"] = glChild.YearMonth
+			glSub.Data["documentType"] = glChild.DocumentType
+			glSub.Data["postingDate"] = glChild.PostingDate
+			glSub.Data["documentDate"] = glChild.DocumentDate
+			glSub.Data["documentNumber"] = glChild.DocumentNumber
+			glSub.Data["invoiceNumber"] = glChild.InvoiceNumber
+			glSub.Data["costAccount"] = glChild.Account
+			glSub.Data["name1"] = glChild.Name1
+			glSub.Data["costAmountLC"] = glChild.CostAmountInLC
+			glSub.Data["costAmountDC"] = glChild.CostAmountInDC
+		}
+		if dt == "SK" || dt == "SA" || dt == "SL" {
+			empty = false
+			glSub.Title = "Cost GL Postings"
+			glSub.Data["yearMonthCostGL"] = glChild.YearMonth
+			glSub.Data["documentTypeCostGL"] = glChild.DocumentType
+			glSub.Data["postingDateCostGL"] = glChild.PostingDate
+			glSub.Data["documentDateCostGL"] = glChild.DocumentDate
+			glSub.Data["documentNumberCostGL"] = glChild.DocumentNumber
+			glSub.Data["costAccountCostGL"] = glChild.Account
+			glSub.Data["costAmountLCCostGL"] = glChild.CostAmountInLC
+			glSub.Data["costAmountDCCostGL"] = glChild.CostAmountInDC
+		}
+		if !empty {
+			submissionWithChildren.Children = append(submissionWithChildren.Children, glSub)
+		}
+	}
+
 	r.repo.Create(c.Request.Context(), submissionWithChildren.Submission)
 	for _, child := range submissionWithChildren.Children {
 		r.repo.Create(c.Request.Context(), child)

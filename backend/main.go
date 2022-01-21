@@ -13,6 +13,7 @@ import (
 	"github.com/doublegrey/formiks/backend/dropdowns"
 	"github.com/doublegrey/formiks/backend/middlewares"
 	"github.com/doublegrey/formiks/backend/middlewares/msal"
+	"github.com/doublegrey/formiks/backend/sap"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -20,6 +21,13 @@ import (
 
 func main() {
 	ticker := time.NewTicker(5 * time.Minute)
+
+	go func() {
+		sap.FetchAccountLines()
+		for range time.NewTicker(time.Hour).C {
+			sap.FetchAccountLines()
+		}
+	}()
 
 	go func() {
 		for range time.NewTicker(5 * time.Hour).C {
