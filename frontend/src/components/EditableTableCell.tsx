@@ -114,6 +114,10 @@ class EditableTableCell extends React.Component<
           // borderRight: this.props.backgroundColor
           //   ? `1px solid ${shadeColor(this.props.backgroundColor, -20)}`
           //   : "",
+          // borderTop:
+          //   this.props.rowIndex === 0 && this.props.backgroundColor
+          //     ? `3px solid ${shadeColor(this.props.backgroundColor, 20)}`
+          //     : "",
         }}
         className={
           this.state.editing
