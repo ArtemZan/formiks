@@ -15,7 +15,7 @@ func FetchAccountLines() error {
     "GetGLAccountLines": {
         "areaKey": "MKT",
         "year": "2021",
-        "bukrs": "2000"
+        "bukrs": "6110"
     }
 	}`)
 
