@@ -1,5 +1,5 @@
-export function numberWithCommas(x: number) {
-  return !isNaN(x)
+export function numberWithCommas(x: any) {
+  return !isNaN(x) && typeof x === "number"
     ? x
         .toFixed(2)
         .toString()

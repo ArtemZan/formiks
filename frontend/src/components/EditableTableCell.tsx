@@ -38,6 +38,7 @@ class EditableTableCell extends React.Component<
     textColor?: any;
     backgroundColor?: string;
     readonly?: boolean;
+    bold?: boolean;
   },
   {
     cellValue: any;
@@ -116,6 +117,7 @@ class EditableTableCell extends React.Component<
     return (
       <div
         style={{
+          fontWeight: this.props.bold ? "bold" : "normal",
           textAlign: this.props.type === "button" ? "center" : "inherit",
           backgroundColor: this.props.backgroundColor
             ? this.props.backgroundColor

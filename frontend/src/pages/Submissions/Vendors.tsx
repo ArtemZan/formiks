@@ -362,7 +362,7 @@ const DisplayedColumnsList = [
       {
         label: "Cost Amount (EUR)",
         value: "data.costAmountEUR",
-        type: "string",
+        type: "number",
       },
       { label: "Cost Status", value: "data.costStatus", type: "string" },
     ],
@@ -406,7 +406,7 @@ const DisplayedColumnsList = [
       {
         label: "Income Amount (EUR)",
         value: "data.incomeAmountEURSI",
-        type: "string",
+        type: "number",
       },
       { label: "Income Status", value: "data.incomeStatusSI", type: "string" },
     ],
@@ -455,7 +455,7 @@ const DisplayedColumnsList = [
       {
         label: "Cost Amount (EUR)",
         value: "data.costAmountEURCostGL",
-        type: "string",
+        type: "number",
       },
     ],
   },
@@ -507,7 +507,7 @@ const DisplayedColumnsList = [
       {
         label: "Income Amount (EUR)",
         value: "data.incomeAmountEurIncomeGL",
-        type: "string",
+        type: "number",
       },
     ],
   },
@@ -1894,13 +1894,26 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("costInvoices", "data.costAmountLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#fff7f8"
+          readonly={true}
+          bold={props.rowData.parentId === null}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.costAmountLC || 0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
@@ -1951,7 +1964,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("costInvoices", "data.costAmountEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2218,7 +2231,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("salesInvoices", "data.incomeAmountEURSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#f2f5fa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2434,7 +2447,7 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#fcfcfe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2652,7 +2665,7 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2719,7 +2732,8 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={numberWithCommas(
-            props.rowData.data.resultLCPR + props.rowData.data.resultEURPR
+            props.rowData.data.costAmountEUR +
+              props.rowData.data.costAmountEURCostGL
           )}
         />
       ),
@@ -2753,12 +2767,16 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
+          readonly={true}
           backgroundColor="#f9f8f8"
-          onUpdate={handleCellUpdate}
+          onUpdate={() => {}}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={numberWithCommas(
+            props.rowData.data.incomeAmountEURSI +
+              props.rowData.data.incomeAmountEurIncomeGL
+          )}
         />
       ),
     },

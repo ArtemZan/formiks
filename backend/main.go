@@ -24,7 +24,8 @@ func main() {
 
 	go func() {
 		sap.FetchAccountLines()
-		for range time.NewTicker(time.Hour).C {
+		fmt.Println("account lines parsed...")
+		for range time.NewTicker(time.Hour * 3).C {
 			sap.FetchAccountLines()
 		}
 	}()
