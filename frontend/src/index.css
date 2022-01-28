@@ -165,8 +165,6 @@ button[name="data[submit]"]:hover {
 .BaseTable__row-cell {
   padding: 0;
   border: 1px solid #f5f8fa;
-  /* border-left: 1px solid rgba(0, 0, 0, 0.1);
-  border-right: 1px solid rgba(0, 0, 0, 0.1); */
 }
 
 .BaseTable__row-cell.red-border {
@@ -182,11 +180,6 @@ button[name="data[submit]"]:hover {
 .BaseTable__row-cell.dark-green-3-border {
   border-left: 1px solid #c4dee3;
 }
-
-/* .BaseTable__row-cell:hover {
-  border: 1px dashed #ccc;
-  border-radius: 2px;
-} */
 
 .BaseTable__row-cell.expand:hover {
   border: 1px solid #f5f8fa;

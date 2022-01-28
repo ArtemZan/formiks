@@ -22,6 +22,7 @@ import {
 import DatePicker from "react-datepicker";
 import Creatable from "react-select/creatable";
 import { shadeColor } from "../utils/Color";
+import { numberWithCommas } from "../utils/utils";
 
 const numRegex = /[0-9]|\./;
 
@@ -54,7 +55,11 @@ class EditableTableCell extends React.Component<
     };
   }
   componentDidUpdate(prevProps: any) {
-    if (prevProps.initialValue !== this.props.initialValue) {
+    if (
+      prevProps.initialValue !== this.props.initialValue &&
+      !isNaN(this.props.initialValue)
+    ) {
+      console.log(prevProps.initialValue, this.props.initialValue);
       this.setState({ cellValue: this.props.initialValue });
     }
   }
@@ -63,11 +68,16 @@ class EditableTableCell extends React.Component<
     var value: any = undefined;
     switch (this.props.type) {
       case "text":
-      case "number":
       case "button":
         value = this.props.initialValue
           ? this.props.initialValue.toString()
           : "";
+        break;
+      case "number":
+        value =
+          typeof this.props.initialValue === "number"
+            ? numberWithCommas(this.props.initialValue)
+            : "";
         break;
       case "tags":
         value = this.props.initialValue;
@@ -87,7 +97,7 @@ class EditableTableCell extends React.Component<
       case "multiple-dropdown":
         value = [];
         if (this.props.initialValue && Array.isArray(this.props.initialValue)) {
-          this.props.initialValue.map((value: any) => {
+          this.props.initialValue.forEach((value: any) => {
             value.push({ label: value, value: value });
           });
         }

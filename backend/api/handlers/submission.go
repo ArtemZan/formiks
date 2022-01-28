@@ -175,6 +175,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			glSub.Data["incomeAccountIncomeGL"] = glChild.Account
 			glSub.Data["incomeAmountLCIncomeGL"] = glChild.CostAmountInLC
 			glSub.Data["incomeAmountDCIncomeGL"] = glChild.CostAmountInDC
+			glSub.Data["dcIncomeGL"] = glChild.DocumentCurrency
 		}
 		if dt == "KX" || dt == "KW" || dt == "ZV" {
 			empty = false
@@ -189,6 +190,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			glSub.Data["name1"] = glChild.Name1
 			glSub.Data["costAmountLC"] = glChild.CostAmountInLC
 			glSub.Data["costAmountDC"] = glChild.CostAmountInDC
+			glSub.Data["dc"] = glChild.DocumentCurrency
 		}
 		if dt == "SK" || dt == "SA" || dt == "SL" {
 			empty = false
@@ -201,6 +203,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			glSub.Data["costAccountCostGL"] = glChild.Account
 			glSub.Data["costAmountLCCostGL"] = glChild.CostAmountInLC
 			glSub.Data["costAmountDCCostGL"] = glChild.CostAmountInDC
+			glSub.Data["dcCostGL"] = glChild.DocumentCurrency
 		}
 		if !empty {
 			submissionWithChildren.Children = append(submissionWithChildren.Children, glSub)
