@@ -1926,7 +1926,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("costInvoices", "data.costAmountDC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1966,11 +1966,24 @@ export function VendorsTable(props: Props) {
         <EditableTableCell
           type={"number"}
           backgroundColor="#fff7f8"
+          readonly={true}
+          bold={props.rowData.parentId === null}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.costAmountEUR || 0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
@@ -2448,6 +2461,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
+          readonly={true}
           backgroundColor="#fcfcfe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2724,17 +2738,27 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("controlChecks", "data.totalCostsInTool"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           readonly={true}
           backgroundColor="#f9f8f8"
           onUpdate={() => {}}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={numberWithCommas(
-            props.rowData.data.costAmountEUR +
-              props.rowData.data.costAmountEURCostGL
-          )}
+          initialValue={
+            props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.costAmountEUR ||
+                        0 + b.data.costAmountEURCostGL ||
+                        0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },

@@ -4,16 +4,17 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/doublegrey/formiks/backend/driver"
+	"github.com/doublegrey/formiks/backend/dropdowns"
 	"github.com/doublegrey/formiks/backend/logger"
 	"github.com/doublegrey/formiks/backend/models"
 	"github.com/doublegrey/formiks/backend/repositories"
 	"github.com/doublegrey/formiks/backend/repositories/submission"
 	"github.com/doublegrey/formiks/backend/sap"
+	"github.com/doublegrey/formiks/backend/utils"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -139,6 +140,8 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	fmt.Println(submissionWithChildren.Submission.Data["projectNumber"].(string))
 	fmt.Println(len(glChildren))
 
+	exchangeRates := dropdowns.FetchExchangeRates(c.Request.Context())
+
 	for _, glChild := range glChildren {
 		glSub := models.Submission{
 			ID:       primitive.NewObjectID(),
@@ -161,9 +164,10 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			glSub.Data["invoiceNumberSI"] = glChild.InvoiceNumber
 			glSub.Data["incomeAccountSI"] = glChild.Account
 			glSub.Data["name1SI"] = glChild.Name1
-			glSub.Data["incomeAmountLCSI"] = string2float(glChild.CostAmountInLC)
-			glSub.Data["incomeAmountDCSI"] = string2float(glChild.CostAmountInDC)
+			glSub.Data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC)
+			glSub.Data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC)
 			glSub.Data["dcSI"] = glChild.DocumentCurrency
+			glSub.Data["incomeAmountEURSI"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
 		}
 		if dt == "SW" || dt == "SA" || dt == "SL" {
 			empty = false
@@ -174,9 +178,10 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			glSub.Data["documentDateIncomeGL"] = glChild.DocumentDate
 			glSub.Data["documentNumberIncomeGL"] = glChild.DocumentNumber
 			glSub.Data["incomeAccountIncomeGL"] = glChild.Account
-			glSub.Data["incomeAmountLCIncomeGL"] = string2float(glChild.CostAmountInLC)
-			glSub.Data["incomeAmountDCIncomeGL"] = string2float(glChild.CostAmountInDC)
+			glSub.Data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC)
+			glSub.Data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC)
 			glSub.Data["dcIncomeGL"] = glChild.DocumentCurrency
+			glSub.Data["incomeAmountEurIncomeGL"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
 		}
 		if dt == "KX" || dt == "KW" || dt == "ZV" {
 			empty = false
@@ -189,9 +194,10 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			glSub.Data["invoiceNumber"] = glChild.InvoiceNumber
 			glSub.Data["costAccount"] = glChild.Account
 			glSub.Data["name1"] = glChild.Name1
-			glSub.Data["costAmountLC"] = string2float(glChild.CostAmountInLC)
-			glSub.Data["costAmountDC"] = string2float(glChild.CostAmountInDC)
+			glSub.Data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC)
+			glSub.Data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC)
 			glSub.Data["dc"] = glChild.DocumentCurrency
+			glSub.Data["costAmountEUR"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
 		}
 		if dt == "SK" || dt == "SA" || dt == "SL" {
 			empty = false
@@ -202,9 +208,10 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			glSub.Data["documentDateCostGL"] = glChild.DocumentDate
 			glSub.Data["documentNumberCostGL"] = glChild.DocumentNumber
 			glSub.Data["costAccountCostGL"] = glChild.Account
-			glSub.Data["costAmountLCCostGL"] = string2float(glChild.CostAmountInLC)
-			glSub.Data["costAmountDCCostGL"] = string2float(glChild.CostAmountInDC)
+			glSub.Data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC)
+			glSub.Data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC)
 			glSub.Data["dcCostGL"] = glChild.DocumentCurrency
+			glSub.Data["costAmountEURCostGL"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
 		}
 		if !empty {
 			submissionWithChildren.Children = append(submissionWithChildren.Children, glSub)
@@ -216,14 +223,6 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		r.repo.Create(c.Request.Context(), child)
 	}
 	c.JSON(http.StatusOK, submissionWithChildren.Submission)
-}
-
-func string2float(s string) float64 {
-	f, err := strconv.ParseFloat(s, 64)
-	if err != nil {
-		f = 0.0
-	}
-	return f
 }
 
 func (r *Submission) Update(c *gin.Context) {

@@ -10,6 +10,7 @@ import (
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/jengine"
 	"github.com/doublegrey/formiks/backend/models"
+	"github.com/doublegrey/formiks/backend/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"rogchap.com/v8go"
 )
@@ -76,4 +77,14 @@ func SyncJS(ctx *v8go.Context, sourceDropdown models.Dropdown) (models.Dropdown,
 	}
 	err = json.Unmarshal(b, &dropdown.Values)
 	return dropdown, err
+}
+
+func FetchExchangeRates(ctx context.Context) map[string]float64 {
+	var dropdown models.Dropdown
+	exchangeRates := make(map[string]float64)
+	driver.Conn.Mongo.Collection("dropdowns").FindOne(ctx, bson.M{"title": "Exchange Rates"}).Decode(&dropdown)
+	for _, record := range dropdown.Values {
+		exchangeRates[record["label"].(string)] = utils.String2float(record["value"].(string))
+	}
+	return exchangeRates
 }
