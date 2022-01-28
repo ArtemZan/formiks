@@ -52,6 +52,7 @@ import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
 import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
 import { SubmissionsTransformer } from "../../utils/SubmissionsTransformer";
+import { numberWithCommas } from "../../utils/utils";
 
 interface Props {
   history: any;
@@ -2717,9 +2718,9 @@ export function VendorsTable(props: Props) {
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={
+          initialValue={numberWithCommas(
             props.rowData.data.resultLCPR + props.rowData.data.resultEURPR
-          }
+          )}
         />
       ),
     },
