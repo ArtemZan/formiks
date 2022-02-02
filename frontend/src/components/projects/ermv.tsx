@@ -597,7 +597,11 @@ export default function CreateBookmark(props: Props) {
           <Input
             placeholder="____________"
             value={projectNumber}
-            onChange={(event) => setProjectNumber(event.target.value)}
+            onChange={(event) => {
+              if (event.target.value.length < 13) {
+                setProjectNumber(event.target.value);
+              }
+            }}
             // disabled
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -606,8 +610,9 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">Requestor`s Name</Text>
           <Input
-            defaultValue={requestorsName}
-            disabled
+            value={requestorsName}
+            onChange={(event) => setRequestorsName(event.target.value)}
+            // disabled
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
@@ -649,17 +654,6 @@ export default function CreateBookmark(props: Props) {
             isClearable={false}
             name="projectApprover"
             options={[]}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">ALSO Project Approval (link)</Text>
-          <Input
-            value={projectApproval}
-            onChange={(event) => {
-              setProjectApproval(event.target.value);
-            }}
-            bg={useColorModeValue("white", "#2C313C")}
-            color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
         <Box w="100%">
@@ -876,8 +870,8 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">
             {budgetSource.value === "noBudget"
-              ? "Campaign Loss in Budget`s currency"
-              : "Campaign Net Profit Target in Budget`s currency"}
+              ? "Campaign Loss in Campaign currency"
+              : "Campaign Net Profit Target in Campaign currency"}
           </Text>
           <Input
             value={netProfitTargetBudgetCurrency}
@@ -949,17 +943,7 @@ export default function CreateBookmark(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
-        <Box w="100%">
-          <Text mb="8px">Total Estimated Costs in EUR</Text>
-          <Input
-            value={totalEstimatedCostsEur}
-            onChange={(event) => {
-              setTotalEstimatedCostsEur(event.target.value);
-            }}
-            bg={useColorModeValue("white", "#2C313C")}
-            color={useColorModeValue("gray.800", "#ABB2BF")}
-          />
-        </Box>
+
         <Box w="100%">
           <Text mb="8px">Vendor`s Names</Text>
           <Select
@@ -1373,7 +1357,7 @@ export default function CreateBookmark(props: Props) {
             rowHeight={65}
             data={costBreakdown}
           >
-            <Column flexGrow={2}>
+            <Column width={200} resizable>
               <HeaderCell>Company Name</HeaderCell>
               <Cell dataKey="companyName">
                 {(rowData, index) => (
@@ -1389,7 +1373,7 @@ export default function CreateBookmark(props: Props) {
               </Cell>
             </Column>
 
-            <Column flexGrow={1}>
+            <Column width={200} resizable>
               <HeaderCell>Company Code</HeaderCell>
               <Cell dataKey="companyCode">
                 {(rowData, index) => (
@@ -1405,7 +1389,7 @@ export default function CreateBookmark(props: Props) {
               </Cell>
             </Column>
 
-            <Column flexGrow={1}>
+            <Column width={100} resizable>
               <HeaderCell>Country</HeaderCell>
               <Cell dataKey="country">
                 {(rowData, index) => (
@@ -1421,7 +1405,7 @@ export default function CreateBookmark(props: Props) {
               </Cell>
             </Column>
 
-            <Column flexGrow={2}>
+            <Column width={200} resizable>
               <HeaderCell>Contact Person's Email</HeaderCell>
               <Cell dataKey="contactEmail">
                 {(rowData, index) => (
@@ -1437,7 +1421,7 @@ export default function CreateBookmark(props: Props) {
               </Cell>
             </Column>
 
-            <Column flexGrow={2}>
+            <Column width={200} resizable>
               <HeaderCell>Local Project Number</HeaderCell>
               <Cell dataKey="projectNumber">
                 {(rowData, index) => (
@@ -1452,7 +1436,7 @@ export default function CreateBookmark(props: Props) {
                 )}
               </Cell>
             </Column>
-            <Column flexGrow={1}>
+            <Column width={100} resizable>
               <HeaderCell>Share %</HeaderCell>
               <Cell dataKey="share">
                 {(rowData, index) => (
@@ -1467,7 +1451,7 @@ export default function CreateBookmark(props: Props) {
                 )}
               </Cell>
             </Column>
-            <Column flexGrow={2}>
+            <Column width={400} resizable>
               <HeaderCell>Budget Contribution in Campaign Currency</HeaderCell>
               <Cell dataKey="contribution">
                 {(rowData, index) => (
@@ -1482,7 +1466,7 @@ export default function CreateBookmark(props: Props) {
                 )}
               </Cell>
             </Column>
-            <Column flexGrow={2}>
+            <Column width={400} resizable>
               <HeaderCell>
                 Total Estimated Costs in Campaign Currency
               </HeaderCell>
