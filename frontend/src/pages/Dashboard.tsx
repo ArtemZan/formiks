@@ -9,7 +9,6 @@ import WelcomeName from "../components/WelcomeName";
 import { msalInstance } from "../index";
 
 export function Dashboard() {
-  console.log(msalInstance.getActiveAccount());
   return (
     <>
       <AuthenticatedTemplate>

@@ -104,9 +104,7 @@ export default function CreateBookmark(props: Props) {
   const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
   const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
 
-  const [totalEstimatedCostsCC, setTotalEstimatedCostsCC] = useState("");
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
-  const [totalEstimatedCostsEur, setTotalEstimatedCostsEur] = useState("");
 
   const [render, rerender] = useState(0);
 
@@ -258,10 +256,10 @@ export default function CreateBookmark(props: Props) {
   useEffect(() => {
     var totalBudgetEur = 0;
     var totalBudgetLC = 0;
-    var totalCostsCC = parseFloat(totalEstimatedCostsCC);
+    var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
     var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
     var totalCostsLC = parseFloat(totalEstimatedCostsLC);
-    var totalCostsEur = parseFloat(totalEstimatedCostsEur);
+    var totalCostsEur = parseFloat(estimatedCosts);
     var netProfitEur = parseFloat(netProfitTarget);
     var netProfiLC = parseFloat(netProfitTargetBudgetCurrency);
 
@@ -315,12 +313,7 @@ export default function CreateBookmark(props: Props) {
     if (!isEqual(vendors, temp)) {
       setVendors(temp);
     }
-  }, [
-    vendors,
-    totalEstimatedCostsCC,
-    totalEstimatedCostsLC,
-    totalEstimatedCostsEur,
-  ]);
+  }, [vendors, estimatedCostsBudgetCurrency, totalEstimatedCostsLC]);
 
   return (
     <Box>
@@ -921,17 +914,6 @@ export default function CreateBookmark(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
-        {/* <Box w="100%">
-          <Text mb="8px">Total Estimated Costs in Campaign Currency</Text>
-          <Input
-            value={totalEstimatedCostsCC}
-            onChange={(event) => {
-              setTotalEstimatedCostsCC(event.target.value);
-            }}
-            bg={useColorModeValue("white", "#2C313C")}
-            color={useColorModeValue("gray.800", "#ABB2BF")}
-          />
-        </Box> */}
         <Box w="100%">
           <Text mb="8px">Total Estimated Costs in Local Currency</Text>
           <Input
@@ -1553,9 +1535,7 @@ export default function CreateBookmark(props: Props) {
               campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
               campaignEstimatedCostsEur: parseFloat(estimatedCosts),
               campaignNetProfitTargetEur: parseFloat(netProfitTarget),
-              totalEstimatedCostsCC: parseFloat(totalEstimatedCostsCC),
               totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
-              totalEstimatedCostsEur: parseFloat(totalEstimatedCostsEur),
               comments: comments,
               projectType: "Regional Multi Vendor",
             },
