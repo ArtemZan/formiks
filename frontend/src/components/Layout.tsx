@@ -231,7 +231,8 @@ function Layout(props: any) {
                 }}
                 onClick={() => {
                   // history.push("/login");
-                  instance.loginPopup();
+                  instance.loginRedirect();
+                  // instance.loginPopup();
                   // instance.login
                 }}
               >
