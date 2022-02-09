@@ -58,15 +58,15 @@ export function Explorer(props: Props) {
       <Center mb={"5em"}>
         <Wrap maxW={{ base: "100%", lg: "50%" }} justify="center">
           {bookmarks
-            ? bookmarks.map((bookmark) => {
+            ? bookmarks.map((bookmark, index) => {
                 return (
-                  <WrapItem>
+                  <WrapItem key={`bookmark-${index}`}>
                     <Tag
                       fontWeight={"400"}
                       size={"lg"}
                       // colorScheme="cyan"
                       cursor="pointer"
-                      id={bookmark.id}
+                      key={bookmark.id}
                       onContextMenu={(e) => {
                         e.preventDefault();
                         console.log(bookmark.id);
@@ -107,7 +107,7 @@ export function Explorer(props: Props) {
       <Wrap justify="center" spacing={{ base: "40px", lg: "3em" }}>
         {projects.map((project) => {
           return (
-            <WrapItem>
+            <WrapItem key={`wrap-${project.id}`}>
               <ProjectCard history={props.history} project={project} />
             </WrapItem>
           );

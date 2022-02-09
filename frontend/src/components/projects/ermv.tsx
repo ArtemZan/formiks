@@ -139,6 +139,15 @@ export default function CreateBookmark(props: Props) {
   }
 
   useEffect(() => {
+    setTotalEstimatedCostsLC(
+      (
+        parseFloat(estimatedCostsBudgetCurrency) *
+        parseFloat(exchangeRates.value)
+      ).toFixed(2)
+    );
+  }, [estimatedCostsBudgetCurrency, exchangeRates]);
+
+  useEffect(() => {
     getAccountInfo().then((response) => {
       if (response) {
         setRequestorsName(response.mail);
@@ -191,6 +200,34 @@ export default function CreateBookmark(props: Props) {
     });
     setCostBreakdown(data);
   }, [companiesParticipating]);
+
+  useEffect(() => {
+    var temp = [...costBreakdown];
+    temp.map((row: any) => {
+      // row.localBudget = (
+      //   parseFloat(row.budgetAmount) * parseFloat(row.budgetCurrency.value)
+      // ).toFixed(2);
+      // var eb = parseFloat(row.eurBudget);
+      // var lb = parseFloat(row.localBudget);
+      row.contribution = (
+        parseFloat(row.share) *
+        0.01 *
+        parseFloat(estimatedIncomeBudgetCurrency)
+      ).toFixed(2);
+      row.estimatedCosts = (
+        parseFloat(row.share) *
+        0.01 *
+        parseFloat(estimatedCostsBudgetCurrency)
+      ).toFixed(2);
+    });
+    if (!isEqual(costBreakdown, temp)) {
+      setCostBreakdown(temp);
+    }
+  }, [
+    costBreakdown,
+    estimatedIncomeBudgetCurrency,
+    estimatedCostsBudgetCurrency,
+  ]);
 
   useEffect(() => {
     setEstimatedCosts(
@@ -265,6 +302,9 @@ export default function CreateBookmark(props: Props) {
 
     var temp = [...vendors];
     temp.map((row: any) => {
+      row.localBudget = (
+        parseFloat(row.budgetAmount) * parseFloat(row.budgetCurrency.value)
+      ).toFixed(2);
       var eb = parseFloat(row.eurBudget);
       var lb = parseFloat(row.localBudget);
 
@@ -996,7 +1036,7 @@ export default function CreateBookmark(props: Props) {
             </Column>
 
             <Column width={200} resizable>
-              <HeaderCell>ALSO Project Manager</HeaderCell>
+              <HeaderCell>ALSO Marketing Manager</HeaderCell>
               <Cell dataKey="projectManager">
                 {(rowData, index) => (
                   <Input
@@ -1004,6 +1044,21 @@ export default function CreateBookmark(props: Props) {
                     onChange={(event) => {
                       var temp = [...vendors];
                       temp[index].projectManager = event.target.value;
+                      setVendors(temp);
+                    }}
+                  />
+                )}
+              </Cell>
+            </Column>
+            <Column width={200} resizable>
+              <HeaderCell>VOD</HeaderCell>
+              <Cell dataKey="debitor">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.debitor}
+                    onChange={(event) => {
+                      var temp = [...vendors];
+                      temp[index].debitor = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1020,22 +1075,6 @@ export default function CreateBookmark(props: Props) {
                     onChange={(event) => {
                       var temp = [...vendors];
                       temp[index].creditor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={200} resizable>
-              <HeaderCell>Debitor</HeaderCell>
-              <Cell dataKey="debitor">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.debitor}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].debitor = event.target.value;
                       setVendors(temp);
                     }}
                   />

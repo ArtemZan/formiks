@@ -101,7 +101,7 @@ export default function ProjectCard(props: Props) {
       >
         {props.project.tags.map((tag) => {
           return (
-            <WrapItem>
+            <WrapItem key={`${props.project.id}-tag-${tag}`}>
               <Tag fontWeight={"400"} size="sm" px={2} cursor="pointer">
                 #{tag.toUpperCase()}
               </Tag>

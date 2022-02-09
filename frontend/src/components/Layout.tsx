@@ -50,6 +50,7 @@ import { msalInstance } from "../index";
 import { InteractionStatus } from "@azure/msal-browser";
 import { getUserPhoto } from "../utils/MsGraphApiCall";
 import { RestAPI } from "../api/rest";
+import { loginRequest } from "../authConfig";
 
 function Layout(props: any) {
   const { instance, inProgress } = useMsal();
@@ -229,9 +230,13 @@ function Layout(props: any) {
                 _hover={{
                   bg: useColorModeValue("blue.300", "#377bbf"),
                 }}
-                onClick={() => {
+                onClick={async () => {
                   // history.push("/login");
-                  instance.loginRedirect();
+                  await instance.loginRedirect();
+                  // instance.acquireTokenPopup({
+                  //   ...loginRequest,
+                  //   account: instance.getActiveAccount()!,
+                  // });
                   // instance.loginPopup();
                   // instance.login
                 }}
