@@ -186,7 +186,7 @@ export default function CreateBookmark(props: Props) {
   }, [vendorsNames]);
   useEffect(() => {
     var data: any = [];
-    companiesParticipating.map((company: any) => {
+    companiesParticipating.forEach((company: any) => {
       data.push({
         companyName: company.label,
         companyCode: company.value.code,
@@ -203,17 +203,17 @@ export default function CreateBookmark(props: Props) {
 
   useEffect(() => {
     var temp = [...costBreakdown];
-    temp.map((row: any) => {
-      // row.localBudget = (
-      //   parseFloat(row.budgetAmount) * parseFloat(row.budgetCurrency.value)
-      // ).toFixed(2);
-      // var eb = parseFloat(row.eurBudget);
-      // var lb = parseFloat(row.localBudget);
-      row.contribution = (
-        parseFloat(row.share) *
-        0.01 *
-        parseFloat(estimatedIncomeBudgetCurrency)
-      ).toFixed(2);
+    temp.forEach((row: any) => {
+      if (budgetSource.value === "noBudget") {
+        row.contribution = "0.00";
+      } else {
+        row.contribution = (
+          parseFloat(row.share) *
+          0.01 *
+          parseFloat(estimatedIncomeBudgetCurrency)
+        ).toFixed(2);
+      }
+
       row.estimatedCosts = (
         parseFloat(row.share) *
         0.01 *
@@ -301,7 +301,7 @@ export default function CreateBookmark(props: Props) {
     var netProfiLC = parseFloat(netProfitTargetBudgetCurrency);
 
     var temp = [...vendors];
-    temp.map((row: any) => {
+    temp.forEach((row: any) => {
       row.localBudget = (
         parseFloat(row.budgetAmount) * parseFloat(row.budgetCurrency.value)
       ).toFixed(2);
@@ -315,36 +315,52 @@ export default function CreateBookmark(props: Props) {
         totalBudgetLC += lb;
       }
     });
-    temp.map((row: any) => {
+    temp.forEach((row: any) => {
       var vbEur = parseFloat(row.eurBudget);
-      if (!isNaN(vbEur) && totalBudgetEur !== 0) {
-        var share = vbEur / totalBudgetEur;
-        row.share = (share * 100).toFixed(2);
+      var share = 0;
+      if (budgetSource.value === "noBudget") {
+        row.budgetAmount = "0.00";
+        row.localBudget = "0.00";
+        row.eurBudget = "0.00";
+        row.estimatedIncomeCC = "0.00";
+        share = parseFloat(row.share) * 0.01;
 
-        if (!isNaN(totalCostsCC)) {
-          row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
-        }
-        if (!isNaN(totalIncomeCC)) {
-          row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
-        }
-        if (!isNaN(totalCostsLC)) {
-          row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
-        }
-        if (!isNaN(totalCostsEur)) {
-          row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
-        }
-        var vendorCurr = parseFloat(row.budgetCurrency.value);
-        if (!isNaN(netProfitEur)) {
-          row.netProfitTargetEUR = (share * netProfitEur).toFixed(2);
-          if (!isNaN(vendorCurr)) {
-            row.netProfitTargetVC = (
-              vendorCurr *
-              (share * netProfitEur)
-            ).toFixed(2);
+        row.estimatedCostsCC = (
+          share * parseFloat(estimatedCostsBudgetCurrency)
+        ).toFixed(2);
+        row.estimatedCostsLC = (
+          share * parseFloat(totalEstimatedCostsLC)
+        ).toFixed(2);
+        row.estimatedCostsEUR = (share * parseFloat(estimatedCosts)).toFixed(2);
+      } else {
+        share = vbEur / totalBudgetEur;
+        row.share = (share * 100).toFixed(2);
+        if (!isNaN(vbEur) && totalBudgetEur !== 0) {
+          if (!isNaN(totalCostsCC)) {
+            row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
           }
-        }
-        if (!isNaN(netProfiLC)) {
-          row.netProfitTargetLC = (share * netProfiLC).toFixed(2);
+          if (!isNaN(totalIncomeCC)) {
+            row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
+          }
+          if (!isNaN(totalCostsLC)) {
+            row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
+          }
+          if (!isNaN(totalCostsEur)) {
+            row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
+          }
+          var vendorCurr = parseFloat(row.budgetCurrency.value);
+          if (!isNaN(netProfitEur)) {
+            row.netProfitTargetEUR = (share * netProfitEur).toFixed(2);
+            if (!isNaN(vendorCurr)) {
+              row.netProfitTargetVC = (
+                vendorCurr *
+                (share * netProfitEur)
+              ).toFixed(2);
+            }
+          }
+          if (!isNaN(netProfiLC)) {
+            row.netProfitTargetLC = (share * netProfiLC).toFixed(2);
+          }
         }
       }
     });
@@ -881,6 +897,7 @@ export default function CreateBookmark(props: Props) {
         <Box w="100%">
           <Text mb="8px">Campaign Estimated Income in Campaign Currency</Text>
           <Input
+            disabled={budgetSource.value === "noBudget"}
             value={estimatedIncomeBudgetCurrency}
             onChange={(event) => {
               setEstimatedIncomeBudgetCurrency(event.target.value);
@@ -1214,6 +1231,7 @@ export default function CreateBookmark(props: Props) {
               <Cell dataKey="budgetAmount">
                 {(rowData, index) => (
                   <Input
+                    disabled={budgetSource.value === "noBudget"}
                     value={rowData.budgetAmount}
                     onChange={(event) => {
                       var temp = [...vendors];
@@ -1229,6 +1247,7 @@ export default function CreateBookmark(props: Props) {
               <Cell dataKey="localBudget">
                 {(rowData, index) => (
                   <Input
+                    disabled={budgetSource.value === "noBudget"}
                     value={rowData.localBudget}
                     onChange={(event) => {
                       var temp = [...vendors];
@@ -1244,6 +1263,7 @@ export default function CreateBookmark(props: Props) {
               <Cell dataKey="eurBudget">
                 {(rowData, index) => (
                   <Input
+                    disabled={budgetSource.value === "noBudget"}
                     value={rowData.eurBudget}
                     onChange={(event) => {
                       var temp = [...vendors];
@@ -1258,7 +1278,15 @@ export default function CreateBookmark(props: Props) {
               <HeaderCell>Share %</HeaderCell>
               <Cell dataKey="share">
                 {(rowData, index) => (
-                  <Input disabled defaultValue={rowData.share} />
+                  <Input
+                    disabled={budgetSource.value !== "noBudget"}
+                    value={rowData.share}
+                    onChange={(event) => {
+                      var temp = [...vendors];
+                      temp[index].share = event.target.value;
+                      setVendors(temp);
+                    }}
+                  />
                 )}
               </Cell>
             </Column>
@@ -1269,7 +1297,10 @@ export default function CreateBookmark(props: Props) {
               </HeaderCell>
               <Cell dataKey="estimatedIncomeCC">
                 {(rowData, index) => (
-                  <Input disabled defaultValue={rowData.estimatedIncomeCC} />
+                  <Input
+                    disabled={budgetSource.value === "noBudget"}
+                    defaultValue={rowData.estimatedIncomeCC}
+                  />
                 )}
               </Cell>
             </Column>
@@ -1477,6 +1508,7 @@ export default function CreateBookmark(props: Props) {
               <Cell dataKey="contribution">
                 {(rowData, index) => (
                   <Input
+                    disabled={budgetSource.value === "noBudget"}
                     value={rowData.contribution}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
