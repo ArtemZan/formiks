@@ -33,19 +33,19 @@ type Submission struct {
 	db   *mongo.Database
 }
 
-func (r *Submission) FetchVendorTable(c *gin.Context) {
-	response, _ := r.repo.FetchVendorTable(context.TODO())
+func (r *Submission) FetchVendorTablePresets(c *gin.Context) {
+	response, _ := r.repo.FetchVendorTablePresets(context.TODO())
 	c.JSON(http.StatusOK, response)
 }
-func (r *Submission) UpdateVendorTable(c *gin.Context) {
-	var data models.VendorTable
+func (r *Submission) UpsertVendorTablePreset(c *gin.Context) {
+	var data models.VendorTablePreset
 	err := c.BindJSON(&data)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to bind request JSON", err)
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	err = r.repo.UpdateVendorTable(c.Request.Context(), data)
+	err = r.repo.UpsertVendorTablePreset(c.Request.Context(), data)
 	status := http.StatusOK
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to update vendor table", err)

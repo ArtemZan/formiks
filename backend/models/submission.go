@@ -30,8 +30,9 @@ type PartialUpdateRequest struct {
 	Value      interface{}        `bson:"value" json:"value"`
 }
 
-type VendorTable struct {
-	Name             string         `bson:"name" json:"name"`
-	DisplayedColumns []string       `bson:"displayedColumns" json:"displayedColumns"`
-	ColumnsWidth     map[string]int `bson:"columnsWidth" json:"columnsWidth"`
+type VendorTablePreset struct {
+	ID               primitive.ObjectID `bson:"_id" json:"id,omitempty"`
+	Name             string             `bson:"name" json:"name"`
+	DisplayedColumns []string           `bson:"displayedColumns" json:"displayedColumns"`
+	ColumnsWidth     map[string]int     `bson:"columnsWidth" json:"columnsWidth"`
 }

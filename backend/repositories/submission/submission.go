@@ -21,17 +21,20 @@ type submissionRepo struct {
 	Conn *mongo.Database
 }
 
-func (r *submissionRepo) FetchVendorTable(ctx context.Context) (models.VendorTable, error) {
-	var response models.VendorTable
-	result := r.Conn.Collection("config").FindOne(ctx, bson.M{"name": "vendorTable"})
-	err := result.Decode(&response)
-	return response, err
+func (r *submissionRepo) FetchVendorTablePresets(ctx context.Context) ([]models.VendorTablePreset, error) {
+	presets := make([]models.VendorTablePreset, 0)
+	cursor, err := r.Conn.Collection("presets").Find(ctx, bson.M{})
+	if err != nil {
+		return presets, err
+	}
+	err = cursor.All(ctx, &presets)
+	return presets, err
 }
 
-func (r *submissionRepo) UpdateVendorTable(ctx context.Context, data models.VendorTable) error {
+func (r *submissionRepo) UpsertVendorTablePreset(ctx context.Context, data models.VendorTablePreset) error {
 	upsert := true
 	data.Name = "vendorTable"
-	_, err := r.Conn.Collection("config").ReplaceOne(ctx, bson.M{"name": "vendorTable"}, data, &options.ReplaceOptions{Upsert: &upsert})
+	_, err := r.Conn.Collection("presets").ReplaceOne(ctx, bson.M{"name": "vendorTable"}, data, &options.ReplaceOptions{Upsert: &upsert})
 	return err
 }
 

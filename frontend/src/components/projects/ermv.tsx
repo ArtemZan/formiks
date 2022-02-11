@@ -53,6 +53,7 @@ export default function CreateBookmark(props: Props) {
     label: "",
     value: { name: "", code: "", country: "" },
   });
+  const [localExchangeRate, setLocalExchangeRate] = useState(0.0);
   const [campaignName, setCampaignName] = useState("");
   const [campaignDescription, setCampaignDescription] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
@@ -140,12 +141,9 @@ export default function CreateBookmark(props: Props) {
 
   useEffect(() => {
     setTotalEstimatedCostsLC(
-      (
-        parseFloat(estimatedCostsBudgetCurrency) *
-        parseFloat(exchangeRates.value)
-      ).toFixed(2)
+      (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
     );
-  }, [estimatedCostsBudgetCurrency, exchangeRates]);
+  }, [estimatedCosts, localExchangeRate]);
 
   useEffect(() => {
     getAccountInfo().then((response) => {
@@ -159,7 +157,7 @@ export default function CreateBookmark(props: Props) {
 
   useEffect(() => {
     var data: any = [];
-    vendorsNames.map((vendor: any) => {
+    vendorsNames.forEach((vendor: any) => {
       data.push({
         vendor: vendor.label,
         projectManager: "",
@@ -302,9 +300,13 @@ export default function CreateBookmark(props: Props) {
 
     var temp = [...vendors];
     temp.forEach((row: any) => {
-      row.localBudget = (
-        parseFloat(row.budgetAmount) * parseFloat(row.budgetCurrency.value)
+      row.eurBudget = (
+        parseFloat(row.budgetAmount) / parseFloat(row.budgetCurrency.value)
       ).toFixed(2);
+      row.localBudget = (parseFloat(row.eurBudget) * localExchangeRate).toFixed(
+        2
+      );
+
       var eb = parseFloat(row.eurBudget);
       var lb = parseFloat(row.localBudget);
 
@@ -328,10 +330,11 @@ export default function CreateBookmark(props: Props) {
         row.estimatedCostsCC = (
           share * parseFloat(estimatedCostsBudgetCurrency)
         ).toFixed(2);
-        row.estimatedCostsLC = (
-          share * parseFloat(totalEstimatedCostsLC)
-        ).toFixed(2);
+
         row.estimatedCostsEUR = (share * parseFloat(estimatedCosts)).toFixed(2);
+        row.estimatedCostsLC = (
+          parseFloat(row.estimatedCostsEUR) * localExchangeRate
+        ).toFixed(2);
       } else {
         share = vbEur / totalBudgetEur;
         row.share = (share * 100).toFixed(2);
@@ -348,21 +351,21 @@ export default function CreateBookmark(props: Props) {
           if (!isNaN(totalCostsEur)) {
             row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
           }
-          var vendorCurr = parseFloat(row.budgetCurrency.value);
-          if (!isNaN(netProfitEur)) {
-            row.netProfitTargetEUR = (share * netProfitEur).toFixed(2);
-            if (!isNaN(vendorCurr)) {
-              row.netProfitTargetVC = (
-                vendorCurr *
-                (share * netProfitEur)
-              ).toFixed(2);
-            }
-          }
-          if (!isNaN(netProfiLC)) {
-            row.netProfitTargetLC = (share * netProfiLC).toFixed(2);
-          }
         }
       }
+      row.netProfitTargetEUR = (
+        parseFloat(row.share) *
+        0.01 *
+        parseFloat(netProfitTarget)
+      ).toFixed(2);
+
+      row.netProfitTargetLC = (
+        parseFloat(row.netProfitTargetEUR) * localExchangeRate
+      ).toFixed(2);
+      row.netProfitTargetVC = (
+        parseFloat(row.budgetCurrency.value) *
+        parseFloat(row.netProfitTargetEUR)
+      ).toFixed(2);
     });
     setTotalVendorBudgetInEUR(totalBudgetEur);
     setTotalVendorBudgetInLC(totalBudgetLC);
@@ -411,6 +414,13 @@ export default function CreateBookmark(props: Props) {
               value: requestorsCompanyName.value,
             }}
             onChange={(value: any) => {
+              var ler = 0.0;
+              ExchangeRates.forEach((rate) => {
+                if (rate.label === value.value.currency) {
+                  ler = parseFloat(rate.value);
+                }
+              });
+              setLocalExchangeRate(ler);
               setRequestorsCompanyName(value);
             }}
             classNamePrefix="select"
@@ -851,6 +861,15 @@ export default function CreateBookmark(props: Props) {
               Click or Drag files to this area to upload
             </div>
           </Uploader>
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Local Currency</Text>
+          <Input
+            defaultValue={requestorsCompanyName.value.currency}
+            disabled
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
+          />
         </Box>
         <Box w="100%">
           <Text mb="8px">Campaign Currency</Text>
@@ -1299,7 +1318,8 @@ export default function CreateBookmark(props: Props) {
                 {(rowData, index) => (
                   <Input
                     disabled={budgetSource.value === "noBudget"}
-                    defaultValue={rowData.estimatedIncomeCC}
+                    onChange={() => {}}
+                    value={rowData.estimatedIncomeCC}
                   />
                 )}
               </Cell>
@@ -1310,7 +1330,11 @@ export default function CreateBookmark(props: Props) {
               </HeaderCell>
               <Cell dataKey="estimatedCostsCC">
                 {(rowData, index) => (
-                  <Input disabled defaultValue={rowData.estimatedCostsCC} />
+                  <Input
+                    disabled
+                    onChange={() => {}}
+                    value={rowData.estimatedCostsCC}
+                  />
                 )}
               </Cell>
             </Column>
@@ -1318,7 +1342,11 @@ export default function CreateBookmark(props: Props) {
               <HeaderCell>Vendor Estimated Costs in LC</HeaderCell>
               <Cell dataKey="estimatedCostsLC">
                 {(rowData, index) => (
-                  <Input disabled defaultValue={rowData.estimatedCostsLC} />
+                  <Input
+                    disabled
+                    onChange={() => {}}
+                    value={rowData.estimatedCostsLC}
+                  />
                 )}
               </Cell>
             </Column>
@@ -1326,7 +1354,11 @@ export default function CreateBookmark(props: Props) {
               <HeaderCell>Vendor Estimated Costs in EUR</HeaderCell>
               <Cell dataKey="estimatedCostsEUR">
                 {(rowData, index) => (
-                  <Input disabled defaultValue={rowData.estimatedCostsEUR} />
+                  <Input
+                    disabled
+                    onChange={() => {}}
+                    value={rowData.estimatedCostsEUR}
+                  />
                 )}
               </Cell>
             </Column>
@@ -1334,7 +1366,11 @@ export default function CreateBookmark(props: Props) {
               <HeaderCell>Net Profit Target in Campaign Currency</HeaderCell>
               <Cell dataKey="netProfitTargetVC">
                 {(rowData, index) => (
-                  <Input disabled defaultValue={rowData.netProfitTargetVC} />
+                  <Input
+                    disabled
+                    onChange={() => {}}
+                    value={rowData.netProfitTargetVC}
+                  />
                 )}
               </Cell>
             </Column>
@@ -1342,7 +1378,11 @@ export default function CreateBookmark(props: Props) {
               <HeaderCell>Net Profit Target in LC</HeaderCell>
               <Cell dataKey="netProfitTargetLC">
                 {(rowData, index) => (
-                  <Input disabled defaultValue={rowData.netProfitTargetLC} />
+                  <Input
+                    disabled
+                    onChange={() => {}}
+                    value={rowData.netProfitTargetLC}
+                  />
                 )}
               </Cell>
             </Column>
@@ -1350,7 +1390,11 @@ export default function CreateBookmark(props: Props) {
               <HeaderCell>Net Profit Target in EUR</HeaderCell>
               <Cell dataKey="netProfitTargetEUR">
                 {(rowData, index) => (
-                  <Input disabled defaultValue={rowData.netProfitTargetEUR} />
+                  <Input
+                    disabled
+                    onChange={() => {}}
+                    value={rowData.netProfitTargetEUR}
+                  />
                 )}
               </Cell>
             </Column>
@@ -1672,7 +1716,6 @@ export default function CreateBookmark(props: Props) {
             children,
           };
           RestAPI.createSubmissionWithChildren(submission).then((response) => {
-            console.log(response.data);
             props.history.push("/vendors");
           });
         }}
