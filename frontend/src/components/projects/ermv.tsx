@@ -180,6 +180,27 @@ export default function CreateBookmark(props: Props) {
         netProfitTargetEUR: "",
       });
     });
+    // data.push({
+    //   vendor: "TOTAL",
+    //   projectManager: "",
+    //   creditor: "",
+    //   debitor: "",
+    //   manufacturer: "",
+    //   bu: "",
+    //   ph: { label: "", value: "" },
+    //   budgetCurrency: { label: "", value: "" },
+    //   budgetAmount: "",
+    //   localBudget: "",
+    //   eurBudget: "",
+    //   share: "",
+    //   estimatedCostsCC: "",
+    //   estimatedIncomeCC: "",
+    //   estimatedCostsLC: "",
+    //   estimatedCostsEUR: "",
+    //   netProfitTargetVC: "",
+    //   netProfitTargetLC: "",
+    //   netProfitTargetEUR: "",
+    // });
     setVendors(data);
   }, [vendorsNames]);
   useEffect(() => {
@@ -295,8 +316,6 @@ export default function CreateBookmark(props: Props) {
     var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
     var totalCostsLC = parseFloat(totalEstimatedCostsLC);
     var totalCostsEur = parseFloat(estimatedCosts);
-    var netProfitEur = parseFloat(netProfitTarget);
-    var netProfiLC = parseFloat(netProfitTargetBudgetCurrency);
 
     var temp = [...vendors];
     temp.forEach((row: any) => {
@@ -317,7 +336,7 @@ export default function CreateBookmark(props: Props) {
         totalBudgetLC += lb;
       }
     });
-    temp.forEach((row: any) => {
+    temp.forEach((row: any, index: number) => {
       var vbEur = parseFloat(row.eurBudget);
       var share = 0;
       if (budgetSource.value === "noBudget") {
@@ -338,6 +357,14 @@ export default function CreateBookmark(props: Props) {
       } else {
         share = vbEur / totalBudgetEur;
         row.share = (share * 100).toFixed(2);
+        if (index === temp.length - 1) {
+          var totalShare = 0.0;
+          temp
+            .slice(0, temp.length - 1)
+            .forEach((t) => (totalShare += parseFloat(t.share)));
+          row.share = (100 - totalShare).toFixed(2);
+          share = (100 - totalShare) * 0.01;
+        }
         if (!isNaN(vbEur) && totalBudgetEur !== 0) {
           if (!isNaN(totalCostsCC)) {
             row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
@@ -362,17 +389,24 @@ export default function CreateBookmark(props: Props) {
       row.netProfitTargetLC = (
         parseFloat(row.netProfitTargetEUR) * localExchangeRate
       ).toFixed(2);
-      row.netProfitTargetVC = (
-        parseFloat(row.budgetCurrency.value) *
-        parseFloat(row.netProfitTargetEUR)
-      ).toFixed(2);
+      row.netProfitTargetVC =
+        `${budgetSource.value === "noBudget" ? "-" : ""}` +
+        (
+          parseFloat(row.budgetCurrency.value) *
+          parseFloat(row.netProfitTargetEUR)
+        ).toFixed(2);
     });
     setTotalVendorBudgetInEUR(totalBudgetEur);
     setTotalVendorBudgetInLC(totalBudgetLC);
     if (!isEqual(vendors, temp)) {
       setVendors(temp);
     }
-  }, [vendors, estimatedCostsBudgetCurrency, totalEstimatedCostsLC]);
+  }, [
+    vendors,
+    estimatedCostsBudgetCurrency,
+    totalEstimatedCostsLC,
+    budgetSource,
+  ]);
 
   return (
     <Box>
@@ -940,7 +974,7 @@ export default function CreateBookmark(props: Props) {
           <Text mb="8px">
             {budgetSource.value === "noBudget"
               ? "Campaign Loss in Campaign currency"
-              : "Campaign Net Profit Target in Campaign currency"}
+              : "Campaign Net Profit Target in Campaign Currency"}
           </Text>
           <Input
             value={netProfitTargetBudgetCurrency}
