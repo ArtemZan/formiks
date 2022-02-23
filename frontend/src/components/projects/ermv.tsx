@@ -180,27 +180,27 @@ export default function CreateBookmark(props: Props) {
         netProfitTargetEUR: "",
       });
     });
-    // data.push({
-    //   vendor: "TOTAL",
-    //   projectManager: "",
-    //   creditor: "",
-    //   debitor: "",
-    //   manufacturer: "",
-    //   bu: "",
-    //   ph: { label: "", value: "" },
-    //   budgetCurrency: { label: "", value: "" },
-    //   budgetAmount: "",
-    //   localBudget: "",
-    //   eurBudget: "",
-    //   share: "",
-    //   estimatedCostsCC: "",
-    //   estimatedIncomeCC: "",
-    //   estimatedCostsLC: "",
-    //   estimatedCostsEUR: "",
-    //   netProfitTargetVC: "",
-    //   netProfitTargetLC: "",
-    //   netProfitTargetEUR: "",
-    // });
+    data.push({
+      vendor: "TOTAL",
+      projectManager: "",
+      creditor: "",
+      debitor: "",
+      manufacturer: "",
+      bu: "",
+      ph: { label: "", value: "" },
+      budgetCurrency: { label: "", value: "" },
+      budgetAmount: "",
+      localBudget: "",
+      eurBudget: "",
+      share: "",
+      estimatedCostsCC: "",
+      estimatedIncomeCC: "",
+      estimatedCostsLC: "",
+      estimatedCostsEUR: "",
+      netProfitTargetVC: "",
+      netProfitTargetLC: "",
+      netProfitTargetEUR: "",
+    });
     setVendors(data);
   }, [vendorsNames]);
   useEffect(() => {
@@ -318,7 +318,7 @@ export default function CreateBookmark(props: Props) {
     var totalCostsEur = parseFloat(estimatedCosts);
 
     var temp = [...vendors];
-    temp.forEach((row: any) => {
+    temp.slice(0, -1).forEach((row: any) => {
       row.eurBudget = (
         parseFloat(row.budgetAmount) / parseFloat(row.budgetCurrency.value)
       ).toFixed(2);
@@ -336,7 +336,18 @@ export default function CreateBookmark(props: Props) {
         totalBudgetLC += lb;
       }
     });
-    temp.forEach((row: any, index: number) => {
+    var totalVendorBudgetAmount = 0;
+    var totalVendorBudgetInLC = 0;
+    var totalVendorBudgetInEUR = 0;
+    var totalVendorShare = 0;
+    var totalEstimatedIncomeInCC = 0;
+    var totalEstimatedCostsInCC = 0;
+    var totalEstimatedCostsInLC = 0;
+    var totalEstimatedCostsInEUR = 0;
+    var totalNetProfitTargetInCC = 0;
+    var totalNetProfitTargetInLC = 0;
+    var totalNetProfitTargetInEUR = 0;
+    temp.slice(0, -1).forEach((row: any, index: number) => {
       var vbEur = parseFloat(row.eurBudget);
       var share = 0;
       if (budgetSource.value === "noBudget") {
@@ -360,7 +371,7 @@ export default function CreateBookmark(props: Props) {
         if (index === temp.length - 1) {
           var totalShare = 0.0;
           temp
-            .slice(0, temp.length - 1)
+            .slice(0, temp.length - 2)
             .forEach((t) => (totalShare += parseFloat(t.share)));
           row.share = (100 - totalShare).toFixed(2);
           share = (100 - totalShare) * 0.01;
@@ -394,7 +405,42 @@ export default function CreateBookmark(props: Props) {
         (
           parseFloat(exchangeRates.value) * parseFloat(row.netProfitTargetEUR)
         ).toFixed(2);
+
+      totalVendorBudgetAmount += parseFloat(row.budgetAmount);
+      totalVendorBudgetInLC += parseFloat(row.localBudget);
+      totalVendorBudgetInEUR += parseFloat(row.eurBudget);
+      totalVendorShare += parseFloat(row.share);
+      totalEstimatedIncomeInCC += parseFloat(row.estimatedIncomeCC);
+      totalEstimatedCostsInCC += parseFloat(row.estimatedCostsCC);
+      totalEstimatedCostsInLC += parseFloat(row.estimatedCostsLC);
+      totalEstimatedCostsInEUR += parseFloat(row.estimatedCostsEUR);
+      totalNetProfitTargetInCC += parseFloat(row.netProfitTargetVC);
+      totalNetProfitTargetInLC += parseFloat(row.netProfitTargetLC);
+      totalNetProfitTargetInEUR += parseFloat(row.netProfitTargetEUR);
     });
+
+    temp[temp.length - 1] = {
+      vendor: "TOTAL",
+      projectManager: "",
+      creditor: "",
+      debitor: "",
+      manufacturer: "",
+      bu: "",
+      ph: { label: "", value: "" },
+      budgetCurrency: { label: "", value: "" },
+      budgetAmount: totalVendorBudgetAmount.toFixed(2),
+      localBudget: totalVendorBudgetInLC.toFixed(2),
+      eurBudget: totalVendorBudgetInEUR.toFixed(2),
+      share: totalVendorShare.toFixed(2),
+      estimatedCostsCC: totalEstimatedIncomeInCC.toFixed(2),
+      estimatedIncomeCC: totalEstimatedCostsInCC.toFixed(2),
+      estimatedCostsLC: totalEstimatedCostsInLC.toFixed(2),
+      estimatedCostsEUR: totalEstimatedCostsInEUR.toFixed(2),
+      netProfitTargetVC: totalNetProfitTargetInCC.toFixed(2),
+      netProfitTargetLC: totalNetProfitTargetInLC.toFixed(2),
+      netProfitTargetEUR: totalNetProfitTargetInEUR.toFixed(2),
+    };
+
     setTotalVendorBudgetInEUR(totalBudgetEur);
     setTotalVendorBudgetInLC(totalBudgetLC);
     if (!isEqual(vendors, temp)) {
