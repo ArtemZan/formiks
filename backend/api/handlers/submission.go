@@ -150,12 +150,14 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			Updated:  time.Now(),
 			Project:  submissionWithChildren.Submission.Project,
 			Data:     make(map[string]interface{}),
+			Group:    "default",
 		}
 		dt := strings.ToUpper(glChild.DocumentType)
 		empty := true
 		if dt == "DR" || dt == "RV" || dt == "WK" || dt == "ZV" {
 			empty = false
 			glSub.Title = "Sales Invoices"
+			glSub.Group = "salesInvoices"
 			glSub.Data["yearMonthSI"] = glChild.YearMonth
 			glSub.Data["documentTypeSI"] = glChild.DocumentType
 			glSub.Data["postingDateSI"] = glChild.PostingDate
@@ -172,6 +174,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		if dt == "SW" || dt == "SA" || dt == "SL" {
 			empty = false
 			glSub.Title = "Income GL Postings"
+			glSub.Group = "incomeGlPostings"
 			glSub.Data["yearMonthIncomeGL"] = glChild.YearMonth
 			glSub.Data["documentTypeIncomeGL"] = glChild.DocumentType
 			glSub.Data["postingDateIncomeGL"] = glChild.PostingDate
@@ -187,6 +190,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		if dt == "KX" || dt == "KW" || dt == "ZV" {
 			empty = false
 			glSub.Title = "Cost Invoices"
+			glSub.Group = "costInvoices"
 			glSub.Data["yearMonth"] = glChild.YearMonth
 			glSub.Data["documentType"] = glChild.DocumentType
 			glSub.Data["postingDate"] = glChild.PostingDate
@@ -203,6 +207,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		if dt == "SK" || dt == "SA" || dt == "SL" {
 			empty = false
 			glSub.Title = "Cost GL Postings"
+			glSub.Group = "costGlPostings"
 			glSub.Data["yearMonthCostGL"] = glChild.YearMonth
 			glSub.Data["documentTypeCostGL"] = glChild.DocumentType
 			glSub.Data["postingDateCostGL"] = glChild.PostingDate
