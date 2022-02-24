@@ -39,7 +39,7 @@ func (r *submissionRepo) UpsertVendorTablePreset(ctx context.Context, data model
 }
 
 func (r *submissionRepo) Fetch(ctx context.Context, filter interface{}) ([]models.Submission, error) {
-	var submissions []models.Submission
+	submissions := make([]models.Submission, 0)
 	cursor, err := r.Conn.Collection("submissions").Find(ctx, filter)
 	if err != nil {
 		return submissions, err

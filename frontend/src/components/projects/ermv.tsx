@@ -1731,7 +1731,7 @@ export default function CreateBookmark(props: Props) {
             },
           };
           var children: Submission[] = [];
-          vendors.map((vendor: any) => {
+          vendors.slice(0, -1).forEach((vendor: any) => {
             children.push({
               project: projectId,
               title: "",
@@ -1764,7 +1764,7 @@ export default function CreateBookmark(props: Props) {
               },
             });
           });
-          costBreakdown.map((company: any) => {
+          costBreakdown.forEach((company: any) => {
             children.push({
               project: projectId,
               title: "",
