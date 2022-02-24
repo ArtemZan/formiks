@@ -161,7 +161,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			glSub.Data["postingDateSI"] = glChild.PostingDate
 			glSub.Data["documentDateSI"] = glChild.DocumentDate
 			glSub.Data["documentNumberSI"] = glChild.DocumentNumber
-			glSub.Data["invoiceNumberSI"] = glChild.InvoiceNumber
+			glSub.Data["invoiceNumberSI"] = glChild.DocumentNumber
 			glSub.Data["incomeAccountSI"] = glChild.Account
 			glSub.Data["name1SI"] = glChild.Name1
 			glSub.Data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC)
@@ -178,6 +178,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			glSub.Data["documentDateIncomeGL"] = glChild.DocumentDate
 			glSub.Data["documentNumberIncomeGL"] = glChild.DocumentNumber
 			glSub.Data["incomeAccountIncomeGL"] = glChild.Account
+			glSub.Data["name1IncomeGL"] = glChild.Name1
 			glSub.Data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC)
 			glSub.Data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC)
 			glSub.Data["dcIncomeGL"] = glChild.DocumentCurrency

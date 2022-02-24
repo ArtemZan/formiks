@@ -336,7 +336,6 @@ export default function CreateBookmark(props: Props) {
         totalBudgetLC += lb;
       }
     });
-    var totalVendorBudgetAmount = 0;
     var totalVendorBudgetInLC = 0;
     var totalVendorBudgetInEUR = 0;
     var totalVendorShare = 0;
@@ -391,22 +390,19 @@ export default function CreateBookmark(props: Props) {
           }
         }
       }
-      row.netProfitTargetEUR = (
-        parseFloat(row.share) *
-        0.01 *
-        parseFloat(netProfitTarget)
-      ).toFixed(2);
+      row.netProfitTargetEUR =
+        `${budgetSource.value === "noBudget" ? "-" : ""}` +
+        (parseFloat(row.share) * 0.01 * parseFloat(netProfitTarget)).toFixed(2);
 
-      row.netProfitTargetLC = (
-        parseFloat(row.netProfitTargetEUR) * localExchangeRate
-      ).toFixed(2);
+      row.netProfitTargetLC =
+        `${budgetSource.value === "noBudget" ? "-" : ""}` +
+        (parseFloat(row.netProfitTargetEUR) * localExchangeRate).toFixed(2);
       row.netProfitTargetVC =
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
         (
           parseFloat(exchangeRates.value) * parseFloat(row.netProfitTargetEUR)
         ).toFixed(2);
 
-      totalVendorBudgetAmount += parseFloat(row.budgetAmount);
       totalVendorBudgetInLC += parseFloat(row.localBudget);
       totalVendorBudgetInEUR += parseFloat(row.eurBudget);
       totalVendorShare += parseFloat(row.share);
@@ -428,12 +424,12 @@ export default function CreateBookmark(props: Props) {
       bu: "",
       ph: { label: "", value: "" },
       budgetCurrency: { label: "", value: "" },
-      budgetAmount: totalVendorBudgetAmount.toFixed(2),
+      budgetAmount: "",
       localBudget: totalVendorBudgetInLC.toFixed(2),
       eurBudget: totalVendorBudgetInEUR.toFixed(2),
       share: totalVendorShare.toFixed(2),
-      estimatedCostsCC: totalEstimatedIncomeInCC.toFixed(2),
-      estimatedIncomeCC: totalEstimatedCostsInCC.toFixed(2),
+      estimatedCostsCC: totalEstimatedCostsInCC.toFixed(2),
+      estimatedIncomeCC: totalEstimatedIncomeInCC.toFixed(2),
       estimatedCostsLC: totalEstimatedCostsInLC.toFixed(2),
       estimatedCostsEUR: totalEstimatedCostsInEUR.toFixed(2),
       netProfitTargetVC: totalNetProfitTargetInCC.toFixed(2),

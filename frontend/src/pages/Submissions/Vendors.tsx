@@ -354,8 +354,7 @@ const DisplayedColumnsList = [
       },
       { label: "Invoice Number", value: "data.invoiceNumber", type: "string" },
       { label: "Cost Account", value: "data.costAccount", type: "string" },
-      { label: "Name 1", value: "data.name1", type: "string" },
-      { label: "Vendor Name", value: "data.vendorNameCI", type: "string" },
+      { label: "Invoice Supplier", value: "data.name1", type: "string" },
       { label: "Cost Amount (LC)", value: "data.costAmountLC", type: "string" },
       { label: "Cost Amount (DC)", value: "data.costAmountDC", type: "string" },
       { label: "DC", value: "data.dc", type: "string" },
@@ -390,8 +389,7 @@ const DisplayedColumnsList = [
         value: "data.incomeAccountSI",
         type: "string",
       },
-      { label: "Name 1", value: "data.name1SI", type: "string" },
-      { label: "Vendor Name", value: "data.vendorNameSI", type: "string" },
+      { label: "Invoice Recipient", value: "data.name1SI", type: "string" },
       {
         label: "Income Amount (LC)",
         value: "data.incomeAmountLCSI",
@@ -491,6 +489,11 @@ const DisplayedColumnsList = [
       {
         label: "Income Account",
         value: "data.incomeAccountIncomeGL",
+        type: "string",
+      },
+      {
+        label: "Name 1",
+        value: "data.name1IncomeGL",
         type: "string",
       },
       {
@@ -1850,29 +1853,10 @@ export function VendorsTable(props: Props) {
     {
       key: "data.name1",
       dataKey: "data.name1",
-      title: "Name 1",
+      title: "Invoice Supplier",
       width: columnWidth("data.name1", 200),
       resizable: true,
       hidden: visibilityController("costInvoices", "data.name1"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#fff7f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.VendorNameCI",
-      dataKey: "data.VendorNameCI",
-      title: "Vendor Name",
-      width: columnWidth("data.VendorNameCI", 200),
-      resizable: true,
-      hidden: visibilityController("costInvoices", "data.VendorNameCI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -2143,7 +2127,7 @@ export function VendorsTable(props: Props) {
     {
       key: "data.name1SI",
       dataKey: "data.name1SI",
-      title: "Name 1",
+      title: "Invoice Recipient",
       width: columnWidth("data.name1SI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.name1SI"),
@@ -2159,25 +2143,7 @@ export function VendorsTable(props: Props) {
         />
       ),
     },
-    {
-      key: "data.vendorNameSI",
-      dataKey: "data.vendorNameSI",
-      title: "Vendor Name",
-      width: columnWidth("data.vendorNameSI", 200),
-      resizable: true,
-      hidden: visibilityController("salesInvoices", "data.vendorNameSI"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#f2f5fa"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
+
     {
       key: "data.incomeAmountLCSI",
       dataKey: "data.incomeAmountLCSI",
@@ -2592,6 +2558,25 @@ export function VendorsTable(props: Props) {
         "incomeGlPostings",
         "data.incomeAccountIncomeGL"
       ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f2fcfc"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.name1IncomeGL",
+      dataKey: "data.name1IncomeGL",
+      title: "Income Account",
+      width: columnWidth("data.name1IncomeGL", 200),
+      resizable: true,
+      hidden: visibilityController("incomeGlPostings", "data.name1IncomeGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
