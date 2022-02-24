@@ -4,7 +4,7 @@ import { Stack, Text, Button } from "@chakra-ui/react";
 export default function CookiePreference(props: any) {
   return (
     <Stack
-      position="absolute"
+      position="fixed"
       bottom="0"
       left="0"
       right="0"
@@ -16,6 +16,7 @@ export default function CookiePreference(props: any) {
       mr="auto"
       mb={"3vh"}
       borderRadius="md"
+      zIndex={10000}
     >
       <Stack direction="row" alignItems="center">
         <Text fontWeight="semibold">Your Privary</Text>
