@@ -22,7 +22,7 @@ type SubmissionRepo interface {
 	FetchByID(ctx context.Context, id primitive.ObjectID) (models.Submission, error)
 	Create(ctx context.Context, submission models.Submission) (models.Submission, error)
 	Update(ctx context.Context, submission models.Submission) error
-	Delete(ctx context.Context, id primitive.ObjectID) error
+	Delete(ctx context.Context, id primitive.ObjectID, children bool) error
 }
 
 type UserRepo interface {

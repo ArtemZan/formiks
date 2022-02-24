@@ -846,9 +846,7 @@ export function VendorsTable(props: Props) {
         }
       });
       setSubmissions(temp);
-      tbd.forEach((ds) => {
-        RestAPI.deleteSubmission(ds);
-      });
+      RestAPI.deleteSubmission(submissionId);
     }
   }
   function parentizeSubmission(submissionId: string) {
@@ -2725,6 +2723,7 @@ export function VendorsTable(props: Props) {
         <EditableTableCell
           type={"number"}
           readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#f9f8f8"
           onUpdate={() => {}}
           rowIndex={props.rowIndex}

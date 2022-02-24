@@ -282,7 +282,7 @@ func (r *Submission) Delete(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	err = r.repo.Delete(c.Request.Context(), id)
+	err = r.repo.Delete(c.Request.Context(), id, true)
 	status := http.StatusOK
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to delete submission", err)

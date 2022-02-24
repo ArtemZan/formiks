@@ -68,7 +68,10 @@ func (r *submissionRepo) Update(ctx context.Context, submission models.Submissio
 	return err
 }
 
-func (r *submissionRepo) Delete(ctx context.Context, id primitive.ObjectID) error {
+func (r *submissionRepo) Delete(ctx context.Context, id primitive.ObjectID, children bool) error {
 	_, err := r.Conn.Collection("submissions").DeleteOne(ctx, bson.M{"_id": id})
+	if children && err == nil {
+		_, err = r.Conn.Collection("submissions").DeleteMany(ctx, bson.M{"parentId": id})
+	}
 	return err
 }
