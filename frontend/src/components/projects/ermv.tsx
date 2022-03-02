@@ -399,9 +399,7 @@ export default function CreateBookmark(props: Props) {
         (parseFloat(row.netProfitTargetEUR) * localExchangeRate).toFixed(2);
       row.netProfitTargetVC =
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (
-          parseFloat(exchangeRates.value) * parseFloat(row.netProfitTargetEUR)
-        ).toFixed(2);
+        (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
 
       totalVendorBudgetInLC += parseFloat(row.localBudget);
       totalVendorBudgetInEUR += parseFloat(row.eurBudget);
