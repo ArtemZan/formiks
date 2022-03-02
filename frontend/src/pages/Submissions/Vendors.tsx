@@ -548,6 +548,38 @@ const DisplayedColumnsList = [
       },
     ],
   },
+  //
+  {
+    label: "Input of Central Marketing Controlling Team",
+    value: "centralMarketingControllingTeam",
+    children: [
+      {
+        label: "Status",
+        value: "data.statusCMCT",
+        type: "string",
+      },
+      {
+        label: "SAP Document Number",
+        value: "data.sapDocumentNumberCMCT",
+        type: "string",
+      },
+      {
+        label: "Additional Information",
+        value: "data.additionalInformationCMCT",
+        type: "string",
+      },
+      {
+        label: "Date",
+        value: "data.dateCMCT",
+        type: "string",
+      },
+      {
+        label: "Operator",
+        value: "data.operatorCMCT",
+        type: "string",
+      },
+    ],
+  },
 ];
 
 export function VendorsTable(props: Props) {
