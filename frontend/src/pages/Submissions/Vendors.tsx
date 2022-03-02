@@ -51,7 +51,6 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
 import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
-import { SubmissionsTransformer } from "../../utils/SubmissionsTransformer";
 import { numberWithCommas } from "../../utils/utils";
 
 interface Props {
@@ -746,9 +745,9 @@ export function VendorsTable(props: Props) {
           filtered.push(submission);
         }
       });
-      setFilteredSubmissions(SubmissionsTransformer(filtered));
+      setFilteredSubmissions(filtered);
     } else {
-      setFilteredSubmissions(SubmissionsTransformer([...submissions]));
+      setFilteredSubmissions(submissions);
     }
   }, [filters, submissions]);
 
@@ -960,9 +959,9 @@ export function VendorsTable(props: Props) {
           vSubs.push(sub);
         }
       });
-      var transformed = SubmissionsTransformer(vSubs);
-      setSubmissions(transformed);
-      setFilteredSubmissions(transformed);
+
+      setSubmissions(vSubs);
+      setFilteredSubmissions(vSubs);
     });
   }, []);
 

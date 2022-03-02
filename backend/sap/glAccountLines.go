@@ -55,6 +55,9 @@ func FetchAccountLines() error {
 			}
 		}
 	}
+	// for k, v := range AccountLines {
+	// 	fmt.Printf("%s: %d\n", k, len(v))
+	// }
 	return nil
 }
 
