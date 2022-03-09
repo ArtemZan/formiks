@@ -547,10 +547,9 @@ const DisplayedColumnsList = [
       },
     ],
   },
-  //
   {
     label: "Input of Central Marketing Controlling Team",
-    value: "centralMarketingControllingTeam",
+    value: "CMCT",
     children: [
       {
         label: "Status",
@@ -559,12 +558,12 @@ const DisplayedColumnsList = [
       },
       {
         label: "SAP Document Number",
-        value: "data.sapDocumentNumberCMCT",
+        value: "data.documentNumberCMCT",
         type: "string",
       },
       {
         label: "Additional Information",
-        value: "data.additionalInformationCMCT",
+        value: "data.infoCMCT",
         type: "string",
       },
       {
@@ -575,6 +574,107 @@ const DisplayedColumnsList = [
       {
         label: "Operator",
         value: "data.operatorCMCT",
+        type: "string",
+      },
+    ],
+  },
+  {
+    label: "Input of Local Marketing Department",
+    value: "LMD",
+    children: [
+      {
+        label: "Status",
+        value: "data.statusLMD",
+        type: "string",
+      },
+      {
+        label: "Date of Invoicing",
+        value: "data.invoicingDateLMD",
+        type: "string",
+      },
+      {
+        label: "Requestor",
+        value: "data.requestorLMD",
+        type: "string",
+      },
+      {
+        label: "VOD",
+        value: "data.vodLMD",
+        type: "string",
+      },
+      {
+        label: "BU",
+        value: "data.buLMD",
+        type: "string",
+      },
+      {
+        label: "Request Date",
+        value: "data.requestDateLMD",
+        type: "string",
+      },
+      {
+        label: "Invoice Type",
+        value: "data.invoiceTypeLMD",
+        type: "string",
+      },
+      {
+        label: "Cancellation Information",
+        value: "data.cancellationInfoLMD",
+        type: "string",
+      },
+      {
+        label: "Document Currency",
+        value: "data.documentCurrencyLMD",
+        type: "string",
+      },
+      {
+        label: "Material Number",
+        value: "data.materialNumberLMD",
+        type: "string",
+      },
+      {
+        label: "Reason",
+        value: "data.reasonLMD",
+        type: "string",
+      },
+      {
+        label: "Text",
+        value: "data.textLMD",
+        type: "string",
+      },
+      {
+        label: "Amount",
+        value: "data.amountLMD",
+        type: "string",
+      },
+      {
+        label: "Additional Info on Invoice",
+        value: "data.additionalInvoiceInfoLMD",
+        type: "string",
+      },
+      {
+        label: "Dunning Stop?",
+        value: "data.dunningStopLMD",
+        type: "string",
+      },
+      {
+        label: "Payment Method",
+        value: "data.paymentMethodLMD",
+        type: "string",
+      },
+      {
+        label: "Deposit Number",
+        value: "data.depositNumberLMD",
+        type: "string",
+      },
+      {
+        label: "Send to",
+        value: "data.sendToLMD",
+        type: "string",
+      },
+      {
+        label: "Additional Comment",
+        value: "data.additionalCommentLMD",
         type: "string",
       },
     ],
@@ -594,6 +694,8 @@ export function VendorsTable(props: Props) {
     "incomeGlPostings",
     "projectResults",
     "controlChecks",
+    "CMCT",
+    "LMD",
   ]);
   const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
@@ -936,7 +1038,7 @@ export function VendorsTable(props: Props) {
 
   function columnWidth(column: string, dw: number) {
     var sd = (defaultColumnsWidth as any)[column];
-    return sd ? sd : 150;
+    return sd ? sd : dw;
   }
   //   async function saveCellWidth(cell: string, width: number) {
   //     localStorage.setItem(cell, width.toString());
@@ -2838,6 +2940,467 @@ export function VendorsTable(props: Props) {
         />
       ),
     },
+    {
+      key: "data.statusCMCT",
+      dataKey: "data.statusCMCT",
+      title: "Status",
+      width: columnWidth("data.statusCMCT", 300),
+      resizable: true,
+      header: "Input of Central Marketing Controlling Team",
+      hidden: visibilityController("CMCT", "data.statusCMCT"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f9ff"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.documentNumberCMCT",
+      dataKey: "data.documentNumberCMCT",
+      title: "SAP Document Number",
+      width: columnWidth("data.documentNumberCMCT", 200),
+      resizable: true,
+      hidden: visibilityController("CMCT", "data.documentNumberCMCT"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f9ff"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.infoCMCT",
+      dataKey: "data.infoCMCT",
+      title: "Additional Information",
+      width: columnWidth("data.infoCMCT", 200),
+      resizable: true,
+      hidden: visibilityController("CMCT", "data.infoCMCT"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f9ff"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.dateCMCT",
+      dataKey: "data.dateCMCT",
+      title: "Date",
+      width: columnWidth("data.dateCMCT", 200),
+      resizable: true,
+      hidden: visibilityController("CMCT", "data.dateCMCT"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f9ff"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.operatorCMCT",
+      dataKey: "data.operatorCMCT",
+      title: "Operator",
+      width: columnWidth("data.operatorCMCT", 200),
+      resizable: true,
+      hidden: visibilityController("CMCT", "data.operatorCMCT"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f9f9ff"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.statusLMD",
+      dataKey: "data.statusLMD",
+      title: "Status",
+      width: columnWidth("data.statusLMD", 300),
+      resizable: true,
+      header: "Input of Local Marketing Department",
+      hidden: visibilityController("LMD", "data.statusLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.invoicingDateLMD",
+      dataKey: "data.invoicingDateLMD",
+      title: "Date of Invoicing",
+      width: columnWidth("data.invoicingDateLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.invoicingDateLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.requestorLMD",
+      dataKey: "data.requestorLMD",
+      title: "Requestor",
+      width: columnWidth("data.requestorLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.requestorLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.vodLMD",
+      dataKey: "data.vodLMD",
+      title: "VOD",
+      width: columnWidth("data.vodLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.vodLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.buLMD",
+      dataKey: "data.buLMD",
+      title: "BU",
+      width: columnWidth("data.buLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.buLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.requestDateLMD",
+      dataKey: "data.requestDateLMD",
+      title: "Request Date",
+      width: columnWidth("data.requestDateLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.requestDateLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.invoiceTypeLMD",
+      dataKey: "data.invoiceTypeLMD",
+      title: "Invoice Type",
+      width: columnWidth("data.invoiceTypeLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.invoiceTypeLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.cancellationInfoLMD",
+      dataKey: "data.cancellationInfoLMD",
+      title: "Cancellation Information",
+      width: columnWidth("data.cancellationInfoLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.cancellationInfoLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.documentCurrencyLMD",
+      dataKey: "data.documentCurrencyLMD",
+      title: "Document Currency",
+      width: columnWidth("data.documentCurrencyLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.documentCurrencyLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.materialNumberLMD",
+      dataKey: "data.materialNumberLMD",
+      title: "Material Number",
+      width: columnWidth("data.materialNumberLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.materialNumberLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.reasonLMD",
+      dataKey: "data.reasonLMD",
+      title: "Reason",
+      width: columnWidth("data.reasonLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.reasonLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.textLMD",
+      dataKey: "data.textLMD",
+      title: "Text",
+      width: columnWidth("data.textLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.textLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.amountLMD",
+      dataKey: "data.amountLMD",
+      title: "Amount",
+      width: columnWidth("data.amountLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.amountLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.additionalInvoiceInfoLMD",
+      dataKey: "data.additionalInvoiceInfoLMD",
+      title: "Additional Info on Invoice",
+      width: columnWidth("data.additionalInvoiceInfoLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.additionalInvoiceInfoLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+
+    {
+      key: "data.dunningStopLMD",
+      dataKey: "data.dunningStopLMD",
+      title: "Dunning Stop?",
+      width: columnWidth("data.dunningStopLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.dunningStopLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.paymentMethodLMD",
+      dataKey: "data.paymentMethodLMD",
+      title: "Payment Method",
+      width: columnWidth("data.paymentMethodLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.paymentMethodLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.depositNumberLMD",
+      dataKey: "data.depositNumberLMD",
+      title: "Deposit Number",
+      width: columnWidth("data.depositNumberLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.depositNumberLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.sendToLMD",
+      dataKey: "data.sendToLMD",
+      title: "Send to",
+      width: columnWidth("data.sendToLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.sendToLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.additionalCommentLMD",
+      dataKey: "data.additionalCommentLMD",
+      title: "Additional Comment",
+      width: columnWidth("data.additionalCommentLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.additionalCommentLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#F5FAEF"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    ///
+
     ///
 
     {
@@ -3009,6 +3572,8 @@ export function VendorsTable(props: Props) {
                   "actualsInEur",
                   "costGlPostings",
                   "incomeGlPostings",
+                  "CMCT",
+                  "LMD",
                 ];
               } else {
                 value.forEach((v) => {

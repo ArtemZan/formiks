@@ -233,12 +233,11 @@ function Layout(props: any) {
                 onClick={async () => {
                   // history.push("/login");
                   await instance.loginRedirect();
-                  // instance.acquireTokenPopup({
+                  // await instance.acquireTokenPopup({
                   //   ...loginRequest,
                   //   account: instance.getActiveAccount()!,
                   // });
-                  // instance.loginPopup();
-                  // instance.login
+                  // await instance.loginPopup();
                 }}
               >
                 Sign In
