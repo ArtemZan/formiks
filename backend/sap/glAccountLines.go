@@ -1,11 +1,18 @@
 package sap
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/doublegrey/formiks/backend/driver"
+	"github.com/doublegrey/formiks/backend/dropdowns"
+	"github.com/doublegrey/formiks/backend/models"
+	"github.com/doublegrey/formiks/backend/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var AccountLines = make(map[string][]AccountLineRecord)
@@ -55,10 +62,185 @@ func FetchAccountLines() error {
 			}
 		}
 	}
-	// for k, v := range AccountLines {
-	// 	fmt.Printf("%s: %d\n", k, len(v))
-	// }
 	return nil
+}
+
+func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []models.Submission {
+	glChildren := AccountLines[projectNumber]
+	exchangeRates := dropdowns.FetchExchangeRates(context.TODO())
+
+	maxGroupLength := make(map[string]int)
+	groups := make(map[string][]map[string]interface{})
+	for _, glChild := range glChildren {
+		var vg []string
+		data := make(map[string]interface{})
+		switch strings.ToUpper(glChild.DocumentType) {
+		case "DR", "RV", "WK":
+			vg = []string{"Sales Invoices"}
+			data["yearMonthSI"] = glChild.YearMonth
+			data["documentTypeSI"] = glChild.DocumentType
+			data["postingDateSI"] = glChild.PostingDate
+			data["documentDateSI"] = glChild.DocumentDate
+			data["documentNumberSI"] = glChild.DocumentNumber
+			data["invoiceNumberSI"] = glChild.DocumentNumber
+			data["incomeAccountSI"] = glChild.Account
+			data["name1SI"] = glChild.Name1
+			data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC)
+			data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC)
+			data["dcSI"] = glChild.DocumentCurrency
+			data["incomeAmountEURSI"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
+		case "SW":
+			vg = []string{"Income GL Postings"}
+			data["yearMonthIncomeGL"] = glChild.YearMonth
+			data["documentTypeIncomeGL"] = glChild.DocumentType
+			data["postingDateIncomeGL"] = glChild.PostingDate
+			data["documentDateIncomeGL"] = glChild.DocumentDate
+			data["documentNumberIncomeGL"] = glChild.DocumentNumber
+			data["incomeAccountIncomeGL"] = glChild.Account
+			data["name1IncomeGL"] = glChild.Name1
+			data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC)
+			data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC)
+			data["dcIncomeGL"] = glChild.DocumentCurrency
+			data["incomeAmountEurIncomeGL"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
+		case "KX", "KW":
+			vg = []string{"Cost Invoices"}
+			data["yearMonth"] = glChild.YearMonth
+			data["documentType"] = glChild.DocumentType
+			data["postingDate"] = glChild.PostingDate
+			data["documentDate"] = glChild.DocumentDate
+			data["documentNumber"] = glChild.DocumentNumber
+			data["invoiceNumber"] = glChild.InvoiceNumber
+			data["costAccount"] = glChild.Account
+			data["name1"] = glChild.Name1
+			data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC)
+			data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC)
+			data["dc"] = glChild.DocumentCurrency
+			data["costAmountEUR"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
+		case "SK":
+			vg = []string{"Cost GL Postings"}
+			data["yearMonthCostGL"] = glChild.YearMonth
+			data["documentTypeCostGL"] = glChild.DocumentType
+			data["postingDateCostGL"] = glChild.PostingDate
+			data["documentDateCostGL"] = glChild.DocumentDate
+			data["documentNumberCostGL"] = glChild.DocumentNumber
+			data["costAccountCostGL"] = glChild.Account
+			data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC)
+			data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC)
+			data["dcCostGL"] = glChild.DocumentCurrency
+			data["costAmountEURCostGL"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
+		case "ZV":
+			vg = []string{"Sales Invoices", "Cost Invoices"}
+			data["yearMonthSI"] = glChild.YearMonth
+			data["documentTypeSI"] = glChild.DocumentType
+			data["postingDateSI"] = glChild.PostingDate
+			data["documentDateSI"] = glChild.DocumentDate
+			data["documentNumberSI"] = glChild.DocumentNumber
+			data["invoiceNumberSI"] = glChild.DocumentNumber
+			data["incomeAccountSI"] = glChild.Account
+			data["name1SI"] = glChild.Name1
+			data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC)
+			data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC)
+			data["dcSI"] = glChild.DocumentCurrency
+			data["incomeAmountEURSI"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
+			data["yearMonth"] = glChild.YearMonth
+			data["documentType"] = glChild.DocumentType
+			data["postingDate"] = glChild.PostingDate
+			data["documentDate"] = glChild.DocumentDate
+			data["documentNumber"] = glChild.DocumentNumber
+			data["invoiceNumber"] = glChild.InvoiceNumber
+			data["costAccount"] = glChild.Account
+			data["name1"] = glChild.Name1
+			data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC)
+			data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC)
+			data["dc"] = glChild.DocumentCurrency
+			data["costAmountEUR"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
+		case "SA", "SL":
+			vg = []string{"Income GL Postings", "Cost GL Postings"}
+			data["yearMonthIncomeGL"] = glChild.YearMonth
+			data["documentTypeIncomeGL"] = glChild.DocumentType
+			data["postingDateIncomeGL"] = glChild.PostingDate
+			data["documentDateIncomeGL"] = glChild.DocumentDate
+			data["documentNumberIncomeGL"] = glChild.DocumentNumber
+			data["incomeAccountIncomeGL"] = glChild.Account
+			data["name1IncomeGL"] = glChild.Name1
+			data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC)
+			data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC)
+			data["dcIncomeGL"] = glChild.DocumentCurrency
+			data["incomeAmountEurIncomeGL"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
+			data["yearMonthCostGL"] = glChild.YearMonth
+			data["documentTypeCostGL"] = glChild.DocumentType
+			data["postingDateCostGL"] = glChild.PostingDate
+			data["documentDateCostGL"] = glChild.DocumentDate
+			data["documentNumberCostGL"] = glChild.DocumentNumber
+			data["costAccountCostGL"] = glChild.Account
+			data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC)
+			data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC)
+			data["dcCostGL"] = glChild.DocumentCurrency
+			data["costAmountEURCostGL"] = utils.String2float(glChild.CostAmountInDC) / exchangeRates[glChild.DocumentCurrency]
+		}
+		for _, g := range vg {
+			maxGroupLength[g]++
+			groups[g] = append(groups[g], data)
+		}
+	}
+
+	var l int
+	for _, v := range maxGroupLength {
+		if l < v {
+			l = v
+		}
+	}
+
+	children := make([]models.Submission, l)
+
+	for i := 0; i < l; i++ {
+		child := models.Submission{
+			ID:       primitive.NewObjectID(),
+			ParentID: parentID,
+			Created:  time.Now(),
+			Updated:  time.Now(),
+			Project:  parentProject,
+			Data:     make(map[string]interface{}),
+		}
+		for _, records := range groups {
+			if len(records) > i {
+				record := records[i]
+				for k, v := range record {
+					child.Data[k] = v
+				}
+			}
+		}
+		children[i] = child
+	}
+	return children
+}
+
+func CreateSubmissionsForAccountLines() {
+	for projectNumber, cd := range AccountLines {
+		if len(cd) < 1 {
+			continue
+		}
+		submissionWithChildren := models.SubmissionWithChildrenRequest{
+			Submission: models.Submission{
+				ID:       primitive.NewObjectID(),
+				Created:  time.Now(),
+				Updated:  time.Now(),
+				Author:   "formiks",
+				ParentID: nil,
+				Project:  "619515b754e61c8dd33daa52",
+				Data:     make(map[string]interface{}),
+			},
+		}
+		submissionWithChildren.Submission.Data[projectNumber] = projectNumber
+		children := GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, projectNumber)
+		submissionWithChildren.Children = children
+
+		driver.Conn.Mongo.Collection("submissions").InsertOne(context.TODO(), submissionWithChildren.Submission)
+		for _, child := range submissionWithChildren.Children {
+			driver.Conn.Mongo.Collection("submissions").InsertOne(context.TODO(), child)
+
+		}
+	}
 }
 
 func isValid(account string) bool {

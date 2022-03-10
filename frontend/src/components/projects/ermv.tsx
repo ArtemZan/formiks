@@ -148,7 +148,7 @@ export default function CreateBookmark(props: Props) {
   useEffect(() => {
     getAccountInfo().then((response) => {
       if (response) {
-        setRequestorsName(response.mail);
+        setRequestorsName(response.displayName);
       }
     });
     fetchDropdowns().then(() => forceUpdate());

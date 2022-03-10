@@ -1,27 +1,8 @@
-import {
-  Box,
-  Button,
-  chakra,
-  Flex,
-  Icon,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Tag,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Button, Tag } from "@chakra-ui/react";
 import moment from "moment";
 import React from "react";
-import {
-  AiFillInfoCircle,
-  BsLightningFill,
-  IoMdCheckmarkCircle,
-  MdError,
-} from "react-icons/all";
 import DatePicker from "react-datepicker";
 import Creatable from "react-select/creatable";
-import { shadeColor } from "../utils/Color";
 import { numberWithCommas } from "../utils/utils";
 
 const numRegex = /[0-9]|\./;
@@ -56,10 +37,7 @@ class EditableTableCell extends React.Component<
     };
   }
   componentDidUpdate(prevProps: any) {
-    if (
-      prevProps.initialValue !== this.props.initialValue &&
-      !isNaN(this.props.initialValue)
-    ) {
+    if (prevProps.initialValue !== this.props.initialValue) {
       this.setState({ cellValue: this.props.initialValue });
     }
   }
@@ -210,10 +188,8 @@ class EditableTableCell extends React.Component<
         ) : this.props.type === "date" ? (
           <DatePicker
             autoFocus
-            // showTimeInput
             isClearable
             customInput={<input className="datepicker-input"></input>}
-            // selected={this.state.cellValue}
             onChange={(date) => {
               this.setState({ cellValue: date, editing: false });
               this.props.onUpdate(

@@ -34,6 +34,7 @@ import { Submission } from "../../types/submission";
 import styled from "styled-components";
 import DatePicker from "react-datepicker";
 import Toast from "../../components/Toast";
+import { getAccountInfo } from "../../utils/MsGraphApiCall";
 
 import BaseTable, {
   AutoResizer,
@@ -223,7 +224,7 @@ const DisplayedColumnsList = [
         value: "data.manufacturerNumber",
         type: "string",
       },
-      { label: "Vendor Name", value: "data.vendorName", type: "string" },
+      { label: "Vendor Name", value: "data.vendorName", type: "dropdown" },
       {
         label: "SAP Debitor Number",
         value: "data.debitorNumber",
@@ -598,6 +599,11 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
+        label: "Vendor",
+        value: "data.vendorLMD",
+        type: "dropdown",
+      },
+      {
         label: "VOD",
         value: "data.vodLMD",
         type: "string",
@@ -682,6 +688,7 @@ const DisplayedColumnsList = [
 ];
 
 export function VendorsTable(props: Props) {
+  const [currentUser, setCurrentUser] = useState({ displayName: "unknown" });
   const [debugOverlayHidden, hideDebugOverlay] = useState(false);
   const [filters, setFilters] = useState<FilterField[]>([]);
   const [displayedColumns, setDisplayedColumns] = useState<string[]>([
@@ -725,8 +732,6 @@ export function VendorsTable(props: Props) {
     fetchDropdowns().then(() => forceUpdate());
   }, []);
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     getHeapInfo();
@@ -1066,6 +1071,13 @@ export function VendorsTable(props: Props) {
       setFilteredSubmissions(vSubs);
     });
   }, []);
+  useEffect(() => {
+    getAccountInfo().then((response) => {
+      if (response) {
+        setCurrentUser(response);
+      }
+    });
+  }, []);
 
   function visibilityController(group: string, key: string) {
     return !displayedColumns.includes(group) && !displayedColumns.includes(key);
@@ -1300,7 +1312,8 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("projectInformation", "data.vendorName"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"dropdown"}
+          loadOptions={loadOptions}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2950,9 +2963,23 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("CMCT", "data.statusCMCT"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"dropdown"}
           backgroundColor="#f9f9ff"
-          onUpdate={handleCellUpdate}
+          onUpdate={(submission: string, path: string, value: any) => {
+            handleCellUpdate(submission, "data.dateCMCT", new Date());
+            handleCellUpdate(
+              submission,
+              "data.operatorCMCT",
+              currentUser.displayName
+            );
+            handleCellUpdate(submission, path, value);
+          }}
+          loadOptions={() => {
+            return [
+              { label: "INVOICED", value: "INVOICED" },
+              { label: "REJECTED", value: "REJECTED" },
+            ];
+          }}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -3007,7 +3034,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("CMCT", "data.dateCMCT"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#f9f9ff"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -3065,9 +3092,16 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("LMD", "data.invoicingDateLMD"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
+          onUpdate={(submission: string, path: string, value: any) => {
+            handleCellUpdate(
+              submission,
+              "data.requestorLMD",
+              currentUser.displayName
+            );
+            handleCellUpdate(submission, path, value);
+          }}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -3087,6 +3121,58 @@ export function VendorsTable(props: Props) {
           type={"text"}
           backgroundColor="#F5FAEF"
           onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+
+    {
+      key: "data.vendorLMD",
+      dataKey: "data.vendorLMD",
+      title: "Vendor",
+      width: columnWidth("data.vendorLMD", 200),
+      resizable: true,
+      hidden: visibilityController("LMD", "data.vendorLMD"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"dropdown"}
+          loadOptions={() => {
+            let childVendors: any[] = [];
+            submissions.forEach((submission) => {
+              if (submission.parentId === props.rowData.id) {
+                childVendors.push({
+                  label: submission.data.vendorName,
+                  value: submission.data.vendorName,
+                });
+              }
+            });
+            return childVendors;
+          }}
+          backgroundColor="#F5FAEF"
+          onUpdate={(submission: string, path: string, value: any) => {
+            handleCellUpdate(submission, path, value);
+            let set = false;
+            VendorsNames.every((v) => {
+              if (v.label === value) {
+                handleCellUpdate(
+                  submission,
+                  "data.vodLMD",
+                  v.value.debitorischer
+                );
+                handleCellUpdate(submission, "data.buLMD", v.value.bu);
+                set = true;
+                return false;
+              }
+              return true;
+            });
+            if (!set) {
+              handleCellUpdate(submission, "data.vodLMD", "");
+              handleCellUpdate(submission, "data.buLMD", "");
+            }
+          }}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -3141,7 +3227,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("LMD", "data.requestDateLMD"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#F5FAEF"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -3160,7 +3246,16 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("LMD", "data.invoiceTypeLMD"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"dropdown"}
+          loadOptions={() => {
+            return [
+              { label: "Marketing Invoice", value: "Marketing Invoice" },
+              { label: "Pre-Invoice", value: "Pre-Invoice" },
+              { label: "Credit Note", value: "Credit Note" },
+              { label: "Cancellation", value: "Cancellation" },
+              { label: "Internal Invoice", value: "Internal Invoice" },
+            ];
+          }}
           backgroundColor="#F5FAEF"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -3198,7 +3293,10 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("LMD", "data.documentCurrencyLMD"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"dropdown"}
+          loadOptions={() => {
+            return ExchangeRates;
+          }}
           backgroundColor="#F5FAEF"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -3313,7 +3411,13 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("LMD", "data.dunningStopLMD"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"dropdown"}
+          loadOptions={() => {
+            return [
+              { label: "Yes", value: "Yes" },
+              { label: "No", value: "No" },
+            ];
+          }}
           backgroundColor="#F5FAEF"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -3332,7 +3436,17 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("LMD", "data.paymentMethodLMD"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"dropdown"}
+          loadOptions={() => {
+            return [
+              { label: "Payment", value: "Payment" },
+              { label: "Money in the House", value: "Money in the House" },
+              {
+                label: "Credit Note from Vendor",
+                value: "Credit Note from Vendor",
+              },
+            ];
+          }}
           backgroundColor="#F5FAEF"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
