@@ -231,7 +231,7 @@ func CreateSubmissionsForAccountLines() {
 				Data:     make(map[string]interface{}),
 			},
 		}
-		submissionWithChildren.Submission.Data[projectNumber] = projectNumber
+		submissionWithChildren.Submission.Data["projectNumber"] = projectNumber
 		children := GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, projectNumber)
 		submissionWithChildren.Children = children
 
