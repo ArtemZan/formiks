@@ -2120,7 +2120,7 @@ export function VendorsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalCostAmount * 1.15)}`
+              ? `TOTAL: ${numberWithCommas(totalCostAmount)}`
               : props.rowData.parentId === null
               ? filteredSubmissions.reduce(
                   (a, b) =>
