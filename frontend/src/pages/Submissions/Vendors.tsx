@@ -758,7 +758,7 @@ export function VendorsTable(props: Props) {
       }
     });
     setTotalCostAmount(tca);
-    totalCostAmountLC(tcal);
+    setTotalCostAmountLC(tcal);
     setTotalCostsInTool(tcit);
   }, [filteredSubmissions]);
   // useEffect(() => {
