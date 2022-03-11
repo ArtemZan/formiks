@@ -705,6 +705,7 @@ export function VendorsTable(props: Props) {
     "LMD",
   ]);
   const [totalCostAmount, setTotalCostAmount] = useState(0);
+  const [totalCostAmountLC, setTotalCostAmountLC] = useState(0);
   const [totalCostsInTool, setTotalCostsInTool] = useState(0);
   const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
@@ -746,15 +747,18 @@ export function VendorsTable(props: Props) {
 
   useEffect(() => {
     let tca = 0;
+    let tcal = 0;
     let tcit = 0;
     filteredSubmissions.forEach((subm) => {
       if (subm.parentId !== null) {
         tcit +=
           subm.data.costAmountEUR || 0 + subm.data.costAmountEURCostGL || 0;
         tca += subm.data.costAmountEUR || 0;
+        tcal += subm.data.costAmountLC || 0;
       }
     });
     setTotalCostAmount(tca);
+    totalCostAmountLC(tcal);
     setTotalCostsInTool(tcit);
   }, [filteredSubmissions]);
   // useEffect(() => {
@@ -2048,7 +2052,7 @@ export function VendorsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? ""
+              ? `TOTAL: ${numberWithCommas(totalCostAmountLC)}`
               : props.rowData.parentId === null
               ? filteredSubmissions.reduce(
                   (a, b) =>
