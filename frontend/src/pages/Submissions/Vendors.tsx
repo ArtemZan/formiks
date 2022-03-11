@@ -704,6 +704,8 @@ export function VendorsTable(props: Props) {
     "CMCT",
     "LMD",
   ]);
+  const [totalCostAmount, setTotalCostAmount] = useState(0);
+  const [totalCostsInTool, setTotalCostsInTool] = useState(0);
   const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -741,27 +743,41 @@ export function VendorsTable(props: Props) {
 
     return () => clearInterval(interval);
   }, []);
-  useEffect(() => {
-    RestAPI.getVendorTableDefaultConfig().then((response) => {
-      if (response.data.columnsWidth !== null) {
-        setDefaultColumnsWidth(response.data.columnsWidth);
-      }
-      if (response.data.displayedColumns !== null) {
-        if (response.data.displayedColumns.length > 0) {
-          setDisplayedColumns(response.data.displayedColumns);
-        }
-      }
 
-      var cw = localStorage.getItem("vendors.columns");
-      if (cw !== null) {
-        setDefaultColumnsWidth(JSON.parse(cw));
-      }
-      var dc = localStorage.getItem("vendors.displayedColumns");
-      if (dc !== null) {
-        setDisplayedColumns(JSON.parse(dc));
+  useEffect(() => {
+    let tca = 0;
+    let tcit = 0;
+    filteredSubmissions.forEach((subm) => {
+      if (subm.parentId !== null) {
+        tcit +=
+          subm.data.costAmountEUR || 0 + subm.data.costAmountEURCostGL || 0;
+        tca += subm.data.costAmountEUR || 0;
       }
     });
-  }, []);
+    setTotalCostAmount(tca);
+    setTotalCostsInTool(tcit);
+  }, [filteredSubmissions]);
+  // useEffect(() => {
+  //   RestAPI.getVendorTableDefaultConfig().then((response) => {
+  //     if (response.data.columnsWidth !== null) {
+  //       setDefaultColumnsWidth(response.data.columnsWidth);
+  //     }
+  //     if (response.data.displayedColumns !== null) {
+  //       if (response.data.displayedColumns.length > 0) {
+  //         setDisplayedColumns(response.data.displayedColumns);
+  //       }
+  //     }
+
+  //     var cw = localStorage.getItem("vendors.columns");
+  //     if (cw !== null) {
+  //       setDefaultColumnsWidth(JSON.parse(cw));
+  //     }
+  //     var dc = localStorage.getItem("vendors.displayedColumns");
+  //     if (dc !== null) {
+  //       setDisplayedColumns(JSON.parse(dc));
+  //     }
+  //   });
+  // }, []);
   useEffect(() => {
     var filtered: Submission[] = [];
     if (filters.length > 0 && submissions.length > 0) {
@@ -2031,7 +2047,9 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            props.rowData.parentId === null
+            props.rowData.id === "total"
+              ? ""
+              : props.rowData.parentId === null
               ? filteredSubmissions.reduce(
                   (a, b) =>
                     a +
@@ -2101,7 +2119,9 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            props.rowData.parentId === null
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalCostAmount * 1.15)}`
+              : props.rowData.parentId === null
               ? filteredSubmissions.reduce(
                   (a, b) =>
                     a +
@@ -2876,7 +2896,9 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            props.rowData.parentId === null
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalCostsInTool)}`
+              : props.rowData.parentId === null
               ? filteredSubmissions.reduce(
                   (a, b) =>
                     a +
@@ -4159,6 +4181,15 @@ export function VendorsTable(props: Props) {
               columns={tableCells}
               headerRenderer={headerRendererForTable}
               headerClassName="header-cells"
+              frozenData={
+                [
+                  {
+                    id: "total",
+                    data: {},
+                    parentId: null,
+                  },
+                ] as any[]
+              }
               data={unflatten([...filteredSubmissions] as any[])}
               rowKey="id"
               headerHeight={[50, 50]}

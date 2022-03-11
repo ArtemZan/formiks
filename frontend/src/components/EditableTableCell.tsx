@@ -97,9 +97,12 @@ class EditableTableCell extends React.Component<
         style={{
           fontWeight: this.props.bold ? "bold" : "normal",
           textAlign: this.props.type === "button" ? "center" : "inherit",
-          backgroundColor: this.props.backgroundColor
-            ? this.props.backgroundColor
-            : "",
+          backgroundColor:
+            this.props.rowData.id === "total"
+              ? "white"
+              : this.props.backgroundColor
+              ? this.props.backgroundColor
+              : "",
         }}
         className={
           this.state.editing
@@ -109,7 +112,11 @@ class EditableTableCell extends React.Component<
               } ${this.props.readonly ? "readonly" : ""}`
         }
         onClick={() => {
-          if (!this.state.editing && !this.props.readonly) {
+          if (
+            !this.state.editing &&
+            !this.props.readonly &&
+            this.props.rowData.id !== "total"
+          ) {
             this.setState({ editing: true });
           }
         }}
