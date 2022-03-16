@@ -20,6 +20,16 @@ import (
 )
 
 func main() {
+	if len(os.Getenv("DEV")) > 0 {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalf("Failed to read .env file: %v\n", err)
+		}
+	}
+	err := driver.Connect()
+	if err != nil {
+		log.Fatalf("Failed to initialize database connection: %v\n", err)
+	}
 	ticker := time.NewTicker(5 * time.Minute)
 
 	go func() {
@@ -38,16 +48,7 @@ func main() {
 			msal.PubKey = []byte{}
 		}
 	}()
-	if len(os.Getenv("DEV")) > 0 {
-		err := godotenv.Load()
-		if err != nil {
-			log.Fatalf("Failed to read .env file: %v\n", err)
-		}
-	}
-	err := driver.Connect()
-	if err != nil {
-		log.Fatalf("Failed to initialize database connection: %v\n", err)
-	}
+
 	go dropdowns.SyncAll()
 	go func() {
 		for {
