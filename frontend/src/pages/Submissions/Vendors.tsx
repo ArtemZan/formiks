@@ -706,6 +706,8 @@ export function VendorsTable(props: Props) {
   ]);
   const [totalCostAmount, setTotalCostAmount] = useState(0);
   const [totalCostAmountLC, setTotalCostAmountLC] = useState(0);
+  const [totalIncomeAmount, setTotalIncomeAmount] = useState(0);
+  const [totalIncomeAmountLC, setTotalIncomeAmountLC] = useState(0);
   const [totalCostsInTool, setTotalCostsInTool] = useState(0);
   const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
@@ -749,16 +751,22 @@ export function VendorsTable(props: Props) {
     let tca = 0;
     let tcal = 0;
     let tcit = 0;
+    let tia = 0;
+    let tial = 0;
     filteredSubmissions.forEach((subm) => {
       if (subm.parentId !== null) {
         tcit +=
           subm.data.costAmountEUR || 0 + subm.data.costAmountEURCostGL || 0;
         tca += subm.data.costAmountEUR || 0;
         tcal += subm.data.costAmountLC || 0;
+        tia += subm.data.incomeAmountEURSI || 0;
+        tial += subm.data.incomeAmountLCSI || 0;
       }
     });
     setTotalCostAmount(tca);
     setTotalCostAmountLC(tcal);
+    setTotalIncomeAmount(tia);
+    setTotalIncomeAmountLC(tial);
     setTotalCostsInTool(tcit);
   }, [filteredSubmissions]);
   // useEffect(() => {
@@ -2321,13 +2329,28 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("salesInvoices", "data.incomeAmountLCSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#f2f5fa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalIncomeAmountLC)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.incomeAmountLCSI || 0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
@@ -2379,12 +2402,27 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#f2f5fa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalIncomeAmount)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.incomeAmountEURSI || 0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
