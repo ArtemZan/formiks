@@ -30,13 +30,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to initialize database connection: %v\n", err)
 	}
-	ticker := time.NewTicker(5 * time.Minute)
+
+	ticker := time.NewTicker(1 * time.Hour)
 
 	go func() {
 		sap.FetchAccountLines()
 		fmt.Println("account lines parsed...")
-		// sap.CreateSubmissionsForAccountLines()
-		// os.Exit(0)
+		sap.CreateSubmissionsForAccountLines()
+		os.Exit(0)
 		for range time.NewTicker(time.Hour * 3).C {
 			sap.FetchAccountLines()
 		}
