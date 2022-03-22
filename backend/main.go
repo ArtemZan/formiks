@@ -35,10 +35,10 @@ func main() {
 
 	go func() {
 		sap.FetchAccountLines()
-		fmt.Println("account lines parsed...")
-		sap.CreateSubmissionsForAccountLines()
-		os.Exit(0)
-		for range time.NewTicker(time.Hour * 3).C {
+		// fmt.Println("account lines parsed...")
+		// sap.CreateSubmissionsForAccountLines()
+		// os.Exit(0)
+		for range time.NewTicker(time.Hour * 5).C {
 			sap.FetchAccountLines()
 		}
 	}()
