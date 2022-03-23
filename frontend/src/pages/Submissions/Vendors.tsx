@@ -406,7 +406,11 @@ const DisplayedColumnsList = [
         value: "data.incomeAmountEURSI",
         type: "number",
       },
-      { label: "Income Status", value: "data.incomeStatusSI", type: "string" },
+      {
+        label: "Invoice Status (Paid/Not Paid)",
+        value: "data.invoiceStatusSI",
+        type: "string",
+      },
     ],
   },
   {
@@ -2565,14 +2569,14 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.incomeStatusSI",
-      dataKey: "data.incomeStatusSI",
-      title: "Income Status",
-      width: columnWidth("data.incomeStatusSI", 200),
+      key: "data.invoiceStatusSI",
+      dataKey: "data.invoiceStatusSI",
+      title: "Invoice Status (Paid/Not Paid)",
+      width: columnWidth("data.invoiceStatusSI", 200),
       group: "Sales Invoices",
 
       resizable: true,
-      hidden: visibilityController("salesInvoices", "data.incomeStatusSI"),
+      hidden: visibilityController("salesInvoices", "data.invoiceStatusSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -4134,9 +4138,6 @@ export function VendorsTable(props: Props) {
             />
           </Box>
         </Stack>
-        {/* <Box w="100%" textAlign="right">
-          <Button>Save</Button>
-        </Box> */}
       </Box>
       <Box
         shadow="md"

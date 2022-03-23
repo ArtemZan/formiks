@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -171,7 +170,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 			data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 			data["dcSI"] = glChild.DocumentCurrency
-			data["incomeAmountEURSI"] = math.Floor((utils.String2float(glChild.CostAmountInDC)/exchangeRates[glChild.DocumentCurrency])*dcIndicator*100) / 100
+			data["incomeAmountEURSI"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 		case "SW":
 			vg = []string{"Income GL Postings"}
 			data["yearMonthIncomeGL"] = glChild.YearMonth
@@ -184,7 +183,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 			data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 			data["dcIncomeGL"] = glChild.DocumentCurrency
-			data["incomeAmountEurIncomeGL"] = math.Floor((utils.String2float(glChild.CostAmountInDC)/exchangeRates[glChild.DocumentCurrency])*dcIndicator*100) / 100
+			data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 		case "KX", "KW":
 			vg = []string{"Cost Invoices"}
 			data["yearMonth"] = glChild.YearMonth
@@ -198,7 +197,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 			data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 			data["dc"] = glChild.DocumentCurrency
-			data["costAmountEUR"] = math.Floor((utils.String2float(glChild.CostAmountInDC)/exchangeRates[glChild.DocumentCurrency])*dcIndicator*100) / 100
+			data["costAmountEUR"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 		case "SK":
 			vg = []string{"Cost GL Postings"}
 			data["yearMonthCostGL"] = glChild.YearMonth
@@ -210,7 +209,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 			data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 			data["dcCostGL"] = glChild.DocumentCurrency
-			data["costAmountEURCostGL"] = math.Floor((utils.String2float(glChild.CostAmountInDC)/exchangeRates[glChild.DocumentCurrency])*dcIndicator*100) / 100
+			data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 		case "ZV":
 			vg = []string{"Sales Invoices", "Cost Invoices"}
 			data["yearMonthSI"] = glChild.YearMonth
@@ -224,7 +223,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 			data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 			data["dcSI"] = glChild.DocumentCurrency
-			data["incomeAmountEURSI"] = math.Floor((utils.String2float(glChild.CostAmountInDC)/exchangeRates[glChild.DocumentCurrency])*dcIndicator*100) / 100
+			data["incomeAmountEURSI"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 			data["yearMonth"] = glChild.YearMonth
 			data["documentType"] = glChild.DocumentType
 			data["postingDate"] = glChild.PostingDate
@@ -236,7 +235,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 			data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 			data["dc"] = glChild.DocumentCurrency
-			data["costAmountEUR"] = math.Floor((utils.String2float(glChild.CostAmountInDC)/exchangeRates[glChild.DocumentCurrency])*dcIndicator*100) / 100
+			data["costAmountEUR"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 		case "SA", "SL":
 			vg = []string{"Income GL Postings", "Cost GL Postings"}
 			data["yearMonthIncomeGL"] = glChild.YearMonth
@@ -249,7 +248,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 			data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 			data["dcIncomeGL"] = glChild.DocumentCurrency
-			data["incomeAmountEurIncomeGL"] = math.Floor((utils.String2float(glChild.CostAmountInDC)/exchangeRates[glChild.DocumentCurrency])*dcIndicator*100) / 100
+			data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 			data["yearMonthCostGL"] = glChild.YearMonth
 			data["documentTypeCostGL"] = glChild.DocumentType
 			data["postingDateCostGL"] = glChild.PostingDate
@@ -259,7 +258,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 			data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 			data["dcCostGL"] = glChild.DocumentCurrency
-			data["costAmountEURCostGL"] = math.Floor((utils.String2float(glChild.CostAmountInDC)/exchangeRates[glChild.DocumentCurrency])*dcIndicator*100) / 100
+			data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 		}
 		data["projectNumber"] = projectNumber
 		for _, g := range vg {
