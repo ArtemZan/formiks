@@ -705,8 +705,13 @@ export function VendorsTable(props: Props) {
     "LMD",
   ]);
   const [totalCostAmount, setTotalCostAmount] = useState(0);
+  const [totalCostAmountCostGL, setTotalCostAmountCostGL] = useState(0);
   const [totalCostAmountLC, setTotalCostAmountLC] = useState(0);
+  const [totalCostAmountLCCostGL, setTotalCostAmountLCCostGL] = useState(0);
   const [totalIncomeAmount, setTotalIncomeAmount] = useState(0);
+  const [totalIncomeAmountLCIncomeGL, setTotalIncomeAmountLCIncomeGL] =
+    useState(0);
+  const [totalIncomeAmountIncomeGL, setTotalIncomeAmountIncomeGL] = useState(0);
   const [totalIncomeAmountLC, setTotalIncomeAmountLC] = useState(0);
   const [totalCostsInTool, setTotalCostsInTool] = useState(0);
   const { fps, avgFps } = useFps(20);
@@ -751,22 +756,34 @@ export function VendorsTable(props: Props) {
     let tca = 0;
     let tcal = 0;
     let tcit = 0;
+    let tcacgl = 0;
     let tia = 0;
     let tial = 0;
+    let tcalcgl = 0;
+    let tialigl = 0;
+    let tiaigl = 0;
     filteredSubmissions.forEach((subm) => {
       if (subm.parentId !== null) {
         tcit +=
           subm.data.costAmountEUR || 0 + subm.data.costAmountEURCostGL || 0;
         tca += subm.data.costAmountEUR || 0;
+        tcacgl += subm.data.costAmountEURCostGL || 0;
         tcal += subm.data.costAmountLC || 0;
         tia += subm.data.incomeAmountEURSI || 0;
         tial += subm.data.incomeAmountLCSI || 0;
+        tcalcgl += subm.data.costAmountLCCostGL || 0;
+        tialigl += subm.data.incomeAmountLCIncomeGL || 0;
+        tiaigl += subm.data.incomeAmountEurIncomeGL || 0;
       }
     });
     setTotalCostAmount(tca);
+    setTotalCostAmountCostGL(tcacgl);
     setTotalCostAmountLC(tcal);
+    setTotalCostAmountLCCostGL(tcalcgl);
     setTotalIncomeAmount(tia);
+    setTotalIncomeAmountLCIncomeGL(tialigl);
     setTotalIncomeAmountLC(tial);
+    setTotalIncomeAmountIncomeGL(tiaigl);
     setTotalCostsInTool(tcit);
   }, [filteredSubmissions]);
   // useEffect(() => {
@@ -1127,6 +1144,7 @@ export function VendorsTable(props: Props) {
       dataKey: "data.companyCode",
       title: "Company Code",
       header: "General Information",
+      group: "General Information",
       width: columnWidth("data.companyCode", 150),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.companyCode"),
@@ -1150,6 +1168,8 @@ export function VendorsTable(props: Props) {
       title: "Project Number",
       width: columnWidth("data.projectNumber", 150),
       resizable: true,
+      group: "General Information",
+
       hidden: visibilityController("generalInformation", "data.projectNumber"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -1169,6 +1189,8 @@ export function VendorsTable(props: Props) {
       title: "Project Name",
       width: columnWidth("data.projectName", 200),
       resizable: true,
+      group: "General Information",
+
       hidden: visibilityController("generalInformation", "data.projectName"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -1186,6 +1208,8 @@ export function VendorsTable(props: Props) {
       key: "data.campaignStartDate",
       dataKey: "data.campaignStartDate",
       title: "Campaign Start Date",
+      group: "General Information",
+
       width: columnWidth("data.campaignStartDate", 200),
       resizable: true,
       hidden: visibilityController(
@@ -1209,6 +1233,8 @@ export function VendorsTable(props: Props) {
       key: "data.projectType",
       dataKey: "data.projectType",
       title: "Project Type",
+      group: "General Information",
+
       width: columnWidth("data.projectType", 250),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.projectType"),
@@ -1233,6 +1259,8 @@ export function VendorsTable(props: Props) {
       header: "Project Information",
       width: columnWidth("data.countriesEMEA", 250),
       resizable: true,
+      group: "Project Information",
+
       hidden: visibilityController("projectInformation", "data.countriesEMEA"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -1252,6 +1280,8 @@ export function VendorsTable(props: Props) {
       title: "% Country Share",
       width: columnWidth("data.countryShare", 200),
       resizable: true,
+      group: "Project Information",
+
       hidden: visibilityController("projectInformation", "data.countryShare"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -1271,6 +1301,8 @@ export function VendorsTable(props: Props) {
       title: "Country Budget Contribution (EUR)",
       width: columnWidth("data.countryBudgetContributionEUR", 250),
       resizable: true,
+      group: "Project Information",
+
       hidden: visibilityController(
         "projectInformation",
         "data.countryBudgetContributionEUR"
@@ -1293,6 +1325,8 @@ export function VendorsTable(props: Props) {
       title: "Country Cost Estimation (EUR)",
       width: columnWidth("data.countryCostEstimationEUR", 250),
       resizable: true,
+      group: "Project Information",
+
       hidden: visibilityController(
         "projectInformation",
         "data.countryCostEstimationEUR"
@@ -1313,6 +1347,8 @@ export function VendorsTable(props: Props) {
       key: "data.manufacturerNumber",
       dataKey: "data.manufacturerNumber",
       title: "Manufacturer Number",
+      group: "Project Information",
+
       width: columnWidth("data.manufacturerNumber", 200),
       resizable: true,
       hidden: visibilityController(
@@ -1334,6 +1370,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.vendorName",
       dataKey: "data.vendorName",
+      group: "Project Information",
+
       title: "Vendor Name",
       width: columnWidth("data.vendorName", 200),
       resizable: true,
@@ -1355,6 +1393,8 @@ export function VendorsTable(props: Props) {
       key: "data.debitorNumber",
       dataKey: "data.debitorNumber",
       title: "SAP Debitor Number",
+      group: "Project Information",
+
       width: columnWidth("data.debitorNumber", 200),
       resizable: true,
       hidden: visibilityController("projectInformation", "data.debitorNumber"),
@@ -1373,6 +1413,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.creditorNumber",
       dataKey: "data.creditorNumber",
+      group: "Project Information",
+
       title: "SAP Creditor Number",
       width: columnWidth("data.creditorNumber", 200),
       resizable: true,
@@ -1395,6 +1437,8 @@ export function VendorsTable(props: Props) {
       title: "MDF Level",
       width: columnWidth("data.mdfLevel", 200),
       resizable: true,
+      group: "Project Information",
+
       hidden: visibilityController("projectInformation", "data.mdfLevel"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -1413,6 +1457,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.vendorBudgetCurrency",
       title: "Vendor Budget Currency",
       width: columnWidth("data.vendorBudgetCurrency", 200),
+      group: "Project Information",
+
       resizable: true,
       hidden: visibilityController(
         "projectInformation",
@@ -1433,6 +1479,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.estimatedIncomeBC",
       dataKey: "data.estimatedIncomeBC",
+      group: "Project Information",
+
       title: "Estimated Income (Budget Currency)",
       width: columnWidth("data.estimatedIncomeBC", 200),
       resizable: true,
@@ -1454,6 +1502,8 @@ export function VendorsTable(props: Props) {
     },
     {
       key: "data.estimatedCostsBC",
+      group: "Project Information",
+
       dataKey: "data.estimatedCostsBC",
       title: "Estimated Costs (Budget Currency)",
       width: columnWidth("data.estimatedCostsBC", 200),
@@ -1478,6 +1528,8 @@ export function VendorsTable(props: Props) {
       key: "data.estimatedResultBC",
       dataKey: "data.estimatedResultBC",
       title: "Estimated Result (Budget Currency)",
+      group: "Project Information",
+
       width: columnWidth("data.estimatedResultBC", 200),
       resizable: true,
       hidden: visibilityController(
@@ -1500,6 +1552,8 @@ export function VendorsTable(props: Props) {
       key: "data.estimatedIncomeEUR",
       dataKey: "data.estimatedIncomeEUR",
       title: "Estimated Income EUR",
+      group: "Project Information",
+
       width: columnWidth("data.estimatedIncomeEUR", 200),
       resizable: true,
       hidden: visibilityController(
@@ -1522,6 +1576,8 @@ export function VendorsTable(props: Props) {
       key: "data.estimatedCostsEUR",
       dataKey: "data.estimatedCostsEUR",
       title: "Estimated Costs EUR",
+      group: "Project Information",
+
       width: columnWidth("data.estimatedCostsEUR", 200),
       resizable: true,
       hidden: visibilityController(
@@ -1545,6 +1601,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.estimatedResultEUR",
       title: "Estimated Result EUR",
       width: columnWidth("data.estimatedResultEUR", 200),
+      group: "Project Information",
+
       resizable: true,
       hidden: visibilityController(
         "projectInformation",
@@ -1566,6 +1624,8 @@ export function VendorsTable(props: Props) {
       key: "data.vendorShare",
       dataKey: "data.vendorShare",
       title: "% Vendor Share",
+      group: "Project Information",
+
       width: columnWidth("data.vendorShare", 200),
       resizable: true,
       hidden: visibilityController("projectInformation", "data.vendorShare"),
@@ -1584,6 +1644,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.businessUnit",
       dataKey: "data.businessUnit",
+      group: "Project Information",
+
       title: "Business Unit",
       width: columnWidth("data.businessUnit", 200),
       resizable: true,
@@ -1605,6 +1667,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.PH1",
       title: "PH1",
       width: columnWidth("data.PH1", 200),
+      group: "Project Information",
+
       resizable: true,
       hidden: visibilityController("projectInformation", "data.PH1"),
       cellRenderer: (props: any) => (
@@ -1625,6 +1689,8 @@ export function VendorsTable(props: Props) {
       title: "Campaign Channel",
       width: columnWidth("data.campaignChannel", 200),
       resizable: true,
+      group: "Project Information",
+
       hidden: visibilityController(
         "projectInformation",
         "data.campaignChannel"
@@ -1645,6 +1711,8 @@ export function VendorsTable(props: Props) {
       key: "data.targetAudience",
       dataKey: "data.targetAudience",
       title: "Target Audience",
+      group: "Project Information",
+
       width: columnWidth("data.targetAudience", 200),
       resizable: true,
       hidden: visibilityController("projectInformation", "data.targetAudience"),
@@ -1662,6 +1730,7 @@ export function VendorsTable(props: Props) {
     },
     {
       key: "data.marketingResponsible",
+      group: "Project Information",
       dataKey: "data.marketingResponsible",
       title: "Marketing Responsible",
       width: columnWidth("data.marketingResponsible", 200),
@@ -1685,6 +1754,7 @@ export function VendorsTable(props: Props) {
     {
       key: "data.projectApprover",
       dataKey: "data.projectApprover",
+      group: "Project Information",
       title: "Project Approver",
       width: columnWidth("data.projectApprover", 200),
       resizable: true,
@@ -1708,6 +1778,8 @@ export function VendorsTable(props: Props) {
       key: "data.additionalInformation",
       dataKey: "data.additionalInformation",
       title: "Additional Information",
+      group: "Project Information",
+
       width: columnWidth("data.additionalInformation", 200),
       resizable: true,
       hidden: visibilityController(
@@ -1730,6 +1802,8 @@ export function VendorsTable(props: Props) {
       key: "data.purchaseOrderServiceProvider",
       dataKey: "data.purchaseOrderServiceProvider",
       title: "Purchase Order Service Provider",
+      group: "Purchase Order",
+
       header: "Purchase Order",
       width: columnWidth("data.purchaseOrderServiceProvider", 200),
       resizable: true,
@@ -1753,6 +1827,8 @@ export function VendorsTable(props: Props) {
       key: "data.vendorNamePO",
       dataKey: "data.vendorNamePO",
       title: "Vendor Name",
+      group: "Purchase Order",
+
       width: columnWidth("data.vendorNamePO", 200),
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.vendorNamePO"),
@@ -1771,6 +1847,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.netValueOfServiceOrderedLC",
       dataKey: "data.netValueOfServiceOrderedLC",
+      group: "Purchase Order",
+
       title: "Net Value of Service Ordered (LC)",
       width: columnWidth("data.netValueOfServiceOrderedLC", 200),
       resizable: true,
@@ -1794,6 +1872,8 @@ export function VendorsTable(props: Props) {
       key: "data.localCurrency",
       dataKey: "data.localCurrency",
       title: "Local Currency",
+      group: "Purchase Order",
+
       width: columnWidth("data.localCurrency", 200),
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.localCurrency"),
@@ -1814,6 +1894,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.netValuePOC",
       title: "Net Value (Purchase Order Currency)",
       width: columnWidth("data.netValuePOC", 200),
+      group: "Purchase Order",
+
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.netValuePOC"),
       cellRenderer: (props: any) => (
@@ -1833,6 +1915,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.purchaseOrderCurrency",
       title: "Purchase Order Currency",
       width: columnWidth("data.purchaseOrderCurrency", 200),
+      group: "Purchase Order",
+
       resizable: true,
       hidden: visibilityController(
         "purchaseOrder",
@@ -1855,6 +1939,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.netValueEur",
       title: "Net Value (EUR)",
       width: columnWidth("data.netValueEur", 200),
+      group: "Purchase Order",
+
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.netValueEur"),
       cellRenderer: (props: any) => (
@@ -1873,6 +1959,8 @@ export function VendorsTable(props: Props) {
       key: "data.purchaseOrderStatus",
       dataKey: "data.purchaseOrderStatus",
       title: "Purchase Order Status",
+      group: "Purchase Order",
+
       width: columnWidth("data.purchaseOrderStatus", 200),
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.purchaseOrderStatus"),
@@ -1893,6 +1981,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.yearMonth",
       title: "Year / Month",
       header: "Cost Invoices",
+      group: "Cost Invoices",
+
       width: columnWidth("data.yearMonth", 200),
       resizable: true,
       hidden: visibilityController("costInvoices", "data.yearMonth"),
@@ -1913,6 +2003,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.documentType",
       title: "Document Type",
       width: columnWidth("data.documentType", 200),
+      group: "Cost Invoices",
+
       resizable: true,
       hidden: visibilityController("costInvoices", "data.documentType"),
       cellRenderer: (props: any) => (
@@ -1932,6 +2024,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.postingDate",
       title: "Posting Date",
       width: columnWidth("data.postingDate", 200),
+      group: "Cost Invoices",
+
       resizable: true,
       hidden: visibilityController("costInvoices", "data.postingDate"),
       cellRenderer: (props: any) => (
@@ -1950,6 +2044,8 @@ export function VendorsTable(props: Props) {
       key: "data.documentDate",
       dataKey: "data.documentDate",
       title: "Document Date",
+      group: "Cost Invoices",
+
       width: columnWidth("data.documentDate", 200),
       resizable: true,
       hidden: visibilityController("costInvoices", "data.documentDate"),
@@ -1971,6 +2067,8 @@ export function VendorsTable(props: Props) {
       title: "Document Number",
       width: columnWidth("data.documentNumber", 200),
       resizable: true,
+      group: "Cost Invoices",
+
       hidden: visibilityController("costInvoices", "data.documentNumber"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -1989,6 +2087,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.invoiceNumber",
       title: "Invoice Number",
       width: columnWidth("data.invoiceNumber", 200),
+      group: "Cost Invoices",
+
       resizable: true,
       hidden: visibilityController("costInvoices", "data.invoiceNumber"),
       cellRenderer: (props: any) => (
@@ -2009,6 +2109,8 @@ export function VendorsTable(props: Props) {
       title: "Cost Account",
       width: columnWidth("data.costAccount", 200),
       resizable: true,
+      group: "Cost Invoices",
+
       hidden: visibilityController("costInvoices", "data.costAccount"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -2027,6 +2129,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.name1",
       title: "Invoice Supplier",
       width: columnWidth("data.name1", 200),
+      group: "Cost Invoices",
+
       resizable: true,
       hidden: visibilityController("costInvoices", "data.name1"),
       cellRenderer: (props: any) => (
@@ -2046,6 +2150,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.costAmountLC",
       title: "Cost Amount (LC)",
       width: columnWidth("data.costAmountLC", 200),
+      group: "Cost Invoices",
+
       resizable: true,
       hidden: visibilityController("costInvoices", "data.costAmountLC"),
       cellRenderer: (props: any) => (
@@ -2079,6 +2185,8 @@ export function VendorsTable(props: Props) {
       key: "data.costAmountDC",
       dataKey: "data.costAmountDC",
       title: "Cost Amount (DC)",
+      group: "Cost Invoices",
+
       width: columnWidth("data.costAmountDC", 200),
       resizable: true,
       hidden: visibilityController("costInvoices", "data.costAmountDC"),
@@ -2100,6 +2208,8 @@ export function VendorsTable(props: Props) {
       title: "DC",
       width: columnWidth("data.dc", 200),
       resizable: true,
+      group: "Cost Invoices",
+
       hidden: visibilityController("costInvoices", "data.dc"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -2119,6 +2229,8 @@ export function VendorsTable(props: Props) {
       title: "Cost Amount (EUR)",
       width: columnWidth("data.costAmountEUR", 200),
       resizable: true,
+      group: "Cost Invoices",
+
       hidden: visibilityController("costInvoices", "data.costAmountEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -2153,6 +2265,8 @@ export function VendorsTable(props: Props) {
       title: "Cost Status",
       width: columnWidth("data.costStatus", 200),
       resizable: true,
+      group: "Cost Invoices",
+
       hidden: visibilityController("costInvoices", "data.costStatus"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -2171,6 +2285,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.yearMonthSI",
       title: "Year / Month",
       width: columnWidth("data.yearMonthSI", 200),
+      group: "Sales Invoices",
+
       header: "Sales Invoices",
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.yearMonthSI"),
@@ -2191,6 +2307,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.documentTypeSI",
       title: "Document Type",
       width: columnWidth("data.documentTypeSI", 200),
+      group: "Sales Invoices",
+
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.documentTypeSI"),
       cellRenderer: (props: any) => (
@@ -2210,6 +2328,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.postingDateSI",
       title: "Posting Date",
       width: columnWidth("data.postingDateSI", 200),
+      group: "Sales Invoices",
+
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.postingDateSI"),
       cellRenderer: (props: any) => (
@@ -2228,6 +2348,8 @@ export function VendorsTable(props: Props) {
       key: "data.documentDateSI",
       dataKey: "data.documentDateSI",
       title: "Document Date",
+      group: "Sales Invoices",
+
       width: columnWidth("data.documentDateSI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.documentDateSI"),
@@ -2245,6 +2367,8 @@ export function VendorsTable(props: Props) {
     },
     {
       key: "data.documentNumberSI",
+      group: "Sales Invoices",
+
       dataKey: "data.documentNumberSI",
       title: "Document Number",
       width: columnWidth("data.documentNumberSI", 200),
@@ -2265,6 +2389,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.invoiceNumberSI",
       dataKey: "data.invoiceNumberSI",
+      group: "Sales Invoices",
+
       title: "Invoice Number",
       width: columnWidth("data.invoiceNumberSI", 200),
       resizable: true,
@@ -2286,6 +2412,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.incomeAccountSI",
       title: "Income Account",
       width: columnWidth("data.incomeAccountSI", 200),
+      group: "Sales Invoices",
+
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.incomeAccountSI"),
       cellRenderer: (props: any) => (
@@ -2304,6 +2432,8 @@ export function VendorsTable(props: Props) {
       key: "data.name1SI",
       dataKey: "data.name1SI",
       title: "Invoice Recipient",
+      group: "Sales Invoices",
+
       width: columnWidth("data.name1SI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.name1SI"),
@@ -2324,6 +2454,8 @@ export function VendorsTable(props: Props) {
       key: "data.incomeAmountLCSI",
       dataKey: "data.incomeAmountLCSI",
       title: "Income Amount (LC)",
+      group: "Sales Invoices",
+
       width: columnWidth("data.incomeAmountLCSI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.incomeAmountLCSI"),
@@ -2358,6 +2490,8 @@ export function VendorsTable(props: Props) {
       key: "data.incomeAmountDCSI",
       dataKey: "data.incomeAmountDCSI",
       title: "Income Amount (DC)",
+      group: "Sales Invoices",
+
       width: columnWidth("data.incomeAmountDCSI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.incomeAmountDCSI"),
@@ -2379,6 +2513,8 @@ export function VendorsTable(props: Props) {
       title: "DC",
       width: columnWidth("data.dcSI", 200),
       resizable: true,
+      group: "Sales Invoices",
+
       hidden: visibilityController("salesInvoices", "data.dcSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -2397,6 +2533,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.incomeAmountEURSI",
       title: "Income Amount (EUR)",
       width: columnWidth("data.incomeAmountEURSI", 200),
+      group: "Sales Invoices",
+
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.incomeAmountEURSI"),
       cellRenderer: (props: any) => (
@@ -2431,6 +2569,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.incomeStatusSI",
       title: "Income Status",
       width: columnWidth("data.incomeStatusSI", 200),
+      group: "Sales Invoices",
+
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.incomeStatusSI"),
       cellRenderer: (props: any) => (
@@ -2450,6 +2590,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.yearMonthCostGL",
       title: "Year / Month",
       header: "Cost GL Postings",
+      group: "Cost GL Postings",
+
       width: columnWidth("data.yearMonthCostGL", 200),
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.yearMonthCostGL"),
@@ -2468,6 +2610,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.documentTypeCostGL",
       dataKey: "data.documentTypeCostGL",
+      group: "Cost GL Postings",
+
       title: "Document Type",
       width: columnWidth("data.documentTypeCostGL", 200),
       resizable: true,
@@ -2486,6 +2630,8 @@ export function VendorsTable(props: Props) {
     },
     {
       key: "data.postingDateCostGL",
+      group: "Cost GL Postings",
+
       dataKey: "data.postingDateCostGL",
       title: "Posting Date",
       width: columnWidth("data.postingDateCostGL", 200),
@@ -2508,6 +2654,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.documentDateCostGL",
       title: "Document Date",
       width: columnWidth("data.documentDateCostGL", 200),
+      group: "Cost GL Postings",
+
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.documentDateCostGL"),
       cellRenderer: (props: any) => (
@@ -2527,6 +2675,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.documentNumberCostGL",
       title: "Document Number",
       width: columnWidth("data.documentNumberCostGL", 200),
+      group: "Cost GL Postings",
+
       resizable: true,
       hidden: visibilityController(
         "costGlPostings",
@@ -2548,6 +2698,8 @@ export function VendorsTable(props: Props) {
       key: "data.costAccountCostGL",
       dataKey: "data.costAccountCostGL",
       title: "Cost Account",
+      group: "Cost GL Postings",
+
       width: columnWidth("data.costAccountCostGL", 200),
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.costAccountCostGL"),
@@ -2568,17 +2720,34 @@ export function VendorsTable(props: Props) {
       dataKey: "data.costAmountLCCostGL",
       title: "Cost Amount (LC)",
       width: columnWidth("data.costAmountLCCostGL", 200),
+      group: "Cost GL Postings",
+
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.costAmountLCCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#fcfcfe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalCostAmountLCCostGL)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.costAmountLCCostGL || 0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
@@ -2587,6 +2756,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.costAmountDCCostGL",
       title: "Cost Amount (DC)",
       width: columnWidth("data.costAmountDCCostGL", 200),
+      group: "Cost GL Postings",
+
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.costAmountDCCostGL"),
       cellRenderer: (props: any) => (
@@ -2605,6 +2776,8 @@ export function VendorsTable(props: Props) {
       key: "data.dcCostGL",
       dataKey: "data.dcCostGL",
       title: "DC",
+      group: "Cost GL Postings",
+
       width: columnWidth("data.dcCostGL", 200),
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.dcCostGL"),
@@ -2625,6 +2798,7 @@ export function VendorsTable(props: Props) {
       dataKey: "data.costAmountEURCostGL",
       title: "Cost Amount (EUR)",
       width: columnWidth("data.costAmountEURCostGL", 200),
+      group: "Cost GL Postings",
       resizable: true,
       hidden: visibilityController(
         "costGlPostings",
@@ -2634,12 +2808,26 @@ export function VendorsTable(props: Props) {
         <EditableTableCell
           type={"number"}
           readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#fcfcfe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalCostAmountCostGL)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.costAmountEURCostGL || 0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
@@ -2648,6 +2836,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.yearMonthIncomeGL",
       title: "Year / Month",
       width: columnWidth("data.yearMonthIncomeGL", 200),
+      group: "Income GL Postings",
+
       header: "Income GL Postings",
       resizable: true,
       hidden: visibilityController(
@@ -2670,6 +2860,8 @@ export function VendorsTable(props: Props) {
       key: "data.documentTypeIncomeGL",
       dataKey: "data.documentTypeIncomeGL",
       title: "Document Type",
+      group: "Income GL Postings",
+
       width: columnWidth("data.documentTypeIncomeGL", 200),
       resizable: true,
       hidden: visibilityController(
@@ -2692,6 +2884,8 @@ export function VendorsTable(props: Props) {
       key: "data.postingDateIncomeGL",
       dataKey: "data.postingDateIncomeGL",
       title: "Posting Date",
+      group: "Income GL Postings",
+
       width: columnWidth("data.postingDateIncomeGL", 200),
       resizable: true,
       hidden: visibilityController(
@@ -2714,6 +2908,8 @@ export function VendorsTable(props: Props) {
       key: "data.documentDateIncomeGL",
       dataKey: "data.documentDateIncomeGL",
       title: "Document Date",
+      group: "Income GL Postings",
+
       width: columnWidth("data.documentDateIncomeGL", 200),
       resizable: true,
       hidden: visibilityController(
@@ -2735,6 +2931,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.documentNumberIncomeGL",
       dataKey: "data.documentNumberIncomeGL",
+      group: "Income GL Postings",
+
       title: "Document Number",
       width: columnWidth("data.documentNumberIncomeGL", 200),
       resizable: true,
@@ -2757,6 +2955,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.incomeAccountIncomeGL",
       dataKey: "data.incomeAccountIncomeGL",
+      group: "Income GL Postings",
+
       title: "Income Account",
       width: columnWidth("data.incomeAccountIncomeGL", 200),
       resizable: true,
@@ -2779,8 +2979,10 @@ export function VendorsTable(props: Props) {
     {
       key: "data.name1IncomeGL",
       dataKey: "data.name1IncomeGL",
-      title: "Income Account",
+      title: "Name 1",
       width: columnWidth("data.name1IncomeGL", 200),
+      group: "Income GL Postings",
+
       resizable: true,
       hidden: visibilityController("incomeGlPostings", "data.name1IncomeGL"),
       cellRenderer: (props: any) => (
@@ -2801,19 +3003,36 @@ export function VendorsTable(props: Props) {
       title: "Income Amount (LC)",
       width: columnWidth("data.incomeAmountLCIncomeGL", 200),
       resizable: true,
+      group: "Income GL Postings",
+
       hidden: visibilityController(
         "incomeGlPostings",
         "data.incomeAmountLCIncomeGL"
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalIncomeAmountLCIncomeGL)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.incomeAmountLCIncomeGL || 0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
@@ -2821,6 +3040,8 @@ export function VendorsTable(props: Props) {
       key: "data.incomeAmountDCIncomeGL",
       dataKey: "data.incomeAmountDCIncomeGL",
       title: "Income Amount (DC)",
+      group: "Income GL Postings",
+
       width: columnWidth("data.incomeAmountDCIncomeGL", 200),
       resizable: true,
       hidden: visibilityController(
@@ -2843,6 +3064,8 @@ export function VendorsTable(props: Props) {
       key: "data.dcIncomeGL",
       dataKey: "data.dcIncomeGL",
       title: "DC",
+      group: "Income GL Postings",
+
       width: columnWidth("data.dcIncomeGL", 200),
       resizable: true,
       hidden: visibilityController("incomeGlPostings", "data.dcIncomeGL"),
@@ -2861,6 +3084,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.incomeAmountEurIncomeGL",
       dataKey: "data.incomeAmountEurIncomeGL",
+      group: "Income GL Postings",
+
       title: "Income Amount (EUR)",
       width: columnWidth("data.incomeAmountEurIncomeGL", 200),
       resizable: true,
@@ -2871,12 +3096,27 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalIncomeAmountIncomeGL)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.incomeAmountEurIncomeGL || 0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
@@ -2885,6 +3125,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.resultLCPR",
       title: "Result (LC)",
       header: "Project Results",
+      group: "Project Results",
+
       width: columnWidth("data.resultLCPR", 200),
       resizable: true,
       hidden: visibilityController("projectResults", "data.resultLCPR"),
@@ -2905,6 +3147,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.resultEURPR",
       title: "Result (EUR)",
       width: columnWidth("data.resultEURPR", 200),
+      group: "Project Results",
+
       resizable: true,
       hidden: visibilityController("projectResults", "data.resultEURPR"),
       cellRenderer: (props: any) => (
@@ -2925,6 +3169,8 @@ export function VendorsTable(props: Props) {
       title: "Total Costs in Tool",
       header: "Control Checks",
       width: columnWidth("data.totalCostsInTool", 200),
+      group: "Control Checks",
+
       resizable: true,
       hidden: visibilityController("controlChecks", "data.totalCostsInTool"),
       cellRenderer: (props: any) => (
@@ -2962,6 +3208,8 @@ export function VendorsTable(props: Props) {
       title: "Total Costs in SAP",
       width: columnWidth("data.totalCostsInSAP", 200),
       resizable: true,
+      group: "Control Checks",
+
       hidden: visibilityController("controlChecks", "data.totalCostsInSAP"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -2981,6 +3229,8 @@ export function VendorsTable(props: Props) {
       title: "Total Income in Tool",
       width: columnWidth("data.totalIncomeInTool", 200),
       resizable: true,
+      group: "Control Checks",
+
       hidden: visibilityController("controlChecks", "data.totalIncomeInTool"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3004,6 +3254,8 @@ export function VendorsTable(props: Props) {
       title: "Total Income in SAP",
       width: columnWidth("data.totalIncomeInSAP", 200),
       resizable: true,
+      group: "Control Checks",
+
       hidden: visibilityController("controlChecks", "data.totalIncomeInSAP"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3023,6 +3275,8 @@ export function VendorsTable(props: Props) {
       title: "Status",
       width: columnWidth("data.statusCMCT", 300),
       resizable: true,
+      group: "Input of Central Marketing Controlling Team",
+
       header: "Input of Central Marketing Controlling Team",
       hidden: visibilityController("CMCT", "data.statusCMCT"),
       cellRenderer: (props: any) => (
@@ -3055,6 +3309,8 @@ export function VendorsTable(props: Props) {
       key: "data.documentNumberCMCT",
       dataKey: "data.documentNumberCMCT",
       title: "SAP Document Number",
+      group: "Input of Central Marketing Controlling Team",
+
       width: columnWidth("data.documentNumberCMCT", 200),
       resizable: true,
       hidden: visibilityController("CMCT", "data.documentNumberCMCT"),
@@ -3075,6 +3331,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.infoCMCT",
       title: "Additional Information",
       width: columnWidth("data.infoCMCT", 200),
+      group: "Input of Central Marketing Controlling Team",
+
       resizable: true,
       hidden: visibilityController("CMCT", "data.infoCMCT"),
       cellRenderer: (props: any) => (
@@ -3095,6 +3353,8 @@ export function VendorsTable(props: Props) {
       title: "Date",
       width: columnWidth("data.dateCMCT", 200),
       resizable: true,
+      group: "Input of Central Marketing Controlling Team",
+
       hidden: visibilityController("CMCT", "data.dateCMCT"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3114,6 +3374,8 @@ export function VendorsTable(props: Props) {
       title: "Operator",
       width: columnWidth("data.operatorCMCT", 200),
       resizable: true,
+      group: "Input of Central Marketing Controlling Team",
+
       hidden: visibilityController("CMCT", "data.operatorCMCT"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3133,6 +3395,8 @@ export function VendorsTable(props: Props) {
       title: "Status",
       width: columnWidth("data.statusLMD", 300),
       resizable: true,
+      group: "Input of Local Marketing Department",
+
       header: "Input of Local Marketing Department",
       hidden: visibilityController("LMD", "data.statusLMD"),
       cellRenderer: (props: any) => (
@@ -3153,6 +3417,8 @@ export function VendorsTable(props: Props) {
       title: "Date of Invoicing",
       width: columnWidth("data.invoicingDateLMD", 200),
       resizable: true,
+      group: "Input of Local Marketing Department",
+
       hidden: visibilityController("LMD", "data.invoicingDateLMD"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3177,6 +3443,8 @@ export function VendorsTable(props: Props) {
       key: "data.requestorLMD",
       dataKey: "data.requestorLMD",
       title: "Requestor",
+      group: "Input of Local Marketing Department",
+
       width: columnWidth("data.requestorLMD", 200),
       resizable: true,
       hidden: visibilityController("LMD", "data.requestorLMD"),
@@ -3198,6 +3466,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.vendorLMD",
       title: "Vendor",
       width: columnWidth("data.vendorLMD", 200),
+      group: "Input of Local Marketing Department",
+
       resizable: true,
       hidden: visibilityController("LMD", "data.vendorLMD"),
       cellRenderer: (props: any) => (
@@ -3247,6 +3517,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.vodLMD",
       dataKey: "data.vodLMD",
+      group: "Input of Local Marketing Department",
+
       title: "VOD",
       width: columnWidth("data.vodLMD", 200),
       resizable: true,
@@ -3267,6 +3539,8 @@ export function VendorsTable(props: Props) {
       key: "data.buLMD",
       dataKey: "data.buLMD",
       title: "BU",
+      group: "Input of Local Marketing Department",
+
       width: columnWidth("data.buLMD", 200),
       resizable: true,
       hidden: visibilityController("LMD", "data.buLMD"),
@@ -3286,6 +3560,8 @@ export function VendorsTable(props: Props) {
       key: "data.requestDateLMD",
       dataKey: "data.requestDateLMD",
       title: "Request Date",
+      group: "Input of Local Marketing Department",
+
       width: columnWidth("data.requestDateLMD", 200),
       resizable: true,
       hidden: visibilityController("LMD", "data.requestDateLMD"),
@@ -3305,6 +3581,8 @@ export function VendorsTable(props: Props) {
       key: "data.invoiceTypeLMD",
       dataKey: "data.invoiceTypeLMD",
       title: "Invoice Type",
+      group: "Input of Local Marketing Department",
+
       width: columnWidth("data.invoiceTypeLMD", 200),
       resizable: true,
       hidden: visibilityController("LMD", "data.invoiceTypeLMD"),
@@ -3333,6 +3611,8 @@ export function VendorsTable(props: Props) {
       key: "data.cancellationInfoLMD",
       dataKey: "data.cancellationInfoLMD",
       title: "Cancellation Information",
+      group: "Input of Local Marketing Department",
+
       width: columnWidth("data.cancellationInfoLMD", 200),
       resizable: true,
       hidden: visibilityController("LMD", "data.cancellationInfoLMD"),
@@ -3352,6 +3632,8 @@ export function VendorsTable(props: Props) {
       key: "data.documentCurrencyLMD",
       dataKey: "data.documentCurrencyLMD",
       title: "Document Currency",
+      group: "Input of Local Marketing Department",
+
       width: columnWidth("data.documentCurrencyLMD", 200),
       resizable: true,
       hidden: visibilityController("LMD", "data.documentCurrencyLMD"),
@@ -3376,6 +3658,8 @@ export function VendorsTable(props: Props) {
       title: "Material Number",
       width: columnWidth("data.materialNumberLMD", 200),
       resizable: true,
+      group: "Input of Local Marketing Department",
+
       hidden: visibilityController("LMD", "data.materialNumberLMD"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3394,6 +3678,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.reasonLMD",
       title: "Reason",
       width: columnWidth("data.reasonLMD", 200),
+      group: "Input of Local Marketing Department",
+
       resizable: true,
       hidden: visibilityController("LMD", "data.reasonLMD"),
       cellRenderer: (props: any) => (
@@ -3411,6 +3697,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.textLMD",
       dataKey: "data.textLMD",
+      group: "Input of Local Marketing Department",
+
       title: "Text",
       width: columnWidth("data.textLMD", 200),
       resizable: true,
@@ -3431,6 +3719,8 @@ export function VendorsTable(props: Props) {
       key: "data.amountLMD",
       dataKey: "data.amountLMD",
       title: "Amount",
+      group: "Input of Local Marketing Department",
+
       width: columnWidth("data.amountLMD", 200),
       resizable: true,
       hidden: visibilityController("LMD", "data.amountLMD"),
@@ -3450,6 +3740,8 @@ export function VendorsTable(props: Props) {
       key: "data.additionalInvoiceInfoLMD",
       dataKey: "data.additionalInvoiceInfoLMD",
       title: "Additional Info on Invoice",
+      group: "Input of Local Marketing Department",
+
       width: columnWidth("data.additionalInvoiceInfoLMD", 200),
       resizable: true,
       hidden: visibilityController("LMD", "data.additionalInvoiceInfoLMD"),
@@ -3469,6 +3761,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.dunningStopLMD",
       dataKey: "data.dunningStopLMD",
+      group: "Input of Local Marketing Department",
+
       title: "Dunning Stop?",
       width: columnWidth("data.dunningStopLMD", 200),
       resizable: true,
@@ -3493,6 +3787,8 @@ export function VendorsTable(props: Props) {
     },
     {
       key: "data.paymentMethodLMD",
+      group: "Input of Local Marketing Department",
+
       dataKey: "data.paymentMethodLMD",
       title: "Payment Method",
       width: columnWidth("data.paymentMethodLMD", 200),
@@ -3523,6 +3819,8 @@ export function VendorsTable(props: Props) {
     {
       key: "data.depositNumberLMD",
       dataKey: "data.depositNumberLMD",
+      group: "Input of Local Marketing Department",
+
       title: "Deposit Number",
       width: columnWidth("data.depositNumberLMD", 200),
       resizable: true,
@@ -3544,6 +3842,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.sendToLMD",
       title: "Send to",
       width: columnWidth("data.sendToLMD", 200),
+      group: "Input of Local Marketing Department",
+
       resizable: true,
       hidden: visibilityController("LMD", "data.sendToLMD"),
       cellRenderer: (props: any) => (
@@ -3563,6 +3863,8 @@ export function VendorsTable(props: Props) {
       dataKey: "data.additionalCommentLMD",
       title: "Additional Comment",
       width: columnWidth("data.additionalCommentLMD", 200),
+      group: "Input of Local Marketing Department",
+
       resizable: true,
       hidden: visibilityController("LMD", "data.additionalCommentLMD"),
       cellRenderer: (props: any) => (
@@ -4048,7 +4350,7 @@ export function VendorsTable(props: Props) {
                                 },
                               })}
                               value={{
-                                label: `${filter.columnLabel} (${filter.columnLabel})`,
+                                label: filter.columnLabel,
                                 value: filter.columnValue,
                               }}
                               onChange={(value: any) => {
@@ -4080,7 +4382,7 @@ export function VendorsTable(props: Props) {
                                 .filter((cell: any) => cell.dataKey[0] !== "_")
                                 .map((cell: any) => {
                                   return {
-                                    label: `${cell.title}`,
+                                    label: `${cell.title} (${cell.group})`,
                                     value: cell.dataKey,
                                     type: cell.type ? cell.type : "text",
                                   };
