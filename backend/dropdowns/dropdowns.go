@@ -7,12 +7,13 @@ import (
 	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"rogchap.com/v8go"
+
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/jengine"
 	"github.com/doublegrey/formiks/backend/models"
 	"github.com/doublegrey/formiks/backend/utils"
-	"go.mongodb.org/mongo-driver/bson"
-	"rogchap.com/v8go"
 )
 
 func SyncAll() error {
@@ -84,7 +85,7 @@ func FetchExchangeRates(ctx context.Context) map[string]float64 {
 	exchangeRates := make(map[string]float64)
 	driver.Conn.Mongo.Collection("dropdowns").FindOne(ctx, bson.M{"title": "Exchange Rates"}).Decode(&dropdown)
 	for _, record := range dropdown.Values {
-		exchangeRates[record["label"].(string)] = utils.String2float(record["value"].(string))
+		exchangeRates[record["label"].(string)] = utils.String2float(record["value"].(string), false)
 	}
 	return exchangeRates
 }

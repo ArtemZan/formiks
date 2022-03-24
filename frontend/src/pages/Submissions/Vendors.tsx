@@ -898,6 +898,7 @@ export function VendorsTable(props: Props) {
           }
         });
         if (valid) {
+          console.log(submission);
           filtered.push(submission);
         }
       });
@@ -3979,42 +3980,8 @@ export function VendorsTable(props: Props) {
       const { headerIndex, columns, cells } = props;
       if (headerIndex === 0) {
         return cells.map((cell, index) => {
-          var colorClass: string = "";
-          // switch (true) {
-          //   case index < 12:
-          //     colorClass = index === 0 ? "" : "dark-green-3";
-          //     break;
-          //   case index < 16:
-          //     colorClass = "white";
-          //     break;
-          //   case index < 31:
-          //     colorClass = "white";
-          //     break;
-          //   case index < 38:
-          //     colorClass = "orange";
-          //     break;
-          //   case index < 51:
-          //     colorClass = "blue-2";
-          //     break;
-          //   case index < 64:
-          //     colorClass = "warm-gray";
-          //     break;
-          //   case index < 67:
-          //     colorClass = "yellow";
-          //     break;
-          //   case index < 77:
-          //     colorClass = "purple";
-          //     break;
-          //   case index < 87:
-          //     colorClass = "salmon";
-          //     break;
-          //   default:
-          //     colorClass = "red";
-          //     break;
-          // }
-
           return cloneElement(cell as ReactElement, {
-            className: "BaseTable__header-cell " + colorClass,
+            className: "BaseTable__header-cell",
             children: (
               <span style={{ fontWeight: 650 }} key={index}>
                 {columns[index].header ? columns[index].header : ""}
@@ -4029,6 +3996,201 @@ export function VendorsTable(props: Props) {
   );
   return (
     <div>
+      <Box
+        w={"100%"}
+        bg={useColorModeValue("white", "#21252A")}
+        minH={"85vh"}
+        mb={5}
+        border="1px"
+        rounded="md"
+        borderColor="gray.100"
+      >
+        <AutoResizer
+          onResize={({ width, height }: { width: number; height: number }) => {
+            setTableWidth(width);
+          }}
+        >
+          {({ width, height }) => (
+            <BaseTable
+              scrollLeft={scrollLeft}
+              onScroll={onScroll}
+              onColumnResizeEnd={({
+                column,
+                width,
+              }: {
+                column: any;
+                width: number;
+              }) => {
+                handleResize(column.dataKey, width);
+              }}
+              rowRenderer={rowRenderer}
+              overscanRowCount={10}
+              ignoreFunctionInColumnCompare={false}
+              expandColumnKey={"__expand"}
+              width={width}
+              height={height}
+              fixed
+              columns={tableCells}
+              headerRenderer={headerRendererForTable}
+              headerClassName="header-cells"
+              frozenData={
+                [
+                  {
+                    id: "total",
+                    data: {},
+                    parentId: null,
+                  },
+                ] as any[]
+              }
+              data={unflatten([...filteredSubmissions] as any[])}
+              rowKey="id"
+              headerHeight={[50, 50]}
+              rowHeight={55}
+              overlayRenderer={
+                <div>
+                  <DebugOverlay hidden={debugOverlayHidden}>
+                    <Box h="40px" w="100%">
+                      <CloseButton
+                        onClick={() => {
+                          hideDebugOverlay(true);
+                        }}
+                        mr="-10px"
+                        float="right"
+                      />
+                    </Box>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Requested Heap Size:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {heapInfo.total > 0
+                          ? bytesToSize(heapInfo.total)
+                          : "none"}
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Allocated Heap Size:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {heapInfo.total > 0
+                          ? bytesToSize(heapInfo.allocated)
+                          : "none"}
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Active Heap Size:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {heapInfo.total > 0
+                          ? bytesToSize(heapInfo.current)
+                          : "none"}
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        DOM Elements:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {heapInfo.domSize}
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Virtualization:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        partial
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Table Mode:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        editable
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Avg FPS:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {avgFps}
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        FPS:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {fps[fps.length - 1]}
+                      </Text>
+                    </HStack>
+                    <Divider mt={"10px"} />
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Active Sessions:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        1
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Total Requests:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        {totalRequests}
+                      </Text>
+                    </HStack>
+                    <HStack spacing={0}>
+                      <Text w="120%" float="left">
+                        Sync Protocol:
+                      </Text>
+                      <Text w="80%" textAlign="right">
+                        HTTP
+                      </Text>
+                    </HStack>
+                    <VStack align="end" mt="10px">
+                      <Button
+                        float="right"
+                        onClick={() => {
+                          RestAPI.updateVendorTableDefaultConfig(
+                            JSON.parse(
+                              localStorage.getItem(
+                                "vendors.displayedColumns"
+                              ) || "[]"
+                            ),
+                            JSON.parse(
+                              localStorage.getItem("vendors.columns") || "{}"
+                            )
+                          );
+                        }}
+                        colorScheme="blue"
+                      >
+                        update preset
+                      </Button>
+                      <Button
+                        float="left"
+                        onClick={() => {
+                          localStorage.removeItem("vendors.displayedColumns");
+                          localStorage.removeItem("vendors.columns");
+                          window.location.reload();
+                        }}
+                        colorScheme="red"
+                      >
+                        clear cache
+                      </Button>
+                    </VStack>
+                  </DebugOverlay>
+                </div>
+              }
+            ></BaseTable>
+          )}
+        </AutoResizer>
+      </Box>
       <Box
         w={"100%"}
         bg={useColorModeValue("white", "#21252A")}
@@ -4488,201 +4650,6 @@ export function VendorsTable(props: Props) {
             </Box>
           </Box>
         </VStack>
-      </Box>
-      <Box
-        w={"100%"}
-        bg={useColorModeValue("white", "#21252A")}
-        minH={"85vh"}
-        mb={5}
-        border="1px"
-        rounded="md"
-        borderColor="gray.100"
-      >
-        <AutoResizer
-          onResize={({ width, height }: { width: number; height: number }) => {
-            setTableWidth(width);
-          }}
-        >
-          {({ width, height }) => (
-            <BaseTable
-              scrollLeft={scrollLeft}
-              onScroll={onScroll}
-              onColumnResizeEnd={({
-                column,
-                width,
-              }: {
-                column: any;
-                width: number;
-              }) => {
-                handleResize(column.dataKey, width);
-              }}
-              rowRenderer={rowRenderer}
-              overscanRowCount={10}
-              ignoreFunctionInColumnCompare={false}
-              expandColumnKey={"__expand"}
-              width={width}
-              height={height}
-              fixed
-              columns={tableCells}
-              headerRenderer={headerRendererForTable}
-              headerClassName="header-cells"
-              frozenData={
-                [
-                  {
-                    id: "total",
-                    data: {},
-                    parentId: null,
-                  },
-                ] as any[]
-              }
-              data={unflatten([...filteredSubmissions] as any[])}
-              rowKey="id"
-              headerHeight={[50, 50]}
-              rowHeight={55}
-              overlayRenderer={
-                <div>
-                  <DebugOverlay hidden={debugOverlayHidden}>
-                    <Box h="40px" w="100%">
-                      <CloseButton
-                        onClick={() => {
-                          hideDebugOverlay(true);
-                        }}
-                        mr="-10px"
-                        float="right"
-                      />
-                    </Box>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Requested Heap Size:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {heapInfo.total > 0
-                          ? bytesToSize(heapInfo.total)
-                          : "none"}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Allocated Heap Size:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {heapInfo.total > 0
-                          ? bytesToSize(heapInfo.allocated)
-                          : "none"}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Active Heap Size:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {heapInfo.total > 0
-                          ? bytesToSize(heapInfo.current)
-                          : "none"}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        DOM Elements:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {heapInfo.domSize}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Virtualization:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        partial
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Table Mode:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        editable
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Avg FPS:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {avgFps}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        FPS:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {fps[fps.length - 1]}
-                      </Text>
-                    </HStack>
-                    <Divider mt={"10px"} />
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Active Sessions:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        1
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Total Requests:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {totalRequests}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Sync Protocol:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        HTTP
-                      </Text>
-                    </HStack>
-                    <VStack align="end" mt="10px">
-                      <Button
-                        float="right"
-                        onClick={() => {
-                          RestAPI.updateVendorTableDefaultConfig(
-                            JSON.parse(
-                              localStorage.getItem(
-                                "vendors.displayedColumns"
-                              ) || "[]"
-                            ),
-                            JSON.parse(
-                              localStorage.getItem("vendors.columns") || "{}"
-                            )
-                          );
-                        }}
-                        colorScheme="blue"
-                      >
-                        update preset
-                      </Button>
-                      <Button
-                        float="left"
-                        onClick={() => {
-                          localStorage.removeItem("vendors.displayedColumns");
-                          localStorage.removeItem("vendors.columns");
-                          window.location.reload();
-                        }}
-                        colorScheme="red"
-                      >
-                        clear cache
-                      </Button>
-                    </VStack>
-                  </DebugOverlay>
-                </div>
-              }
-            ></BaseTable>
-          )}
-        </AutoResizer>
       </Box>
     </div>
   );

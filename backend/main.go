@@ -8,15 +8,16 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+
 	"github.com/doublegrey/formiks/backend/api"
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/dropdowns"
 	"github.com/doublegrey/formiks/backend/middlewares"
 	"github.com/doublegrey/formiks/backend/middlewares/msal"
 	"github.com/doublegrey/formiks/backend/sap"
-	"github.com/gin-gonic/contrib/static"
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -47,9 +48,12 @@ func main() {
 
 	go func() {
 		sap.FetchAccountLines()
+		//
+		// driver.Conn.Mongo.Collection("submissions").Drop(context.TODO())
 		// fmt.Println("account lines parsed...")
 		// sap.CreateSubmissionsForAccountLines()
 		// os.Exit(0)
+		//
 		for range time.NewTicker(time.Hour * 5).C {
 			sap.FetchAccountLines()
 		}

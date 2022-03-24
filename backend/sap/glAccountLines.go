@@ -8,11 +8,12 @@ import (
 	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/dropdowns"
 	"github.com/doublegrey/formiks/backend/models"
 	"github.com/doublegrey/formiks/backend/utils"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var AccountLines = make(map[string][]AccountLineRecord)
@@ -78,7 +79,7 @@ var allowedAccounts = map[string][]string{
 		"0050501000", "0050501200", "0050501300", "0055900200", "0055904100", "0055922300", "0050700400", "0050600000", "0050610100", "0050700000", "0050600030", "0050600100", "0050900300", "0050900400", "0050900600", "0050900500", "0050900510", "0050600010", "0050700600", "0050600020", "0050600700", "0050500300", "0050849000", "0050800160", "0056490110", "0050850200", "0050850000", "0050850100", "0050650020", "0050551000", "0050650030", "0082204100", "0082200000", "0082216000", "0082230000", "0082246000", "0082230088", "0050500310", "0050500000", "0050550000", "0050551010", "0050660000", "0055902100", "0055902110", "0055902300", "0055902310", "0055904010", "0055920000", "0055920010", "0050610000", "0050650010", "0050650200", "0050650000", "0050650100", "0050700100", "0050700200", "0050750100", "0050700010", "0050700020", "0050750000", "0050600300", "0050650300", "0050900100", "0050900200", "0050900000", "0050900098", "0050900700", "0050900800", "0050950000", "0050950300", "0050950400", "0050660100", "0050600800", "0050800000", "0050800170", "0050900900", "0051009900", "0050500098", "0082204000", "0082270000", "0082200010", "0082200020", "0082200022", "0082216020", "0082274000", "0082286000", "0082234000", "0082200098", "0082230098",
 	},
 	"Cost GL Postings": {
-		"0050501000", "50501200", "50501300", "55900200", "55904100", "55922300", "50700400", "50600000", "50610100", "50700000", "50600030", "50600100", "50900300", "50900400", "50900600", "50900500", "50900510", "50600010", "50700600", "50600020", "50600700", "50500300", "50849000", "50800160", "56490110", "50850200", "50850000", "50850100", "50650020", "50551000", "50650030", "82204100", "82200000", "82216000", "82230000", "82246000", "82230088", "50500310", "50500000", "50550000", "50551010", "50660000", "55902100", "55902110", "55902300", "55902310", "55904010", "55920000", "55920010", "50610000", "50650010", "50650200", "50650000", "50650100", "50700100", "50700200", "50750100", "50700010", "50700020", "50750000", "50600300", "50650300", "50900100", "50900200", "50900000", "50900098", "50900700", "50900800", "50950000", "50950300", "50950400", "50660100", "50600800", "50800000", "50800170", "50900900", "51009900", "50500098", "82204000", "82270000", "82200010", "82200020", "82200022", "82216020", "82274000", "82286000", "82234000", "82200098", "82230098",
+		"0050501000", "0050501200", "0050501300", "0055900200", "0055904100", "0055922300", "0050700400", "0050600000", "0050610100", "0050700000", "0050600030", "0050600100", "0050900300", "0050900400", "0050900600", "0050900500", "0050900510", "0050600010", "0050700600", "0050600020", "0050600700", "0050500300", "0050849000", "0050800160", "0056490110", "0050850200", "0050850000", "0050850100", "0050650020", "0050551000", "0050650030", "0082204100", "0082200000", "0082216000", "0082230000", "0082246000", "0082230088", "0050500310", "0050500000", "0050550000", "0050551010", "0050660000", "0055902100", "0055902110", "0055902300", "0055902310", "0055904010", "0055920000", "0055920010", "0050610000", "0050650010", "0050650200", "0050650000", "0050650100", "0050700100", "0050700200", "0050750100", "0050700010", "0050700020", "0050750000", "0050600300", "0050650300", "0050900100", "0050900200", "0050900000", "0050900098", "0050900700", "0050900800", "0050950000", "0050950300", "0050950400", "0050660100", "0050600800", "0050800000", "0050800170", "0050900900", "0051009900", "0050500098", "0082204000", "0082270000", "0082200010", "0082200020", "0082200022", "0082216020", "0082274000", "0082286000", "0082234000", "0082200098", "0082230098",
 	},
 }
 
@@ -119,25 +120,26 @@ func FetchAccountLines() error {
 	}
 	if len(response.GetGLAccountLinesOutput.Rs) > 0 {
 		AccountLines = make(map[string][]AccountLineRecord)
-		g := []string{}
+		// g := []string{}
 		for _, record := range response.GetGLAccountLinesOutput.Rs {
-			switch strings.ToUpper(record.DocumentType) {
-			case "DR", "RV", "WK":
-				g = []string{"Sales Invoices"}
-			case "SW":
-				g = []string{"Income GL Postings"}
-			case "KX", "KW":
-				g = []string{"Cost Invoices"}
-			case "SK":
-				g = []string{"Cost GL Postings"}
-			case "ZV":
-				g = []string{"Sales Invoices", "Cost Invoices"}
-			case "SA", "SL":
-				g = []string{"Income GL Postings", "Cost GL Postings"}
-			}
-			if isValid(record.Account, g) {
-				AccountLines[record.ProjectNumber] = append(AccountLines[record.ProjectNumber], record)
-			}
+			AccountLines[record.ProjectNumber] = append(AccountLines[record.ProjectNumber], record)
+			// switch strings.ToUpper(record.DocumentType) {
+			// case "DR", "RV", "WK":
+			// 	g = []string{"Sales Invoices"}
+			// case "SW":
+			// 	g = []string{"Income GL Postings"}
+			// case "KX", "KW":
+			// 	g = []string{"Cost Invoices"}
+			// case "SK":
+			// 	g = []string{"Cost GL Postings"}
+			// case "ZV":
+			// 	g = []string{"Sales Invoices", "Cost Invoices"}
+			// case "SA", "SL":
+			// 	g = []string{"Income GL Postings", "Cost GL Postings"}
+			// }
+			// if isValid(record.Account, g) {
+			// 	AccountLines[record.ProjectNumber] = append(AccountLines[record.ProjectNumber], record)
+			// }
 		}
 	}
 	return nil
@@ -150,7 +152,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 	maxGroupLength := make(map[string]int)
 	groups := make(map[string][]map[string]interface{})
 	for _, glChild := range glChildren {
-		var vg []string
+		var group string
 		data := make(map[string]interface{})
 		dcIndicator := 1.0
 		if glChild.DebitCreditIndicator == "H" {
@@ -158,112 +160,137 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 		}
 		switch strings.ToUpper(glChild.DocumentType) {
 		case "DR", "RV", "WK":
-			vg = []string{"Sales Invoices"}
-			data["yearMonthSI"] = glChild.YearMonth
-			data["documentTypeSI"] = glChild.DocumentType
-			data["postingDateSI"] = glChild.PostingDate
-			data["documentDateSI"] = glChild.DocumentDate
-			data["documentNumberSI"] = glChild.DocumentNumber
-			data["invoiceNumberSI"] = glChild.DocumentNumber
-			data["incomeAccountSI"] = glChild.Account
-			data["name1SI"] = glChild.Name1
-			data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
-			data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
-			data["dcSI"] = glChild.DocumentCurrency
-			data["incomeAmountEURSI"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+			if isValid(glChild.Account, "Sales Invoices") {
+				data["yearMonthSI"] = glChild.YearMonth
+				data["documentTypeSI"] = glChild.DocumentType
+				data["postingDateSI"] = glChild.PostingDate
+				data["documentDateSI"] = glChild.DocumentDate
+				data["documentNumberSI"] = glChild.DocumentNumber
+				data["invoiceNumberSI"] = glChild.DocumentNumber
+				data["incomeAccountSI"] = glChild.Account
+				data["name1SI"] = glChild.Name1
+				data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
+				data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
+				data["dcSI"] = glChild.DocumentCurrency
+				data["incomeAmountEURSI"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+
+				group = "Sales Invoices"
+			}
 		case "SW":
-			vg = []string{"Income GL Postings"}
-			data["yearMonthIncomeGL"] = glChild.YearMonth
-			data["documentTypeIncomeGL"] = glChild.DocumentType
-			data["postingDateIncomeGL"] = glChild.PostingDate
-			data["documentDateIncomeGL"] = glChild.DocumentDate
-			data["documentNumberIncomeGL"] = glChild.DocumentNumber
-			data["incomeAccountIncomeGL"] = glChild.Account
-			data["name1IncomeGL"] = glChild.Name1
-			data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
-			data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
-			data["dcIncomeGL"] = glChild.DocumentCurrency
-			data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+			if isValid(glChild.Account, "Income GL Postings") {
+				data["yearMonthIncomeGL"] = glChild.YearMonth
+				data["documentTypeIncomeGL"] = glChild.DocumentType
+				data["postingDateIncomeGL"] = glChild.PostingDate
+				data["documentDateIncomeGL"] = glChild.DocumentDate
+				data["documentNumberIncomeGL"] = glChild.DocumentNumber
+				data["incomeAccountIncomeGL"] = glChild.Account
+				data["name1IncomeGL"] = glChild.Name1
+				data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
+				data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
+				data["dcIncomeGL"] = glChild.DocumentCurrency
+				data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+
+				group = "Income GL Postings"
+			}
 		case "KX", "KW":
-			vg = []string{"Cost Invoices"}
-			data["yearMonth"] = glChild.YearMonth
-			data["documentType"] = glChild.DocumentType
-			data["postingDate"] = glChild.PostingDate
-			data["documentDate"] = glChild.DocumentDate
-			data["documentNumber"] = glChild.DocumentNumber
-			data["invoiceNumber"] = glChild.InvoiceNumber
-			data["costAccount"] = glChild.Account
-			data["name1"] = glChild.Name1
-			data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
-			data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
-			data["dc"] = glChild.DocumentCurrency
-			data["costAmountEUR"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+			if isValid(glChild.Account, "Cost Invoices") {
+				data["yearMonth"] = glChild.YearMonth
+				data["documentType"] = glChild.DocumentType
+				data["postingDate"] = glChild.PostingDate
+				data["documentDate"] = glChild.DocumentDate
+				data["documentNumber"] = glChild.DocumentNumber
+				data["invoiceNumber"] = glChild.InvoiceNumber
+				data["costAccount"] = glChild.Account
+				data["name1"] = glChild.Name1
+				data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
+				data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
+				data["dc"] = glChild.DocumentCurrency
+				data["costAmountEUR"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+
+				group = "Cost Invoices"
+			}
 		case "SK":
-			vg = []string{"Cost GL Postings"}
-			data["yearMonthCostGL"] = glChild.YearMonth
-			data["documentTypeCostGL"] = glChild.DocumentType
-			data["postingDateCostGL"] = glChild.PostingDate
-			data["documentDateCostGL"] = glChild.DocumentDate
-			data["documentNumberCostGL"] = glChild.DocumentNumber
-			data["costAccountCostGL"] = glChild.Account
-			data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
-			data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
-			data["dcCostGL"] = glChild.DocumentCurrency
-			data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+			if isValid(glChild.Account, "Cost GL Postings") {
+				data["yearMonthCostGL"] = glChild.YearMonth
+				data["documentTypeCostGL"] = glChild.DocumentType
+				data["postingDateCostGL"] = glChild.PostingDate
+				data["documentDateCostGL"] = glChild.DocumentDate
+				data["documentNumberCostGL"] = glChild.DocumentNumber
+				data["costAccountCostGL"] = glChild.Account
+				data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
+				data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
+				data["dcCostGL"] = glChild.DocumentCurrency
+				data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+
+				group = "Cost GL Postings"
+			}
 		case "ZV":
-			vg = []string{"Sales Invoices", "Cost Invoices"}
-			data["yearMonthSI"] = glChild.YearMonth
-			data["documentTypeSI"] = glChild.DocumentType
-			data["postingDateSI"] = glChild.PostingDate
-			data["documentDateSI"] = glChild.DocumentDate
-			data["documentNumberSI"] = glChild.DocumentNumber
-			data["invoiceNumberSI"] = glChild.DocumentNumber
-			data["incomeAccountSI"] = glChild.Account
-			data["name1SI"] = glChild.Name1
-			data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
-			data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
-			data["dcSI"] = glChild.DocumentCurrency
-			data["incomeAmountEURSI"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
-			data["yearMonth"] = glChild.YearMonth
-			data["documentType"] = glChild.DocumentType
-			data["postingDate"] = glChild.PostingDate
-			data["documentDate"] = glChild.DocumentDate
-			data["documentNumber"] = glChild.DocumentNumber
-			data["invoiceNumber"] = glChild.InvoiceNumber
-			data["costAccount"] = glChild.Account
-			data["name1"] = glChild.Name1
-			data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
-			data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
-			data["dc"] = glChild.DocumentCurrency
-			data["costAmountEUR"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+			if isValid(glChild.Account, "Sales Invoices") {
+				data["yearMonthSI"] = glChild.YearMonth
+				data["documentTypeSI"] = glChild.DocumentType
+				data["postingDateSI"] = glChild.PostingDate
+				data["documentDateSI"] = glChild.DocumentDate
+				data["documentNumberSI"] = glChild.DocumentNumber
+				data["invoiceNumberSI"] = glChild.DocumentNumber
+				data["incomeAccountSI"] = glChild.Account
+				data["name1SI"] = glChild.Name1
+				data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
+				data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
+				data["dcSI"] = glChild.DocumentCurrency
+				data["incomeAmountEURSI"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+
+				group = "Sales Invoices"
+			} else if isValid(glChild.Account, "Cost Invoices") {
+				data["yearMonth"] = glChild.YearMonth
+				data["documentType"] = glChild.DocumentType
+				data["postingDate"] = glChild.PostingDate
+				data["documentDate"] = glChild.DocumentDate
+				data["documentNumber"] = glChild.DocumentNumber
+				data["invoiceNumber"] = glChild.InvoiceNumber
+				data["costAccount"] = glChild.Account
+				data["name1"] = glChild.Name1
+				data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
+				data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
+				data["dc"] = glChild.DocumentCurrency
+				data["costAmountEUR"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+
+				group = "Cost Invoices"
+			}
+
 		case "SA", "SL":
-			vg = []string{"Income GL Postings", "Cost GL Postings"}
-			data["yearMonthIncomeGL"] = glChild.YearMonth
-			data["documentTypeIncomeGL"] = glChild.DocumentType
-			data["postingDateIncomeGL"] = glChild.PostingDate
-			data["documentDateIncomeGL"] = glChild.DocumentDate
-			data["documentNumberIncomeGL"] = glChild.DocumentNumber
-			data["incomeAccountIncomeGL"] = glChild.Account
-			data["name1IncomeGL"] = glChild.Name1
-			data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
-			data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
-			data["dcIncomeGL"] = glChild.DocumentCurrency
-			data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
-			data["yearMonthCostGL"] = glChild.YearMonth
-			data["documentTypeCostGL"] = glChild.DocumentType
-			data["postingDateCostGL"] = glChild.PostingDate
-			data["documentDateCostGL"] = glChild.DocumentDate
-			data["documentNumberCostGL"] = glChild.DocumentNumber
-			data["costAccountCostGL"] = glChild.Account
-			data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
-			data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
-			data["dcCostGL"] = glChild.DocumentCurrency
-			data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+			if isValid(glChild.Account, "Income GL Postings") {
+				data["yearMonthIncomeGL"] = glChild.YearMonth
+				data["documentTypeIncomeGL"] = glChild.DocumentType
+				data["postingDateIncomeGL"] = glChild.PostingDate
+				data["documentDateIncomeGL"] = glChild.DocumentDate
+				data["documentNumberIncomeGL"] = glChild.DocumentNumber
+				data["incomeAccountIncomeGL"] = glChild.Account
+				data["name1IncomeGL"] = glChild.Name1
+				data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
+				data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
+				data["dcIncomeGL"] = glChild.DocumentCurrency
+				data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+
+				group = "Income GL Postings"
+			} else if isValid(glChild.Account, "Cost GL Postings") {
+				data["yearMonthCostGL"] = glChild.YearMonth
+				data["documentTypeCostGL"] = glChild.DocumentType
+				data["postingDateCostGL"] = glChild.PostingDate
+				data["documentDateCostGL"] = glChild.DocumentDate
+				data["documentNumberCostGL"] = glChild.DocumentNumber
+				data["costAccountCostGL"] = glChild.Account
+				data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
+				data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
+				data["dcCostGL"] = glChild.DocumentCurrency
+				data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
+
+				group = "Cost GL Postings"
+			}
 		}
 		data["projectNumber"] = projectNumber
-		for _, g := range vg {
-			maxGroupLength[g]++
-			groups[g] = append(groups[g], data)
+		if len(group) > 0 {
+			maxGroupLength[group]++
+			groups[group] = append(groups[group], data)
 		}
 	}
 
@@ -325,12 +352,10 @@ func CreateSubmissionsForAccountLines() {
 	}
 }
 
-func isValid(account string, groups []string) bool {
-	for _, group := range groups {
-		for _, v := range allowedAccounts[group] {
-			if v == account {
-				return true
-			}
+func isValid(account string, group string) bool {
+	for _, v := range allowedAccounts[group] {
+		if v == account {
+			return true
 		}
 	}
 	return false
