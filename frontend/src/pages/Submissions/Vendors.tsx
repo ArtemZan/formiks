@@ -692,6 +692,7 @@ const DisplayedColumnsList = [
 ];
 
 export function VendorsTable(props: Props) {
+  const [sourceSubmissions, setSourceSubmissions] = useState(new Map());
   const [currentUser, setCurrentUser] = useState({ displayName: "unknown" });
   const [debugOverlayHidden, hideDebugOverlay] = useState(false);
   const [filters, setFilters] = useState<FilterField[]>([]);
@@ -812,6 +813,7 @@ export function VendorsTable(props: Props) {
   //   });
   // }, []);
   useEffect(() => {
+    var filteredMap = new Map();
     var filtered: Submission[] = [];
     if (filters.length > 0 && submissions.length > 0) {
       submissions.forEach((submission) => {
@@ -898,10 +900,20 @@ export function VendorsTable(props: Props) {
           }
         });
         if (valid) {
-          console.log(submission);
-          filtered.push(submission);
+          if (submission.parentId !== null) {
+            var parent = sourceSubmissions.get(submission.parentId);
+            if (parent !== undefined && parent.id !== undefined) {
+              filteredMap.set(parent.id, parent);
+            }
+          }
+          filteredMap.set(submission.id, submission);
         }
       });
+
+      filteredMap.forEach((value) => {
+        filtered.push(value);
+      });
+
       setFilteredSubmissions(filtered);
     } else {
       setFilteredSubmissions(submissions);
@@ -1111,12 +1123,15 @@ export function VendorsTable(props: Props) {
     RestAPI.getSubmissions().then((response) => {
       var vSubs: Submission[] = [];
       var subs = response.data;
+      var ss = new Map();
+
       subs.forEach((sub) => {
         if (sub.project === "619515b754e61c8dd33daa52") {
           vSubs.push(sub);
+          ss.set(sub.id, sub);
         }
       });
-
+      setSourceSubmissions(ss);
       setSubmissions(vSubs);
       setFilteredSubmissions(vSubs);
     });
