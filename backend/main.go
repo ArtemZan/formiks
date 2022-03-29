@@ -32,18 +32,6 @@ func main() {
 		log.Fatalf("Failed to initialize database connection: %v\n", err)
 	}
 
-	// var documents []models.Submission
-	// docs, _ := driver.Conn.Mongo.Collection("submissions").Find(context.TODO(), bson.M{"data.costAccount": "0050501000"})
-
-	// docs.All(context.TODO(), &documents)
-
-	// var sum float64
-	// for _, doc := range documents {
-	// 	sum += doc.Data["costAmountLC"].(float64)
-	// }
-	// fmt.Println(sum)
-	// os.Exit(0)
-
 	ticker := time.NewTicker(1 * time.Hour)
 
 	go func() {

@@ -16,6 +16,11 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   CloseButton,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
 } from "@chakra-ui/react";
 import {
   cloneElement,
@@ -725,6 +730,9 @@ export function VendorsTable(props: Props) {
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
     []
   );
+  const [communicationSubmissions, setCommunicationSubmissions] = useState<
+    Submission[]
+  >([]);
   const [scrollLeft, setScrollLeft] = React.useState(0);
   const [defaultColumnsWidth, setDefaultColumnsWidth] = useState({});
   const onScroll = React.useCallback(
@@ -1124,13 +1132,19 @@ export function VendorsTable(props: Props) {
       var vSubs: Submission[] = [];
       var subs = response.data;
       var ss = new Map();
+      var cSubs: Submission[] = [];
 
       subs.forEach((sub) => {
         if (sub.project === "619515b754e61c8dd33daa52") {
-          vSubs.push(sub);
-          ss.set(sub.id, sub);
+          if (sub.group === "communication") {
+            cSubs.push(sub);
+          } else {
+            vSubs.push(sub);
+            ss.set(sub.id, sub);
+          }
         }
       });
+      setCommunicationSubmissions(cSubs);
       setSourceSubmissions(ss);
       setSubmissions(vSubs);
       setFilteredSubmissions(vSubs);
@@ -3289,616 +3303,7 @@ export function VendorsTable(props: Props) {
         />
       ),
     },
-    {
-      key: "data.statusCMCT",
-      dataKey: "data.statusCMCT",
-      title: "Status",
-      width: columnWidth("data.statusCMCT", 300),
-      resizable: true,
-      group: "Input of Central Marketing Controlling Team",
 
-      header: "Input of Central Marketing Controlling Team",
-      hidden: visibilityController("CMCT", "data.statusCMCT"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          backgroundColor="#f9f9ff"
-          onUpdate={(submission: string, path: string, value: any) => {
-            handleCellUpdate(submission, "data.dateCMCT", new Date());
-            handleCellUpdate(
-              submission,
-              "data.operatorCMCT",
-              currentUser.displayName
-            );
-            handleCellUpdate(submission, path, value);
-          }}
-          loadOptions={() => {
-            return [
-              { label: "INVOICED", value: "INVOICED" },
-              { label: "REJECTED", value: "REJECTED" },
-            ];
-          }}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.documentNumberCMCT",
-      dataKey: "data.documentNumberCMCT",
-      title: "SAP Document Number",
-      group: "Input of Central Marketing Controlling Team",
-
-      width: columnWidth("data.documentNumberCMCT", 200),
-      resizable: true,
-      hidden: visibilityController("CMCT", "data.documentNumberCMCT"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#f9f9ff"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.infoCMCT",
-      dataKey: "data.infoCMCT",
-      title: "Additional Information",
-      width: columnWidth("data.infoCMCT", 200),
-      group: "Input of Central Marketing Controlling Team",
-
-      resizable: true,
-      hidden: visibilityController("CMCT", "data.infoCMCT"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#f9f9ff"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.dateCMCT",
-      dataKey: "data.dateCMCT",
-      title: "Date",
-      width: columnWidth("data.dateCMCT", 200),
-      resizable: true,
-      group: "Input of Central Marketing Controlling Team",
-
-      hidden: visibilityController("CMCT", "data.dateCMCT"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"date"}
-          backgroundColor="#f9f9ff"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.operatorCMCT",
-      dataKey: "data.operatorCMCT",
-      title: "Operator",
-      width: columnWidth("data.operatorCMCT", 200),
-      resizable: true,
-      group: "Input of Central Marketing Controlling Team",
-
-      hidden: visibilityController("CMCT", "data.operatorCMCT"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#f9f9ff"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.statusLMD",
-      dataKey: "data.statusLMD",
-      title: "Status",
-      width: columnWidth("data.statusLMD", 300),
-      resizable: true,
-      group: "Input of Local Marketing Department",
-
-      header: "Input of Local Marketing Department",
-      hidden: visibilityController("LMD", "data.statusLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.invoicingDateLMD",
-      dataKey: "data.invoicingDateLMD",
-      title: "Date of Invoicing",
-      width: columnWidth("data.invoicingDateLMD", 200),
-      resizable: true,
-      group: "Input of Local Marketing Department",
-
-      hidden: visibilityController("LMD", "data.invoicingDateLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"date"}
-          backgroundColor="#F5FAEF"
-          onUpdate={(submission: string, path: string, value: any) => {
-            handleCellUpdate(
-              submission,
-              "data.requestorLMD",
-              currentUser.displayName
-            );
-            handleCellUpdate(submission, path, value);
-          }}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.requestorLMD",
-      dataKey: "data.requestorLMD",
-      title: "Requestor",
-      group: "Input of Local Marketing Department",
-
-      width: columnWidth("data.requestorLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.requestorLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-
-    {
-      key: "data.vendorLMD",
-      dataKey: "data.vendorLMD",
-      title: "Vendor",
-      width: columnWidth("data.vendorLMD", 200),
-      group: "Input of Local Marketing Department",
-
-      resizable: true,
-      hidden: visibilityController("LMD", "data.vendorLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          loadOptions={() => {
-            let childVendors: any[] = [];
-            submissions.forEach((submission) => {
-              if (submission.parentId === props.rowData.id) {
-                childVendors.push({
-                  label: submission.data.vendorName,
-                  value: submission.data.vendorName,
-                });
-              }
-            });
-            return childVendors;
-          }}
-          backgroundColor="#F5FAEF"
-          onUpdate={(submission: string, path: string, value: any) => {
-            handleCellUpdate(submission, path, value);
-            let set = false;
-            VendorsNames.every((v) => {
-              if (v.label === value) {
-                handleCellUpdate(
-                  submission,
-                  "data.vodLMD",
-                  v.value.debitorischer
-                );
-                handleCellUpdate(submission, "data.buLMD", v.value.bu);
-                set = true;
-                return false;
-              }
-              return true;
-            });
-            if (!set) {
-              handleCellUpdate(submission, "data.vodLMD", "");
-              handleCellUpdate(submission, "data.buLMD", "");
-            }
-          }}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.vodLMD",
-      dataKey: "data.vodLMD",
-      group: "Input of Local Marketing Department",
-
-      title: "VOD",
-      width: columnWidth("data.vodLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.vodLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.buLMD",
-      dataKey: "data.buLMD",
-      title: "BU",
-      group: "Input of Local Marketing Department",
-
-      width: columnWidth("data.buLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.buLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.requestDateLMD",
-      dataKey: "data.requestDateLMD",
-      title: "Request Date",
-      group: "Input of Local Marketing Department",
-
-      width: columnWidth("data.requestDateLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.requestDateLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"date"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.invoiceTypeLMD",
-      dataKey: "data.invoiceTypeLMD",
-      title: "Invoice Type",
-      group: "Input of Local Marketing Department",
-
-      width: columnWidth("data.invoiceTypeLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.invoiceTypeLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          loadOptions={() => {
-            return [
-              { label: "Marketing Invoice", value: "Marketing Invoice" },
-              { label: "Pre-Invoice", value: "Pre-Invoice" },
-              { label: "Credit Note", value: "Credit Note" },
-              { label: "Cancellation", value: "Cancellation" },
-              { label: "Internal Invoice", value: "Internal Invoice" },
-            ];
-          }}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.cancellationInfoLMD",
-      dataKey: "data.cancellationInfoLMD",
-      title: "Cancellation Information",
-      group: "Input of Local Marketing Department",
-
-      width: columnWidth("data.cancellationInfoLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.cancellationInfoLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.documentCurrencyLMD",
-      dataKey: "data.documentCurrencyLMD",
-      title: "Document Currency",
-      group: "Input of Local Marketing Department",
-
-      width: columnWidth("data.documentCurrencyLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.documentCurrencyLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          loadOptions={() => {
-            return ExchangeRates;
-          }}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.materialNumberLMD",
-      dataKey: "data.materialNumberLMD",
-      title: "Material Number",
-      width: columnWidth("data.materialNumberLMD", 200),
-      resizable: true,
-      group: "Input of Local Marketing Department",
-
-      hidden: visibilityController("LMD", "data.materialNumberLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.reasonLMD",
-      dataKey: "data.reasonLMD",
-      title: "Reason",
-      width: columnWidth("data.reasonLMD", 200),
-      group: "Input of Local Marketing Department",
-
-      resizable: true,
-      hidden: visibilityController("LMD", "data.reasonLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.textLMD",
-      dataKey: "data.textLMD",
-      group: "Input of Local Marketing Department",
-
-      title: "Text",
-      width: columnWidth("data.textLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.textLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.amountLMD",
-      dataKey: "data.amountLMD",
-      title: "Amount",
-      group: "Input of Local Marketing Department",
-
-      width: columnWidth("data.amountLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.amountLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.additionalInvoiceInfoLMD",
-      dataKey: "data.additionalInvoiceInfoLMD",
-      title: "Additional Info on Invoice",
-      group: "Input of Local Marketing Department",
-
-      width: columnWidth("data.additionalInvoiceInfoLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.additionalInvoiceInfoLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-
-    {
-      key: "data.dunningStopLMD",
-      dataKey: "data.dunningStopLMD",
-      group: "Input of Local Marketing Department",
-
-      title: "Dunning Stop?",
-      width: columnWidth("data.dunningStopLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.dunningStopLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          loadOptions={() => {
-            return [
-              { label: "Yes", value: "Yes" },
-              { label: "No", value: "No" },
-            ];
-          }}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.paymentMethodLMD",
-      group: "Input of Local Marketing Department",
-
-      dataKey: "data.paymentMethodLMD",
-      title: "Payment Method",
-      width: columnWidth("data.paymentMethodLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.paymentMethodLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          loadOptions={() => {
-            return [
-              { label: "Payment", value: "Payment" },
-              { label: "Money in the House", value: "Money in the House" },
-              {
-                label: "Credit Note from Vendor",
-                value: "Credit Note from Vendor",
-              },
-            ];
-          }}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.depositNumberLMD",
-      dataKey: "data.depositNumberLMD",
-      group: "Input of Local Marketing Department",
-
-      title: "Deposit Number",
-      width: columnWidth("data.depositNumberLMD", 200),
-      resizable: true,
-      hidden: visibilityController("LMD", "data.depositNumberLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.sendToLMD",
-      dataKey: "data.sendToLMD",
-      title: "Send to",
-      width: columnWidth("data.sendToLMD", 200),
-      group: "Input of Local Marketing Department",
-
-      resizable: true,
-      hidden: visibilityController("LMD", "data.sendToLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.additionalCommentLMD",
-      dataKey: "data.additionalCommentLMD",
-      title: "Additional Comment",
-      width: columnWidth("data.additionalCommentLMD", 200),
-      group: "Input of Local Marketing Department",
-
-      resizable: true,
-      hidden: visibilityController("LMD", "data.additionalCommentLMD"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          backgroundColor="#F5FAEF"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
     ///
 
     ///
@@ -4016,195 +3421,1084 @@ export function VendorsTable(props: Props) {
         bg={useColorModeValue("white", "#21252A")}
         minH={"85vh"}
         mb={5}
+        mt={"-20px"}
         border="1px"
         rounded="md"
         borderColor="gray.100"
       >
-        <AutoResizer
-          onResize={({ width, height }: { width: number; height: number }) => {
-            setTableWidth(width);
-          }}
-        >
-          {({ width, height }) => (
-            <BaseTable
-              scrollLeft={scrollLeft}
-              onScroll={onScroll}
-              onColumnResizeEnd={({
-                column,
-                width,
-              }: {
-                column: any;
-                width: number;
-              }) => {
-                handleResize(column.dataKey, width);
-              }}
-              rowRenderer={rowRenderer}
-              overscanRowCount={10}
-              ignoreFunctionInColumnCompare={false}
-              expandColumnKey={"__expand"}
-              width={width}
-              height={height}
-              fixed
-              columns={tableCells}
-              headerRenderer={headerRendererForTable}
-              headerClassName="header-cells"
-              frozenData={
-                [
-                  {
-                    id: "total",
-                    data: {},
-                    parentId: null,
-                  },
-                ] as any[]
-              }
-              data={unflatten([...filteredSubmissions] as any[])}
-              rowKey="id"
-              headerHeight={[50, 50]}
-              rowHeight={55}
-              overlayRenderer={
-                <div>
-                  <DebugOverlay hidden={debugOverlayHidden}>
-                    <Box h="40px" w="100%">
-                      <CloseButton
-                        onClick={() => {
-                          hideDebugOverlay(true);
+        <Tabs isLazy variant="enclosed">
+          <TabList>
+            <Tab>Vendors</Tab>
+            <Tab>Communication</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel w="100%" h="85vh">
+              <AutoResizer
+                onResize={({
+                  width,
+                  height,
+                }: {
+                  width: number;
+                  height: number;
+                }) => {
+                  setTableWidth(width);
+                }}
+              >
+                {({ width, height }) => (
+                  <BaseTable
+                    scrollLeft={scrollLeft}
+                    onScroll={onScroll}
+                    onColumnResizeEnd={({
+                      column,
+                      width,
+                    }: {
+                      column: any;
+                      width: number;
+                    }) => {
+                      handleResize(column.dataKey, width);
+                    }}
+                    rowRenderer={rowRenderer}
+                    overscanRowCount={10}
+                    ignoreFunctionInColumnCompare={false}
+                    expandColumnKey={"__expand"}
+                    width={width}
+                    height={height}
+                    fixed
+                    columns={tableCells}
+                    headerRenderer={headerRendererForTable}
+                    headerClassName="header-cells"
+                    frozenData={
+                      [
+                        {
+                          id: "total",
+                          data: {},
+                          parentId: null,
+                        },
+                      ] as any[]
+                    }
+                    data={unflatten([...filteredSubmissions] as any[])}
+                    rowKey="id"
+                    headerHeight={[50, 50]}
+                    rowHeight={55}
+                    overlayRenderer={
+                      <div>
+                        <DebugOverlay hidden={debugOverlayHidden}>
+                          <Box h="40px" w="100%">
+                            <CloseButton
+                              onClick={() => {
+                                hideDebugOverlay(true);
+                              }}
+                              mr="-10px"
+                              float="right"
+                            />
+                          </Box>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              Requested Heap Size:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              {heapInfo.total > 0
+                                ? bytesToSize(heapInfo.total)
+                                : "none"}
+                            </Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              Allocated Heap Size:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              {heapInfo.total > 0
+                                ? bytesToSize(heapInfo.allocated)
+                                : "none"}
+                            </Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              Active Heap Size:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              {heapInfo.total > 0
+                                ? bytesToSize(heapInfo.current)
+                                : "none"}
+                            </Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              DOM Elements:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              {heapInfo.domSize}
+                            </Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              Virtualization:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              partial
+                            </Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              Table Mode:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              editable
+                            </Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              Avg FPS:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              {avgFps}
+                            </Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              FPS:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              {fps[fps.length - 1]}
+                            </Text>
+                          </HStack>
+                          <Divider mt={"10px"} />
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              Active Sessions:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              1
+                            </Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              Total Requests:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              {totalRequests}
+                            </Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <Text w="120%" float="left">
+                              Sync Protocol:
+                            </Text>
+                            <Text w="80%" textAlign="right">
+                              HTTP
+                            </Text>
+                          </HStack>
+                          <VStack align="end" mt="10px">
+                            <Button
+                              float="right"
+                              onClick={() => {
+                                RestAPI.updateVendorTableDefaultConfig(
+                                  JSON.parse(
+                                    localStorage.getItem(
+                                      "vendors.displayedColumns"
+                                    ) || "[]"
+                                  ),
+                                  JSON.parse(
+                                    localStorage.getItem("vendors.columns") ||
+                                      "{}"
+                                  )
+                                );
+                              }}
+                              colorScheme="blue"
+                            >
+                              update preset
+                            </Button>
+                            <Button
+                              float="left"
+                              onClick={() => {
+                                localStorage.removeItem(
+                                  "vendors.displayedColumns"
+                                );
+                                localStorage.removeItem("vendors.columns");
+                                window.location.reload();
+                              }}
+                              colorScheme="red"
+                            >
+                              clear cache
+                            </Button>
+                          </VStack>
+                        </DebugOverlay>
+                      </div>
+                    }
+                  ></BaseTable>
+                )}
+              </AutoResizer>
+            </TabPanel>
+            <TabPanel w="100%" h="85vh">
+              <AutoResizer
+                onResize={({
+                  width,
+                  height,
+                }: {
+                  width: number;
+                  height: number;
+                }) => {
+                  setTableWidth(width);
+                }}
+              >
+                {({ width, height }) => (
+                  <BaseTable
+                    scrollLeft={scrollLeft}
+                    onScroll={onScroll}
+                    onColumnResizeEnd={({
+                      column,
+                      width,
+                    }: {
+                      column: any;
+                      width: number;
+                    }) => {
+                      handleResize(column.dataKey, width);
+                    }}
+                    rowRenderer={rowRenderer}
+                    overscanRowCount={10}
+                    ignoreFunctionInColumnCompare={false}
+                    expandColumnKey={"__expand"}
+                    width={width}
+                    height={height}
+                    fixed
+                    columns={[
+                      {
+                        key: "__expand",
+                        dataKey: "__expand",
+                        title: "",
+                        width: 50,
+                        frozen: Column.FrozenDirection.LEFT,
+                        resizable: false,
+                        cellRenderer: () => <div />,
+                        className: "expand",
+                      },
+                      {
+                        key: "data.statusCMCT",
+                        dataKey: "data.statusCMCT",
+                        title: "Status",
+                        width: columnWidth("data.statusCMCT", 310),
+                        resizable: true,
+                        group: "Input of Central Marketing Controlling Team",
+
+                        header: "Input of Central Marketing Controlling Team",
+                        hidden: visibilityController("CMCT", "data.statusCMCT"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"dropdown"}
+                            backgroundColor="#f9f9ff"
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              handleCellUpdate(
+                                submission,
+                                "data.dateCMCT",
+                                new Date()
+                              );
+                              handleCellUpdate(
+                                submission,
+                                "data.operatorCMCT",
+                                currentUser.displayName
+                              );
+                              handleCellUpdate(submission, path, value);
+                            }}
+                            loadOptions={() => {
+                              return [
+                                { label: "INVOICED", value: "INVOICED" },
+                                { label: "REJECTED", value: "REJECTED" },
+                              ];
+                            }}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.documentNumberCMCT",
+                        dataKey: "data.documentNumberCMCT",
+                        title: "SAP Document Number",
+                        group: "Input of Central Marketing Controlling Team",
+
+                        width: columnWidth("data.documentNumberCMCT", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "CMCT",
+                          "data.documentNumberCMCT"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#f9f9ff"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.infoCMCT",
+                        dataKey: "data.infoCMCT",
+                        title: "Additional Information",
+                        width: columnWidth("data.infoCMCT", 200),
+                        group: "Input of Central Marketing Controlling Team",
+
+                        resizable: true,
+                        hidden: visibilityController("CMCT", "data.infoCMCT"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#f9f9ff"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.dateCMCT",
+                        dataKey: "data.dateCMCT",
+                        title: "Date",
+                        width: columnWidth("data.dateCMCT", 200),
+                        resizable: true,
+                        group: "Input of Central Marketing Controlling Team",
+
+                        hidden: visibilityController("CMCT", "data.dateCMCT"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"date"}
+                            backgroundColor="#f9f9ff"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.operatorCMCT",
+                        dataKey: "data.operatorCMCT",
+                        title: "Operator",
+                        width: columnWidth("data.operatorCMCT", 200),
+                        resizable: true,
+                        group: "Input of Central Marketing Controlling Team",
+
+                        hidden: visibilityController(
+                          "CMCT",
+                          "data.operatorCMCT"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#f9f9ff"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.statusLMD",
+                        dataKey: "data.statusLMD",
+                        title: "Status",
+                        width: columnWidth("data.statusLMD", 300),
+                        resizable: true,
+                        group: "Input of Local Marketing Department",
+
+                        header: "Input of Local Marketing Department",
+                        hidden: visibilityController("LMD", "data.statusLMD"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.invoicingDateLMD",
+                        dataKey: "data.invoicingDateLMD",
+                        title: "Date of Invoicing",
+                        width: columnWidth("data.invoicingDateLMD", 200),
+                        resizable: true,
+                        group: "Input of Local Marketing Department",
+
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.invoicingDateLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"date"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              handleCellUpdate(
+                                submission,
+                                "data.requestorLMD",
+                                currentUser.displayName
+                              );
+                              handleCellUpdate(submission, path, value);
+                            }}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.requestorLMD",
+                        dataKey: "data.requestorLMD",
+                        title: "Requestor",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.requestorLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.requestorLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+
+                      {
+                        key: "data.vendorLMD",
+                        dataKey: "data.vendorLMD",
+                        title: "Vendor",
+                        width: columnWidth("data.vendorLMD", 200),
+                        group: "Input of Local Marketing Department",
+
+                        resizable: true,
+                        hidden: visibilityController("LMD", "data.vendorLMD"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"dropdown"}
+                            loadOptions={() => {
+                              let childVendors: any[] = [];
+                              submissions.forEach((submission) => {
+                                if (submission.parentId === props.rowData.id) {
+                                  childVendors.push({
+                                    label: submission.data.vendorName,
+                                    value: submission.data.vendorName,
+                                  });
+                                }
+                              });
+                              return childVendors;
+                            }}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              handleCellUpdate(submission, path, value);
+                              let set = false;
+                              VendorsNames.every((v) => {
+                                if (v.label === value) {
+                                  handleCellUpdate(
+                                    submission,
+                                    "data.vodLMD",
+                                    v.value.debitorischer
+                                  );
+                                  handleCellUpdate(
+                                    submission,
+                                    "data.buLMD",
+                                    v.value.bu
+                                  );
+                                  set = true;
+                                  return false;
+                                }
+                                return true;
+                              });
+                              if (!set) {
+                                handleCellUpdate(submission, "data.vodLMD", "");
+                                handleCellUpdate(submission, "data.buLMD", "");
+                              }
+                            }}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.vodLMD",
+                        dataKey: "data.vodLMD",
+                        group: "Input of Local Marketing Department",
+
+                        title: "VOD",
+                        width: columnWidth("data.vodLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController("LMD", "data.vodLMD"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.buLMD",
+                        dataKey: "data.buLMD",
+                        title: "BU",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.buLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController("LMD", "data.buLMD"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.requestDateLMD",
+                        dataKey: "data.requestDateLMD",
+                        title: "Request Date",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.requestDateLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.requestDateLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"date"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.invoiceTypeLMD",
+                        dataKey: "data.invoiceTypeLMD",
+                        title: "Invoice Type",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.invoiceTypeLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.invoiceTypeLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"dropdown"}
+                            loadOptions={() => {
+                              return [
+                                {
+                                  label: "Marketing Invoice",
+                                  value: "Marketing Invoice",
+                                },
+                                { label: "Pre-Invoice", value: "Pre-Invoice" },
+                                { label: "Credit Note", value: "Credit Note" },
+                                {
+                                  label: "Cancellation",
+                                  value: "Cancellation",
+                                },
+                                {
+                                  label: "Internal Invoice",
+                                  value: "Internal Invoice",
+                                },
+                              ];
+                            }}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.cancellationInfoLMD",
+                        dataKey: "data.cancellationInfoLMD",
+                        title: "Cancellation Information",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.cancellationInfoLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.cancellationInfoLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.documentCurrencyLMD",
+                        dataKey: "data.documentCurrencyLMD",
+                        title: "Document Currency",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.documentCurrencyLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.documentCurrencyLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"dropdown"}
+                            loadOptions={() => {
+                              return ExchangeRates;
+                            }}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.materialNumberLMD",
+                        dataKey: "data.materialNumberLMD",
+                        title: "Material Number",
+                        width: columnWidth("data.materialNumberLMD", 200),
+                        resizable: true,
+                        group: "Input of Local Marketing Department",
+
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.materialNumberLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.reasonLMD",
+                        dataKey: "data.reasonLMD",
+                        title: "Reason",
+                        width: columnWidth("data.reasonLMD", 200),
+                        group: "Input of Local Marketing Department",
+
+                        resizable: true,
+                        hidden: visibilityController("LMD", "data.reasonLMD"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.textLMD",
+                        dataKey: "data.textLMD",
+                        group: "Input of Local Marketing Department",
+
+                        title: "Text",
+                        width: columnWidth("data.textLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController("LMD", "data.textLMD"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.amountLMD",
+                        dataKey: "data.amountLMD",
+                        title: "Amount",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.amountLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController("LMD", "data.amountLMD"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.additionalInvoiceInfoLMD",
+                        dataKey: "data.additionalInvoiceInfoLMD",
+                        title: "Additional Info on Invoice",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth(
+                          "data.additionalInvoiceInfoLMD",
+                          200
+                        ),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.additionalInvoiceInfoLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+
+                      {
+                        key: "data.dunningStopLMD",
+                        dataKey: "data.dunningStopLMD",
+                        group: "Input of Local Marketing Department",
+
+                        title: "Dunning Stop?",
+                        width: columnWidth("data.dunningStopLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.dunningStopLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"dropdown"}
+                            loadOptions={() => {
+                              return [
+                                { label: "Yes", value: "Yes" },
+                                { label: "No", value: "No" },
+                              ];
+                            }}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.paymentMethodLMD",
+                        group: "Input of Local Marketing Department",
+
+                        dataKey: "data.paymentMethodLMD",
+                        title: "Payment Method",
+                        width: columnWidth("data.paymentMethodLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.paymentMethodLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"dropdown"}
+                            loadOptions={() => {
+                              return [
+                                { label: "Payment", value: "Payment" },
+                                {
+                                  label: "Money in the House",
+                                  value: "Money in the House",
+                                },
+                                {
+                                  label: "Credit Note from Vendor",
+                                  value: "Credit Note from Vendor",
+                                },
+                              ];
+                            }}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.depositNumberLMD",
+                        dataKey: "data.depositNumberLMD",
+                        group: "Input of Local Marketing Department",
+
+                        title: "Deposit Number",
+                        width: columnWidth("data.depositNumberLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.depositNumberLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.sendToLMD",
+                        dataKey: "data.sendToLMD",
+                        title: "Send to",
+                        width: columnWidth("data.sendToLMD", 200),
+                        group: "Input of Local Marketing Department",
+
+                        resizable: true,
+                        hidden: visibilityController("LMD", "data.sendToLMD"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.additionalCommentLMD",
+                        dataKey: "data.additionalCommentLMD",
+                        title: "Additional Comment",
+                        width: columnWidth("data.additionalCommentLMD", 200),
+                        group: "Input of Local Marketing Department",
+
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.additionalCommentLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "__actions.sap",
+                        dataKey: "__actions.sap",
+                        title: "Create",
+                        width: columnWidth("__actions.create", 100),
+                        resizable: true,
+                        header: "Actions",
+                        className: "red-border",
+                        cellRenderer: (props: any) =>
+                          props.rowData.parentId === null ? (
+                            <EditableTableCell
+                              type={"button"}
+                              backgroundColor="#fef9fa"
+                              textColor={"blue"}
+                              onUpdate={(submissionId: string) => {
+                                var submission: Submission = {
+                                  project: "619515b754e61c8dd33daa52",
+                                  parentId: submissionId,
+                                  group: "communication",
+                                  created: new Date(),
+                                  updated: new Date(),
+                                  title: "",
+                                  author: "",
+                                  status: "",
+                                  data: {},
+                                };
+                                RestAPI.createSubmission(submission).then(
+                                  (response) => {
+                                    var temp = [...communicationSubmissions];
+                                    temp.push(response.data);
+                                    setCommunicationSubmissions(temp);
+                                  }
+                                );
+                              }}
+                              rowIndex={props.rowIndex}
+                              columnKey={props.column.dataKey}
+                              rowData={props.rowData}
+                              initialValue={"create"}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                backgroundColor: "#F7FAFC",
+                                width: "100%",
+                                height: "100%",
+                              }}
+                            />
+                          ),
+                      },
+                      {
+                        key: "__actions.delete",
+                        dataKey: "__actions.delete",
+                        title: "Delete",
+                        width: columnWidth("__actions.delete", 100),
+                        resizable: true,
+                        className: "red-border",
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"button"}
+                            textColor={"red"}
+                            backgroundColor="#fef9fa"
+                            onUpdate={(submissionId: string) => {
+                              var tbd: string[] = [submissionId];
+                              var submissionIndex =
+                                communicationSubmissions.findIndex(
+                                  (s) => s.id === submissionId
+                                );
+                              if (submissionIndex > -1) {
+                                var temp = [...communicationSubmissions];
+                                temp.splice(submissionIndex, 1);
+                                temp.forEach((s, index) => {
+                                  if (
+                                    s.parentId !== null &&
+                                    s.parentId === submissionId
+                                  ) {
+                                    if (s.id) {
+                                      temp.splice(index, 1);
+                                      tbd.push(s.id);
+                                    }
+                                  }
+                                });
+                                setCommunicationSubmissions(temp);
+                                RestAPI.deleteSubmission(submissionId);
+                              }
+                            }}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={"delete"}
+                          />
+                        ),
+                      },
+                    ]}
+                    headerRenderer={headerRendererForTable}
+                    headerClassName="header-cells"
+                    data={unflatten([...communicationSubmissions] as any[])}
+                    rowKey="id"
+                    headerHeight={[50, 50]}
+                    rowHeight={55}
+                    overlayRenderer={
+                      <div
+                        style={{
+                          position: "absolute",
+                          width: "200px",
+                          bottom: "20px",
+                          right: "20px",
+                          padding: "5px 15px",
                         }}
-                        mr="-10px"
-                        float="right"
-                      />
-                    </Box>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Requested Heap Size:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {heapInfo.total > 0
-                          ? bytesToSize(heapInfo.total)
-                          : "none"}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Allocated Heap Size:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {heapInfo.total > 0
-                          ? bytesToSize(heapInfo.allocated)
-                          : "none"}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Active Heap Size:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {heapInfo.total > 0
-                          ? bytesToSize(heapInfo.current)
-                          : "none"}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        DOM Elements:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {heapInfo.domSize}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Virtualization:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        partial
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Table Mode:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        editable
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Avg FPS:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {avgFps}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        FPS:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {fps[fps.length - 1]}
-                      </Text>
-                    </HStack>
-                    <Divider mt={"10px"} />
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Active Sessions:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        1
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Total Requests:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        {totalRequests}
-                      </Text>
-                    </HStack>
-                    <HStack spacing={0}>
-                      <Text w="120%" float="left">
-                        Sync Protocol:
-                      </Text>
-                      <Text w="80%" textAlign="right">
-                        HTTP
-                      </Text>
-                    </HStack>
-                    <VStack align="end" mt="10px">
-                      <Button
-                        float="right"
-                        onClick={() => {
-                          RestAPI.updateVendorTableDefaultConfig(
-                            JSON.parse(
-                              localStorage.getItem(
-                                "vendors.displayedColumns"
-                              ) || "[]"
-                            ),
-                            JSON.parse(
-                              localStorage.getItem("vendors.columns") || "{}"
-                            )
-                          );
-                        }}
-                        colorScheme="blue"
                       >
-                        update preset
-                      </Button>
-                      <Button
-                        float="left"
-                        onClick={() => {
-                          localStorage.removeItem("vendors.displayedColumns");
-                          localStorage.removeItem("vendors.columns");
-                          window.location.reload();
-                        }}
-                        colorScheme="red"
-                      >
-                        clear cache
-                      </Button>
-                    </VStack>
-                  </DebugOverlay>
-                </div>
-              }
-            ></BaseTable>
-          )}
-        </AutoResizer>
+                        <Button
+                          onClick={() => {
+                            var submission: Submission = {
+                              project: "619515b754e61c8dd33daa52",
+                              parentId: null,
+                              group: "communication",
+                              created: new Date(),
+                              updated: new Date(),
+                              title: "",
+                              author: "",
+                              status: "",
+                              data: {},
+                            };
+                            RestAPI.createSubmission(submission).then(
+                              (response) => {
+                                var temp = [...communicationSubmissions];
+                                temp.push(response.data);
+                                setCommunicationSubmissions(temp);
+                              }
+                            );
+                          }}
+                        >
+                          Create Submission
+                        </Button>
+                      </div>
+                    }
+                  ></BaseTable>
+                )}
+              </AutoResizer>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </Box>
       <Box
         w={"100%"}
