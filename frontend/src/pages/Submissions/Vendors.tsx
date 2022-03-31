@@ -557,143 +557,143 @@ const DisplayedColumnsList = [
       },
     ],
   },
-  {
-    label: "Input of Central Marketing Controlling Team",
-    value: "CMCT",
-    children: [
-      {
-        label: "Status",
-        value: "data.statusCMCT",
-        type: "string",
-      },
-      {
-        label: "SAP Document Number",
-        value: "data.documentNumberCMCT",
-        type: "string",
-      },
-      {
-        label: "Additional Information",
-        value: "data.infoCMCT",
-        type: "string",
-      },
-      {
-        label: "Date",
-        value: "data.dateCMCT",
-        type: "string",
-      },
-      {
-        label: "Operator",
-        value: "data.operatorCMCT",
-        type: "string",
-      },
-    ],
-  },
-  {
-    label: "Input of Local Marketing Department",
-    value: "LMD",
-    children: [
-      {
-        label: "Status",
-        value: "data.statusLMD",
-        type: "string",
-      },
-      {
-        label: "Date of Invoicing",
-        value: "data.invoicingDateLMD",
-        type: "string",
-      },
-      {
-        label: "Requestor",
-        value: "data.requestorLMD",
-        type: "string",
-      },
-      {
-        label: "Vendor",
-        value: "data.vendorLMD",
-        type: "dropdown",
-      },
-      {
-        label: "VOD",
-        value: "data.vodLMD",
-        type: "string",
-      },
-      {
-        label: "BU",
-        value: "data.buLMD",
-        type: "string",
-      },
-      {
-        label: "Request Date",
-        value: "data.requestDateLMD",
-        type: "string",
-      },
-      {
-        label: "Invoice Type",
-        value: "data.invoiceTypeLMD",
-        type: "string",
-      },
-      {
-        label: "Cancellation Information",
-        value: "data.cancellationInfoLMD",
-        type: "string",
-      },
-      {
-        label: "Document Currency",
-        value: "data.documentCurrencyLMD",
-        type: "string",
-      },
-      {
-        label: "Material Number",
-        value: "data.materialNumberLMD",
-        type: "string",
-      },
-      {
-        label: "Reason",
-        value: "data.reasonLMD",
-        type: "string",
-      },
-      {
-        label: "Text",
-        value: "data.textLMD",
-        type: "string",
-      },
-      {
-        label: "Amount",
-        value: "data.amountLMD",
-        type: "string",
-      },
-      {
-        label: "Additional Info on Invoice",
-        value: "data.additionalInvoiceInfoLMD",
-        type: "string",
-      },
-      {
-        label: "Dunning Stop?",
-        value: "data.dunningStopLMD",
-        type: "string",
-      },
-      {
-        label: "Payment Method",
-        value: "data.paymentMethodLMD",
-        type: "string",
-      },
-      {
-        label: "Deposit Number",
-        value: "data.depositNumberLMD",
-        type: "string",
-      },
-      {
-        label: "Send to",
-        value: "data.sendToLMD",
-        type: "string",
-      },
-      {
-        label: "Additional Comment",
-        value: "data.additionalCommentLMD",
-        type: "string",
-      },
-    ],
-  },
+  // {
+  //   label: "Input of Central Marketing Controlling Team",
+  //   value: "CMCT",
+  //   children: [
+  //     {
+  //       label: "Status",
+  //       value: "data.statusCMCT",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "SAP Document Number",
+  //       value: "data.documentNumberCMCT",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Additional Information",
+  //       value: "data.infoCMCT",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Date",
+  //       value: "data.dateCMCT",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Operator",
+  //       value: "data.operatorCMCT",
+  //       type: "string",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Input of Local Marketing Department",
+  //   value: "LMD",
+  //   children: [
+  //     {
+  //       label: "Status",
+  //       value: "data.statusLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Date of Invoicing",
+  //       value: "data.invoicingDateLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Requestor",
+  //       value: "data.requestorLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Vendor",
+  //       value: "data.vendorLMD",
+  //       type: "dropdown",
+  //     },
+  //     {
+  //       label: "VOD",
+  //       value: "data.vodLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "BU",
+  //       value: "data.buLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Request Date",
+  //       value: "data.requestDateLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Invoice Type",
+  //       value: "data.invoiceTypeLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Cancellation Information",
+  //       value: "data.cancellationInfoLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Document Currency",
+  //       value: "data.documentCurrencyLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Material Number",
+  //       value: "data.materialNumberLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Reason",
+  //       value: "data.reasonLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Text",
+  //       value: "data.textLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Amount",
+  //       value: "data.amountLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Additional Info on Invoice",
+  //       value: "data.additionalInvoiceInfoLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Dunning Stop?",
+  //       value: "data.dunningStopLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Payment Method",
+  //       value: "data.paymentMethodLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Deposit Number",
+  //       value: "data.depositNumberLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Send to",
+  //       value: "data.sendToLMD",
+  //       type: "string",
+  //     },
+  //     {
+  //       label: "Additional Comment",
+  //       value: "data.additionalCommentLMD",
+  //       type: "string",
+  //     },
+  //   ],
+  // },
 ];
 
 export function VendorsTable(props: Props) {
@@ -1035,6 +1035,22 @@ export function VendorsTable(props: Props) {
       path = `[${submissionIndex}].${path}`;
       if (_.get(submissions, path) !== value) {
         _.set(submissions, path, value);
+        partialUpdate(submission, path, value);
+      }
+    }
+  }
+  function handleCommunicationCellUpdate(
+    submission: string,
+    path: string,
+    value: any
+  ) {
+    var submissionIndex = communicationSubmissions.findIndex(
+      (s) => s.id === submission
+    );
+    if (submissionIndex > -1) {
+      path = `[${submissionIndex}].${path}`;
+      if (_.get(communicationSubmissions, path) !== value) {
+        _.set(communicationSubmissions, path, value);
         partialUpdate(submission, path, value);
       }
     }
@@ -3690,17 +3706,21 @@ export function VendorsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              handleCellUpdate(
+                              handleCommunicationCellUpdate(
                                 submission,
                                 "data.dateCMCT",
                                 new Date()
                               );
-                              handleCellUpdate(
+                              handleCommunicationCellUpdate(
                                 submission,
                                 "data.operatorCMCT",
                                 currentUser.displayName
                               );
-                              handleCellUpdate(submission, path, value);
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
                             }}
                             loadOptions={() => {
                               return [
@@ -3731,7 +3751,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#f9f9ff"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -3752,7 +3772,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#f9f9ff"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -3773,7 +3793,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"date"}
                             backgroundColor="#f9f9ff"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -3797,7 +3817,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#f9f9ff"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -3819,7 +3839,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -3848,12 +3868,16 @@ export function VendorsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              handleCellUpdate(
+                              handleCommunicationCellUpdate(
                                 submission,
                                 "data.requestorLMD",
                                 currentUser.displayName
                               );
-                              handleCellUpdate(submission, path, value);
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
                             }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -3878,7 +3902,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -3917,16 +3941,20 @@ export function VendorsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              handleCellUpdate(submission, path, value);
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
                               let set = false;
                               VendorsNames.every((v) => {
                                 if (v.label === value) {
-                                  handleCellUpdate(
+                                  handleCommunicationCellUpdate(
                                     submission,
                                     "data.vodLMD",
                                     v.value.debitorischer
                                   );
-                                  handleCellUpdate(
+                                  handleCommunicationCellUpdate(
                                     submission,
                                     "data.buLMD",
                                     v.value.bu
@@ -3937,8 +3965,16 @@ export function VendorsTable(props: Props) {
                                 return true;
                               });
                               if (!set) {
-                                handleCellUpdate(submission, "data.vodLMD", "");
-                                handleCellUpdate(submission, "data.buLMD", "");
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vodLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.buLMD",
+                                  ""
+                                );
                               }
                             }}
                             rowIndex={props.rowIndex}
@@ -3961,7 +3997,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -3982,7 +4018,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4006,7 +4042,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"date"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4048,7 +4084,7 @@ export function VendorsTable(props: Props) {
                               ];
                             }}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4072,7 +4108,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4099,7 +4135,7 @@ export function VendorsTable(props: Props) {
                               return ExchangeRates;
                             }}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4123,7 +4159,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4144,7 +4180,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4165,7 +4201,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4186,7 +4222,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4213,7 +4249,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4244,7 +4280,7 @@ export function VendorsTable(props: Props) {
                               ];
                             }}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4281,7 +4317,7 @@ export function VendorsTable(props: Props) {
                               ];
                             }}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4305,7 +4341,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4326,7 +4362,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4350,7 +4386,7 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCellUpdate}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
