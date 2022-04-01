@@ -2547,7 +2547,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("salesInvoices", "data.incomeAmountDCSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#f2f5fa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}

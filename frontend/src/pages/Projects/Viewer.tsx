@@ -24,6 +24,7 @@ import { API, RestAPI } from "../../api/rest";
 import { FiSettings, FiRefreshCw } from "react-icons/all";
 
 import Ermv from "../../components/projects/ermv";
+import Erov from "../../components/projects/erov";
 
 interface Props {
   history: any;
@@ -33,7 +34,7 @@ interface Props {
 }
 
 export function Viewer(props: Props) {
-  const [predefinedProject, setPrefedinedProject] = useState<any>(null);
+  const [predefinedProject, setPredefinedProject] = useState<any>(null);
   const [form, setForm] = useState<any>(null);
   const [project, setProject] = useState<Project>({
     title: "",
@@ -55,8 +56,13 @@ export function Viewer(props: Props) {
         setProject(response.data);
         setForm({ display: "form", components: response.data.components });
         if (props.match.params.id === "619515b754e61c8dd33daa52") {
-          setPrefedinedProject(
+          setPredefinedProject(
             <Ermv project={project} history={props.history} />
+          );
+        }
+        if (props.match.params.id === "6246bc93fa2a446faadb8d9a") {
+          setPredefinedProject(
+            <Erov project={project} history={props.history} />
           );
         }
       });

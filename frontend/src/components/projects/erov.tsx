@@ -39,7 +39,7 @@ interface Props {
   project: Project;
 }
 
-export default function Ermv(props: Props) {
+export default function Erov(props: Props) {
   const [requestorsCompanyName, setRequestorsCompanyName] = useState<any>({
     label: "",
     value: { name: "", code: "", country: "" },
@@ -52,7 +52,7 @@ export default function Ermv(props: Props) {
     label: "",
     value: "",
   });
-  const [vendorsNames, setVendorsNames] = useState<any>([]);
+  const [vendorName, setVendorName] = useState<any>({});
   const [year, setYear] = useState<any>({
     label: "",
     value: "",
@@ -90,7 +90,7 @@ export default function Ermv(props: Props) {
   const [netProfitTarget, setNetProfitTarget] = useState("");
   const [companiesParticipating, setCompaniesParticipating] = useState<any>([]);
   const [comments, setComments] = useState("");
-  const [vendors, setVendors] = useState<any>([]);
+  const [vendor, setVendor] = useState<any>({});
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
 
   const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
@@ -148,54 +148,6 @@ export default function Ermv(props: Props) {
 
   useEffect(() => {
     var data: any = [];
-    vendorsNames.forEach((vendor: any) => {
-      data.push({
-        vendor: vendor.label,
-        projectManager: "",
-        creditor: vendor.value.kreditor,
-        debitor: vendor.value.debitorischer,
-        manufacturer: vendor.value.hersteller,
-        bu: vendor.value.bu,
-        ph: { label: "", value: "" },
-        budgetCurrency: { label: "", value: "" },
-        budgetAmount: "",
-        localBudget: "",
-        eurBudget: "",
-        share: "",
-        estimatedCostsCC: "",
-        estimatedIncomeCC: "",
-        estimatedCostsLC: "",
-        estimatedCostsEUR: "",
-        netProfitTargetVC: "",
-        netProfitTargetLC: "",
-        netProfitTargetEUR: "",
-      });
-    });
-    data.push({
-      vendor: "TOTAL",
-      projectManager: "",
-      creditor: "",
-      debitor: "",
-      manufacturer: "",
-      bu: "",
-      ph: { label: "", value: "" },
-      budgetCurrency: { label: "", value: "" },
-      budgetAmount: "",
-      localBudget: "",
-      eurBudget: "",
-      share: "",
-      estimatedCostsCC: "",
-      estimatedIncomeCC: "",
-      estimatedCostsLC: "",
-      estimatedCostsEUR: "",
-      netProfitTargetVC: "",
-      netProfitTargetLC: "",
-      netProfitTargetEUR: "",
-    });
-    setVendors(data);
-  }, [vendorsNames]);
-  useEffect(() => {
-    var data: any = [];
     companiesParticipating.forEach((company: any) => {
       data.push({
         companyName: company.label,
@@ -238,6 +190,32 @@ export default function Ermv(props: Props) {
     estimatedIncomeBudgetCurrency,
     estimatedCostsBudgetCurrency,
   ]);
+
+  useEffect(() => {
+    if (vendorName.value) {
+      setVendor({
+        vendor: vendorName.label,
+        projectManager: "",
+        creditor: vendorName.value.kreditor,
+        debitor: vendorName.value.debitorischer,
+        manufacturer: vendorName.value.hersteller,
+        bu: vendorName.value.bu,
+        ph: { label: "", value: "" },
+        budgetCurrency: { label: "", value: "" },
+        budgetAmount: "",
+        localBudget: "",
+        eurBudget: "",
+        share: "",
+        estimatedCostsCC: "",
+        estimatedIncomeCC: "",
+        estimatedCostsLC: "",
+        estimatedCostsEUR: "",
+        netProfitTargetVC: "",
+        netProfitTargetLC: "",
+        netProfitTargetEUR: "",
+      });
+    }
+  }, [vendorName]);
 
   useEffect(() => {
     setEstimatedCosts(
@@ -300,143 +278,143 @@ export default function Ermv(props: Props) {
     );
   }, [year, campaignChannel, projectStartQuarter, requestorsCompanyName]);
 
-  useEffect(() => {
-    var totalBudgetEur = 0;
-    var totalBudgetLC = 0;
-    var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
-    var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
-    var totalCostsLC = parseFloat(totalEstimatedCostsLC);
-    var totalCostsEur = parseFloat(estimatedCosts);
+  // useEffect(() => {
+  //   var totalBudgetEur = 0;
+  //   var totalBudgetLC = 0;
+  //   var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
+  //   var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
+  //   var totalCostsLC = parseFloat(totalEstimatedCostsLC);
+  //   var totalCostsEur = parseFloat(estimatedCosts);
 
-    var temp = [...vendors];
-    temp.slice(0, -1).forEach((row: any) => {
-      row.eurBudget = (
-        parseFloat(row.budgetAmount) / parseFloat(row.budgetCurrency.value)
-      ).toFixed(2);
-      row.localBudget = (parseFloat(row.eurBudget) * localExchangeRate).toFixed(
-        2
-      );
+  //   var temp = [...vendor];
+  //   temp.slice(0, -1).forEach((row: any) => {
+  //     row.eurBudget = (
+  //       parseFloat(row.budgetAmount) / parseFloat(row.budgetCurrency.value)
+  //     ).toFixed(2);
+  //     row.localBudget = (parseFloat(row.eurBudget) * localExchangeRate).toFixed(
+  //       2
+  //     );
 
-      var eb = parseFloat(row.eurBudget);
-      var lb = parseFloat(row.localBudget);
+  //     var eb = parseFloat(row.eurBudget);
+  //     var lb = parseFloat(row.localBudget);
 
-      if (!isNaN(eb)) {
-        totalBudgetEur += eb;
-      }
-      if (!isNaN(lb)) {
-        totalBudgetLC += lb;
-      }
-    });
-    var totalVendorBudgetInLC = 0;
-    var totalVendorBudgetInEUR = 0;
-    var totalVendorShare = 0;
-    var totalEstimatedIncomeInCC = 0;
-    var totalEstimatedCostsInCC = 0;
-    var totalEstimatedCostsInLC = 0;
-    var totalEstimatedCostsInEUR = 0;
-    var totalNetProfitTargetInCC = 0;
-    var totalNetProfitTargetInLC = 0;
-    var totalNetProfitTargetInEUR = 0;
-    temp.slice(0, -1).forEach((row: any, index: number) => {
-      var vbEur = parseFloat(row.eurBudget);
-      var share = 0;
-      if (budgetSource.value === "noBudget") {
-        row.budgetAmount = "0.00";
-        row.localBudget = "0.00";
-        row.eurBudget = "0.00";
-        row.estimatedIncomeCC = "0.00";
-        share = parseFloat(row.share) * 0.01;
+  //     if (!isNaN(eb)) {
+  //       totalBudgetEur += eb;
+  //     }
+  //     if (!isNaN(lb)) {
+  //       totalBudgetLC += lb;
+  //     }
+  //   });
+  //   var totalVendorBudgetInLC = 0;
+  //   var totalVendorBudgetInEUR = 0;
+  //   var totalVendorShare = 0;
+  //   var totalEstimatedIncomeInCC = 0;
+  //   var totalEstimatedCostsInCC = 0;
+  //   var totalEstimatedCostsInLC = 0;
+  //   var totalEstimatedCostsInEUR = 0;
+  //   var totalNetProfitTargetInCC = 0;
+  //   var totalNetProfitTargetInLC = 0;
+  //   var totalNetProfitTargetInEUR = 0;
+  //   temp.slice(0, -1).forEach((row: any, index: number) => {
+  //     var vbEur = parseFloat(row.eurBudget);
+  //     var share = 0;
+  //     if (budgetSource.value === "noBudget") {
+  //       row.budgetAmount = "0.00";
+  //       row.localBudget = "0.00";
+  //       row.eurBudget = "0.00";
+  //       row.estimatedIncomeCC = "0.00";
+  //       share = parseFloat(row.share) * 0.01;
 
-        row.estimatedCostsCC = (
-          share * parseFloat(estimatedCostsBudgetCurrency)
-        ).toFixed(2);
+  //       row.estimatedCostsCC = (
+  //         share * parseFloat(estimatedCostsBudgetCurrency)
+  //       ).toFixed(2);
 
-        row.estimatedCostsEUR = (share * parseFloat(estimatedCosts)).toFixed(2);
-        row.estimatedCostsLC = (
-          parseFloat(row.estimatedCostsEUR) * localExchangeRate
-        ).toFixed(2);
-      } else {
-        share = vbEur / totalBudgetEur;
-        row.share = (share * 100).toFixed(2);
-        if (index === temp.length - 1) {
-          var totalShare = 0.0;
-          temp
-            .slice(0, temp.length - 2)
-            .forEach((t) => (totalShare += parseFloat(t.share)));
-          row.share = (100 - totalShare).toFixed(2);
-          share = (100 - totalShare) * 0.01;
-        }
-        if (!isNaN(vbEur) && totalBudgetEur !== 0) {
-          if (!isNaN(totalCostsCC)) {
-            row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
-          }
-          if (!isNaN(totalIncomeCC)) {
-            row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
-          }
-          if (!isNaN(totalCostsLC)) {
-            row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
-          }
-          if (!isNaN(totalCostsEur)) {
-            row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
-          }
-        }
-      }
-      row.netProfitTargetEUR =
-        `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (parseFloat(row.share) * 0.01 * parseFloat(netProfitTarget)).toFixed(2);
+  //       row.estimatedCostsEUR = (share * parseFloat(estimatedCosts)).toFixed(2);
+  //       row.estimatedCostsLC = (
+  //         parseFloat(row.estimatedCostsEUR) * localExchangeRate
+  //       ).toFixed(2);
+  //     } else {
+  //       share = vbEur / totalBudgetEur;
+  //       row.share = (share * 100).toFixed(2);
+  //       if (index === temp.length - 1) {
+  //         var totalShare = 0.0;
+  //         temp
+  //           .slice(0, temp.length - 2)
+  //           .forEach((t) => (totalShare += parseFloat(t.share)));
+  //         row.share = (100 - totalShare).toFixed(2);
+  //         share = (100 - totalShare) * 0.01;
+  //       }
+  //       if (!isNaN(vbEur) && totalBudgetEur !== 0) {
+  //         if (!isNaN(totalCostsCC)) {
+  //           row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
+  //         }
+  //         if (!isNaN(totalIncomeCC)) {
+  //           row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
+  //         }
+  //         if (!isNaN(totalCostsLC)) {
+  //           row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
+  //         }
+  //         if (!isNaN(totalCostsEur)) {
+  //           row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
+  //         }
+  //       }
+  //     }
+  //     row.netProfitTargetEUR =
+  //       `${budgetSource.value === "noBudget" ? "-" : ""}` +
+  //       (parseFloat(row.share) * 0.01 * parseFloat(netProfitTarget)).toFixed(2);
 
-      row.netProfitTargetLC =
-        `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (parseFloat(row.netProfitTargetEUR) * localExchangeRate).toFixed(2);
-      row.netProfitTargetVC =
-        `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
+  //     row.netProfitTargetLC =
+  //       `${budgetSource.value === "noBudget" ? "-" : ""}` +
+  //       (parseFloat(row.netProfitTargetEUR) * localExchangeRate).toFixed(2);
+  //     row.netProfitTargetVC =
+  //       `${budgetSource.value === "noBudget" ? "-" : ""}` +
+  //       (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
 
-      totalVendorBudgetInLC += parseFloat(row.localBudget);
-      totalVendorBudgetInEUR += parseFloat(row.eurBudget);
-      totalVendorShare += parseFloat(row.share);
-      totalEstimatedIncomeInCC += parseFloat(row.estimatedIncomeCC);
-      totalEstimatedCostsInCC += parseFloat(row.estimatedCostsCC);
-      totalEstimatedCostsInLC += parseFloat(row.estimatedCostsLC);
-      totalEstimatedCostsInEUR += parseFloat(row.estimatedCostsEUR);
-      totalNetProfitTargetInCC += parseFloat(row.netProfitTargetVC);
-      totalNetProfitTargetInLC += parseFloat(row.netProfitTargetLC);
-      totalNetProfitTargetInEUR += parseFloat(row.netProfitTargetEUR);
-    });
+  //     totalVendorBudgetInLC += parseFloat(row.localBudget);
+  //     totalVendorBudgetInEUR += parseFloat(row.eurBudget);
+  //     totalVendorShare += parseFloat(row.share);
+  //     totalEstimatedIncomeInCC += parseFloat(row.estimatedIncomeCC);
+  //     totalEstimatedCostsInCC += parseFloat(row.estimatedCostsCC);
+  //     totalEstimatedCostsInLC += parseFloat(row.estimatedCostsLC);
+  //     totalEstimatedCostsInEUR += parseFloat(row.estimatedCostsEUR);
+  //     totalNetProfitTargetInCC += parseFloat(row.netProfitTargetVC);
+  //     totalNetProfitTargetInLC += parseFloat(row.netProfitTargetLC);
+  //     totalNetProfitTargetInEUR += parseFloat(row.netProfitTargetEUR);
+  //   });
 
-    temp[temp.length - 1] = {
-      vendor: "TOTAL",
-      projectManager: "",
-      creditor: "",
-      debitor: "",
-      manufacturer: "",
-      bu: "",
-      ph: { label: "", value: "" },
-      budgetCurrency: { label: "", value: "" },
-      budgetAmount: "",
-      localBudget: totalVendorBudgetInLC.toFixed(2),
-      eurBudget: totalVendorBudgetInEUR.toFixed(2),
-      share: totalVendorShare.toFixed(2),
-      estimatedCostsCC: totalEstimatedCostsInCC.toFixed(2),
-      estimatedIncomeCC: totalEstimatedIncomeInCC.toFixed(2),
-      estimatedCostsLC: totalEstimatedCostsInLC.toFixed(2),
-      estimatedCostsEUR: totalEstimatedCostsInEUR.toFixed(2),
-      netProfitTargetVC: totalNetProfitTargetInCC.toFixed(2),
-      netProfitTargetLC: totalNetProfitTargetInLC.toFixed(2),
-      netProfitTargetEUR: totalNetProfitTargetInEUR.toFixed(2),
-    };
+  //   temp[temp.length - 1] = {
+  //     vendor: "TOTAL",
+  //     projectManager: "",
+  //     creditor: "",
+  //     debitor: "",
+  //     manufacturer: "",
+  //     bu: "",
+  //     ph: { label: "", value: "" },
+  //     budgetCurrency: { label: "", value: "" },
+  //     budgetAmount: "",
+  //     localBudget: totalVendorBudgetInLC.toFixed(2),
+  //     eurBudget: totalVendorBudgetInEUR.toFixed(2),
+  //     share: totalVendorShare.toFixed(2),
+  //     estimatedCostsCC: totalEstimatedCostsInCC.toFixed(2),
+  //     estimatedIncomeCC: totalEstimatedIncomeInCC.toFixed(2),
+  //     estimatedCostsLC: totalEstimatedCostsInLC.toFixed(2),
+  //     estimatedCostsEUR: totalEstimatedCostsInEUR.toFixed(2),
+  //     netProfitTargetVC: totalNetProfitTargetInCC.toFixed(2),
+  //     netProfitTargetLC: totalNetProfitTargetInLC.toFixed(2),
+  //     netProfitTargetEUR: totalNetProfitTargetInEUR.toFixed(2),
+  //   };
 
-    setTotalVendorBudgetInEUR(totalBudgetEur);
-    setTotalVendorBudgetInLC(totalBudgetLC);
-    if (!isEqual(vendors, temp)) {
-      setVendors(temp);
-    }
-  }, [
-    vendors,
-    estimatedCostsBudgetCurrency,
-    totalEstimatedCostsLC,
-    budgetSource,
-  ]);
+  //   setTotalVendorBudgetInEUR(totalBudgetEur);
+  //   setTotalVendorBudgetInLC(totalBudgetLC);
+  //   if (!isEqual(vendor, temp)) {
+  //     setVendor(temp);
+  //   }
+  // }, [
+  //   vendor,
+  //   estimatedCostsBudgetCurrency,
+  //   totalEstimatedCostsLC,
+  //   budgetSource,
+  // ]);
 
   return (
     <Box>
@@ -1067,10 +1045,8 @@ export default function Ermv(props: Props) {
         </Box>
 
         <Box w="100%">
-          <Text mb="8px">Vendor`s Names</Text>
+          <Text mb="8px">Vendor Name</Text>
           <Select
-            // menuPortalTarget={document.body}
-            isMulti
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -1098,10 +1074,10 @@ export default function Ermv(props: Props) {
                 primary: "#3082CE",
               },
             })}
-            value={vendorsNames}
+            value={vendorName}
             placeholder=""
             onChange={(value: any) => {
-              setVendorsNames(value);
+              setVendorName(value);
             }}
             classNamePrefix="select"
             isClearable={false}
@@ -1109,361 +1085,209 @@ export default function Ermv(props: Props) {
             options={VendorsNames}
           />
         </Box>
-
+        {/*  */}
         <Box w="100%">
-          <Text mb="8px">Vendors</Text>
-          <Table
-            shouldUpdateScroll={false}
-            hover={false}
-            autoHeight
-            rowHeight={65}
-            data={vendors}
-          >
-            <Column width={200} resizable>
-              <HeaderCell>Vendor</HeaderCell>
-              <Cell dataKey="vendor">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.vendor}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].vendor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={200} resizable>
-              <HeaderCell>ALSO Marketing Manager</HeaderCell>
-              <Cell dataKey="projectManager">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.projectManager}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].projectManager = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>VOD</HeaderCell>
-              <Cell dataKey="debitor">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.debitor}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].debitor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={200} resizable>
-              <HeaderCell>Creditor</HeaderCell>
-              <Cell dataKey="creditor">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.creditor}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].creditor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={200} resizable>
-              <HeaderCell>Manufacturer</HeaderCell>
-              <Cell dataKey="manufacturer">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.manufacturer}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].manufacturer = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={200} resizable>
-              <HeaderCell>Business Unit</HeaderCell>
-              <Cell dataKey="bu">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.bu}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].bu = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>PH1</HeaderCell>
-              <Cell dataKey="ph">
-                {(rowData, index) => (
-                  <Select
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        zIndex: 1000000000,
-                      }),
-                      singleValue: (provided) => ({
-                        ...provided,
-                        color: "#718196",
-                      }),
-                      control: (base, state) => ({
-                        ...base,
-                        minHeight: 40,
-                        border: "1px solid #E2E8F0",
-                        transition: "0.3s",
-                        "&:hover": {
-                          border: "1px solid #CBD5E0",
-                        },
-                      }),
-                    }}
-                    theme={(theme) => ({
-                      ...theme,
-                      borderRadius: 6,
-                      colors: {
-                        ...theme.colors,
-                        primary: "#3082CE",
-                      },
-                    })}
-                    menuPortalTarget={document.body}
-                    value={rowData.ph}
-                    onChange={(value) => {
-                      var temp = [...vendors];
-                      temp[index].ph = value;
-                      setVendors(temp);
-                    }}
-                    placeholder=""
-                    classNamePrefix="select"
-                    isClearable={false}
-                    name="PH1"
-                    options={PH1}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Vendor Budget Currency</HeaderCell>
-              <Cell dataKey="budgetCurrency">
-                {(rowData, index) => (
-                  <Select
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        zIndex: 1000000000,
-                      }),
-                      singleValue: (provided) => ({
-                        ...provided,
-                        color: "#718196",
-                      }),
-                      control: (base, state) => ({
-                        ...base,
-                        minHeight: 40,
-                        border: "1px solid #E2E8F0",
-                        transition: "0.3s",
-                        "&:hover": {
-                          border: "1px solid #CBD5E0",
-                        },
-                      }),
-                    }}
-                    theme={(theme) => ({
-                      ...theme,
-                      borderRadius: 6,
-                      colors: {
-                        ...theme.colors,
-                        primary: "#3082CE",
-                      },
-                    })}
-                    menuPortalTarget={document.body}
-                    value={rowData.budgetCurrency}
-                    onChange={(value) => {
-                      var temp = [...vendors];
-                      temp[index].budgetCurrency = value;
-                      setVendors(temp);
-                    }}
-                    placeholder=""
-                    classNamePrefix="select"
-                    isClearable={false}
-                    name="budgetCurrency"
-                    options={ExchangeRates}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Vendor Budget Amount</HeaderCell>
-              <Cell dataKey="budgetAmount">
-                {(rowData, index) => (
-                  <Input
-                    disabled={budgetSource.value === "noBudget"}
-                    value={rowData.budgetAmount}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].budgetAmount = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Vendor Budget in LC</HeaderCell>
-              <Cell dataKey="localBudget">
-                {(rowData, index) => (
-                  <Input
-                    disabled={budgetSource.value === "noBudget"}
-                    value={rowData.localBudget}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].localBudget = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Vendor Budget in EUR</HeaderCell>
-              <Cell dataKey="eurBudget">
-                {(rowData, index) => (
-                  <Input
-                    disabled={budgetSource.value === "noBudget"}
-                    value={rowData.eurBudget}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].eurBudget = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={100} resizable>
-              <HeaderCell>Share %</HeaderCell>
-              <Cell dataKey="share">
-                {(rowData, index) => (
-                  <Input
-                    disabled={budgetSource.value !== "noBudget"}
-                    value={rowData.share}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index].share = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            {/* FIXME: calculate */}
-            <Column width={300} resizable>
-              <HeaderCell>
-                Vendor Estimated Income in Campaign Currency
-              </HeaderCell>
-              <Cell dataKey="estimatedIncomeCC">
-                {(rowData, index) => (
-                  <Input
-                    disabled={budgetSource.value === "noBudget"}
-                    onChange={() => {}}
-                    value={rowData.estimatedIncomeCC}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={300} resizable>
-              <HeaderCell>
-                Vendor Estimated Costs in Campaign Currency
-              </HeaderCell>
-              <Cell dataKey="estimatedCostsCC">
-                {(rowData, index) => (
-                  <Input
-                    disabled
-                    onChange={() => {}}
-                    value={rowData.estimatedCostsCC}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={300} resizable>
-              <HeaderCell>Vendor Estimated Costs in LC</HeaderCell>
-              <Cell dataKey="estimatedCostsLC">
-                {(rowData, index) => (
-                  <Input
-                    disabled
-                    onChange={() => {}}
-                    value={rowData.estimatedCostsLC}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={300} resizable>
-              <HeaderCell>Vendor Estimated Costs in EUR</HeaderCell>
-              <Cell dataKey="estimatedCostsEUR">
-                {(rowData, index) => (
-                  <Input
-                    disabled
-                    onChange={() => {}}
-                    value={rowData.estimatedCostsEUR}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={300} resizable>
-              <HeaderCell>Net Profit Target in Campaign Currency</HeaderCell>
-              <Cell dataKey="netProfitTargetVC">
-                {(rowData, index) => (
-                  <Input
-                    disabled
-                    onChange={() => {}}
-                    value={rowData.netProfitTargetVC}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={300} resizable>
-              <HeaderCell>Net Profit Target in LC</HeaderCell>
-              <Cell dataKey="netProfitTargetLC">
-                {(rowData, index) => (
-                  <Input
-                    disabled
-                    onChange={() => {}}
-                    value={rowData.netProfitTargetLC}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={300} resizable>
-              <HeaderCell>Net Profit Target in EUR</HeaderCell>
-              <Cell dataKey="netProfitTargetEUR">
-                {(rowData, index) => (
-                  <Input
-                    disabled
-                    onChange={() => {}}
-                    value={rowData.netProfitTargetEUR}
-                  />
-                )}
-              </Cell>
-            </Column>
-          </Table>
+          <Text mb="8px">ALSO Marketing Manager</Text>
+          <Input
+            bgColor={"white"}
+            value={vendor.projectManager}
+            onChange={(event) => {
+              var temp = { ...vendor };
+              vendor.projectManager = event.target.value;
+              setVendor(temp);
+              console.log(vendor);
+            }}
+          />
         </Box>
+        <Box w="100%">
+          <Text mb="8px">VOD</Text>
+          <Input
+            bgColor={"white"}
+            value={vendor.debitor}
+            onChange={(event) => {
+              var temp = { ...vendor };
+              vendor.debitor = event.target.value;
+              setVendor(temp);
+            }}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Creditor</Text>
+          <Input
+            bgColor={"white"}
+            value={vendor.creditor}
+            onChange={(event) => {
+              var temp = { ...vendor };
+              vendor.creditor = event.target.value;
+              setVendor(temp);
+            }}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Manufacturer</Text>
+          <Input
+            bgColor={"white"}
+            value={vendor.manufacturer}
+            onChange={(event) => {
+              var temp = { ...vendor };
+              vendor.manufacturer = event.target.value;
+              setVendor(temp);
+            }}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Business Unit</Text>
+          <Input
+            bgColor={"white"}
+            value={vendor.bu}
+            onChange={(event) => {
+              var temp = { ...vendor };
+              vendor.bu = event.target.value;
+              setVendor(temp);
+            }}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">PH1</Text>
+          <Select
+            styles={{
+              menu: (provided) => ({
+                ...provided,
+                zIndex: 1000000000,
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: "#718196",
+              }),
+              control: (base, state) => ({
+                ...base,
+                minHeight: 40,
+                border: "1px solid #E2E8F0",
+                transition: "0.3s",
+                "&:hover": {
+                  border: "1px solid #CBD5E0",
+                },
+              }),
+            }}
+            theme={(theme) => ({
+              ...theme,
+              borderRadius: 6,
+              colors: {
+                ...theme.colors,
+                primary: "#3082CE",
+              },
+            })}
+            menuPortalTarget={document.body}
+            value={vendor.ph}
+            onChange={(value) => {
+              var temp = { ...vendor };
+              vendor.ph = value;
+              setVendor(temp);
+            }}
+            placeholder=""
+            classNamePrefix="select"
+            isClearable={false}
+            name="PH1"
+            options={PH1}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Vendor Budget Currency</Text>
+          <Select
+            styles={{
+              menu: (provided) => ({
+                ...provided,
+                zIndex: 1000000000,
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: "#718196",
+              }),
+              control: (base, state) => ({
+                ...base,
+                minHeight: 40,
+                border: "1px solid #E2E8F0",
+                transition: "0.3s",
+                "&:hover": {
+                  border: "1px solid #CBD5E0",
+                },
+              }),
+            }}
+            theme={(theme) => ({
+              ...theme,
+              borderRadius: 6,
+              colors: {
+                ...theme.colors,
+                primary: "#3082CE",
+              },
+            })}
+            menuPortalTarget={document.body}
+            value={vendor.budgetCurrency}
+            onChange={(value) => {
+              var temp = { ...vendor };
+              vendor.budgetCurrency = value;
+              setVendor(temp);
+            }}
+            placeholder=""
+            classNamePrefix="select"
+            isClearable={false}
+            name="budgetCurrency"
+            options={ExchangeRates}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Vendor Budget Amount</Text>
+          <Input
+            bgColor={"white"}
+            disabled={budgetSource.value === "noBudget"}
+            value={vendor.budgetAmount}
+            onChange={(event) => {
+              var temp = { ...vendor };
+              vendor.budgetAmount = event.target.value;
+              setVendor(temp);
+            }}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Vendor Budget in LC</Text>
+          <Input
+            bgColor={"white"}
+            disabled={budgetSource.value === "noBudget"}
+            value={vendor.localBudget}
+            onChange={(event) => {
+              var temp = { ...vendor };
+              vendor.localBudget = event.target.value;
+              setVendor(temp);
+            }}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Vendor Budget in EUR</Text>
+          <Input
+            bgColor={"white"}
+            disabled={budgetSource.value === "noBudget"}
+            value={vendor.eurBudget}
+            onChange={(event) => {
+              var temp = { ...vendor };
+              vendor.eurBudget = event.target.value;
+              setVendor(temp);
+            }}
+          />
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Share %</Text>
+          <Input
+            bgColor={"white"}
+            disabled={budgetSource.value === "noBudget"}
+            value={vendor.share}
+            onChange={(event) => {
+              var temp = { ...vendor };
+              vendor.share = event.target.value;
+              setVendor(temp);
+            }}
+          />
+        </Box>
+
         <Box w="100%">
           <Text mb="8px">Companies Participating</Text>
           <Select
@@ -1720,7 +1544,7 @@ export default function Ermv(props: Props) {
             },
           };
           var children: Submission[] = [];
-          vendors.slice(0, -1).forEach((vendor: any) => {
+          vendor.slice(0, -1).forEach((vendor: any) => {
             children.push({
               project: projectId,
               title: "",
