@@ -3688,60 +3688,12 @@ export function VendorsTable(props: Props) {
                         className: "expand",
                       },
                       {
-                        key: "data.statusCMCT",
-                        dataKey: "data.statusCMCT",
-                        title: "Status",
-                        width: columnWidth("data.statusCMCT", 310),
-                        resizable: true,
-                        group: "Input of Central Marketing Controlling Team",
-
-                        header: "Input of Central Marketing Controlling Team",
-                        hidden: visibilityController("CMCT", "data.statusCMCT"),
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            type={"dropdown"}
-                            backgroundColor="#f9f9ff"
-                            onUpdate={(
-                              submission: string,
-                              path: string,
-                              value: any
-                            ) => {
-                              handleCommunicationCellUpdate(
-                                submission,
-                                "data.dateCMCT",
-                                new Date()
-                              );
-                              handleCommunicationCellUpdate(
-                                submission,
-                                "data.operatorCMCT",
-                                currentUser.displayName
-                              );
-                              handleCommunicationCellUpdate(
-                                submission,
-                                path,
-                                value
-                              );
-                            }}
-                            loadOptions={() => {
-                              return [
-                                { label: "INVOICED", value: "INVOICED" },
-                                { label: "REJECTED", value: "REJECTED" },
-                              ];
-                            }}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={props.cellData}
-                          />
-                        ),
-                      },
-                      {
                         key: "data.documentNumberCMCT",
                         dataKey: "data.documentNumberCMCT",
                         title: "SAP Document Number",
                         group: "Input of Central Marketing Controlling Team",
-
-                        width: columnWidth("data.documentNumberCMCT", 200),
+                        // header: "Input of Central Marketing Controlling Team",
+                        width: columnWidth("data.documentNumberCMCT", 300),
                         resizable: true,
                         hidden: visibilityController(
                           "CMCT",
@@ -3759,27 +3711,53 @@ export function VendorsTable(props: Props) {
                           />
                         ),
                       },
-                      {
-                        key: "data.infoCMCT",
-                        dataKey: "data.infoCMCT",
-                        title: "Additional Information",
-                        width: columnWidth("data.infoCMCT", 200),
-                        group: "Input of Central Marketing Controlling Team",
-
-                        resizable: true,
-                        hidden: visibilityController("CMCT", "data.infoCMCT"),
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            type={"text"}
-                            backgroundColor="#f9f9ff"
-                            onUpdate={handleCommunicationCellUpdate}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={props.cellData}
-                          />
-                        ),
-                      },
+                      // {
+                      //   key: "data.statusCMCT",
+                      //   dataKey: "data.statusCMCT",
+                      //   title: "Status",
+                      //   width: columnWidth("data.statusCMCT", 310),
+                      //   resizable: true,
+                      //   group: "Input of Central Marketing Controlling Team",
+                      //   header: "Input of Central Marketing Controlling Team",
+                      //   hidden: visibilityController("CMCT", "data.statusCMCT"),
+                      //   cellRenderer: (props: any) => (
+                      //     <EditableTableCell
+                      //       type={"dropdown"}
+                      //       backgroundColor="#f9f9ff"
+                      //       onUpdate={(
+                      //         submission: string,
+                      //         path: string,
+                      //         value: any
+                      //       ) => {
+                      //         handleCommunicationCellUpdate(
+                      //           submission,
+                      //           "data.dateCMCT",
+                      //           new Date()
+                      //         );
+                      //         handleCommunicationCellUpdate(
+                      //           submission,
+                      //           "data.operatorCMCT",
+                      //           currentUser.displayName
+                      //         );
+                      //         handleCommunicationCellUpdate(
+                      //           submission,
+                      //           path,
+                      //           value
+                      //         );
+                      //       }}
+                      //       loadOptions={() => {
+                      //         return [
+                      //           { label: "INVOICED", value: "INVOICED" },
+                      //           { label: "REJECTED", value: "REJECTED" },
+                      //         ];
+                      //       }}
+                      //       rowIndex={props.rowIndex}
+                      //       columnKey={props.column.dataKey}
+                      //       rowData={props.rowData}
+                      //       initialValue={props.cellData}
+                      //     />
+                      //   ),
+                      // },
                       {
                         key: "data.dateCMCT",
                         dataKey: "data.dateCMCT",
@@ -3787,7 +3765,6 @@ export function VendorsTable(props: Props) {
                         width: columnWidth("data.dateCMCT", 200),
                         resizable: true,
                         group: "Input of Central Marketing Controlling Team",
-
                         hidden: visibilityController("CMCT", "data.dateCMCT"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
@@ -3808,7 +3785,6 @@ export function VendorsTable(props: Props) {
                         width: columnWidth("data.operatorCMCT", 200),
                         resizable: true,
                         group: "Input of Central Marketing Controlling Team",
-
                         hidden: visibilityController(
                           "CMCT",
                           "data.operatorCMCT"
@@ -3832,12 +3808,12 @@ export function VendorsTable(props: Props) {
                         width: columnWidth("data.statusLMD", 300),
                         resizable: true,
                         group: "Input of Local Marketing Department",
-
                         header: "Input of Local Marketing Department",
                         hidden: visibilityController("LMD", "data.statusLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            readonly={true}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -3871,6 +3847,16 @@ export function VendorsTable(props: Props) {
                               handleCommunicationCellUpdate(
                                 submission,
                                 "data.requestorLMD",
+                                currentUser.displayName
+                              );
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.operatorCMCT",
+                                currentUser.displayName
+                              );
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.dateCMCT",
                                 currentUser.displayName
                               );
                               handleCommunicationCellUpdate(
@@ -3915,25 +3901,15 @@ export function VendorsTable(props: Props) {
                         key: "data.vendorLMD",
                         dataKey: "data.vendorLMD",
                         title: "Vendor",
-                        width: columnWidth("data.vendorLMD", 200),
+                        width: columnWidth("data.vendorLMD", 250),
                         group: "Input of Local Marketing Department",
-
                         resizable: true,
                         hidden: visibilityController("LMD", "data.vendorLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
                             loadOptions={() => {
-                              let childVendors: any[] = [];
-                              submissions.forEach((submission) => {
-                                if (submission.parentId === props.rowData.id) {
-                                  childVendors.push({
-                                    label: submission.data.vendorName,
-                                    value: submission.data.vendorName,
-                                  });
-                                }
-                              });
-                              return childVendors;
+                              return VendorsNames;
                             }}
                             backgroundColor="#F5FAEF"
                             onUpdate={(
@@ -3947,6 +3923,7 @@ export function VendorsTable(props: Props) {
                                 value
                               );
                               let set = false;
+                              console.log(value);
                               VendorsNames.every((v) => {
                                 if (v.label === value) {
                                   handleCommunicationCellUpdate(
@@ -4026,21 +4003,23 @@ export function VendorsTable(props: Props) {
                           />
                         ),
                       },
+                      // FIXME: set after 'refresh status' clicked
                       {
-                        key: "data.requestDateLMD",
-                        dataKey: "data.requestDateLMD",
-                        title: "Request Date",
+                        key: "data.entryDateLMD",
+                        dataKey: "data.entryDateLMD",
+                        title: "Entry Date",
                         group: "Input of Local Marketing Department",
 
-                        width: columnWidth("data.requestDateLMD", 200),
+                        width: columnWidth("data.entryDateLMD", 200),
                         resizable: true,
                         hidden: visibilityController(
                           "LMD",
-                          "data.requestDateLMD"
+                          "data.entryDateLMD"
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"date"}
+                            readonly
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -4068,18 +4047,17 @@ export function VendorsTable(props: Props) {
                             loadOptions={() => {
                               return [
                                 {
-                                  label: "Marketing Invoice",
-                                  value: "Marketing Invoice",
+                                  label: "Invoice",
+                                  value: "Invoice",
                                 },
                                 { label: "Pre-Invoice", value: "Pre-Invoice" },
-                                { label: "Credit Note", value: "Credit Note" },
-                                {
-                                  label: "Cancellation",
-                                  value: "Cancellation",
-                                },
                                 {
                                   label: "Internal Invoice",
                                   value: "Internal Invoice",
+                                },
+                                {
+                                  label: "Cancellation",
+                                  value: "Cancellation",
                                 },
                               ];
                             }}
@@ -4116,33 +4094,7 @@ export function VendorsTable(props: Props) {
                           />
                         ),
                       },
-                      {
-                        key: "data.documentCurrencyLMD",
-                        dataKey: "data.documentCurrencyLMD",
-                        title: "Document Currency",
-                        group: "Input of Local Marketing Department",
 
-                        width: columnWidth("data.documentCurrencyLMD", 200),
-                        resizable: true,
-                        hidden: visibilityController(
-                          "LMD",
-                          "data.documentCurrencyLMD"
-                        ),
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            type={"dropdown"}
-                            loadOptions={() => {
-                              return ExchangeRates;
-                            }}
-                            backgroundColor="#F5FAEF"
-                            onUpdate={handleCommunicationCellUpdate}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={props.cellData}
-                          />
-                        ),
-                      },
                       {
                         key: "data.materialNumberLMD",
                         dataKey: "data.materialNumberLMD",
@@ -4157,8 +4109,62 @@ export function VendorsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
+                            type={"dropdown"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCommunicationCellUpdate}
+                            loadOptions={() => {
+                              return VendorsNames.map((vendor) => {
+                                return {
+                                  label: vendor.value.hersteller,
+                                  value: vendor.value.hersteller,
+                                };
+                              });
+                            }}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      // {
+                      //   key: "data.reasonLMD",
+                      //   dataKey: "data.reasonLMD",
+                      //   title: "Reason",
+                      //   width: columnWidth("data.reasonLMD", 200),
+                      //   group: "Input of Local Marketing Department",
+
+                      //   resizable: true,
+                      //   hidden: visibilityController("LMD", "data.reasonLMD"),
+                      //   cellRenderer: (props: any) => (
+                      //     <EditableTableCell
+                      //       type={"text"}
+                      //       backgroundColor="#F5FAEF"
+                      //       onUpdate={handleCommunicationCellUpdate}
+                      //       rowIndex={props.rowIndex}
+                      //       columnKey={props.column.dataKey}
+                      //       rowData={props.rowData}
+                      //       initialValue={props.cellData}
+                      //     />
+                      //   ),
+                      // },
+                      {
+                        key: "data.alsoMarketingProjectNumberLMD",
+                        dataKey: "data.alsoMarketingProjectNumberLMD",
+                        group: "Input of Local Marketing Department",
+
+                        title: "ALSO Marketing Project Number",
+                        width: columnWidth("data.textLMD", 250),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.alsoMarketingProjectNumberLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
                             type={"text"}
                             backgroundColor="#F5FAEF"
+                            // FIXME: limit to 12 chars
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -4168,14 +4174,17 @@ export function VendorsTable(props: Props) {
                         ),
                       },
                       {
-                        key: "data.reasonLMD",
-                        dataKey: "data.reasonLMD",
-                        title: "Reason",
-                        width: columnWidth("data.reasonLMD", 200),
+                        key: "data.invoiceTextLMD",
+                        dataKey: "data.invoiceTextLMD",
                         group: "Input of Local Marketing Department",
 
+                        title: "Invoice Text",
+                        width: columnWidth("data.invoiceTextLMD", 200),
                         resizable: true,
-                        hidden: visibilityController("LMD", "data.reasonLMD"),
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.invoiceTextLMD"
+                        ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
@@ -4189,14 +4198,47 @@ export function VendorsTable(props: Props) {
                         ),
                       },
                       {
-                        key: "data.textLMD",
-                        dataKey: "data.textLMD",
+                        key: "data.referenceNumberFromVendor",
+                        dataKey: "data.referenceNumberFromVendor",
                         group: "Input of Local Marketing Department",
 
-                        title: "Text",
-                        width: columnWidth("data.textLMD", 200),
+                        title: "Reference Number From Vendor",
+                        width: columnWidth(
+                          "data.referenceNumberFromVendor",
+                          200
+                        ),
                         resizable: true,
-                        hidden: visibilityController("LMD", "data.textLMD"),
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.referenceNumberFromVendor"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.activityIdForPortalVendors",
+                        dataKey: "data.activityIdForPortalVendors",
+                        group: "Activity ID for Portal Vendors",
+
+                        title: "Reference Number From Vendor",
+                        width: columnWidth(
+                          "data.activityIdForPortalVendors",
+                          200
+                        ),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.activityIdForPortalVendors"
+                        ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
@@ -4230,54 +4272,50 @@ export function VendorsTable(props: Props) {
                           />
                         ),
                       },
+                      // {
+                      //   key: "data.additionalInvoiceInfoLMD",
+                      //   dataKey: "data.additionalInvoiceInfoLMD",
+                      //   title: "Additional Info on Invoice",
+                      //   group: "Input of Local Marketing Department",
+
+                      //   width: columnWidth(
+                      //     "data.additionalInvoiceInfoLMD",
+                      //     200
+                      //   ),
+                      //   resizable: true,
+                      //   hidden: visibilityController(
+                      //     "LMD",
+                      //     "data.additionalInvoiceInfoLMD"
+                      //   ),
+                      //   cellRenderer: (props: any) => (
+                      //     <EditableTableCell
+                      //       type={"text"}
+                      //       backgroundColor="#F5FAEF"
+                      //       onUpdate={handleCommunicationCellUpdate}
+                      //       rowIndex={props.rowIndex}
+                      //       columnKey={props.column.dataKey}
+                      //       rowData={props.rowData}
+                      //       initialValue={props.cellData}
+                      //     />
+                      //   ),
+                      // },
                       {
-                        key: "data.additionalInvoiceInfoLMD",
-                        dataKey: "data.additionalInvoiceInfoLMD",
-                        title: "Additional Info on Invoice",
+                        key: "data.documentCurrencyLMD",
+                        dataKey: "data.documentCurrencyLMD",
+                        title: "Document Currency",
                         group: "Input of Local Marketing Department",
 
-                        width: columnWidth(
-                          "data.additionalInvoiceInfoLMD",
-                          200
-                        ),
+                        width: columnWidth("data.documentCurrencyLMD", 200),
                         resizable: true,
                         hidden: visibilityController(
                           "LMD",
-                          "data.additionalInvoiceInfoLMD"
-                        ),
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            type={"text"}
-                            backgroundColor="#F5FAEF"
-                            onUpdate={handleCommunicationCellUpdate}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={props.cellData}
-                          />
-                        ),
-                      },
-
-                      {
-                        key: "data.dunningStopLMD",
-                        dataKey: "data.dunningStopLMD",
-                        group: "Input of Local Marketing Department",
-
-                        title: "Dunning Stop?",
-                        width: columnWidth("data.dunningStopLMD", 200),
-                        resizable: true,
-                        hidden: visibilityController(
-                          "LMD",
-                          "data.dunningStopLMD"
+                          "data.documentCurrencyLMD"
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
                             loadOptions={() => {
-                              return [
-                                { label: "Yes", value: "Yes" },
-                                { label: "No", value: "No" },
-                              ];
+                              return ExchangeRates;
                             }}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
@@ -4326,6 +4364,37 @@ export function VendorsTable(props: Props) {
                         ),
                       },
                       {
+                        key: "data.dunningStopLMD",
+                        dataKey: "data.dunningStopLMD",
+                        group: "Input of Local Marketing Department",
+
+                        title: "Dunning Stop?",
+                        width: columnWidth("data.dunningStopLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.dunningStopLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"dropdown"}
+                            loadOptions={() => {
+                              return [
+                                { label: "Yes", value: "Yes" },
+                                { label: "No", value: "No" },
+                              ];
+                            }}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+
+                      {
                         key: "data.depositNumberLMD",
                         dataKey: "data.depositNumberLMD",
                         group: "Input of Local Marketing Department",
@@ -4336,6 +4405,33 @@ export function VendorsTable(props: Props) {
                         hidden: visibilityController(
                           "LMD",
                           "data.depositNumberLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.additionalInformationLMD",
+                        dataKey: "data.additionalInformationLMD",
+                        title: "Additional Information",
+                        width: columnWidth(
+                          "data.additionalInformationLMD",
+                          200
+                        ),
+                        group: "Input of Local Marketing Department",
+
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.additionalInformationLMD"
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
@@ -4370,37 +4466,34 @@ export function VendorsTable(props: Props) {
                           />
                         ),
                       },
-                      {
-                        key: "data.additionalCommentLMD",
-                        dataKey: "data.additionalCommentLMD",
-                        title: "Additional Comment",
-                        width: columnWidth("data.additionalCommentLMD", 200),
-                        group: "Input of Local Marketing Department",
 
-                        resizable: true,
-                        hidden: visibilityController(
-                          "LMD",
-                          "data.additionalCommentLMD"
-                        ),
+                      {
+                        key: "__actions.sap",
+                        dataKey: "__actions.sap",
+                        title: "",
+                        width: columnWidth("__actions.create", 100),
+                        resizable: false,
+                        header: "Actions",
+                        className: "red-border",
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            type={"text"}
-                            backgroundColor="#F5FAEF"
-                            onUpdate={handleCommunicationCellUpdate}
+                            type={"button"}
+                            backgroundColor="#fef9fa"
+                            textColor={"green"}
+                            onUpdate={(submissionId: string) => {}}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
-                            initialValue={props.cellData}
+                            initialValue={"validate"}
                           />
                         ),
                       },
                       {
-                        key: "__actions.sap",
-                        dataKey: "__actions.sap",
-                        title: "Create",
+                        key: "__actions.create",
+                        dataKey: "__actions.create",
+                        title: "",
                         width: columnWidth("__actions.create", 100),
-                        resizable: true,
-                        header: "Actions",
+                        resizable: false,
                         className: "red-border",
                         cellRenderer: (props: any) =>
                           props.rowData.parentId === null ? (
@@ -4446,9 +4539,9 @@ export function VendorsTable(props: Props) {
                       {
                         key: "__actions.delete",
                         dataKey: "__actions.delete",
-                        title: "Delete",
+                        title: "",
                         width: columnWidth("__actions.delete", 100),
-                        resizable: true,
+                        resizable: false,
                         className: "red-border",
                         cellRenderer: (props: any) => (
                           <EditableTableCell
