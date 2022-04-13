@@ -3923,7 +3923,6 @@ export function VendorsTable(props: Props) {
                                 value
                               );
                               let set = false;
-                              console.log(value);
                               VendorsNames.every((v) => {
                                 if (v.label === value) {
                                   handleCommunicationCellUpdate(

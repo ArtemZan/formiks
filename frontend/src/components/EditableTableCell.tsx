@@ -44,49 +44,59 @@ class EditableTableCell extends React.Component<
 
   componentDidMount() {
     var value: any = undefined;
-    switch (this.props.type) {
-      case "text":
-      case "button":
-        value = this.props.initialValue
-          ? this.props.initialValue.toString()
-          : "";
-        break;
-      case "number":
-        value =
-          typeof this.props.initialValue === "number"
-            ? numberWithCommas(this.props.initialValue)
+    if (this.props.rowData.id === "total") {
+      value = this.props.initialValue ? this.props.initialValue : "";
+    } else {
+      switch (this.props.type) {
+        case "text":
+        case "button":
+          value = this.props.initialValue
+            ? this.props.initialValue.toString()
             : "";
-        break;
-      case "tags":
-        value = this.props.initialValue;
-        break;
-      case "date":
-        value =
-          this.props.initialValue && this.props.initialValue !== null
-            ? new Date(this.props.initialValue)
-            : null;
-        break;
-      case "dropdown":
-        value =
-          typeof this.props.initialValue === "string"
-            ? { label: this.props.initialValue, value: this.props.initialValue }
-            : { label: "", value: "" };
-        break;
-      case "multiple-dropdown":
-        value = [];
-        if (this.props.initialValue && Array.isArray(this.props.initialValue)) {
-          this.props.initialValue.forEach((value: any) => {
-            value.push({ label: value, value: value });
-          });
-        }
-        break;
-      case "menu":
-        value = this.props.initialValue
-          ? this.props.initialValue.toString()
-          : "";
-        break;
-      default:
-        break;
+          break;
+        case "number":
+          value =
+            typeof this.props.initialValue === "number"
+              ? numberWithCommas(this.props.initialValue)
+              : "";
+          break;
+        case "tags":
+          value = this.props.initialValue;
+          break;
+        case "date":
+          value =
+            this.props.initialValue && this.props.initialValue !== null
+              ? new Date(this.props.initialValue)
+              : null;
+          break;
+        case "dropdown":
+          value =
+            typeof this.props.initialValue === "string"
+              ? {
+                  label: this.props.initialValue,
+                  value: this.props.initialValue,
+                }
+              : { label: "", value: "" };
+          break;
+        case "multiple-dropdown":
+          value = [];
+          if (
+            this.props.initialValue &&
+            Array.isArray(this.props.initialValue)
+          ) {
+            this.props.initialValue.forEach((value: any) => {
+              value.push({ label: value, value: value });
+            });
+          }
+          break;
+        case "menu":
+          value = this.props.initialValue
+            ? this.props.initialValue.toString()
+            : "";
+          break;
+        default:
+          break;
+      }
     }
     this.setState({ cellValue: value });
   }
