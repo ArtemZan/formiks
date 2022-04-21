@@ -1194,6 +1194,7 @@ export default function Elov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Vendor Budget Currency</Text>
           <Select
+            isDisabled={budgetSource.value === "noBudget"}
             styles={{
               menu: (provided) => ({
                 ...provided,
@@ -1274,20 +1275,6 @@ export default function Elov(props: Props) {
             }}
           />
         </Box>
-        <Box w="100%">
-          <Text mb="8px">Share %</Text>
-          <Input
-            bgColor={"white"}
-            disabled={budgetSource.value === "noBudget"}
-            value={vendor.share}
-            onChange={(event) => {
-              var temp = { ...vendor };
-              vendor.share = event.target.value;
-              setVendor(temp);
-            }}
-          />
-        </Box>
-
         <Box w="100%">
           <Text mb="8px">Comments</Text>
           <Textarea
