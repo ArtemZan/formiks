@@ -104,7 +104,11 @@ export function Explorer(props: Props) {
           </WrapItem>
         </Wrap>
       </Center>
-      <Wrap justify="center" spacing={{ base: "40px", lg: "3em" }}>
+      <Wrap
+        justify="center"
+        spacing={{ base: "40px", lg: "3em" }}
+        mx={{ base: 0, "2xl": "300px" }}
+      >
         {projects.map((project) => {
           return (
             <WrapItem key={`wrap-${project.id}`}>
