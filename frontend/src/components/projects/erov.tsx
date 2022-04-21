@@ -10,6 +10,7 @@ import {
   HStack,
   Textarea,
   Button,
+  Divider,
 } from "@chakra-ui/react";
 import Project from "../../types/project";
 import Select from "react-select";
@@ -93,6 +94,10 @@ export default function Erov(props: Props) {
   const [vendor, setVendor] = useState<any>({});
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
 
+  const [totalcbShare, setTotalcbShare] = useState("0.00");
+  const [totalcbContribution, setTotalcbContribution] = useState("0.00");
+  const [totalcbCosts, setTotalcbCosts] = useState("0.00");
+
   const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
   const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
 
@@ -164,6 +169,9 @@ export default function Erov(props: Props) {
   }, [companiesParticipating]);
 
   useEffect(() => {
+    var totalShare = 0.0;
+    var totalContribution = 0.0;
+    var totalCosts = 0.0;
     var temp = [...costBreakdown];
     temp.forEach((row: any) => {
       if (budgetSource.value === "noBudget") {
@@ -181,10 +189,16 @@ export default function Erov(props: Props) {
         0.01 *
         parseFloat(estimatedCostsBudgetCurrency)
       ).toFixed(2);
+      totalShare += parseFloat(row.share) || 0;
+      totalContribution += parseFloat(row.contribution) || 0;
+      totalCosts += parseFloat(row.estimatedCosts) || 0;
     });
     if (!isEqual(costBreakdown, temp)) {
       setCostBreakdown(temp);
     }
+    setTotalcbShare(totalShare.toFixed(2));
+    setTotalcbContribution(totalContribution.toFixed(2));
+    setTotalcbCosts(totalCosts.toFixed(2));
   }, [
     costBreakdown,
     estimatedIncomeBudgetCurrency,
@@ -1458,6 +1472,17 @@ export default function Erov(props: Props) {
               </Cell>
             </Column>
           </Table>
+        </Box>
+        <Box w="100%">
+          <Text mb="8px">Total Share: {totalcbShare}%</Text>
+          <Text mb="8px">
+            Total Budget Contribution: {totalcbContribution}{" "}
+            {exchangeRates.label}
+          </Text>
+          <Text mb="8px">
+            Total Estimated Costs: {totalcbCosts} {exchangeRates.label}
+          </Text>
+          <Divider />
         </Box>
         <Box w="100%">
           <Text mb="8px">Comments</Text>
