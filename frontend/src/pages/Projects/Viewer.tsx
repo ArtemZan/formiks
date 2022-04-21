@@ -27,6 +27,7 @@ import Ermv from "../../components/projects/ermv";
 import Erov from "../../components/projects/erov";
 import Elmv from "../../components/projects/elmv";
 import Elov from "../../components/projects/elov";
+import Por from "../../components/projects/por";
 
 interface Props {
   history: any;
@@ -75,6 +76,11 @@ export function Viewer(props: Props) {
         if (props.match.params.id === "624ac98682eeddf1a9b6a622") {
           setPredefinedProject(
             <Elov project={project} history={props.history} />
+          );
+        }
+        if (props.match.params.id === "62610ab73a88d397b05cea12") {
+          setPredefinedProject(
+            <Por project={project} history={props.history} />
           );
         }
       });
