@@ -99,7 +99,7 @@ export default function Ermv(props: Props) {
 
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
 
-  const [totalcbShare, setTotalcbShare] = useState("0.00");
+  const [totalcbShare, setTotalcbShare] = useState("0");
   const [totalcbContribution, setTotalcbContribution] = useState("0.00");
   const [totalcbCosts, setTotalcbCosts] = useState("0.00");
 
@@ -245,7 +245,7 @@ export default function Ermv(props: Props) {
     if (!isEqual(costBreakdown, temp)) {
       setCostBreakdown(temp);
     }
-    setTotalcbShare(totalShare.toFixed(2));
+    setTotalcbShare(totalShare.toFixed(0));
     setTotalcbContribution(totalContribution.toFixed(2));
     setTotalcbCosts(totalCosts.toFixed(2));
   }, [
@@ -1535,6 +1535,7 @@ export default function Ermv(props: Props) {
             data={[
               ...costBreakdown,
               {
+                invalid: totalcbShare === "100" ? false : true,
                 companyName: "TOTAL",
                 share: totalcbShare + "%",
                 contribution: totalcbContribution + " " + exchangeRates.label,
@@ -1626,6 +1627,7 @@ export default function Ermv(props: Props) {
               <Cell dataKey="share">
                 {(rowData, index) => (
                   <Input
+                    color={rowData.invalid && "red"}
                     value={rowData.share}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
