@@ -888,6 +888,7 @@ export default function Elov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Budget Approved by Vendor (name and surname)</Text>
           <Input
+            disabled={budgetSource.value === "noBudget"}
             value={budgetApprovedByVendor}
             onChange={(event) => {
               setBudgetApprovedByVendor(event.target.value);
@@ -898,7 +899,7 @@ export default function Elov(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">Budget Approved by Vendor (attachments)</Text>
-          <Uploader draggable>
+          <Uploader disabled={budgetSource.value === "noBudget"} draggable>
             <div style={{ lineHeight: "200px" }}>
               Click or Drag files to this area to upload
             </div>

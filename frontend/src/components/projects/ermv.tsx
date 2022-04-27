@@ -1532,7 +1532,15 @@ export default function Ermv(props: Props) {
             hover={false}
             autoHeight
             rowHeight={65}
-            data={costBreakdown}
+            data={[
+              ...costBreakdown,
+              {
+                companyName: "TOTAL",
+                share: totalcbShare + "%",
+                contribution: totalcbContribution + " " + exchangeRates.label,
+                estimatedCosts: totalcbCosts + " " + exchangeRates.label,
+              },
+            ]}
           >
             <Column width={200} resizable>
               <HeaderCell>Company Name</HeaderCell>
@@ -1663,17 +1671,7 @@ export default function Ermv(props: Props) {
             </Column>
           </Table>
         </Box>
-        <Box w="100%">
-          <Text mb="8px">Total Share: {totalcbShare}%</Text>
-          <Text mb="8px">
-            Total Budget Contribution: {totalcbContribution}{" "}
-            {exchangeRates.label}
-          </Text>
-          <Text mb="8px">
-            Total Estimated Costs: {totalcbCosts} {exchangeRates.label}
-          </Text>
-          <Divider />
-        </Box>
+
         <Box w="100%">
           <Text mb="8px">Comments</Text>
           <Textarea
