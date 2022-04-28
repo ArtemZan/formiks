@@ -530,7 +530,7 @@ export default function Elov(props: Props) {
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
         onClick={() => {
-          var projectId = "619515b754e61c8dd33daa52";
+          var projectId = "62610ab73a88d397b05cea12";
 
           var parent: Submission = {
             project: projectId,
@@ -542,41 +542,41 @@ export default function Elov(props: Props) {
             status: "New",
             author: requestorsName,
             data: {
-              requestorsCompanyName: requestorsCompanyName.label,
-              companyCode: requestorsCompanyName.value.code,
-              requestorsCountry: requestorsCompanyName.value.country,
-              campaignName: campaignName,
-              campaignDescription: campaignDescription,
-              targetAudience: targetAudience,
-              campaignChannel: campaignChannel.label,
-              year: year.label,
-              projectStartQuarter: projectStartQuarter.label,
-              projectNumber: projectNumber,
-              requestorsName: requestorsName,
-              projectApprover: "",
-              projectApproval: projectApproval,
-              manufacturersFiscalQuarter: fiscalQuarter.label,
-              campaignStartDate:
-                startDate === null ? null : startDate.toString(),
-              campaignEndDate: endDate === null ? null : endDate.toString(),
-              budgetSource: budgetSource.label,
-              budgetApprovedByVendor: budgetApprovedByVendor,
-              campaignBudgetsCurrency: exchangeRates.label,
-              campaignEstimatedIncomeBudgetsCurrency: parseFloat(
-                estimatedIncomeBudgetCurrency
-              ),
-              campaignEstimatedCostsBudgetsCurrency: parseFloat(
-                estimatedCostsBudgetCurrency
-              ),
-              campaignNetProfitTargetBudgetsCurrency: parseFloat(
-                netProfitTargetBudgetCurrency
-              ),
-              campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
-              campaignEstimatedCostsEur: parseFloat(estimatedCosts),
-              campaignNetProfitTargetEur: parseFloat(netProfitTarget),
-              totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
+              // requestorsCompanyName: requestorsCompanyName.label,
+              // companyCode: requestorsCompanyName.value.code,
+              // requestorsCountry: requestorsCompanyName.value.country,
+              // campaignName: campaignName,
+              // campaignDescription: campaignDescription,
+              // targetAudience: targetAudience,
+              // campaignChannel: campaignChannel.label,
+              // year: year.label,
+              // projectStartQuarter: projectStartQuarter.label,
+              // projectNumber: projectNumber,
+              // requestorsName: requestorsName,
+              // projectApprover: "",
+              // projectApproval: projectApproval,
+              // manufacturersFiscalQuarter: fiscalQuarter.label,
+              // campaignStartDate:
+              //   startDate === null ? null : startDate.toString(),
+              // campaignEndDate: endDate === null ? null : endDate.toString(),
+              // budgetSource: budgetSource.label,
+              // budgetApprovedByVendor: budgetApprovedByVendor,
+              // campaignBudgetsCurrency: exchangeRates.label,
+              // campaignEstimatedIncomeBudgetsCurrency: parseFloat(
+              //   estimatedIncomeBudgetCurrency
+              // ),
+              // campaignEstimatedCostsBudgetsCurrency: parseFloat(
+              //   estimatedCostsBudgetCurrency
+              // ),
+              // campaignNetProfitTargetBudgetsCurrency: parseFloat(
+              //   netProfitTargetBudgetCurrency
+              // ),
+              // campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
+              // campaignEstimatedCostsEur: parseFloat(estimatedCosts),
+              // campaignNetProfitTargetEur: parseFloat(netProfitTarget),
+              // totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
               comments: comments,
-              projectType: "Regional Multi Vendor",
+              projectType: "Purchase Order Request",
             },
           };
           var children: Submission[] = [];

@@ -1151,13 +1151,11 @@ export function VendorsTable(props: Props) {
       var cSubs: Submission[] = [];
 
       subs.forEach((sub) => {
-        if (sub.project === "619515b754e61c8dd33daa52") {
-          if (sub.group === "communication") {
-            cSubs.push(sub);
-          } else {
-            vSubs.push(sub);
-            ss.set(sub.id, sub);
-          }
+        if (sub.group === "communication") {
+          cSubs.push(sub);
+        } else {
+          vSubs.push(sub);
+          ss.set(sub.id, sub);
         }
       });
       setCommunicationSubmissions(cSubs);
@@ -4502,7 +4500,7 @@ export function VendorsTable(props: Props) {
                               textColor={"blue"}
                               onUpdate={(submissionId: string) => {
                                 var submission: Submission = {
-                                  project: "619515b754e61c8dd33daa52",
+                                  project: props.rowData.project,
                                   parentId: submissionId,
                                   group: "communication",
                                   created: new Date(),
@@ -4598,6 +4596,7 @@ export function VendorsTable(props: Props) {
                         <Button
                           onClick={() => {
                             var submission: Submission = {
+                              // FIXME
                               project: "619515b754e61c8dd33daa52",
                               parentId: null,
                               group: "communication",

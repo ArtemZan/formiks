@@ -1094,7 +1094,7 @@ export default function Elov(props: Props) {
             value={vendor.projectManager}
             onChange={(event) => {
               var temp = { ...vendor };
-              vendor.projectManager = event.target.value;
+              temp.projectManager = event.target.value;
               setVendor(temp);
               console.log(vendor);
             }}
@@ -1107,7 +1107,7 @@ export default function Elov(props: Props) {
             value={vendor.debitor}
             onChange={(event) => {
               var temp = { ...vendor };
-              vendor.debitor = event.target.value;
+              temp.debitor = event.target.value;
               setVendor(temp);
             }}
           />
@@ -1119,7 +1119,7 @@ export default function Elov(props: Props) {
             value={vendor.creditor}
             onChange={(event) => {
               var temp = { ...vendor };
-              vendor.creditor = event.target.value;
+              temp.creditor = event.target.value;
               setVendor(temp);
             }}
           />
@@ -1131,7 +1131,7 @@ export default function Elov(props: Props) {
             value={vendor.manufacturer}
             onChange={(event) => {
               var temp = { ...vendor };
-              vendor.manufacturer = event.target.value;
+              temp.manufacturer = event.target.value;
               setVendor(temp);
             }}
           />
@@ -1143,7 +1143,7 @@ export default function Elov(props: Props) {
             value={vendor.bu}
             onChange={(event) => {
               var temp = { ...vendor };
-              vendor.bu = event.target.value;
+              temp.bu = event.target.value;
               setVendor(temp);
             }}
           />
@@ -1182,7 +1182,7 @@ export default function Elov(props: Props) {
             value={vendor.ph}
             onChange={(value) => {
               var temp = { ...vendor };
-              vendor.ph = value;
+              temp.ph = value;
               setVendor(temp);
             }}
             placeholder=""
@@ -1227,7 +1227,7 @@ export default function Elov(props: Props) {
             value={vendor.budgetCurrency}
             onChange={(value) => {
               var temp = { ...vendor };
-              vendor.budgetCurrency = value;
+              temp.budgetCurrency = value;
               setVendor(temp);
             }}
             placeholder=""
@@ -1245,7 +1245,7 @@ export default function Elov(props: Props) {
             value={vendor.budgetAmount}
             onChange={(event) => {
               var temp = { ...vendor };
-              vendor.budgetAmount = event.target.value;
+              temp.budgetAmount = event.target.value;
               setVendor(temp);
             }}
           />
@@ -1258,7 +1258,7 @@ export default function Elov(props: Props) {
             value={vendor.localBudget}
             onChange={(event) => {
               var temp = { ...vendor };
-              vendor.localBudget = event.target.value;
+              temp.localBudget = event.target.value;
               setVendor(temp);
             }}
           />
@@ -1271,7 +1271,7 @@ export default function Elov(props: Props) {
             value={vendor.eurBudget}
             onChange={(event) => {
               var temp = { ...vendor };
-              vendor.eurBudget = event.target.value;
+              temp.eurBudget = event.target.value;
               setVendor(temp);
             }}
           />
@@ -1300,7 +1300,7 @@ export default function Elov(props: Props) {
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
         onClick={() => {
-          var projectId = "619515b754e61c8dd33daa52";
+          var projectId = "624ac98682eeddf1a9b6a622";
 
           var parent: Submission = {
             project: projectId,
@@ -1346,10 +1346,42 @@ export default function Elov(props: Props) {
               campaignNetProfitTargetEur: parseFloat(netProfitTarget),
               totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
               comments: comments,
-              projectType: "Regional Multi Vendor",
+              projectType: "Local One Vendor",
             },
           };
           var children: Submission[] = [];
+
+          children.push({
+            project: projectId,
+            title: "",
+            parentId: "",
+            group: "vendor",
+            created: new Date(),
+            updated: new Date(),
+            status: "New",
+            author: requestorsName,
+            data: {
+              vendorName: vendorName,
+              productionProjectManager: vendor.projectManager,
+              sapCreditorNumber: vendor.creditor,
+              sapDebitorNumber: vendor.debitor,
+              manufacturerNumber: vendor.manufacturer,
+              bu: vendor.bu,
+              ph1: vendor.ph.label,
+              budgetCurrency: vendor.budgetCurrency.label,
+              estimatedIncomeEur: parseFloat(vendor.budgetAmount),
+              estimatedIncomeBC: parseFloat(vendor.localBudget),
+              // cbbudgetEur: parseFloat(vendor.eurBudget),
+              vendorShare: parseFloat(vendor.share),
+              estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
+              estimatedIncomeCC: parseFloat(vendor.estimatedIncomeCC),
+              // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+              estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
+              estimatedResultBC: parseFloat(vendor.netProfitTargetVC),
+              // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+              estimatedResultEur: parseFloat(vendor.netProfitTargetEUR),
+            },
+          });
 
           var submission: SubmissionWithChildren = {
             submission: parent,

@@ -1491,7 +1491,7 @@ export default function Elmv(props: Props) {
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
         onClick={() => {
-          var projectId = "619515b754e61c8dd33daa52";
+          var projectId = "6246ec8efa2a446faadb8d9b";
 
           var parent: Submission = {
             project: projectId,
@@ -1537,7 +1537,7 @@ export default function Elmv(props: Props) {
               campaignNetProfitTargetEur: parseFloat(netProfitTarget),
               totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
               comments: comments,
-              projectType: "Regional Multi Vendor",
+              projectType: "Local Multi Vendor",
             },
           };
           var children: Submission[] = [];
