@@ -1047,11 +1047,18 @@ export function VendorsTable(props: Props) {
     var submissionIndex = communicationSubmissions.findIndex(
       (s) => s.id === submission
     );
+
     if (submissionIndex > -1) {
       path = `[${submissionIndex}].${path}`;
+
       if (_.get(communicationSubmissions, path) !== value) {
         _.set(communicationSubmissions, path, value);
         partialUpdate(submission, path, value);
+        var datePath = `[${submissionIndex}].data.entryDateLMD`;
+        if (_.get(communicationSubmissions, datePath) === undefined) {
+          _.set(communicationSubmissions, datePath, new Date());
+          partialUpdate(submission, datePath, new Date());
+        }
       }
     }
   }
@@ -4082,6 +4089,10 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            readonly={
+                              props.rowData.data.invoiceTypeLMD !==
+                              "Cancellation"
+                            }
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -4162,7 +4173,20 @@ export function VendorsTable(props: Props) {
                             type={"text"}
                             backgroundColor="#F5FAEF"
                             // FIXME: limit to 12 chars
-                            onUpdate={handleCommunicationCellUpdate}
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              if (value !== undefined && value.length > 11) {
+                                return;
+                              }
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
+                            }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -4224,9 +4248,9 @@ export function VendorsTable(props: Props) {
                       {
                         key: "data.activityIdForPortalVendors",
                         dataKey: "data.activityIdForPortalVendors",
-                        group: "Activity ID for Portal Vendors",
+                        group: "Input of Local Marketing Department",
 
-                        title: "Reference Number From Vendor",
+                        title: "Activity ID for Portal Vendors",
                         width: columnWidth(
                           "data.activityIdForPortalVendors",
                           200
@@ -4259,7 +4283,7 @@ export function VendorsTable(props: Props) {
                         hidden: visibilityController("LMD", "data.amountLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            type={"text"}
+                            type={"number"}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -4342,8 +4366,8 @@ export function VendorsTable(props: Props) {
                               return [
                                 { label: "Payment", value: "Payment" },
                                 {
-                                  label: "Money in the House",
-                                  value: "Money in the House",
+                                  label: "Money in House",
+                                  value: "Money in House",
                                 },
                                 {
                                   label: "Credit Note from Vendor",
@@ -4352,7 +4376,29 @@ export function VendorsTable(props: Props) {
                               ];
                             }}
                             backgroundColor="#F5FAEF"
-                            onUpdate={handleCommunicationCellUpdate}
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              var dunningStop = "No"
+                              if (
+                                value === "Money in House" ||
+                                value === "Credit Note from Vendor"
+                              ) {
+                                dunningStop = "Yes"
+                              }
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.dunningStopLMD",
+                                dunningStop
+                              );
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
+                            }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}

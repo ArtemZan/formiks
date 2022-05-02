@@ -223,10 +223,12 @@ class EditableTableCell extends React.Component<
         ) : this.props.type === "dropdown" ||
           this.props.type === "multiple-dropdown" ? (
           <Creatable
+            menuPortalTarget={document.body}
             menuIsOpen={this.state.editing}
             autoFocus
             isMulti={this.props.type === "multiple-dropdown"}
             styles={{
+              menuPortal: (base) => ({ ...base, zIndex: 1000000 }),
               menu: (provided) => ({
                 ...provided,
                 zIndex: 1000000,
@@ -255,7 +257,6 @@ class EditableTableCell extends React.Component<
                 primary: "#a0bfe3",
               },
             })}
-            menuPortalTarget={document.body}
             value={this.state.cellValue}
             onChange={(value) => {
               this.setState({
