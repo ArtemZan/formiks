@@ -36,12 +36,12 @@ func main() {
 
 	go func() {
 		sap.FetchAccountLines()
-		//
+
 		// driver.Conn.Mongo.Collection("submissions").Drop(context.TODO())
 		// fmt.Println("account lines parsed...")
 		// sap.CreateSubmissionsForAccountLines()
 		// os.Exit(0)
-		//
+
 		for range time.NewTicker(time.Hour * 5).C {
 			sap.FetchAccountLines()
 		}

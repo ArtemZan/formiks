@@ -3,6 +3,7 @@ package sap
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -152,6 +153,12 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 	maxGroupLength := make(map[string]int)
 	groups := make(map[string][]map[string]interface{})
 	for _, glChild := range glChildren {
+		if len(glChild.DocumentDate) == 8 {
+			glChild.DocumentDate = fmt.Sprintf("%s.%s.%s", glChild.DocumentDate[0:4], glChild.DocumentDate[4:6], glChild.DocumentDate[6:8])
+		}
+		if len(glChild.PostingDate) == 8 {
+			glChild.PostingDate = fmt.Sprintf("%s.%s.%s", glChild.PostingDate[0:4], glChild.PostingDate[4:6], glChild.PostingDate[6:8])
+		}
 		var group string
 		data := make(map[string]interface{})
 		dcIndicator := 1.0

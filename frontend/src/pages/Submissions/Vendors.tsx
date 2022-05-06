@@ -350,12 +350,12 @@ const DisplayedColumnsList = [
     children: [
       { label: "Year / Month", value: "data.yearMonth", type: "string" },
       { label: "Document Type", value: "data.documentType", type: "string" },
-      { label: "Posting Date", value: "data.postingDate", type: "string" },
+      { label: "Posting Date", value: "data.postingDate", type: "date" },
       { label: "Document Date", value: "data.documentDate", type: "string" },
       {
         label: "Document Number",
         value: "data.documentNumber",
-        type: "string",
+        type: "date",
       },
       { label: "Invoice Number", value: "data.invoiceNumber", type: "string" },
       { label: "Cost Account", value: "data.costAccount", type: "string" },
@@ -377,8 +377,8 @@ const DisplayedColumnsList = [
     children: [
       { label: "Year / Month", value: "data.yearMonthSI", type: "string" },
       { label: "Document Type", value: "data.documentTypeSI", type: "string" },
-      { label: "Posting Date", value: "data.postingDateSI", type: "string" },
-      { label: "Document Date", value: "data.documentDateSI", type: "string" },
+      { label: "Posting Date", value: "data.postingDateSI", type: "date" },
+      { label: "Document Date", value: "data.documentDateSI", type: "date" },
       {
         label: "Document Number",
         value: "data.documentNumberSI",
@@ -431,12 +431,12 @@ const DisplayedColumnsList = [
       {
         label: "Posting Date",
         value: "data.postingDateCostGL",
-        type: "string",
+        type: "date",
       },
       {
         label: "Document Date",
         value: "data.documentDateCostGL",
-        type: "string",
+        type: "date",
       },
       {
         label: "Document Number",
@@ -483,12 +483,12 @@ const DisplayedColumnsList = [
       {
         label: "Posting Date",
         value: "data.postingDateIncomeGL",
-        type: "string",
+        type: "date",
       },
       {
         label: "Document Date",
         value: "data.documentDateIncomeGL",
-        type: "string",
+        type: "date",
       },
       {
         label: "Document Number",
@@ -2085,7 +2085,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("costInvoices", "data.postingDate"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2106,7 +2106,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("costInvoices", "data.documentDate"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2389,7 +2389,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("salesInvoices", "data.postingDateSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#f2f5fa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2410,7 +2410,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("salesInvoices", "data.documentDateSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#f2f5fa"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2694,7 +2694,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("costGlPostings", "data.postingDateCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#fcfcfe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2715,7 +2715,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("costGlPostings", "data.documentDateCostGL"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#fcfcfe"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2949,7 +2949,7 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2973,7 +2973,7 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"date"}
           backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -3105,7 +3105,7 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -4249,7 +4249,6 @@ export function VendorsTable(props: Props) {
                         key: "data.activityIdForPortalVendors",
                         dataKey: "data.activityIdForPortalVendors",
                         group: "Input of Local Marketing Department",
-
                         title: "Activity ID for Portal Vendors",
                         width: columnWidth(
                           "data.activityIdForPortalVendors",
@@ -4381,12 +4380,12 @@ export function VendorsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              var dunningStop = "No"
+                              var dunningStop = "No";
                               if (
                                 value === "Money in House" ||
                                 value === "Credit Note from Vendor"
                               ) {
-                                dunningStop = "Yes"
+                                dunningStop = "Yes";
                               }
                               handleCommunicationCellUpdate(
                                 submission,
@@ -4511,10 +4510,10 @@ export function VendorsTable(props: Props) {
                       },
 
                       {
-                        key: "__actions.sap",
-                        dataKey: "__actions.sap",
+                        key: "__actions.validate",
+                        dataKey: "__actions.validate",
                         title: "",
-                        width: columnWidth("__actions.create", 100),
+                        width: columnWidth("__actions.validate", 100),
                         resizable: false,
                         header: "Actions",
                         className: "red-border",
@@ -4523,7 +4522,9 @@ export function VendorsTable(props: Props) {
                             type={"button"}
                             backgroundColor="#fef9fa"
                             textColor={"green"}
-                            onUpdate={(submissionId: string) => {}}
+                            onUpdate={(submissionId: string) => {
+                              console.log(submissionId);
+                            }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}

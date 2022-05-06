@@ -14,12 +14,12 @@ import {
 import Project from "../../types/project";
 import Select from "react-select";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
-import DatePicker from "react-datepicker";
 import isEqual from "lodash/isEqual";
-
+import DatePicker from "react-datepicker";
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
+import { isDisabled } from "@chakra-ui/utils";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -338,13 +338,50 @@ export default function Elov(props: Props) {
               <HeaderCell>Local Currency</HeaderCell>
               <Cell dataKey="localCurrency">
                 {(rowData, index) => (
-                  <Input
-                    value={rowData.localCurrency}
-                    onChange={(event) => {
+                  <Select
+                    menuPortalTarget={document.body}
+                    styles={{
+                      menu: (provided) => ({
+                        ...provided,
+                        zIndex: 1000000,
+                      }),
+                      singleValue: (provided) => ({
+                        ...provided,
+                        color: "#718196",
+                      }),
+                      control: (base, state) => ({
+                        ...base,
+                        minHeight: 40,
+                        border: "1px solid #E2E8F0",
+                        transition: "0.3s",
+                        "&:hover": {
+                          border: "1px solid #CBD5E0",
+                        },
+                      }),
+                    }}
+                    theme={(theme) => ({
+                      ...theme,
+                      borderRadius: 6,
+                      colors: {
+                        ...theme.colors,
+                        primary: "#3082CE",
+                      },
+                    })}
+                    value={{
+                      label: rowData.localCurrency,
+                      value: rowData.localCurrency,
+                    }}
+                    onChange={(value) => {
                       var temp = [...services];
-                      temp[index].localCurrency = event.target.value;
+                      temp[index].localCurrency =
+                        value === null ? "" : value.label;
                       setServices(temp);
                     }}
+                    placeholder=""
+                    classNamePrefix="select"
+                    isClearable={false}
+                    name="localCurrency"
+                    options={ExchangeRates}
                   />
                 )}
               </Cell>
@@ -368,13 +405,50 @@ export default function Elov(props: Props) {
               <HeaderCell>Purchase Order Currency Code</HeaderCell>
               <Cell dataKey="poCurrencyCode">
                 {(rowData, index) => (
-                  <Input
-                    value={rowData.poCurrencyCode}
-                    onChange={(event) => {
+                  <Select
+                    menuPortalTarget={document.body}
+                    styles={{
+                      menu: (provided) => ({
+                        ...provided,
+                        zIndex: 1000000,
+                      }),
+                      singleValue: (provided) => ({
+                        ...provided,
+                        color: "#718196",
+                      }),
+                      control: (base, state) => ({
+                        ...base,
+                        minHeight: 40,
+                        border: "1px solid #E2E8F0",
+                        transition: "0.3s",
+                        "&:hover": {
+                          border: "1px solid #CBD5E0",
+                        },
+                      }),
+                    }}
+                    theme={(theme) => ({
+                      ...theme,
+                      borderRadius: 6,
+                      colors: {
+                        ...theme.colors,
+                        primary: "#3082CE",
+                      },
+                    })}
+                    value={{
+                      label: rowData.poCurrencyCode,
+                      value: rowData.poCurrencyCode,
+                    }}
+                    onChange={(value) => {
                       var temp = [...services];
-                      temp[index].poCurrencyCode = event.target.value;
+                      temp[index].poCurrencyCode =
+                        value === null ? "" : value.label;
                       setServices(temp);
                     }}
+                    placeholder=""
+                    classNamePrefix="select"
+                    isClearable={false}
+                    name="poCurrencyCode"
+                    options={ExchangeRates}
                   />
                 )}
               </Cell>
@@ -414,13 +488,17 @@ export default function Elov(props: Props) {
               <HeaderCell>Purchase Order Date</HeaderCell>
               <Cell dataKey="purchaseOrderDate">
                 {(rowData, index) => (
-                  <Input
-                    value={rowData.purchaseOrderDate}
-                    onChange={(event) => {
+                  <DatePicker
+                    portalId="root-portal"
+                    isClearable={false}
+                    selected={rowData.purchaseOrderDate}
+                    customInput={<Input value={rowData.purchaseOrderDate} />}
+                    onChange={(date) => {
                       var temp = [...services];
-                      temp[index].purchaseOrderDate = event.target.value;
+                      temp[index].purchaseOrderDate = date;
                       setServices(temp);
                     }}
+                    dateFormat="dd.MM.yyyy"
                   />
                 )}
               </Cell>

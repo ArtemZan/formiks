@@ -7,6 +7,10 @@ import { numberWithCommas } from "../utils/utils";
 
 const numRegex = /[0-9]|\./;
 
+function isValidDate(d: any) {
+  return d instanceof Date && !isNaN(d as any);
+}
+
 class EditableTableCell extends React.Component<
   {
     onUpdate: any;
@@ -206,6 +210,11 @@ class EditableTableCell extends React.Component<
           <DatePicker
             autoFocus
             isClearable
+            selected={
+              isValidDate(this.state.cellValue)
+                ? moment(this.state.cellValue).toDate()
+                : null
+            }
             customInput={<input className="datepicker-input"></input>}
             onChange={(date) => {
               this.setState({ cellValue: date, editing: false });
@@ -301,8 +310,8 @@ class EditableTableCell extends React.Component<
               onClick={() => {
                 this.props.onUpdate(
                   this.props.rowData.id,
-                  "data.companyName",
-                  "Updated Name"
+                  this.props.columnKey,
+                  this.state.cellValue
                 );
                 this.setState({ editing: false });
               }}

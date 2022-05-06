@@ -1173,6 +1173,7 @@ export default function Elmv(props: Props) {
               <Cell dataKey="creditor">
                 {(rowData, index) => (
                   <Input
+                    isDisabled
                     value={rowData.creditor}
                     onChange={(event) => {
                       var temp = [...vendors];

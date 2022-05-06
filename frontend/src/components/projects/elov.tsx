@@ -1115,6 +1115,7 @@ export default function Elov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Creditor</Text>
           <Input
+            isDisabled
             bgColor={"white"}
             value={vendor.creditor}
             onChange={(event) => {
