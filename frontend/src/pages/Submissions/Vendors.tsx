@@ -696,6 +696,16 @@ const DisplayedColumnsList = [
   // },
 ];
 
+const DisplayedColumnsListOptions = DisplayedColumnsList.map((group: any) => {
+  return group.children.map((column: any) => {
+    return {
+      label: `${column.label} (${group.label})`,
+      value: column.value,
+      type: column.type,
+    };
+  });
+}).flat(1);
+
 export function VendorsTable(props: Props) {
   const [sourceSubmissions, setSourceSubmissions] = useState(new Map());
   const [currentUser, setCurrentUser] = useState({ displayName: "unknown" });
@@ -5024,15 +5034,17 @@ export function VendorsTable(props: Props) {
                               classNamePrefix="select"
                               isClearable={false}
                               name="color"
-                              options={tableCells
-                                .filter((cell: any) => cell.dataKey[0] !== "_")
-                                .map((cell: any) => {
-                                  return {
-                                    label: `${cell.title} (${cell.group})`,
-                                    value: cell.dataKey,
-                                    type: cell.type ? cell.type : "text",
-                                  };
-                                })}
+                              options={DisplayedColumnsListOptions}
+                              // options={tableCells
+                              //   .filter((cell: any) => cell.dataKey[0] !== "_")
+                              //   .map((cell: any) => {
+                              //     console.log(cell.cellRenderer.arguments[0]);
+                              //     return {
+                              //       label: `${cell.title} (${cell.group})`,
+                              //       value: cell.dataKey,
+                              //       type: cell.type ? cell.type : "text",
+                              //     };
+                              //   })}
                             />
                           </Box>
                           <Box w="100%">
