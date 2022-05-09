@@ -557,143 +557,143 @@ const DisplayedColumnsList = [
       },
     ],
   },
-  // {
-  //   label: "Input of Central Marketing Controlling Team",
-  //   value: "CMCT",
-  //   children: [
-  //     {
-  //       label: "Status",
-  //       value: "data.statusCMCT",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "SAP Document Number",
-  //       value: "data.documentNumberCMCT",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Additional Information",
-  //       value: "data.infoCMCT",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Date",
-  //       value: "data.dateCMCT",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Operator",
-  //       value: "data.operatorCMCT",
-  //       type: "string",
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: "Input of Local Marketing Department",
-  //   value: "LMD",
-  //   children: [
-  //     {
-  //       label: "Status",
-  //       value: "data.statusLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Date of Invoicing",
-  //       value: "data.invoicingDateLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Requestor",
-  //       value: "data.requestorLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Vendor",
-  //       value: "data.vendorLMD",
-  //       type: "dropdown",
-  //     },
-  //     {
-  //       label: "VOD",
-  //       value: "data.vodLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "BU",
-  //       value: "data.buLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Request Date",
-  //       value: "data.requestDateLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Invoice Type",
-  //       value: "data.invoiceTypeLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Cancellation Information",
-  //       value: "data.cancellationInfoLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Document Currency",
-  //       value: "data.documentCurrencyLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Material Number",
-  //       value: "data.materialNumberLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Reason",
-  //       value: "data.reasonLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Text",
-  //       value: "data.textLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Amount",
-  //       value: "data.amountLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Additional Info on Invoice",
-  //       value: "data.additionalInvoiceInfoLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Dunning Stop?",
-  //       value: "data.dunningStopLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Payment Method",
-  //       value: "data.paymentMethodLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Deposit Number",
-  //       value: "data.depositNumberLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Send to",
-  //       value: "data.sendToLMD",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Additional Comment",
-  //       value: "data.additionalCommentLMD",
-  //       type: "string",
-  //     },
-  //   ],
-  // },
+  {
+    label: "Input of Central Marketing Controlling Team",
+    value: "CMCT",
+    children: [
+      {
+        label: "Status",
+        value: "data.statusCMCT",
+        type: "dropdown",
+      },
+      {
+        label: "SAP Document Number",
+        value: "data.documentNumberCMCT",
+        type: "string",
+      },
+      {
+        label: "Additional Information",
+        value: "data.infoCMCT",
+        type: "string",
+      },
+      {
+        label: "Date",
+        value: "data.dateCMCT",
+        type: "date",
+      },
+      {
+        label: "Operator",
+        value: "data.operatorCMCT",
+        type: "string",
+      },
+    ],
+  },
+  {
+    label: "Input of Local Marketing Department",
+    value: "LMD",
+    children: [
+      {
+        label: "Status",
+        value: "data.statusLMD",
+        type: "string",
+      },
+      {
+        label: "Date of Invoicing",
+        value: "data.invoicingDateLMD",
+        type: "string",
+      },
+      {
+        label: "Requestor",
+        value: "data.requestorLMD",
+        type: "string",
+      },
+      {
+        label: "Vendor",
+        value: "data.vendorLMD",
+        type: "dropdown",
+      },
+      {
+        label: "VOD",
+        value: "data.vodLMD",
+        type: "string",
+      },
+      {
+        label: "BU",
+        value: "data.buLMD",
+        type: "string",
+      },
+      {
+        label: "Request Date",
+        value: "data.requestDateLMD",
+        type: "string",
+      },
+      {
+        label: "Invoice Type",
+        value: "data.invoiceTypeLMD",
+        type: "string",
+      },
+      {
+        label: "Cancellation Information",
+        value: "data.cancellationInfoLMD",
+        type: "string",
+      },
+      {
+        label: "Document Currency",
+        value: "data.documentCurrencyLMD",
+        type: "string",
+      },
+      {
+        label: "Material Number",
+        value: "data.materialNumberLMD",
+        type: "string",
+      },
+      {
+        label: "Reason",
+        value: "data.reasonLMD",
+        type: "string",
+      },
+      {
+        label: "Text",
+        value: "data.textLMD",
+        type: "string",
+      },
+      {
+        label: "Amount",
+        value: "data.amountLMD",
+        type: "number",
+      },
+      {
+        label: "Additional Info on Invoice",
+        value: "data.additionalInvoiceInfoLMD",
+        type: "string",
+      },
+      {
+        label: "Dunning Stop?",
+        value: "data.dunningStopLMD",
+        type: "string",
+      },
+      {
+        label: "Payment Method",
+        value: "data.paymentMethodLMD",
+        type: "string",
+      },
+      {
+        label: "Deposit Number",
+        value: "data.depositNumberLMD",
+        type: "string",
+      },
+      {
+        label: "Send to",
+        value: "data.sendToLMD",
+        type: "string",
+      },
+      {
+        label: "Additional Comment",
+        value: "data.additionalCommentLMD",
+        type: "string",
+      },
+    ],
+  },
 ];
 
 const DisplayedColumnsListOptions = DisplayedColumnsList.map((group: any) => {
@@ -3717,7 +3717,11 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            backgroundColor="#f9f9ff"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#f9f9ff"
+                                : "#f7cdd6"
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -3853,7 +3857,11 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"date"}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -3926,7 +3934,11 @@ export function VendorsTable(props: Props) {
                             loadOptions={() => {
                               return VendorsNames;
                             }}
-                            backgroundColor="#F5FAEF" // #f7cdd6
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -4075,7 +4087,11 @@ export function VendorsTable(props: Props) {
                                 },
                               ];
                             }}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -4128,7 +4144,11 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             loadOptions={() => {
                               return VendorsNames.map((vendor) => {
@@ -4217,7 +4237,11 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -4291,7 +4315,13 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"number"}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData &&
+                              props.cellData !== 0 &&
+                              props.cellData.toString().trim().length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -4345,7 +4375,11 @@ export function VendorsTable(props: Props) {
                             loadOptions={() => {
                               return ExchangeRates;
                             }}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -4382,7 +4416,11 @@ export function VendorsTable(props: Props) {
                                 },
                               ];
                             }}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -4434,7 +4472,11 @@ export function VendorsTable(props: Props) {
                                 { label: "No", value: "No" },
                               ];
                             }}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -4507,7 +4549,11 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -4525,20 +4571,87 @@ export function VendorsTable(props: Props) {
                         resizable: false,
                         header: "Actions",
                         className: "red-border",
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            type={"button"}
-                            backgroundColor="#fef9fa"
-                            textColor={"green"}
-                            onUpdate={(submissionId: string) => {
-                              console.log(submissionId);
-                            }}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={"validate"}
-                          />
-                        ),
+                        cellRenderer: (props: any) =>
+                          props.rowData.parentId === null ? (
+                            <EditableTableCell
+                              type={"button"}
+                              backgroundColor="#fef9fa"
+                              textColor={"green"}
+                              onUpdate={(submissionId: string) => {
+                                var targetSubmissionIndex =
+                                  communicationSubmissions.findIndex(
+                                    (s) => s.id === submissionId
+                                  );
+                                if (targetSubmissionIndex > -1) {
+                                  var ts =
+                                    communicationSubmissions[
+                                      targetSubmissionIndex
+                                    ];
+                                  if (
+                                    ts.data.documentNumberCMCT &&
+                                    ts.data.documentNumberCMCT.length > 0 &&
+                                    ts.data.invoicingDateLMD &&
+                                    ts.data.invoicingDateLMD.length > 0 &&
+                                    ts.data.vendorLMD &&
+                                    ts.data.vendorLMD.length > 0 &&
+                                    ts.data.invoiceTypeLMD &&
+                                    ts.data.invoiceTypeLMD.length > 0 &&
+                                    ts.data.materialNumberLMD &&
+                                    ts.data.materialNumberLMD.length > 0 &&
+                                    ts.data.invoiceTextLMD &&
+                                    ts.data.invoiceTextLMD.length > 0 &&
+                                    ts.data.amountLMD &&
+                                    typeof ts.data.amountLMD === "number" &&
+                                    ts.data.documentCurrencyLMD &&
+                                    ts.data.documentCurrencyLMD.length > 0 &&
+                                    ts.data.paymentMethodLMD &&
+                                    ts.data.paymentMethodLMD.length > 0 &&
+                                    ts.data.dunningStopLMD &&
+                                    ts.data.dunningStopLMD.length > 0 &&
+                                    ts.data.sendToLMD &&
+                                    ts.data.sendToLMD.length > 0
+                                  ) {
+                                    var today = new Date();
+                                    today.setHours(23, 59, 59, 998);
+                                    if (
+                                      ts.data.invoicingDateLMD &&
+                                      new Date(ts.data.invoicingDateLMD) > today
+                                    ) {
+                                      handleCommunicationCellUpdate(
+                                        submissionId,
+                                        "data.statusLMD",
+                                        "FUTURE INVOICE"
+                                      );
+                                    } else {
+                                      handleCommunicationCellUpdate(
+                                        submissionId,
+                                        "data.statusLMD",
+                                        "OK FOR INVOICING"
+                                      );
+                                    }
+                                  } else {
+                                    handleCommunicationCellUpdate(
+                                      submissionId,
+                                      "data.statusLMD",
+                                      "INCOMPLETE"
+                                    );
+                                  }
+                                }
+                              }}
+                              rowIndex={props.rowIndex}
+                              columnKey={props.column.dataKey}
+                              rowData={props.rowData}
+                              initialValue={"validate"}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                backgroundColor: "#F7FAFC",
+                                width: "100%",
+                                height: "100%",
+                              }}
+                            />
+                          ),
                       },
                       {
                         key: "__actions.create",

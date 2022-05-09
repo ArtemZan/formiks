@@ -5,7 +5,7 @@ import DatePicker from "react-datepicker";
 import Creatable from "react-select/creatable";
 import { numberWithCommas } from "../utils/utils";
 
-const numRegex = /[0-9]|\./;
+const numRegex = /[0-9.\-/]|\./;
 
 function isValidDate(d: any) {
   return d instanceof Date && !isNaN(d as any);
@@ -61,6 +61,7 @@ class EditableTableCell extends React.Component<
           break;
         case "number":
           value =
+            this.props.initialValue &&
             typeof this.props.initialValue === "number"
               ? numberWithCommas(this.props.initialValue)
               : "";
@@ -167,6 +168,8 @@ class EditableTableCell extends React.Component<
             ) : (
               ""
             )
+          ) : typeof this.state.cellValue === "number" ? (
+            `${numberWithCommas(this.state.cellValue)}`
           ) : (
             `${this.state.cellValue}`
           )
@@ -206,7 +209,7 @@ class EditableTableCell extends React.Component<
                 this.props.rowData.id,
                 this.props.columnKey,
                 this.props.type === "number"
-                  ? numberWithCommas(Number(this.state.cellValue))
+                  ? Number(this.state.cellValue)
                   : this.state.cellValue
               );
               this.setState({ editing: false });
