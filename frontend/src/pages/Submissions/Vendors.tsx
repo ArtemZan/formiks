@@ -847,7 +847,7 @@ export function VendorsTable(props: Props) {
               return;
             }
             switch (filter.type) {
-              case "text":
+              case "string":
                 switch (filter.filter) {
                   case "exact":
                     valid =
@@ -5015,7 +5015,7 @@ export function VendorsTable(props: Props) {
                                 temp[index].filter = "exact";
                                 var tv: any = [];
                                 switch (value.type) {
-                                  case "text":
+                                  case "string":
                                     tv = [""];
                                     break;
                                   case "number":
