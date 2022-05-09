@@ -24,6 +24,7 @@ class EditableTableCell extends React.Component<
     backgroundColor?: string;
     readonly?: boolean;
     bold?: boolean;
+    maxLength?: number;
   },
   {
     cellValue: any;
@@ -175,6 +176,12 @@ class EditableTableCell extends React.Component<
             style={{ resize: "none" }}
             value={this.state.cellValue ?? ""}
             onChange={(event) => {
+              if (
+                this.props.maxLength !== undefined &&
+                event.target.value.length > this.props.maxLength
+              ) {
+                return;
+              }
               this.setState({ cellValue: event.target.value });
             }}
             onFocus={(e) => {
@@ -199,7 +206,7 @@ class EditableTableCell extends React.Component<
                 this.props.rowData.id,
                 this.props.columnKey,
                 this.props.type === "number"
-                  ? Number(this.state.cellValue)
+                  ? numberWithCommas(Number(this.state.cellValue))
                   : this.state.cellValue
               );
               this.setState({ editing: false });

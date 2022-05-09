@@ -1067,7 +1067,7 @@ export function VendorsTable(props: Props) {
         var datePath = `[${submissionIndex}].data.entryDateLMD`;
         if (_.get(communicationSubmissions, datePath) === undefined) {
           _.set(communicationSubmissions, datePath, new Date());
-          partialUpdate(submission, datePath, new Date());
+          partialUpdate(submission, datePath, new Date().toString());
         }
       }
     }
@@ -3869,11 +3869,11 @@ export function VendorsTable(props: Props) {
                                 "data.operatorCMCT",
                                 currentUser.displayName
                               );
-                              handleCommunicationCellUpdate(
-                                submission,
-                                "data.dateCMCT",
-                                currentUser.displayName
-                              );
+                              // handleCommunicationCellUpdate(
+                              //   submission,
+                              //   "data.dateCMCT",
+                              //   new Date().toString()
+                              // );
                               handleCommunicationCellUpdate(
                                 submission,
                                 path,
@@ -3926,7 +3926,7 @@ export function VendorsTable(props: Props) {
                             loadOptions={() => {
                               return VendorsNames;
                             }}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor="#F5FAEF" // #f7cdd6
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -4181,6 +4181,7 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            maxLength={12}
                             backgroundColor="#F5FAEF"
                             // FIXME: limit to 12 chars
                             onUpdate={(
@@ -4188,9 +4189,6 @@ export function VendorsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              if (value !== undefined && value.length > 11) {
-                                return;
-                              }
                               handleCommunicationCellUpdate(
                                 submission,
                                 path,
