@@ -4809,7 +4809,7 @@ export function VendorsTable(props: Props) {
                 var valuesField: JSX.Element = <div></div>;
 
                 switch (filter.type) {
-                  case "text":
+                  case "string":
                     valuesField = (
                       <Input
                         onChange={(event) => {
