@@ -395,6 +395,11 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
+        label: "Activity ID for Portal Vendors",
+        value: "data.activityIdSI",
+        type: "string",
+      },
+      {
         label: "Invoice Number",
         value: "data.invoiceNumberSI",
         type: "string",
@@ -2484,6 +2489,27 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
+      key: "data.activityIdSI",
+      group: "Sales Invoices",
+      dataKey: "data.activityIdSI",
+      title: "Activity ID for Portal Vendors",
+      width: columnWidth("data.activityIdSI", 200),
+      resizable: true,
+      hidden: visibilityController("salesInvoices", "data.activityIdSI"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          readonly={true}
+          backgroundColor="#f2f5fa"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
       key: "data.invoiceNumberSI",
       dataKey: "data.invoiceNumberSI",
       group: "Sales Invoices",
@@ -3751,12 +3777,8 @@ export function VendorsTable(props: Props) {
                             type={"text"}
                             readonly={
                               props.rowData.data.statusLMD !==
-                              "OK FOR INVOICING"
-                            }
-                            backgroundColor={
-                              props.cellData && props.cellData.length > 0
-                                ? "#f9f9ff"
-                                : "#f7cdd6"
+                                "OK FOR INVOICING" &&
+                              props.rowData.data.statusLMD !== "INVOICED"
                             }
                             onUpdate={(
                               submission: string,
@@ -3773,6 +3795,22 @@ export function VendorsTable(props: Props) {
                                 "data.dateCMCT",
                                 new Date().toString()
                               );
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.statusLMD",
+                                "INVOICED"
+                              );
+
+                              var mi = submissions.findIndex(
+                                (s) => s.data.documentNumberSI === value
+                              );
+                              if (mi > -1) {
+                                handleCellUpdate(
+                                  submissions[mi].id!,
+                                  "data.activityIdSI",
+                                  props.rowData.data.activityIdForPortalVendors
+                                );
+                              }
                               handleCommunicationCellUpdate(
                                 submission,
                                 path,
@@ -4604,8 +4642,6 @@ export function VendorsTable(props: Props) {
 
                                   is.forEach((ts) => {
                                     if (
-                                      ts.data.documentNumberCMCT &&
-                                      ts.data.documentNumberCMCT.length > 0 &&
                                       ts.data.invoicingDateLMD &&
                                       ts.data.invoicingDateLMD.length > 0 &&
                                       ts.data.vendorLMD &&

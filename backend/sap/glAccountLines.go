@@ -295,6 +295,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			}
 		}
 		data["projectNumber"] = projectNumber
+		data["status"] = "Created"
 		if len(group) > 0 {
 			maxGroupLength[group]++
 			groups[group] = append(groups[group], data)

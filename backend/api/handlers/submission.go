@@ -5,16 +5,17 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/logger"
 	"github.com/doublegrey/formiks/backend/models"
 	"github.com/doublegrey/formiks/backend/repositories"
 	"github.com/doublegrey/formiks/backend/repositories/submission"
 	"github.com/doublegrey/formiks/backend/sap"
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func NewSubmissionHandler(db *driver.DB) *Submission {
@@ -97,6 +98,7 @@ func (r *Submission) Create(c *gin.Context) {
 	submission.Created = time.Now()
 	submission.Updated = time.Now()
 	submission.Author = email.(string)
+	submission.Data["status"] = "New"
 	submission, err = r.repo.Create(c.Request.Context(), submission)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to create submission", err)
@@ -124,12 +126,14 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	submissionWithChildren.Submission.Updated = time.Now()
 	submissionWithChildren.Submission.Author = email.(string)
 	submissionWithChildren.Submission.ParentID = nil
+	submissionWithChildren.Submission.Data["status"] = "New"
 	for index := range submissionWithChildren.Children {
 		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
 		submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
 		submissionWithChildren.Children[index].Created = time.Now()
 		submissionWithChildren.Children[index].Updated = time.Now()
 		submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
+		submissionWithChildren.Children[index].Data["status"] = "New"
 	}
 	children := sap.GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, submissionWithChildren.Submission.Data["projectNumber"].(string))
 	submissionWithChildren.Children = append(submissionWithChildren.Children, children...)
