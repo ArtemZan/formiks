@@ -150,6 +150,15 @@ const loadOptions = (identifier: string) => {
       return VendorsNames;
     case "data.costStatus":
       return CostStatuses;
+    case "data.statusLMD":
+      return [
+        { label: "OK FOR INVOICING", value: "OK FOR INVOICING" },
+        { label: "FUTURE INVOICE", value: "FUTURE INVOICE" },
+        { label: "INVOICED", value: "INVOICED" },
+        { label: "INCOMPLETE", value: "INCOMPLETE" },
+        { label: "OK FOR CANCELLATION", value: "OK FOR CANCELLATION" },
+        { label: "CANCELLED", value: "CANCELLED" },
+      ];
   }
   return [];
 };
@@ -206,6 +215,7 @@ const DisplayedColumnsList = [
         type: "date",
       },
       { label: "Project Type", value: "data.projectType", type: "dropdown" },
+      { label: "Status", value: "data.status", type: "string" },
     ],
   },
   {
@@ -351,11 +361,11 @@ const DisplayedColumnsList = [
       { label: "Year / Month", value: "data.yearMonth", type: "string" },
       { label: "Document Type", value: "data.documentType", type: "string" },
       { label: "Posting Date", value: "data.postingDate", type: "date" },
-      { label: "Document Date", value: "data.documentDate", type: "string" },
+      { label: "Document Date", value: "data.documentDate", type: "date" },
       {
         label: "Document Number",
         value: "data.documentNumber",
-        type: "date",
+        type: "string",
       },
       { label: "Invoice Number", value: "data.invoiceNumber", type: "string" },
       { label: "Cost Account", value: "data.costAccount", type: "string" },
@@ -1310,6 +1320,28 @@ export function VendorsTable(props: Props) {
           backgroundColor="#f4fcf9"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.status",
+      dataKey: "data.status",
+      title: "Status",
+      group: "General Information",
+      width: columnWidth("data.status", 250),
+      resizable: true,
+      hidden: visibilityController("generalInformation", "data.status"),
+      type: "text",
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          readonly={true}
+          backgroundColor="#f4fcf9"
+          onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
@@ -3459,8 +3491,8 @@ export function VendorsTable(props: Props) {
       >
         <Tabs isLazy variant="enclosed">
           <TabList>
-            <Tab>Vendors</Tab>
-            <Tab>Communication</Tab>
+            <Tab>Projects</Tab>
+            <Tab>Invoice Request, Issue and Status</Tab>
           </TabList>
           <TabPanels>
             <TabPanel w="100%" h="85vh">
@@ -3707,7 +3739,7 @@ export function VendorsTable(props: Props) {
                         dataKey: "data.documentNumberCMCT",
                         title: "SAP Document Number",
                         group: "Input of Central Marketing Controlling Team",
-                        // header: "Input of Central Marketing Controlling Team",
+                        header: "Input of Central Marketing Controlling Team",
                         width: columnWidth("data.documentNumberCMCT", 300),
                         resizable: true,
                         hidden: visibilityController(
@@ -3717,12 +3749,36 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            readonly={
+                              props.rowData.data.statusLMD !==
+                              "OK FOR INVOICING"
+                            }
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
                                 ? "#f9f9ff"
                                 : "#f7cdd6"
                             }
-                            onUpdate={handleCommunicationCellUpdate}
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.operatorCMCT",
+                                currentUser.displayName
+                              );
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.dateCMCT",
+                                new Date().toString()
+                              );
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
+                            }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -3730,53 +3786,6 @@ export function VendorsTable(props: Props) {
                           />
                         ),
                       },
-                      // {
-                      //   key: "data.statusCMCT",
-                      //   dataKey: "data.statusCMCT",
-                      //   title: "Status",
-                      //   width: columnWidth("data.statusCMCT", 310),
-                      //   resizable: true,
-                      //   group: "Input of Central Marketing Controlling Team",
-                      //   header: "Input of Central Marketing Controlling Team",
-                      //   hidden: visibilityController("CMCT", "data.statusCMCT"),
-                      //   cellRenderer: (props: any) => (
-                      //     <EditableTableCell
-                      //       type={"dropdown"}
-                      //       backgroundColor="#f9f9ff"
-                      //       onUpdate={(
-                      //         submission: string,
-                      //         path: string,
-                      //         value: any
-                      //       ) => {
-                      //         handleCommunicationCellUpdate(
-                      //           submission,
-                      //           "data.dateCMCT",
-                      //           new Date()
-                      //         );
-                      //         handleCommunicationCellUpdate(
-                      //           submission,
-                      //           "data.operatorCMCT",
-                      //           currentUser.displayName
-                      //         );
-                      //         handleCommunicationCellUpdate(
-                      //           submission,
-                      //           path,
-                      //           value
-                      //         );
-                      //       }}
-                      //       loadOptions={() => {
-                      //         return [
-                      //           { label: "INVOICED", value: "INVOICED" },
-                      //           { label: "REJECTED", value: "REJECTED" },
-                      //         ];
-                      //       }}
-                      //       rowIndex={props.rowIndex}
-                      //       columnKey={props.column.dataKey}
-                      //       rowData={props.rowData}
-                      //       initialValue={props.cellData}
-                      //     />
-                      //   ),
-                      // },
                       {
                         key: "data.dateCMCT",
                         dataKey: "data.dateCMCT",
@@ -3788,6 +3797,7 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"date"}
+                            readonly={true}
                             backgroundColor="#f9f9ff"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -3811,6 +3821,7 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            readonly={true}
                             backgroundColor="#f9f9ff"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -3831,8 +3842,9 @@ export function VendorsTable(props: Props) {
                         hidden: visibilityController("LMD", "data.statusLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            type={"text"}
+                            type={"dropdown"}
                             readonly={true}
+                            loadOptions={loadOptions}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -3872,16 +3884,6 @@ export function VendorsTable(props: Props) {
                                 "data.requestorLMD",
                                 currentUser.displayName
                               );
-                              handleCommunicationCellUpdate(
-                                submission,
-                                "data.operatorCMCT",
-                                currentUser.displayName
-                              );
-                              // handleCommunicationCellUpdate(
-                              //   submission,
-                              //   "data.dateCMCT",
-                              //   new Date().toString()
-                              // );
                               handleCommunicationCellUpdate(
                                 submission,
                                 path,
@@ -4070,6 +4072,7 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
+                            readonly={props.rowData.parentId !== null}
                             loadOptions={() => {
                               return [
                                 {
@@ -4088,7 +4091,8 @@ export function VendorsTable(props: Props) {
                               ];
                             }}
                             backgroundColor={
-                              props.cellData && props.cellData.length > 0
+                              (props.cellData && props.cellData.length > 0) ||
+                              props.rowData.parentId !== null
                                 ? "#F5FAEF"
                                 : "#f7cdd6"
                             }
@@ -4583,59 +4587,73 @@ export function VendorsTable(props: Props) {
                                     (s) => s.id === submissionId
                                   );
                                 if (targetSubmissionIndex > -1) {
-                                  var ts =
+                                  var is: Submission[] = [];
+                                  is.push(
                                     communicationSubmissions[
                                       targetSubmissionIndex
-                                    ];
-                                  if (
-                                    ts.data.documentNumberCMCT &&
-                                    ts.data.documentNumberCMCT.length > 0 &&
-                                    ts.data.invoicingDateLMD &&
-                                    ts.data.invoicingDateLMD.length > 0 &&
-                                    ts.data.vendorLMD &&
-                                    ts.data.vendorLMD.length > 0 &&
-                                    ts.data.invoiceTypeLMD &&
-                                    ts.data.invoiceTypeLMD.length > 0 &&
-                                    ts.data.materialNumberLMD &&
-                                    ts.data.materialNumberLMD.length > 0 &&
-                                    ts.data.invoiceTextLMD &&
-                                    ts.data.invoiceTextLMD.length > 0 &&
-                                    ts.data.amountLMD &&
-                                    typeof ts.data.amountLMD === "number" &&
-                                    ts.data.documentCurrencyLMD &&
-                                    ts.data.documentCurrencyLMD.length > 0 &&
-                                    ts.data.paymentMethodLMD &&
-                                    ts.data.paymentMethodLMD.length > 0 &&
-                                    ts.data.dunningStopLMD &&
-                                    ts.data.dunningStopLMD.length > 0 &&
-                                    ts.data.sendToLMD &&
-                                    ts.data.sendToLMD.length > 0
-                                  ) {
-                                    var today = new Date();
-                                    today.setHours(23, 59, 59, 998);
+                                    ]
+                                  );
+
+                                  if (is[0].parentId === null) {
+                                    communicationSubmissions.forEach((s) => {
+                                      if (s.parentId === submissionId) {
+                                        is.push(s);
+                                      }
+                                    });
+                                  }
+
+                                  is.forEach((ts) => {
                                     if (
+                                      ts.data.documentNumberCMCT &&
+                                      ts.data.documentNumberCMCT.length > 0 &&
                                       ts.data.invoicingDateLMD &&
-                                      new Date(ts.data.invoicingDateLMD) > today
+                                      ts.data.invoicingDateLMD.length > 0 &&
+                                      ts.data.vendorLMD &&
+                                      ts.data.vendorLMD.length > 0 &&
+                                      ts.data.invoiceTypeLMD &&
+                                      ts.data.invoiceTypeLMD.length > 0 &&
+                                      ts.data.materialNumberLMD &&
+                                      ts.data.materialNumberLMD.length > 0 &&
+                                      ts.data.invoiceTextLMD &&
+                                      ts.data.invoiceTextLMD.length > 0 &&
+                                      ts.data.amountLMD &&
+                                      typeof ts.data.amountLMD === "number" &&
+                                      ts.data.documentCurrencyLMD &&
+                                      ts.data.documentCurrencyLMD.length > 0 &&
+                                      ts.data.paymentMethodLMD &&
+                                      ts.data.paymentMethodLMD.length > 0 &&
+                                      ts.data.dunningStopLMD &&
+                                      ts.data.dunningStopLMD.length > 0 &&
+                                      ts.data.sendToLMD &&
+                                      ts.data.sendToLMD.length > 0
                                     ) {
-                                      handleCommunicationCellUpdate(
-                                        submissionId,
-                                        "data.statusLMD",
-                                        "FUTURE INVOICE"
-                                      );
+                                      var today = new Date();
+                                      today.setHours(23, 59, 59, 998);
+                                      if (
+                                        ts.data.invoicingDateLMD &&
+                                        new Date(ts.data.invoicingDateLMD) >
+                                          today
+                                      ) {
+                                        handleCommunicationCellUpdate(
+                                          ts.id!,
+                                          "data.statusLMD",
+                                          "FUTURE INVOICE"
+                                        );
+                                      } else {
+                                        handleCommunicationCellUpdate(
+                                          ts.id!,
+                                          "data.statusLMD",
+                                          "OK FOR INVOICING"
+                                        );
+                                      }
                                     } else {
                                       handleCommunicationCellUpdate(
-                                        submissionId,
+                                        ts.id!,
                                         "data.statusLMD",
-                                        "OK FOR INVOICING"
+                                        "INCOMPLETE"
                                       );
                                     }
-                                  } else {
-                                    handleCommunicationCellUpdate(
-                                      submissionId,
-                                      "data.statusLMD",
-                                      "INCOMPLETE"
-                                    );
-                                  }
+                                  });
                                 }
                               }}
                               rowIndex={props.rowIndex}
@@ -4778,7 +4796,7 @@ export function VendorsTable(props: Props) {
                             RestAPI.createSubmission(submission).then(
                               (response) => {
                                 var temp = [...communicationSubmissions];
-                                temp.push(response.data);
+                                temp.unshift(response.data);
                                 setCommunicationSubmissions(temp);
                               }
                             );

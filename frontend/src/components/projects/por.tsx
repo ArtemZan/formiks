@@ -312,7 +312,7 @@ export default function Elov(props: Props) {
                     value={rowData.serviceType}
                     onChange={(event) => {
                       var temp = [...services];
-                      temp[index].serviceType = event.target.value;
+                      temp[index!].serviceType = event.target.value;
                       setServices(temp);
                     }}
                   />
@@ -327,7 +327,7 @@ export default function Elov(props: Props) {
                     value={rowData.netValueLC}
                     onChange={(event) => {
                       var temp = [...services];
-                      temp[index].netValueLC = event.target.value;
+                      temp[index!].netValueLC = event.target.value;
                       setServices(temp);
                     }}
                   />
@@ -373,7 +373,7 @@ export default function Elov(props: Props) {
                     }}
                     onChange={(value) => {
                       var temp = [...services];
-                      temp[index].localCurrency =
+                      temp[index!].localCurrency =
                         value === null ? "" : value.label;
                       setServices(temp);
                     }}
@@ -394,7 +394,7 @@ export default function Elov(props: Props) {
                     value={rowData.netValuePO}
                     onChange={(event) => {
                       var temp = [...services];
-                      temp[index].netValuePO = event.target.value;
+                      temp[index!].netValuePO = event.target.value;
                       setServices(temp);
                     }}
                   />
@@ -440,7 +440,7 @@ export default function Elov(props: Props) {
                     }}
                     onChange={(value) => {
                       var temp = [...services];
-                      temp[index].poCurrencyCode =
+                      temp[index!].poCurrencyCode =
                         value === null ? "" : value.label;
                       setServices(temp);
                     }}
@@ -461,7 +461,7 @@ export default function Elov(props: Props) {
                     value={rowData.netValueEUR}
                     onChange={(event) => {
                       var temp = [...services];
-                      temp[index].netValueEUR = event.target.value;
+                      temp[index!].netValueEUR = event.target.value;
                       setServices(temp);
                     }}
                   />
@@ -476,7 +476,7 @@ export default function Elov(props: Props) {
                     value={rowData.externalPurchaseOrderNumber}
                     onChange={(event) => {
                       var temp = [...services];
-                      temp[index].externalPurchaseOrderNumber =
+                      temp[index!].externalPurchaseOrderNumber =
                         event.target.value;
                       setServices(temp);
                     }}
@@ -495,7 +495,7 @@ export default function Elov(props: Props) {
                     customInput={<Input value={rowData.purchaseOrderDate} />}
                     onChange={(date) => {
                       var temp = [...services];
-                      temp[index].purchaseOrderDate = date;
+                      temp[index!].purchaseOrderDate = date;
                       setServices(temp);
                     }}
                     dateFormat="dd.MM.yyyy"
@@ -513,7 +513,7 @@ export default function Elov(props: Props) {
                     value={rowData.orderingPerson}
                     onChange={(event) => {
                       var temp = [...services];
-                      temp[index].orderingPerson = event.target.value;
+                      temp[index!].orderingPerson = event.target.value;
                       setServices(temp);
                     }}
                   />
@@ -530,7 +530,7 @@ export default function Elov(props: Props) {
                     value={rowData.approvingPerson}
                     onChange={(event) => {
                       var temp = [...services];
-                      temp[index].approvingPerson = event.target.value;
+                      temp[index!].approvingPerson = event.target.value;
                       setServices(temp);
                     }}
                   />
@@ -545,7 +545,7 @@ export default function Elov(props: Props) {
                     value={rowData.contactPerson}
                     onChange={(event) => {
                       var temp = [...services];
-                      temp[index].contactPerson = event.target.value;
+                      temp[index!].contactPerson = event.target.value;
                       setServices(temp);
                     }}
                   />
@@ -563,7 +563,7 @@ export default function Elov(props: Props) {
                     value={rowData.contactDetails}
                     onChange={(event) => {
                       var temp = [...services];
-                      temp[index].contactDetails = event.target.value;
+                      temp[index!].contactDetails = event.target.value;
                       setServices(temp);
                     }}
                   />

@@ -3,12 +3,13 @@ package submission
 import (
 	"context"
 
-	"github.com/doublegrey/formiks/backend/models"
-	"github.com/doublegrey/formiks/backend/repositories"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"github.com/doublegrey/formiks/backend/models"
+	"github.com/doublegrey/formiks/backend/repositories"
 )
 
 func NewSubmissionRepo(Conn *mongo.Database) repositories.SubmissionRepo {
@@ -40,7 +41,7 @@ func (r *submissionRepo) UpsertVendorTablePreset(ctx context.Context, data model
 
 func (r *submissionRepo) Fetch(ctx context.Context, filter interface{}) ([]models.Submission, error) {
 	submissions := make([]models.Submission, 0)
-	cursor, err := r.Conn.Collection("submissions").Find(ctx, filter)
+	cursor, err := r.Conn.Collection("submissions").Find(ctx, filter, options.Find().SetSort(bson.D{{"created", -1}}))
 	if err != nil {
 		return submissions, err
 	}

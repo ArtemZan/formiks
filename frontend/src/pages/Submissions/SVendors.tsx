@@ -707,7 +707,7 @@ export function SVendorsTable(props: Props) {
                       <Input
                         onChange={(event) => {
                           var temp = [...filters];
-                          temp[index].selectedValues[0] = event.target.value;
+                          temp[index!].selectedValues[0] = event.target.value;
                           setFilters(temp);
                         }}
                         value={filter.selectedValues[0]}
@@ -721,7 +721,7 @@ export function SVendorsTable(props: Props) {
                           <NumberInput
                             onChange={(vstring, value) => {
                               var temp = [...filters];
-                              temp[index].selectedValues[0] = value;
+                              temp[index!].selectedValues[0] = value;
                               setFilters(temp);
                             }}
                             value={filter.selectedValues[0]}
@@ -742,7 +742,7 @@ export function SVendorsTable(props: Props) {
                               w="100%"
                               onChange={(vstring, value) => {
                                 var temp = [...filters];
-                                temp[index].selectedValues[0] = value;
+                                temp[index!].selectedValues[0] = value;
                                 setFilters(temp);
                               }}
                               value={filter.selectedValues[0]}
@@ -764,7 +764,7 @@ export function SVendorsTable(props: Props) {
                               w="100%"
                               onChange={(vstring, value) => {
                                 var temp = [...filters];
-                                temp[index].selectedValues[1] = value;
+                                temp[index!].selectedValues[1] = value;
                                 setFilters(temp);
                               }}
                               value={filter.selectedValues[1]}
@@ -792,7 +792,7 @@ export function SVendorsTable(props: Props) {
                         onChange={(value) => {
                           console.log(value);
                           var temp = [...filters];
-                          temp[index].selectedValues = value;
+                          temp[index!].selectedValues = value;
                           setFilters(temp);
                         }}
                         data={loadOptions(filter.columnValue)}
@@ -810,7 +810,7 @@ export function SVendorsTable(props: Props) {
                             onChange={(value) => {
                               if (value !== filters[index].selectedValues[0]) {
                                 var temp = [...filters];
-                                temp[index].selectedValues = [value];
+                                temp[index!].selectedValues = [value];
                                 setFilters(temp);
                               }
                             }}
@@ -824,7 +824,7 @@ export function SVendorsTable(props: Props) {
                             displayFormat="dd.MM.yyyy"
                             onDatesChange={(value) => {
                               var temp = [...filters];
-                              temp[index].selectedValues = [
+                              temp[index!].selectedValues = [
                                 value.startDate,
                                 value.endDate,
                               ];
@@ -903,24 +903,24 @@ export function SVendorsTable(props: Props) {
                               }}
                               onChange={(value: any) => {
                                 var temp = [...filters];
-                                temp[index].columnValue = value.value;
-                                temp[index].columnLabel = value.label;
-                                temp[index].type = value.type;
-                                temp[index].filter = "exact";
+                                temp[index!].columnValue = value.value;
+                                temp[index!].columnLabel = value.label;
+                                temp[index!].type = value.type;
+                                temp[index!].filter = "exact";
                                 var tv: any = [];
                                 switch (value.type) {
                                   case "text":
                                     tv = [""];
                                     break;
                                   case "number":
-                                    if (temp[index].filter === "exact") {
+                                    if (temp[index!].filter === "exact") {
                                       tv = [0];
                                     } else {
                                       tv = [0, 0];
                                     }
                                     break;
                                 }
-                                temp[index].selectedValues = tv;
+                                temp[index!].selectedValues = tv;
                                 setFilters(temp);
                               }}
                               classNamePrefix="select"
@@ -983,7 +983,7 @@ export function SVendorsTable(props: Props) {
                               }}
                               onChange={(value: any) => {
                                 var temp = [...filters];
-                                temp[index].filter = value.value;
+                                temp[index!].filter = value.value;
                                 setFilters(temp);
                               }}
                               classNamePrefix="select"

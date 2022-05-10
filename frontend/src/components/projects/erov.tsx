@@ -773,7 +773,7 @@ export default function Erov(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">ALSO Project Approval (attachments)</Text>
-          <Uploader draggable>
+          <Uploader action="" draggable>
             <div style={{ lineHeight: "200px" }}>
               Click or Drag files to this area to upload
             </div>
@@ -913,7 +913,11 @@ export default function Erov(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">Budget Approved by Vendor (attachments)</Text>
-          <Uploader disabled={budgetSource.value === "noBudget"} draggable>
+          <Uploader
+            action=""
+            disabled={budgetSource.value === "noBudget"}
+            draggable
+          >
             <div style={{ lineHeight: "200px" }}>
               Click or Drag files to this area to upload
             </div>
@@ -1359,7 +1363,7 @@ export default function Erov(props: Props) {
                     value={rowData.companyName}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].companyName = event.target.value;
+                      temp[index!].companyName = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1375,7 +1379,7 @@ export default function Erov(props: Props) {
                     value={rowData.companyCode}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].companyCode = event.target.value;
+                      temp[index!].companyCode = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1391,7 +1395,7 @@ export default function Erov(props: Props) {
                     value={rowData.country}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].country = event.target.value;
+                      temp[index!].country = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1407,7 +1411,7 @@ export default function Erov(props: Props) {
                     value={rowData.contactEmail}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].contactEmail = event.target.value;
+                      temp[index!].contactEmail = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1423,7 +1427,7 @@ export default function Erov(props: Props) {
                     value={rowData.projectNumber}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].projectNumber = event.target.value;
+                      temp[index!].projectNumber = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1438,7 +1442,7 @@ export default function Erov(props: Props) {
                     value={rowData.share}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].share = event.target.value;
+                      temp[index!].share = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1454,7 +1458,7 @@ export default function Erov(props: Props) {
                     value={rowData.contribution}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].contribution = event.target.value;
+                      temp[index!].contribution = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1471,7 +1475,7 @@ export default function Erov(props: Props) {
                     value={rowData.estimatedCosts}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].estimatedCosts = event.target.value;
+                      temp[index!].estimatedCosts = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />

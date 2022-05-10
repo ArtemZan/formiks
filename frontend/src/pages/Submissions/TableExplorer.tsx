@@ -409,7 +409,7 @@ export function TableExplorer(props: Props) {
                           <Input
                             onChange={(event) => {
                               var temp = [...filters];
-                              temp[index].selectedValues[0] =
+                              temp[index!].selectedValues[0] =
                                 event.target.value;
                               setFilters(temp);
                             }}
@@ -424,7 +424,7 @@ export function TableExplorer(props: Props) {
                               <NumberInput
                                 onChange={(_, value) => {
                                   var temp = [...filters];
-                                  temp[index].selectedValues[0] = value;
+                                  temp[index!].selectedValues[0] = value;
                                   setFilters(temp);
                                 }}
                                 value={filter.selectedValues[0]}
@@ -445,7 +445,7 @@ export function TableExplorer(props: Props) {
                                   w="100%"
                                   onChange={(_, value) => {
                                     var temp = [...filters];
-                                    temp[index].selectedValues[0] = value;
+                                    temp[index!].selectedValues[0] = value;
                                     setFilters(temp);
                                   }}
                                   value={filter.selectedValues[0]}
@@ -467,7 +467,7 @@ export function TableExplorer(props: Props) {
                                   w="100%"
                                   onChange={(_, value) => {
                                     var temp = [...filters];
-                                    temp[index].selectedValues[1] = value;
+                                    temp[index!].selectedValues[1] = value;
                                     setFilters(temp);
                                   }}
                                   value={filter.selectedValues[1]}
@@ -493,7 +493,7 @@ export function TableExplorer(props: Props) {
                             }}
                             onChange={(value) => {
                               var temp = [...filters];
-                              temp[index].selectedValues = value;
+                              temp[index!].selectedValues = value;
                               setFilters(temp);
                             }}
                             data={filter.selectedValues}
@@ -577,8 +577,8 @@ export function TableExplorer(props: Props) {
                                   }}
                                   onChange={(value: any) => {
                                     var temp = [...filters];
-                                    temp[index].column = value.value;
-                                    temp[index].type = value.type;
+                                    temp[index!].column = value.value;
+                                    temp[index!].type = value.type;
                                     var tv: any = [];
                                     switch (value.type) {
                                       case "textfield":
@@ -586,14 +586,14 @@ export function TableExplorer(props: Props) {
                                         tv = [""];
                                         break;
                                       case "number":
-                                        if (temp[index].filter === "exact") {
+                                        if (temp[index!].filter === "exact") {
                                           tv = [0];
                                         } else {
                                           tv = [0, 0];
                                         }
                                         break;
                                     }
-                                    temp[index].selectedValues = tv;
+                                    temp[index!].selectedValues = tv;
                                     setFilters(temp);
                                   }}
                                   classNamePrefix="select"
@@ -660,7 +660,7 @@ export function TableExplorer(props: Props) {
                                   }}
                                   onChange={(value: any) => {
                                     var temp = [...filters];
-                                    temp[index].filter = value.value;
+                                    temp[index!].filter = value.value;
                                     setFilters(temp);
                                   }}
                                   classNamePrefix="select"

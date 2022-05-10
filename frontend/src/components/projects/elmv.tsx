@@ -782,7 +782,7 @@ export default function Elmv(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">ALSO Project Approval (attachments)</Text>
-          <Uploader draggable>
+          <Uploader action="" draggable>
             <div style={{ lineHeight: "200px" }}>
               Click or Drag files to this area to upload
             </div>
@@ -922,7 +922,11 @@ export default function Elmv(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">Budget Approved by Vendor (attachments)</Text>
-          <Uploader disabled={budgetSource.value === "noBudget"} draggable>
+          <Uploader
+            action=""
+            disabled={budgetSource.value === "noBudget"}
+            draggable
+          >
             <div style={{ lineHeight: "200px" }}>
               Click or Drag files to this area to upload
             </div>
@@ -1129,7 +1133,7 @@ export default function Elmv(props: Props) {
                     value={rowData.vendor}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].vendor = event.target.value;
+                      temp[index!].vendor = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1145,7 +1149,7 @@ export default function Elmv(props: Props) {
                     value={rowData.projectManager}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].projectManager = event.target.value;
+                      temp[index!].projectManager = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1160,7 +1164,7 @@ export default function Elmv(props: Props) {
                     value={rowData.debitor}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].debitor = event.target.value;
+                      temp[index!].debitor = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1177,7 +1181,7 @@ export default function Elmv(props: Props) {
                     value={rowData.creditor}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].creditor = event.target.value;
+                      temp[index!].creditor = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1193,7 +1197,7 @@ export default function Elmv(props: Props) {
                     value={rowData.manufacturer}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].manufacturer = event.target.value;
+                      temp[index!].manufacturer = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1209,7 +1213,7 @@ export default function Elmv(props: Props) {
                     value={rowData.bu}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].bu = event.target.value;
+                      temp[index!].bu = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1252,7 +1256,7 @@ export default function Elmv(props: Props) {
                     value={rowData.ph}
                     onChange={(value) => {
                       var temp = [...vendors];
-                      temp[index].ph = value;
+                      temp[index!].ph = value;
                       setVendors(temp);
                     }}
                     placeholder=""
@@ -1301,7 +1305,7 @@ export default function Elmv(props: Props) {
                     value={rowData.budgetCurrency}
                     onChange={(value) => {
                       var temp = [...vendors];
-                      temp[index].budgetCurrency = value;
+                      temp[index!].budgetCurrency = value;
                       setVendors(temp);
                     }}
                     placeholder=""
@@ -1322,7 +1326,7 @@ export default function Elmv(props: Props) {
                     value={rowData.budgetAmount}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].budgetAmount = event.target.value;
+                      temp[index!].budgetAmount = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1338,7 +1342,7 @@ export default function Elmv(props: Props) {
                     value={rowData.localBudget}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].localBudget = event.target.value;
+                      temp[index!].localBudget = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1354,7 +1358,7 @@ export default function Elmv(props: Props) {
                     value={rowData.eurBudget}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].eurBudget = event.target.value;
+                      temp[index!].eurBudget = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1370,7 +1374,7 @@ export default function Elmv(props: Props) {
                     value={rowData.share}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].share = event.target.value;
+                      temp[index!].share = event.target.value;
                       setVendors(temp);
                     }}
                   />

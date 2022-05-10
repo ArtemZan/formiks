@@ -796,7 +796,7 @@ export default function Ermv(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">ALSO Project Approval (attachments)</Text>
-          <Uploader draggable>
+          <Uploader action="" draggable>
             <div style={{ lineHeight: "200px" }}>
               Click or Drag files to this area to upload
             </div>
@@ -936,7 +936,11 @@ export default function Ermv(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">Budget Approved by Vendor (attachments)</Text>
-          <Uploader disabled={budgetSource.value === "noBudget"} draggable>
+          <Uploader
+            action=""
+            disabled={budgetSource.value === "noBudget"}
+            draggable
+          >
             <div style={{ lineHeight: "200px" }}>
               Click or Drag files to this area to upload
             </div>
@@ -1128,13 +1132,7 @@ export default function Ermv(props: Props) {
 
         <Box w="100%">
           <Text mb="8px">Vendors</Text>
-          <Table
-            shouldUpdateScroll={false}
-            hover={false}
-            autoHeight
-            rowHeight={65}
-            data={vendors}
-          >
+          <Table hover={false} autoHeight rowHeight={65} data={vendors}>
             <Column width={200} resizable>
               <HeaderCell>Vendor</HeaderCell>
               <Cell dataKey="vendor">
@@ -1143,7 +1141,7 @@ export default function Ermv(props: Props) {
                     value={rowData.vendor}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].vendor = event.target.value;
+                      temp[index!].vendor = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1159,7 +1157,7 @@ export default function Ermv(props: Props) {
                     value={rowData.projectManager}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].projectManager = event.target.value;
+                      temp[index!].projectManager = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1174,7 +1172,7 @@ export default function Ermv(props: Props) {
                     value={rowData.debitor}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].debitor = event.target.value;
+                      temp[index!].debitor = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1191,7 +1189,7 @@ export default function Ermv(props: Props) {
                     value={rowData.creditor}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].creditor = event.target.value;
+                      temp[index!].creditor = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1207,7 +1205,7 @@ export default function Ermv(props: Props) {
                     value={rowData.manufacturer}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].manufacturer = event.target.value;
+                      temp[index!].manufacturer = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1223,7 +1221,7 @@ export default function Ermv(props: Props) {
                     value={rowData.bu}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].bu = event.target.value;
+                      temp[index!].bu = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1266,7 +1264,7 @@ export default function Ermv(props: Props) {
                     value={rowData.ph}
                     onChange={(value) => {
                       var temp = [...vendors];
-                      temp[index].ph = value;
+                      temp[index!].ph = value;
                       setVendors(temp);
                     }}
                     placeholder=""
@@ -1315,7 +1313,7 @@ export default function Ermv(props: Props) {
                     value={rowData.budgetCurrency}
                     onChange={(value) => {
                       var temp = [...vendors];
-                      temp[index].budgetCurrency = value;
+                      temp[index!].budgetCurrency = value;
                       setVendors(temp);
                     }}
                     placeholder=""
@@ -1336,7 +1334,7 @@ export default function Ermv(props: Props) {
                     value={rowData.budgetAmount}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].budgetAmount = event.target.value;
+                      temp[index!].budgetAmount = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1352,7 +1350,7 @@ export default function Ermv(props: Props) {
                     value={rowData.localBudget}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].localBudget = event.target.value;
+                      temp[index!].localBudget = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1368,7 +1366,7 @@ export default function Ermv(props: Props) {
                     value={rowData.eurBudget}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].eurBudget = event.target.value;
+                      temp[index!].eurBudget = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1384,7 +1382,7 @@ export default function Ermv(props: Props) {
                     value={rowData.share}
                     onChange={(event) => {
                       var temp = [...vendors];
-                      temp[index].share = event.target.value;
+                      temp[index!].share = event.target.value;
                       setVendors(temp);
                     }}
                   />
@@ -1552,7 +1550,7 @@ export default function Ermv(props: Props) {
                     value={rowData.companyName}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].companyName = event.target.value;
+                      temp[index!].companyName = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1568,7 +1566,7 @@ export default function Ermv(props: Props) {
                     value={rowData.companyCode}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].companyCode = event.target.value;
+                      temp[index!].companyCode = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1584,7 +1582,7 @@ export default function Ermv(props: Props) {
                     value={rowData.country}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].country = event.target.value;
+                      temp[index!].country = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1600,7 +1598,7 @@ export default function Ermv(props: Props) {
                     value={rowData.contactEmail}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].contactEmail = event.target.value;
+                      temp[index!].contactEmail = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1616,7 +1614,7 @@ export default function Ermv(props: Props) {
                     value={rowData.projectNumber}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].projectNumber = event.target.value;
+                      temp[index!].projectNumber = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1632,7 +1630,7 @@ export default function Ermv(props: Props) {
                     value={rowData.share}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].share = event.target.value;
+                      temp[index!].share = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1648,7 +1646,7 @@ export default function Ermv(props: Props) {
                     value={rowData.contribution}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].contribution = event.target.value;
+                      temp[index!].contribution = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />
@@ -1665,7 +1663,7 @@ export default function Ermv(props: Props) {
                     value={rowData.estimatedCosts}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
-                      temp[index].estimatedCosts = event.target.value;
+                      temp[index!].estimatedCosts = event.target.value;
                       setCostBreakdown(temp);
                     }}
                   />

@@ -759,7 +759,7 @@ export default function Elov(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">ALSO Project Approval (attachments)</Text>
-          <Uploader draggable>
+          <Uploader action="" draggable>
             <div style={{ lineHeight: "200px" }}>
               Click or Drag files to this area to upload
             </div>
@@ -899,7 +899,11 @@ export default function Elov(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">Budget Approved by Vendor (attachments)</Text>
-          <Uploader disabled={budgetSource.value === "noBudget"} draggable>
+          <Uploader
+            action=""
+            disabled={budgetSource.value === "noBudget"}
+            draggable
+          >
             <div style={{ lineHeight: "200px" }}>
               Click or Drag files to this area to upload
             </div>

@@ -2266,6 +2266,11 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
+"@juggle/resize-observer@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.3.1.tgz#b50a781709c81e10701004214340f25475a171a0"
+  integrity sha512-zMM9Ds+SawiUkakS7y94Ymqx+S0ORzpG3frZirN3l+UlXUmSUR7hF4wxCVqW+ei94JzV5kt0uXBcoOEAuiydrw==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -2762,10 +2767,15 @@
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.4.1.tgz#e1303048d5389563e130f5bdd89d37a99acb75eb"
   integrity sha512-Fo79ojj3vdEZOHg3wR9ksAMRz4P3S5fDB5e/YWZiFnyFQI1WY2Vftu9XoXVVtJfxB7Bpce/QTqWSSntkz2Znrw==
 
-"@types/prop-types@*", "@types/prop-types@^15.7.1":
+"@types/prop-types@*":
   version "15.7.4"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.4.tgz#fcf7205c25dff795ee79af1e30da2c9790808f11"
   integrity sha512-rZ5drC/jWjrArrS8BR6SIr4cWpW09RNTYt9AMZo3Jwwif+iacXAqgVjm0B0Bv/S1jhDXKHqRVNCbACkJ89RAnQ==
+
+"@types/prop-types@^15.7.4":
+  version "15.7.5"
+  resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.5.tgz#5f19d2b85a98e9558036f6a3cacc8819420f05cf"
+  integrity sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==
 
 "@types/q@^1.5.1":
   version "1.5.5"
@@ -5390,10 +5400,10 @@ dom-helpers@^5.0.1, dom-helpers@^5.1.3, dom-helpers@^5.2.0:
     "@babel/runtime" "^7.8.7"
     csstype "^3.0.2"
 
-dom-lib@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/dom-lib/-/dom-lib-3.0.0.tgz#4748469a4d4a76461f245bb5a3fc8422cf698851"
-  integrity sha512-3US7OyceYve90NSU4MhuE0lK4a7aB1hbb14h45v3CPV/ZolLoEOeuPrdS/A0L8kLnwgVCDiKwlPy/Ajq0u9vfA==
+dom-lib@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/dom-lib/-/dom-lib-3.1.2.tgz#b9667a4c3435e522f818704c821418614625b929"
+  integrity sha512-FKw/w51guhTwiSnyCQKTxEwglnZG7Q1qJO62asKwedcqCCHwrwQP8DnMPBTXL9y3JTePFDaPS95GLha/Q9nd/w==
   dependencies:
     "@babel/runtime" "^7.16.0"
 
@@ -5532,11 +5542,6 @@ electron-to-chromium@^1.3.564, electron-to-chromium@^1.3.886:
   version "1.3.889"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.889.tgz#0b7c6f7628559592d5406deda281788f37107790"
   integrity sha512-suEUoPTD1mExjL9TdmH7cvEiWJVM2oEiAi+Y1p0QKxI2HcRlT44qDTP2c1aZmVwRemIPYOpxmV7CxQCOWcm4XQ==
-
-element-resize-event@^3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/element-resize-event/-/element-resize-event-3.0.6.tgz#3a18efd4879ad615e979fd8bbf173b014987eb9a"
-  integrity sha512-sSeXY9rNDp86bJODW68pxLcy3A5FrPZfIgOrJHzqgYzX513Zq6/ytdBigp7KeJEpZZopBBSiO1cVuiRkZpNxLw==
 
 elliptic@^6.5.3:
   version "6.5.4"
@@ -10777,7 +10782,7 @@ react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-is@^17.0.1:
+react-is@^17.0.1, react-is@^17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
@@ -11406,37 +11411,38 @@ rollup@^1.31.1:
     "@types/node" "*"
     acorn "^7.1.0"
 
-rsuite-table@^5.0.3:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/rsuite-table/-/rsuite-table-5.0.3.tgz#9bcd4a6cb18f2157b905f7b30ecce17a09e024df"
-  integrity sha512-91bufUgj8nZeJ6idaxPv1qM9oWr/2zWzoH2WBiOeAPJvvOur38be59WKqz25jG9DG+iJ1tnDqDDPm2KWLXj0sA==
+rsuite-table@^5.5.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/rsuite-table/-/rsuite-table-5.5.0.tgz#17abfcc6290c76cb1414492d0d04acda8a562ebf"
+  integrity sha512-Bh4VUWsN8Q8q1oTvBx+Q4N05OpScsL7nEBi82M9ryY0gss7V0W8jaqBlJdvbxMZhZow3yfka0BLcbzeZfNADCA==
   dependencies:
     "@babel/runtime" "^7.12.5"
+    "@juggle/resize-observer" "^3.3.1"
     "@rsuite/icons" "^1.0.0"
     classnames "^2.2.5"
-    dom-lib "^3.0.0"
-    element-resize-event "^3.0.6"
+    dom-lib "^3.1.2"
     lodash "^4.17.21"
+    react-is "^17.0.2"
 
-rsuite@^5.1.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/rsuite/-/rsuite-5.2.0.tgz#ba23c9ebc94cf20f222af77f82d58d030b5a3544"
-  integrity sha512-0WUMjEsx3i5y4wCwNtcNDxlsfB3hYR5ZLyPoBijk40L1tB60uUMCO+HOjSlayDU0Cp51NUN1p3YkkLORAuhmoQ==
+rsuite@^5.11.0:
+  version "5.11.0"
+  resolved "https://registry.yarnpkg.com/rsuite/-/rsuite-5.11.0.tgz#0dddd3424c4a94cc83f2bcacddd02af4da969ace"
+  integrity sha512-gtWpbaWsGGjFuhVdQ0IXKFKQwVVrvsJtLwbDLVL/k4mMXXlVQX/s7TgasF6oRhyIl6eR+Ye1gygVFyqh51sGww==
   dependencies:
     "@babel/runtime" "^7.8.4"
+    "@juggle/resize-observer" "^3.3.1"
     "@rsuite/icons" "^1.0.2"
     "@types/chai" "^4.2.18"
     "@types/lodash" "^4.14.134"
-    "@types/prop-types" "^15.7.1"
+    "@types/prop-types" "^15.7.4"
     "@types/react-virtualized" "^9.21.11"
     classnames "^2.3.1"
     date-fns "^2.13.0"
-    dom-lib "^3.0.0"
-    element-resize-event "^3.0.6"
+    dom-lib "^3.1.2"
     lodash "^4.17.11"
     prop-types "^15.7.2"
     react-virtualized "^9.22.3"
-    rsuite-table "^5.0.3"
+    rsuite-table "^5.5.0"
     schema-typed "^2.0.2"
 
 rsvp@^4.8.4:
