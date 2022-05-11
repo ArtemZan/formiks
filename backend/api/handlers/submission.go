@@ -135,7 +135,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
 		submissionWithChildren.Children[index].Data["status"] = "New"
 	}
-	children := sap.GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, submissionWithChildren.Submission.Data["projectNumber"].(string))
+	children := sap.GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, submissionWithChildren.Submission.Data["projectNumber"].(string), []models.Submission{})
 	submissionWithChildren.Children = append(submissionWithChildren.Children, children...)
 
 	r.repo.Create(c.Request.Context(), submissionWithChildren.Submission)

@@ -749,6 +749,7 @@ export function VendorsTable(props: Props) {
   const [totalIncomeAmountIncomeGL, setTotalIncomeAmountIncomeGL] = useState(0);
   const [totalIncomeAmountLC, setTotalIncomeAmountLC] = useState(0);
   const [totalCostsInTool, setTotalCostsInTool] = useState(0);
+  const [totalIncomeInTool, setTotalIncomeInTool] = useState(0);
   const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -798,6 +799,7 @@ export function VendorsTable(props: Props) {
     let tca = 0;
     let tcal = 0;
     let tcit = 0;
+    let tiit = 0;
     let tcacgl = 0;
     let tia = 0;
     let tial = 0;
@@ -816,6 +818,10 @@ export function VendorsTable(props: Props) {
         tcalcgl += subm.data.costAmountLCCostGL || 0;
         tialigl += subm.data.incomeAmountLCIncomeGL || 0;
         tiaigl += subm.data.incomeAmountEurIncomeGL || 0;
+        tiit +=
+          subm.data.incomeAmountEURSI ||
+          0 + subm.data.incomeAmountEurIncomeGL ||
+          0;
       }
     });
     setTotalCostAmount(tca);
@@ -827,6 +833,7 @@ export function VendorsTable(props: Props) {
     setTotalIncomeAmountLC(tial);
     setTotalIncomeAmountIncomeGL(tiaigl);
     setTotalCostsInTool(tcit);
+    setTotalIncomeInTool(tiit);
   }, [filteredSubmissions]);
   // useEffect(() => {
   //   RestAPI.getVendorTableDefaultConfig().then((response) => {
@@ -3487,13 +3494,30 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("controlChecks", "data.totalCostsInSAP"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#f9f8f8"
-          onUpdate={handleCellUpdate}
+          onUpdate={() => {}}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalCostsInTool)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.costAmountEUR ||
+                        0 + b.data.costAmountEURCostGL ||
+                        0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
@@ -3508,17 +3532,30 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("controlChecks", "data.totalIncomeInTool"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#f9f8f8"
           onUpdate={() => {}}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={numberWithCommas(
-            props.rowData.data.incomeAmountEURSI +
-              props.rowData.data.incomeAmountEurIncomeGL
-          )}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalIncomeInTool)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.incomeAmountEURSI ||
+                        0 + b.data.incomeAmountEurIncomeGL ||
+                        0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },
@@ -3533,13 +3570,30 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("controlChecks", "data.totalIncomeInSAP"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
           backgroundColor="#f9f8f8"
-          onUpdate={handleCellUpdate}
+          onUpdate={() => {}}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
-          initialValue={props.cellData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalIncomeInTool)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.incomeAmountEURSI ||
+                        0 + b.data.incomeAmountEurIncomeGL ||
+                        0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
         />
       ),
     },

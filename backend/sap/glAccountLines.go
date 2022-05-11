@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/doublegrey/formiks/backend/driver"
@@ -88,7 +89,7 @@ func FetchAccountLines() error {
 	payload := strings.NewReader(`{
     "GetGLAccountLines": {
         "areaKey": "MKT",
-        "year": "2021",
+        "year": "2022",
         "bukrs": "6110"
     }
 	}`)
@@ -146,7 +147,7 @@ func FetchAccountLines() error {
 	return nil
 }
 
-func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []models.Submission {
+func GetAccountLinesChildren(parentID, parentProject, projectNumber string, existingSubmissions []models.Submission) []models.Submission {
 	glChildren := AccountLines[projectNumber]
 	exchangeRates := dropdowns.FetchExchangeRates(context.TODO())
 
@@ -165,9 +166,18 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 		if glChild.DebitCreditIndicator == "H" {
 			dcIndicator = -1.0
 		}
+		exists := false
+		es := models.Submission{}
 		switch strings.ToUpper(glChild.DocumentType) {
 		case "DR", "RV", "WK":
 			if isValid(glChild.Account, "Sales Invoices") {
+				for _, s := range existingSubmissions {
+					if s.Data["documentNumberSI"] == glChild.DocumentNumber {
+						exists = true
+						es = s
+						break
+					}
+				}
 				data["yearMonthSI"] = glChild.YearMonth
 				data["documentTypeSI"] = glChild.DocumentType
 				data["postingDateSI"] = glChild.PostingDate
@@ -185,6 +195,13 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			}
 		case "SW":
 			if isValid(glChild.Account, "Income GL Postings") {
+				for _, s := range existingSubmissions {
+					if s.Data["documentNumberIncomeGL"] == glChild.DocumentNumber {
+						exists = true
+						es = s
+						break
+					}
+				}
 				data["yearMonthIncomeGL"] = glChild.YearMonth
 				data["documentTypeIncomeGL"] = glChild.DocumentType
 				data["postingDateIncomeGL"] = glChild.PostingDate
@@ -201,6 +218,13 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			}
 		case "KX", "KW":
 			if isValid(glChild.Account, "Cost Invoices") {
+				for _, s := range existingSubmissions {
+					if s.Data["documentNumber"] == glChild.DocumentNumber {
+						exists = true
+						es = s
+						break
+					}
+				}
 				data["yearMonth"] = glChild.YearMonth
 				data["documentType"] = glChild.DocumentType
 				data["postingDate"] = glChild.PostingDate
@@ -218,6 +242,13 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			}
 		case "SK":
 			if isValid(glChild.Account, "Cost GL Postings") {
+				for _, s := range existingSubmissions {
+					if s.Data["documentNumberCostGL"] == glChild.DocumentNumber {
+						exists = true
+						es = s
+						break
+					}
+				}
 				data["yearMonthCostGL"] = glChild.YearMonth
 				data["documentTypeCostGL"] = glChild.DocumentType
 				data["postingDateCostGL"] = glChild.PostingDate
@@ -233,6 +264,13 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 			}
 		case "ZV":
 			if isValid(glChild.Account, "Sales Invoices") {
+				for _, s := range existingSubmissions {
+					if s.Data["documentNumberSI"] == glChild.DocumentNumber {
+						exists = true
+						es = s
+						break
+					}
+				}
 				data["yearMonthSI"] = glChild.YearMonth
 				data["documentTypeSI"] = glChild.DocumentType
 				data["postingDateSI"] = glChild.PostingDate
@@ -248,6 +286,13 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 
 				group = "Sales Invoices"
 			} else if isValid(glChild.Account, "Cost Invoices") {
+				for _, s := range existingSubmissions {
+					if s.Data["documentNumber"] == glChild.DocumentNumber {
+						exists = true
+						es = s
+						break
+					}
+				}
 				data["yearMonth"] = glChild.YearMonth
 				data["documentType"] = glChild.DocumentType
 				data["postingDate"] = glChild.PostingDate
@@ -266,6 +311,13 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 
 		case "SA", "SL":
 			if isValid(glChild.Account, "Income GL Postings") {
+				for _, s := range existingSubmissions {
+					if s.Data["documentNumberIncomeGL"] == glChild.DocumentNumber {
+						exists = true
+						es = s
+						break
+					}
+				}
 				data["yearMonthIncomeGL"] = glChild.YearMonth
 				data["documentTypeIncomeGL"] = glChild.DocumentType
 				data["postingDateIncomeGL"] = glChild.PostingDate
@@ -280,6 +332,13 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 
 				group = "Income GL Postings"
 			} else if isValid(glChild.Account, "Cost GL Postings") {
+				for _, s := range existingSubmissions {
+					if s.Data["documentNumberCostGL"] == glChild.DocumentNumber {
+						exists = true
+						es = s
+						break
+					}
+				}
 				data["yearMonthCostGL"] = glChild.YearMonth
 				data["documentTypeCostGL"] = glChild.DocumentType
 				data["postingDateCostGL"] = glChild.PostingDate
@@ -296,7 +355,11 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 		}
 		data["projectNumber"] = projectNumber
 		data["status"] = "Created"
-		if len(group) > 0 {
+		if exists {
+			driver.Conn.Mongo.Collection("submissions").UpdateOne(context.TODO(), bson.M{"_id": es.ID}, bson.D{{Key: "$set", Value: bson.D{{Key: "data.status", Value: "Created"}}}})
+		}
+
+		if len(group) > 0 && !exists {
 			maxGroupLength[group]++
 			groups[group] = append(groups[group], data)
 		}
@@ -334,6 +397,14 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string) []mo
 }
 
 func CreateSubmissionsForAccountLines() {
+	existingSubmissions := make([]models.Submission, 0)
+	cursor, err := driver.Conn.Mongo.Collection("submissions").Find(context.TODO(), bson.M{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = cursor.All(context.TODO(), &existingSubmissions)
+	//
 	for projectNumber, cd := range AccountLines {
 		if len(cd) < 1 {
 			continue
@@ -349,9 +420,13 @@ func CreateSubmissionsForAccountLines() {
 				Data:     make(map[string]interface{}),
 			},
 		}
+		submissionWithChildren.Submission.Data["status"] = "Created"
 		submissionWithChildren.Submission.Data["projectNumber"] = projectNumber
-		children := GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, projectNumber)
+		children := GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, projectNumber, existingSubmissions)
 		submissionWithChildren.Children = children
+		if len(children) < 1 {
+			continue
+		}
 
 		driver.Conn.Mongo.Collection("submissions").InsertOne(context.TODO(), submissionWithChildren.Submission)
 		for _, child := range submissionWithChildren.Children {
