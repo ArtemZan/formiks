@@ -2510,6 +2510,30 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
+      key: "data.additionalMarketingInformation",
+      group: "Sales Invoices",
+      dataKey: "data.additionalMarketingInformation",
+      title: "Additional Marketing Information",
+      width: columnWidth("data.additionalMarketingInformation", 200),
+      resizable: true,
+      hidden: visibilityController(
+        "salesInvoices",
+        "data.additionalMarketingInformation"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          readonly={true}
+          backgroundColor="#f2f5fa"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
       key: "data.invoiceNumberSI",
       dataKey: "data.invoiceNumberSI",
       group: "Sales Invoices",
@@ -3809,6 +3833,11 @@ export function VendorsTable(props: Props) {
                                   submissions[mi].id!,
                                   "data.activityIdSI",
                                   props.rowData.data.activityIdForPortalVendors
+                                );
+                                handleCellUpdate(
+                                  submissions[mi].id!,
+                                  "data.additionalMarketingInformation",
+                                  props.rowData.data.additionalInformationLMD
                                 );
                               }
                               handleCommunicationCellUpdate(
