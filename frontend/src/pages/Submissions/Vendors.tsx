@@ -179,7 +179,7 @@ interface FilterField {
   selectedValues: any[];
 }
 const filterTypes = {
-  text: [
+  string: [
     { label: "Exact", value: "exact" },
     { label: "Includes", value: "includes" },
   ],
@@ -755,6 +755,10 @@ export function VendorsTable(props: Props) {
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
     []
   );
+  const [
+    filteredCommunicationSubmissions,
+    setFilteredCommunicationSubmissions,
+  ] = useState<Submission[]>([]);
   const [communicationSubmissions, setCommunicationSubmissions] = useState<
     Submission[]
   >([]);
@@ -848,10 +852,22 @@ export function VendorsTable(props: Props) {
   useEffect(() => {
     var filteredMap = new Map();
     var filtered: Submission[] = [];
+    var cFilteredMap = new Map();
+    var filteredCommunication: Submission[] = [];
     if (filters.length > 0 && submissions.length > 0) {
       submissions.forEach((submission) => {
         var valid = true;
         filters.forEach((filter) => {
+          if (
+            filter.columnLabel.includes(
+              "Input of Local Marketing Department"
+            ) ||
+            filter.columnLabel.includes(
+              "Input of Central Marketing Controlling Team"
+            )
+          ) {
+            return;
+          }
           if (
             filter.selectedValues !== null &&
             filter.selectedValues.length > 0
@@ -942,16 +958,126 @@ export function VendorsTable(props: Props) {
           filteredMap.set(submission.id, submission);
         }
       });
+      ///
+      communicationSubmissions.forEach((submission) => {
+        var valid = true;
+        filters.forEach((filter) => {
+          if (
+            !filter.columnLabel.includes(
+              "Input of Local Marketing Department"
+            ) &&
+            !filter.columnLabel.includes(
+              "Input of Central Marketing Controlling Team"
+            )
+          ) {
+            return;
+          }
+          if (
+            filter.selectedValues !== null &&
+            filter.selectedValues.length > 0
+          ) {
+            var value = _.get(submission, filter.columnValue);
+            if (value === undefined) {
+              valid = false;
+              return;
+            }
+            switch (filter.type) {
+              case "string":
+                switch (filter.filter) {
+                  case "exact":
+                    valid =
+                      filter.selectedValues[0].toString() === value.toString();
+                    break;
+                  case "includes":
+                    valid = value
+                      .toString()
+                      .includes(filter.selectedValues[0].toString());
+                    break;
+                }
+                break;
+              case "number":
+                switch (filter.filter) {
+                  case "exact":
+                    valid = filter.selectedValues[0] === value;
+                    break;
+                  case "range":
+                    if (filter.selectedValues.length === 2) {
+                      valid =
+                        value >= filter.selectedValues[0] &&
+                        value <= filter.selectedValues[1];
+                    }
+                    break;
+                }
+                break;
+              case "dropdown":
+              case "multiple-dropdown":
+                switch (filter.filter) {
+                  case "includes":
+                    var exists = false;
+                    filter.selectedValues.forEach((filterValue) => {
+                      if (filterValue.toString() === value) {
+                        exists = true;
+                      }
+                    });
+                    if (!exists) {
+                      valid = false;
+                    }
+                    break;
+                  case "exact":
+                    valid = false;
+                    break;
+                }
+                break;
+              case "date":
+                var v = new Date(value).setHours(0, 0, 0, 0);
+                if (
+                  v !== null &&
+                  filter.filter === "range" &&
+                  filter.selectedValues.length === 2 &&
+                  filter.selectedValues[0] !== null &&
+                  filter.selectedValues[1] !== null
+                ) {
+                  valid =
+                    v >= filter.selectedValues[0].setHours(0, 0, 0, 0) &&
+                    v <= filter.selectedValues[1].setHours(0, 0, 0, 0);
+                } else if (
+                  v !== null &&
+                  filter.selectedValues[0] !== null &&
+                  filter.filter === "exact" &&
+                  filter.selectedValues.length === 1
+                ) {
+                  valid = v === filter.selectedValues[0].setHours(0, 0, 0, 0);
+                }
+                break;
+            }
+          }
+        });
+        if (valid) {
+          if (submission.parentId !== null) {
+            var parent = sourceSubmissions.get(submission.parentId);
+            if (parent !== undefined && parent.id !== undefined) {
+              cFilteredMap.set(parent.id, parent);
+            }
+          }
+          cFilteredMap.set(submission.id, submission);
+        }
+      });
+      ///
 
+      cFilteredMap.forEach((value) => {
+        filteredCommunication.push(value);
+      });
       filteredMap.forEach((value) => {
         filtered.push(value);
       });
 
+      setFilteredCommunicationSubmissions(filteredCommunication);
       setFilteredSubmissions(filtered);
     } else {
       setFilteredSubmissions(submissions);
+      setFilteredCommunicationSubmissions(communicationSubmissions);
     }
-  }, [filters, submissions]);
+  }, [filters, submissions, communicationSubmissions]);
 
   const getHeapInfo = () => {
     var memory = (window.performance as any).memory;
@@ -1187,10 +1313,11 @@ export function VendorsTable(props: Props) {
           cSubs.push(sub);
         } else {
           vSubs.push(sub);
-          ss.set(sub.id, sub);
         }
+        ss.set(sub.id, sub);
       });
       setCommunicationSubmissions(cSubs);
+      setFilteredCommunicationSubmissions(cSubs);
       setSourceSubmissions(ss);
       setSubmissions(vSubs);
       setFilteredSubmissions(vSubs);
@@ -4830,7 +4957,9 @@ export function VendorsTable(props: Props) {
                     ]}
                     headerRenderer={headerRendererForTable}
                     headerClassName="header-cells"
-                    data={unflatten([...communicationSubmissions] as any[])}
+                    data={unflatten([
+                      ...filteredCommunicationSubmissions,
+                    ] as any[])}
                     rowKey="id"
                     headerHeight={[50, 50]}
                     rowHeight={55}
