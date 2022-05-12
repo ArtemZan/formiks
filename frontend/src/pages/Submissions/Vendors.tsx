@@ -808,8 +808,7 @@ export function VendorsTable(props: Props) {
     let tiaigl = 0;
     filteredSubmissions.forEach((subm) => {
       if (subm.parentId !== null) {
-        tcit +=
-          subm.data.costAmountEUR || 0 + subm.data.costAmountEURCostGL || 0;
+        tcit += subm.data.costAmountLC || 0 + subm.data.costAmountLCCostGL || 0;
         tca += subm.data.costAmountEUR || 0;
         tcacgl += subm.data.costAmountEURCostGL || 0;
         tcal += subm.data.costAmountLC || 0;
@@ -819,8 +818,8 @@ export function VendorsTable(props: Props) {
         tialigl += subm.data.incomeAmountLCIncomeGL || 0;
         tiaigl += subm.data.incomeAmountEurIncomeGL || 0;
         tiit +=
-          subm.data.incomeAmountEURSI ||
-          0 + subm.data.incomeAmountEurIncomeGL ||
+          subm.data.incomeAmountLCSI ||
+          0 + subm.data.incomeAmountLCIncomeGL ||
           0;
       }
     });
@@ -3472,8 +3471,8 @@ export function VendorsTable(props: Props) {
                   (a, b) =>
                     a +
                     (b.parentId === props.rowData.id
-                      ? b.data.costAmountEUR ||
-                        0 + b.data.costAmountEURCostGL ||
+                      ? b.data.costAmountLC ||
+                        0 + b.data.costAmountLCCostGL ||
                         0
                       : 0),
                   0
@@ -3510,8 +3509,8 @@ export function VendorsTable(props: Props) {
                   (a, b) =>
                     a +
                     (b.parentId === props.rowData.id
-                      ? b.data.costAmountEUR ||
-                        0 + b.data.costAmountEURCostGL ||
+                      ? b.data.costAmountLC ||
+                        0 + b.data.costAmountLCCostGL ||
                         0
                       : 0),
                   0
@@ -3548,8 +3547,8 @@ export function VendorsTable(props: Props) {
                   (a, b) =>
                     a +
                     (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountEURSI ||
-                        0 + b.data.incomeAmountEurIncomeGL ||
+                      ? b.data.incomeAmountLCSI ||
+                        0 + b.data.incomeAmountLCIncomeGL ||
                         0
                       : 0),
                   0
@@ -3586,8 +3585,8 @@ export function VendorsTable(props: Props) {
                   (a, b) =>
                     a +
                     (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountEURSI ||
-                        0 + b.data.incomeAmountEurIncomeGL ||
+                      ? b.data.incomeAmountLCSI ||
+                        0 + b.data.incomeAmountLCIncomeGL ||
                         0
                       : 0),
                   0

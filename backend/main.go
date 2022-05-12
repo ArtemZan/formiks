@@ -32,7 +32,7 @@ func main() {
 		log.Fatalf("Failed to initialize database connection: %v\n", err)
 	}
 
-	ticker := time.NewTicker(1 * time.Hour)
+	ticker := time.NewTicker(2 * time.Hour)
 
 	go func() {
 		sap.FetchAccountLines()
