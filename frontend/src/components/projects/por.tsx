@@ -671,7 +671,13 @@ export default function Elov(props: Props) {
               updated: new Date(),
               status: "New",
               author: requestorsName,
-              data: {},
+              data: {
+                netValueOfServiceOrderedLC: service.netValueLC,
+                localCurrency: service.localCurrency,
+                netValuePOC: service.netValuePO,
+                purchaseOrderCurrency: service.poCurrencyCode,
+                netValueEur: service.netValueEUR,
+              },
             });
           });
 
