@@ -620,16 +620,18 @@ export default function Elov(props: Props) {
             status: "New",
             author: requestorsName,
             data: {
-              // requestorsCompanyName: requestorsCompanyName.label,
-              // companyCode: requestorsCompanyName.value.code,
-              // requestorsCountry: requestorsCompanyName.value.country,
+              purchaseOrderServiceProvider: serviceProvider,
+              requestorsCompanyName: requestorsCompanyName.label,
+              companyCode: requestorsCompanyName.value.code,
+              requestorsCountry: requestorsCompanyName.value.country,
               // campaignName: campaignName,
               // campaignDescription: campaignDescription,
               // targetAudience: targetAudience,
               // campaignChannel: campaignChannel.label,
               // year: year.label,
               // projectStartQuarter: projectStartQuarter.label,
-              // projectNumber: projectNumber,
+              projectNumber: projectNumber,
+              projectName: projectName,
               // requestorsName: requestorsName,
               // projectApprover: "",
               // projectApproval: projectApproval,
@@ -658,6 +660,20 @@ export default function Elov(props: Props) {
             },
           };
           var children: Submission[] = [];
+
+          services.forEach((service: any) => {
+            children.push({
+              project: projectId,
+              title: "",
+              parentId: "",
+              group: "vendor",
+              created: new Date(),
+              updated: new Date(),
+              status: "New",
+              author: requestorsName,
+              data: {},
+            });
+          });
 
           var submission: SubmissionWithChildren = {
             submission: parent,
