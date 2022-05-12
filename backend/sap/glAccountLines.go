@@ -172,7 +172,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 		case "DR", "RV", "WK":
 			if isValid(glChild.Account, "Sales Invoices") {
 				for _, s := range existingSubmissions {
-					if s.Data["documentNumberSI"] == glChild.DocumentNumber {
+					if s.Data["documentNumberSI"] == glChild.DocumentNumber && s.Data["yearMonthSI"] == glChild.YearMonth {
 						exists = true
 						es = s
 						break
@@ -196,7 +196,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 		case "SW":
 			if isValid(glChild.Account, "Income GL Postings") {
 				for _, s := range existingSubmissions {
-					if s.Data["documentNumberIncomeGL"] == glChild.DocumentNumber {
+					if s.Data["documentNumberIncomeGL"] == glChild.DocumentNumber && s.Data["yearMonthIncomeGL"] == glChild.YearMonth {
 						exists = true
 						es = s
 						break
@@ -219,7 +219,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 		case "KX", "KW":
 			if isValid(glChild.Account, "Cost Invoices") {
 				for _, s := range existingSubmissions {
-					if s.Data["documentNumber"] == glChild.DocumentNumber {
+					if s.Data["documentNumber"] == glChild.DocumentNumber && s.Data["yearMonth"] == glChild.YearMonth {
 						exists = true
 						es = s
 						break
@@ -243,7 +243,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 		case "SK":
 			if isValid(glChild.Account, "Cost GL Postings") {
 				for _, s := range existingSubmissions {
-					if s.Data["documentNumberCostGL"] == glChild.DocumentNumber {
+					if s.Data["documentNumberCostGL"] == glChild.DocumentNumber && s.Data["yearMonthCostGL"] == glChild.YearMonth {
 						exists = true
 						es = s
 						break
@@ -265,7 +265,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 		case "ZV":
 			if isValid(glChild.Account, "Sales Invoices") {
 				for _, s := range existingSubmissions {
-					if s.Data["documentNumberSI"] == glChild.DocumentNumber {
+					if s.Data["documentNumberSI"] == glChild.DocumentNumber && s.Data["yearMonthSI"] == glChild.YearMonth {
 						exists = true
 						es = s
 						break
@@ -287,7 +287,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				group = "Sales Invoices"
 			} else if isValid(glChild.Account, "Cost Invoices") {
 				for _, s := range existingSubmissions {
-					if s.Data["documentNumber"] == glChild.DocumentNumber {
+					if s.Data["documentNumber"] == glChild.DocumentNumber && s.Data["yearMonth"] == glChild.YearMonth {
 						exists = true
 						es = s
 						break
@@ -312,7 +312,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 		case "SA", "SL":
 			if isValid(glChild.Account, "Income GL Postings") {
 				for _, s := range existingSubmissions {
-					if s.Data["documentNumberIncomeGL"] == glChild.DocumentNumber {
+					if s.Data["documentNumberIncomeGL"] == glChild.DocumentNumber && s.Data["yearMonthIncomeGL"] == glChild.YearMonth {
 						exists = true
 						es = s
 						break
@@ -333,7 +333,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				group = "Income GL Postings"
 			} else if isValid(glChild.Account, "Cost GL Postings") {
 				for _, s := range existingSubmissions {
-					if s.Data["documentNumberCostGL"] == glChild.DocumentNumber {
+					if s.Data["documentNumberCostGL"] == glChild.DocumentNumber && s.Data["yearMonthCostGL"] == glChild.YearMonth {
 						exists = true
 						es = s
 						break
@@ -355,7 +355,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 		}
 		data["projectNumber"] = projectNumber
 		data["status"] = "Created"
-		if exists {
+		if exists && es.Data["status"] != "Created" && len(existingSubmissions) > 0 {
 			driver.Conn.Mongo.Collection("submissions").UpdateOne(context.TODO(), bson.M{"_id": es.ID}, bson.D{{Key: "$set", Value: bson.D{{Key: "data.status", Value: "Created"}}}})
 		}
 

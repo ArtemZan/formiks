@@ -874,6 +874,7 @@ export function VendorsTable(props: Props) {
           ) {
             return;
           }
+
           if (
             filter.selectedValues !== null &&
             filter.selectedValues.length > 0
@@ -889,6 +890,21 @@ export function VendorsTable(props: Props) {
                   case "exact":
                     valid =
                       filter.selectedValues[0].toString() === value.toString();
+                    if (
+                      !valid &&
+                      (filter.columnValue === "data.documentNumber" ||
+                        filter.columnValue === "data.costAccount" ||
+                        filter.columnValue === "data.documentNumberSI" ||
+                        filter.columnValue === "data.incomeAccountSI" ||
+                        filter.columnValue === "data.documentNumberCostGL" ||
+                        filter.columnValue === "data.costAccountCostGL" ||
+                        filter.columnValue === "data.documentNumberIncomeGL" ||
+                        filter.columnValue === "data.incomeAccountIncomeGL")
+                    ) {
+                      valid = value
+                        .toString()
+                        .endsWith(filter.selectedValues[0].toString());
+                    }
                     break;
                   case "includes":
                     valid = value
