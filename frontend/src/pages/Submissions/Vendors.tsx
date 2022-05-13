@@ -3690,7 +3690,15 @@ export function VendorsTable(props: Props) {
             type={"button"}
             backgroundColor="#fef9fa"
             textColor={"yellow"}
-            onUpdate={handleCellUpdate}
+            onUpdate={(submissionId: string) => {
+              if (props.rowData.data.projectType === "Local One Vendor") {
+                window.open(
+                  "/submissions/view/" + submissionId,
+                  "_blank",
+                  "noopener,noreferrer"
+                );
+              }
+            }}
             rowIndex={props.rowIndex}
             columnKey={props.column.dataKey}
             rowData={props.rowData}

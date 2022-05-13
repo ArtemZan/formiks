@@ -142,13 +142,17 @@ export default function Elov(props: Props) {
         value: props.submission.campaignBudgetsCurrency,
       });
       setEstimatedIncomeBudgetCurrency(
-        props.submission.campaignEstimatedIncomeBudgetsCurrency.toString()
+        (
+          props.submission.campaignEstimatedIncomeBudgetsCurrency ?? 0
+        ).toString()
       );
       setEstimatedCostsBudgetCurrency(
-        props.submission.campaignEstimatedCostsBudgetsCurrency.toString()
+        (props.submission.campaignEstimatedCostsBudgetsCurrency ?? 0).toString()
       );
       setNetProfitTargetBudgetCurrency(
-        props.submission.campaignNetProfitTargetBudgetsCurrency.toString()
+        (
+          props.submission.campaignNetProfitTargetBudgetsCurrency ?? 0
+        ).toString()
       );
       setComments(props.submission.comments);
       setTotalEstimatedCostsLC(props.submission.totalEstimatedCostsLC);

@@ -65,20 +65,28 @@ func (r *Submission) Fetch(c *gin.Context) {
 	c.JSON(http.StatusOK, submissions)
 }
 
-func (r *Submission) FetchByID(c *gin.Context) {
+func (r *Submission) FetchByIDWithChildren(c *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to convert hex to ObjectID", err)
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	submission, err := r.repo.FetchByID(c.Request.Context(), id)
+	parent, err := r.repo.FetchByID(c.Request.Context(), id)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to fetch submission", err)
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-	c.JSON(http.StatusOK, submission)
+	cursor, err := r.db.Collection("submissions").Find(c.Request.Context(), bson.M{"parentId": id.Hex()})
+	if err != nil {
+		logger.LogHandlerError(c, "Failed to fetch submission children", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	var children []models.Submission
+	cursor.All(c.Request.Context(), &children)
+	c.JSON(http.StatusOK, models.SubmissionWithChildrenRequest{Submission: parent, Children: children})
 }
 
 func (r *Submission) Create(c *gin.Context) {

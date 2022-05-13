@@ -55,40 +55,41 @@ export function Viewer(props: Props) {
   });
   useEffect(() => {
     if (props.match.params.id) {
-      RestAPI.getProject(props.match.params.id).then((response) => {
-        setProject(response.data);
-        setForm({ display: "form", components: response.data.components });
-        if (props.match.params.id === "619515b754e61c8dd33daa52") {
-          setPredefinedProject(
-            <Ermv project={project} history={props.history} />
-          );
+      RestAPI.getSubmissionWithChildren(props.match.params.id).then(
+        (response) => {
+          setForm({ display: "form", components: [] });
+          if (response.data.submission.project === "619515b754e61c8dd33daa52") {
+            setPredefinedProject(
+              <Ermv project={project} history={props.history} />
+            );
+          }
+          if (response.data.submission.project === "6246bc93fa2a446faadb8d9a") {
+            setPredefinedProject(
+              <Erov project={project} history={props.history} />
+            );
+          }
+          if (response.data.submission.project === "6246ec8efa2a446faadb8d9b") {
+            setPredefinedProject(
+              <Elmv project={project} history={props.history} />
+            );
+          }
+          if (response.data.submission.project === "624ac98682eeddf1a9b6a622") {
+            setPredefinedProject(
+              <Elov
+                project={project}
+                submission={response.data.submission}
+                children={response.data.children}
+                history={props.history}
+              />
+            );
+          }
+          if (props.match.params.id === "62610ab73a88d397b05cea12") {
+            setPredefinedProject(
+              <Por project={project} history={props.history} />
+            );
+          }
         }
-        if (props.match.params.id === "6246bc93fa2a446faadb8d9a") {
-          setPredefinedProject(
-            <Erov project={project} history={props.history} />
-          );
-        }
-        if (props.match.params.id === "6246ec8efa2a446faadb8d9b") {
-          setPredefinedProject(
-            <Elmv project={project} history={props.history} />
-          );
-        }
-        if (props.match.params.id === "624ac98682eeddf1a9b6a622") {
-          setPredefinedProject(
-            <Elov
-              project={project}
-              submission={{}}
-              children={[]}
-              history={props.history}
-            />
-          );
-        }
-        if (props.match.params.id === "62610ab73a88d397b05cea12") {
-          setPredefinedProject(
-            <Por project={project} history={props.history} />
-          );
-        }
-      });
+      );
     }
   }, []);
 

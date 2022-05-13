@@ -54,8 +54,10 @@ export class API {
     }
     return axios.get<Submission[]>(this.submissionsUrl, { params });
   }
-  getSubmission(id: string): Promise<AxiosResponse<Submission>> {
-    return axios.get<Submission>(`${this.submissionsUrl}${id}`);
+  getSubmissionWithChildren(
+    id: string
+  ): Promise<AxiosResponse<SubmissionWithChildren>> {
+    return axios.get<SubmissionWithChildren>(`${this.submissionsUrl}${id}`);
   }
   createSubmission(submission: Submission): Promise<AxiosResponse<Submission>> {
     return axios.post<Submission>(

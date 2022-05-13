@@ -31,8 +31,8 @@ func RegisterRoutes(r *gin.Engine) {
 	bookmarksGroup.POST("/", msal.Admin(), bookmarkHandler.Create)
 	bookmarksGroup.DELETE("/:id", msal.Admin(), bookmarkHandler.Delete)
 
-	submissionsGroup.GET("/", submissionHandler.Fetch)        // get all submissions available to user
-	submissionsGroup.GET("/:id", submissionHandler.FetchByID) // get submission
+	submissionsGroup.GET("/", submissionHandler.Fetch)                    // get all submissions available to user
+	submissionsGroup.GET("/:id", submissionHandler.FetchByIDWithChildren) // get submission
 	submissionsGroup.GET("/:id/sap", submissionHandler.CallSap)
 	submissionsGroup.POST("/", submissionHandler.Create)                     // create submission
 	submissionsGroup.POST("/children", submissionHandler.CreateWithChildren) // create submission with children
