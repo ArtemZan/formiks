@@ -142,7 +142,9 @@ const loadOptions = (identifier: string) => {
       return CampaignChannel;
     case "data.targetAudience":
       return TargetAudience;
-    case "data.budgetCurrency":
+    case "data.budgetCurrency" ||
+      "data.vendorBudgetCurrency" ||
+      "data.campaignCurrency":
       return ExchangeRates;
     case "data.sapStatus":
       return SapStatus;
@@ -262,6 +264,11 @@ const DisplayedColumnsList = [
         label: "Vendor Amount",
         value: "data.vendorAmount",
         type: "number",
+      },
+      {
+        label: "Campaign Currency",
+        value: "data.campaignCurrency",
+        type: "dropdown",
       },
       {
         label: "Estimated Income (Campaign Currency)",
@@ -1725,7 +1732,8 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"dropdown"}
+          loadOptions={loadOptions}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1747,6 +1755,31 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
+          backgroundColor="#f5faef"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.campaignCurrency",
+      dataKey: "data.campaignCurrency",
+      title: "Campaign Currency",
+      width: columnWidth("data.campaignCurrency", 200),
+      group: "Project Information",
+
+      resizable: true,
+      hidden: visibilityController(
+        "projectInformation",
+        "data.campaignCurrency"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"dropdown"}
+          loadOptions={loadOptions}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}

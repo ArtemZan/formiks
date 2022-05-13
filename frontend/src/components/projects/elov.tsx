@@ -712,7 +712,10 @@ export default function Elov(props: Props) {
                 primary: "#3082CE",
               },
             })}
-            value={{ label: "", value: "" }}
+            value={{ label: projectApproval, value: projectApproval }}
+            onChange={(value) => {
+              setProjectApproval(value === null ? "" : value.label);
+            }}
             placeholder=""
             classNamePrefix="select"
             isClearable={false}
@@ -1207,7 +1210,8 @@ export default function Elov(props: Props) {
               projectStartQuarter: projectStartQuarter.label,
               projectNumber: projectNumber,
               requestorsName: requestorsName,
-              projectApprover: "",
+              projectApprover: projectApproval,
+
               projectApproval: projectApproval,
               manufacturersFiscalQuarter: fiscalQuarter.label,
               campaignStartDate:
@@ -1216,6 +1220,7 @@ export default function Elov(props: Props) {
               budgetSource: budgetSource.label,
               budgetApprovedByVendor: budgetApprovedByVendor,
               campaignBudgetsCurrency: exchangeRates.label,
+              campaignCurrency: exchangeRates.label,
               campaignEstimatedIncomeBudgetsCurrency: parseFloat(
                 estimatedIncomeBudgetCurrency
               ),
@@ -1230,6 +1235,7 @@ export default function Elov(props: Props) {
               campaignNetProfitTargetEur: parseFloat(netProfitTarget),
               totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
               comments: comments,
+              additionalInformation: comments,
               projectType: "Local One Vendor",
             },
           };
@@ -1246,6 +1252,7 @@ export default function Elov(props: Props) {
             author: requestorsName,
             data: {
               vendorName: vendorName.label,
+              marketingResponsible: vendor.projectManager,
               productionProjectManager: vendor.projectManager,
               creditorNumber: vendor.creditor,
               debitorNumber: vendor.debitor,
