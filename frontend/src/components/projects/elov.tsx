@@ -1160,90 +1160,6 @@ export default function Elov(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Vendor Budget Currency</Text>
-          <Select
-            isDisabled={budgetSource.value === "noBudget"}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 6,
-              colors: {
-                ...theme.colors,
-                primary: "#3082CE",
-              },
-            })}
-            menuPortalTarget={document.body}
-            value={vendor.budgetCurrency}
-            onChange={(value) => {
-              var temp = { ...vendor };
-              temp.budgetCurrency = value;
-              setVendor(temp);
-            }}
-            placeholder=""
-            classNamePrefix="select"
-            isClearable={false}
-            name="budgetCurrency"
-            options={ExchangeRates}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Vendor Budget Amount</Text>
-          <Input
-            bgColor={"white"}
-            disabled={budgetSource.value === "noBudget"}
-            value={vendor.budgetAmount}
-            onChange={(event) => {
-              var temp = { ...vendor };
-              temp.budgetAmount = event.target.value;
-              setVendor(temp);
-            }}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Vendor Budget in LC</Text>
-          <Input
-            bgColor={"white"}
-            disabled={budgetSource.value === "noBudget"}
-            value={vendor.localBudget}
-            onChange={(event) => {
-              var temp = { ...vendor };
-              temp.localBudget = event.target.value;
-              setVendor(temp);
-            }}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Vendor Budget in EUR</Text>
-          <Input
-            bgColor={"white"}
-            disabled={budgetSource.value === "noBudget"}
-            value={vendor.eurBudget}
-            onChange={(event) => {
-              var temp = { ...vendor };
-              temp.eurBudget = event.target.value;
-              setVendor(temp);
-            }}
-          />
-        </Box>
-        <Box w="100%">
           <Text mb="8px">Comments</Text>
           <Textarea
             value={comments}
@@ -1283,6 +1199,7 @@ export default function Elov(props: Props) {
               companyCode: requestorsCompanyName.value.code,
               requestorsCountry: requestorsCompanyName.value.country,
               campaignName: campaignName,
+              projectName: campaignName,
               campaignDescription: campaignDescription,
               targetAudience: targetAudience,
               campaignChannel: campaignChannel.label,
@@ -1330,18 +1247,19 @@ export default function Elov(props: Props) {
             data: {
               vendorName: vendorName.label,
               productionProjectManager: vendor.projectManager,
-              sapCreditorNumber: vendor.creditor,
-              sapDebitorNumber: vendor.debitor,
+              creditorNumber: vendor.creditor,
+              debitorNumber: vendor.debitor,
               manufacturerNumber: vendor.manufacturer,
               businessUnit: vendor.bu,
               PH1: vendor.ph.label,
               budgetCurrency: vendor.budgetCurrency.label,
-              estimatedIncomeEur: parseFloat(vendor.budgetAmount),
-              estimatedIncomeBC: parseFloat(vendor.localBudget),
+              estimatedIncomeEur: parseFloat(estimatedIncome),
+              vendorAmount: parseFloat(vendor.localBudget),
               // cbbudgetEur: parseFloat(vendor.eurBudget),
               vendorShare: 100,
-              estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
-              estimatedIncomeCC: parseFloat(vendor.estimatedIncomeCC),
+              estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
+              estimatedIncomeCC: parseFloat(estimatedIncomeBudgetCurrency),
+              estimatedResultCC: parseFloat(netProfitTargetBudgetCurrency),
               // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
               estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
               estimatedResultBC: parseFloat(netProfitTargetBudgetCurrency),
