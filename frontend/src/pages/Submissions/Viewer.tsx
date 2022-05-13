@@ -119,54 +119,7 @@ export function Viewer(props: Props) {
           />
         </Box>
       </HStack>
-      <Box color={useColorModeValue("gray.800", "#ABB2BF")} w="100%" mb={10}>
-        <VStack
-          mb={"40px"}
-          pr={{ base: 0, md: "10px" }}
-          divider={<StackDivider />}
-          spacing={4}
-          fontSize="md"
-          align="stretch"
-        >
-          <Box>
-            <Stack
-              direction={{ base: "column", md: "row" }}
-              w="100%"
-              spacing={{ base: "20px", md: "100px" }}
-            >
-              <Box w="100%">
-                <Text float="left" as="b">
-                  Title
-                </Text>
-                <Text float="right">{project.title}</Text>
-              </Box>
-              <Box w="100%">
-                <Text float="left" as="b">
-                  Tags
-                </Text>
-                <HStack spacing={3} float="right">
-                  {project.tags.map((tag) => {
-                    return (
-                      <Tag
-                        key={tag}
-                        fontWeight={"400"}
-                        colorScheme="cyan"
-                        cursor="pointer"
-                      >
-                        {tag}
-                      </Tag>
-                    );
-                  })}
-                </HStack>
-              </Box>
-            </Stack>
-          </Box>
-          <Box>
-            <Text as="b">Description</Text>
-            <Text mt={3}>{project.description}</Text>
-          </Box>
-        </VStack>
-      </Box>
+
       {predefinedProject === null ? (
         <Form
           // onChange={(event: any) => {

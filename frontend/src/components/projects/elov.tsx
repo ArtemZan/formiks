@@ -105,75 +105,85 @@ export default function Elov(props: Props) {
   useEffect(() => {
     if (props.submission) {
       setRequestorsCompanyName({
-        label: props.submission.requestorsCompanyName,
+        label: props.submission.data.requestorsCompanyName ?? "",
         value: {
-          name: props.submission.requestorsCompanyName,
-          code: props.submission.companyCode,
-          country: props.submission.requestorsCountry,
+          name: props.submission.data.requestorsCompanyName ?? "",
+          code: props.submission.data.companyCode ?? "",
+          country: props.submission.data.requestorsCountry ?? "",
         },
       });
-      setCampaignName(props.submission.campaignName);
-      setCampaignDescription(props.submission.campaignDescription);
-      setTargetAudience(props.submission.targetAudience);
+      setCampaignName(props.submission.data.campaignName ?? "");
+      setCampaignDescription(props.submission.data.campaignDescription ?? "");
+      setTargetAudience(props.submission.data.targetAudience ?? "");
       setCampaignChannel({
-        label: props.submission.campaignChannel,
-        value: props.submission.campaignChannel,
+        label: props.submission.data.campaignChannel ?? "",
+        value: props.submission.data.campaignChannel ?? "",
       });
-      setYear({ label: props.submission.year, value: props.submission.year });
+      setYear({
+        label: props.submission.data.year ?? "",
+        value: props.submission.data.year ?? "",
+      });
       setProjectStartQuarter({
-        label: props.submission.projectStartQuarter,
-        value: props.submission.projectStartQuarter,
+        label: props.submission.data.projectStartQuarter ?? "",
+        value: props.submission.data.projectStartQuarter ?? "",
       });
-      setProjectNumber(props.submission.projectNumber);
-      setRequestorsName(props.submission.requestorsName);
+      setProjectNumber(props.submission.data.projectNumber ?? "");
+      setRequestorsName(props.submission.data.requestorsName ?? "");
       setFiscalQuarter({
-        label: props.submission.manufacturersFiscalQuarter,
-        value: props.submission.manufacturersFiscalQuarter,
+        label: props.submission.data.manufacturersFiscalQuarter ?? "",
+        value: props.submission.data.manufacturersFiscalQuarter ?? "",
       });
-      setStartDate(new Date(props.submission.campaignStartDate));
-      setEndDate(new Date(props.submission.campaignEndDate));
+      // setStartDate(new Date(props.submission.data.campaignStartDate));
+      // setEndDate(new Date(props.submission.data.campaignEndDate));
       setBudgetSource({
-        label: props.submission.budgetSource,
-        value: props.submission.budgetSource,
+        label: props.submission.data.budgetSource ?? "",
+        value: props.submission.data.budgetSource ?? "",
       });
-      setBudgetApprovedByVendor(props.submission.budgetApprovedByVendor);
+      setBudgetApprovedByVendor(
+        props.submission.data.budgetApprovedByVendor ?? ""
+      );
       setExchangeRates({
-        label: props.submission.campaignBudgetsCurrency,
-        value: props.submission.campaignBudgetsCurrency,
+        label: props.submission.data.campaignBudgetsCurrency ?? "",
+        value: props.submission.data.campaignBudgetsCurrency ?? "",
       });
       setEstimatedIncomeBudgetCurrency(
         (
-          props.submission.campaignEstimatedIncomeBudgetsCurrency ?? 0
+          props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
         ).toString()
       );
       setEstimatedCostsBudgetCurrency(
-        (props.submission.campaignEstimatedCostsBudgetsCurrency ?? 0).toString()
+        (
+          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
+        ).toString()
       );
       setNetProfitTargetBudgetCurrency(
         (
-          props.submission.campaignNetProfitTargetBudgetsCurrency ?? 0
+          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
         ).toString()
       );
-      setComments(props.submission.comments);
-      setTotalEstimatedCostsLC(props.submission.totalEstimatedCostsLC);
+      setComments(props.submission.data.comments ?? "");
+      // setTotalEstimatedCostsLC(props.submission.data.totalEstimatedCostsLC);
 
       //
       if (props.children && props.children.length > 0) {
         setVendorName({
-          label: props.children[0].vendorName,
-          value: props.children[0].vendorName,
+          label: props.children[0].data.vendorName ?? "",
+          value: props.children[0].data.vendorName ?? "",
         });
         setVendor({
-          vendor: props.children[0].vendorName,
-          projectManager: props.children[0].productionProjectManager,
-          creditor: props.children[0].sapCreditorNumber,
-          debitor: props.children[0].sapDebitorNumber,
-          manufacturer: props.children[0].manufacturerNumber,
-          bu: props.children[0].businessUnit,
-          ph: { label: props.children[0].PH1, value: props.children[0].PH1 },
+          vendor: props.children[0].data.vendorName ?? "",
+          projectManager: props.children[0].data.productionProjectManager ?? "",
+          creditor: props.children[0].data.sapCreditorNumber ?? "",
+          debitor: props.children[0].data.sapDebitorNumber ?? "",
+          manufacturer: props.children[0].data.manufacturerNumber ?? "",
+          bu: props.children[0].data.businessUnit ?? "",
+          ph: {
+            label: props.children[0].data.PH1 ?? "",
+            value: props.children[0].data.PH1 ?? "",
+          },
           budgetCurrency: {
-            label: props.children[0].budgetCurrency,
-            value: props.children[0].budgetCurrency,
+            label: props.children[0].data.budgetCurrency ?? "",
+            value: props.children[0].data.budgetCurrency ?? "",
           },
           budgetAmount: "",
           localBudget: "",
@@ -189,8 +199,6 @@ export default function Elov(props: Props) {
         });
       }
     }
-    console.log(props.submission);
-    console.log(props.children);
   }, [props.submission, props.children]);
 
   async function fetchDropdowns() {
@@ -370,144 +378,6 @@ export default function Elov(props: Props) {
         "01"
     );
   }, [year, campaignChannel, projectStartQuarter, requestorsCompanyName]);
-
-  // useEffect(() => {
-  //   var totalBudgetEur = 0;
-  //   var totalBudgetLC = 0;
-  //   var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
-  //   var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
-  //   var totalCostsLC = parseFloat(totalEstimatedCostsLC);
-  //   var totalCostsEur = parseFloat(estimatedCosts);
-
-  //   var temp = [...vendor];
-  //   temp.slice(0, -1).forEach((row: any) => {
-  //     row.eurBudget = (
-  //       parseFloat(row.budgetAmount) / parseFloat(row.budgetCurrency.value)
-  //     ).toFixed(2);
-  //     row.localBudget = (parseFloat(row.eurBudget) * localExchangeRate).toFixed(
-  //       2
-  //     );
-
-  //     var eb = parseFloat(row.eurBudget);
-  //     var lb = parseFloat(row.localBudget);
-
-  //     if (!isNaN(eb)) {
-  //       totalBudgetEur += eb;
-  //     }
-  //     if (!isNaN(lb)) {
-  //       totalBudgetLC += lb;
-  //     }
-  //   });
-  //   var totalVendorBudgetInLC = 0;
-  //   var totalVendorBudgetInEUR = 0;
-  //   var totalVendorShare = 0;
-  //   var totalEstimatedIncomeInCC = 0;
-  //   var totalEstimatedCostsInCC = 0;
-  //   var totalEstimatedCostsInLC = 0;
-  //   var totalEstimatedCostsInEUR = 0;
-  //   var totalNetProfitTargetInCC = 0;
-  //   var totalNetProfitTargetInLC = 0;
-  //   var totalNetProfitTargetInEUR = 0;
-  //   temp.slice(0, -1).forEach((row: any, index: number) => {
-  //     var vbEur = parseFloat(row.eurBudget);
-  //     var share = 0;
-  //     if (budgetSource.value === "noBudget") {
-  //       row.budgetAmount = "0.00";
-  //       row.localBudget = "0.00";
-  //       row.eurBudget = "0.00";
-  //       row.estimatedIncomeCC = "0.00";
-  //       share = parseFloat(row.share) * 0.01;
-
-  //       row.estimatedCostsCC = (
-  //         share * parseFloat(estimatedCostsBudgetCurrency)
-  //       ).toFixed(2);
-
-  //       row.estimatedCostsEUR = (share * parseFloat(estimatedCosts)).toFixed(2);
-  //       row.estimatedCostsLC = (
-  //         parseFloat(row.estimatedCostsEUR) * localExchangeRate
-  //       ).toFixed(2);
-  //     } else {
-  //       share = vbEur / totalBudgetEur;
-  //       row.share = (share * 100).toFixed(2);
-  //       if (index === temp.length - 1) {
-  //         var totalShare = 0.0;
-  //         temp
-  //           .slice(0, temp.length - 2)
-  //           .forEach((t) => (totalShare += parseFloat(t.share)));
-  //         row.share = (100 - totalShare).toFixed(2);
-  //         share = (100 - totalShare) * 0.01;
-  //       }
-  //       if (!isNaN(vbEur) && totalBudgetEur !== 0) {
-  //         if (!isNaN(totalCostsCC)) {
-  //           row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
-  //         }
-  //         if (!isNaN(totalIncomeCC)) {
-  //           row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
-  //         }
-  //         if (!isNaN(totalCostsLC)) {
-  //           row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
-  //         }
-  //         if (!isNaN(totalCostsEur)) {
-  //           row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
-  //         }
-  //       }
-  //     }
-  //     row.netProfitTargetEUR =
-  //       `${budgetSource.value === "noBudget" ? "-" : ""}` +
-  //       (parseFloat(row.share) * 0.01 * parseFloat(netProfitTarget)).toFixed(2);
-
-  //     row.netProfitTargetLC =
-  //       `${budgetSource.value === "noBudget" ? "-" : ""}` +
-  //       (parseFloat(row.netProfitTargetEUR) * localExchangeRate).toFixed(2);
-  //     row.netProfitTargetVC =
-  //       `${budgetSource.value === "noBudget" ? "-" : ""}` +
-  //       (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
-
-  //     totalVendorBudgetInLC += parseFloat(row.localBudget);
-  //     totalVendorBudgetInEUR += parseFloat(row.eurBudget);
-  //     totalVendorShare += parseFloat(row.share);
-  //     totalEstimatedIncomeInCC += parseFloat(row.estimatedIncomeCC);
-  //     totalEstimatedCostsInCC += parseFloat(row.estimatedCostsCC);
-  //     totalEstimatedCostsInLC += parseFloat(row.estimatedCostsLC);
-  //     totalEstimatedCostsInEUR += parseFloat(row.estimatedCostsEUR);
-  //     totalNetProfitTargetInCC += parseFloat(row.netProfitTargetVC);
-  //     totalNetProfitTargetInLC += parseFloat(row.netProfitTargetLC);
-  //     totalNetProfitTargetInEUR += parseFloat(row.netProfitTargetEUR);
-  //   });
-
-  //   temp[temp.length - 1] = {
-  //     vendor: "TOTAL",
-  //     projectManager: "",
-  //     creditor: "",
-  //     debitor: "",
-  //     manufacturer: "",
-  //     bu: "",
-  //     ph: { label: "", value: "" },
-  //     budgetCurrency: { label: "", value: "" },
-  //     budgetAmount: "",
-  //     localBudget: totalVendorBudgetInLC.toFixed(2),
-  //     eurBudget: totalVendorBudgetInEUR.toFixed(2),
-  //     share: totalVendorShare.toFixed(2),
-  //     estimatedCostsCC: totalEstimatedCostsInCC.toFixed(2),
-  //     estimatedIncomeCC: totalEstimatedIncomeInCC.toFixed(2),
-  //     estimatedCostsLC: totalEstimatedCostsInLC.toFixed(2),
-  //     estimatedCostsEUR: totalEstimatedCostsInEUR.toFixed(2),
-  //     netProfitTargetVC: totalNetProfitTargetInCC.toFixed(2),
-  //     netProfitTargetLC: totalNetProfitTargetInLC.toFixed(2),
-  //     netProfitTargetEUR: totalNetProfitTargetInEUR.toFixed(2),
-  //   };
-
-  //   setTotalVendorBudgetInEUR(totalBudgetEur);
-  //   setTotalVendorBudgetInLC(totalBudgetLC);
-  //   if (!isEqual(vendor, temp)) {
-  //     setVendor(temp);
-  //   }
-  // }, [
-  //   vendor,
-  //   estimatedCostsBudgetCurrency,
-  //   totalEstimatedCostsLC,
-  //   budgetSource,
-  // ]);
 
   return (
     <Box>
@@ -1193,7 +1063,6 @@ export default function Elov(props: Props) {
               var temp = { ...vendor };
               temp.projectManager = event.target.value;
               setVendor(temp);
-              console.log(vendor);
             }}
           />
         </Box>
