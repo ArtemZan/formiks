@@ -132,6 +132,8 @@ async function fetchDropdowns() {
 
 const loadOptions = (identifier: string) => {
   switch (identifier) {
+    case "data.budgetSource":
+      return Budget;
     case "data.projectType":
       return ProjectType;
     case "data.ph1":
@@ -250,25 +252,30 @@ const DisplayedColumnsList = [
         value: "data.creditorNumber",
         type: "string",
       },
-      { label: "MDF Level", value: "data.mdfLevel", type: "dropdown" },
+      { label: "Budget Source", value: "data.budgetSource", type: "dropdown" },
       {
         label: "Vendor Budget Currency",
         value: "data.vendorBudgetCurrency",
         type: "dropdown",
       },
       {
-        label: "Estimated Income (Budget Currency)",
-        value: "data.estimatedIncomeBC",
+        label: "Vendor Amount",
+        value: "data.vendorAmount",
         type: "number",
       },
       {
-        label: "Estimated Costs (Budget Currency)",
-        value: "data.estimatedCostsBC",
+        label: "Estimated Income (Campaign Currency)",
+        value: "data.estimatedIncomeCC",
         type: "number",
       },
       {
-        label: "Estimated Result (Budget Currency)",
-        value: "data.estimatedResultBC",
+        label: "Estimated Costs (Campaign Currency)",
+        value: "data.estimatedCostsCC",
+        type: "number",
+      },
+      {
+        label: "Estimated Result (Campaign Currency)",
+        value: "data.estimatedResultCC",
         type: "number",
       },
       {
@@ -1381,7 +1388,7 @@ export function VendorsTable(props: Props) {
       // className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"number"}
+          type={"text"}
           backgroundColor="#f4fcf9"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1683,17 +1690,18 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.mdfLevel",
-      dataKey: "data.mdfLevel",
-      title: "MDF Level",
-      width: columnWidth("data.mdfLevel", 200),
+      key: "data.budgetSource",
+      dataKey: "data.budgetSource",
+      title: "Budget Source",
+      width: columnWidth("data.budgetSource", 200),
       resizable: true,
       group: "Project Information",
 
-      hidden: visibilityController("projectInformation", "data.mdfLevel"),
+      hidden: visibilityController("projectInformation", "data.budgetSource"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"dropdown"}
+          loadOptions={loadOptions}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1728,20 +1736,17 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.estimatedIncomeBC",
-      dataKey: "data.estimatedIncomeBC",
+      key: "data.vendorAmount",
+      dataKey: "data.vendorAmount",
       group: "Project Information",
 
-      title: "Estimated Income (Budget Currency)",
-      width: columnWidth("data.estimatedIncomeBC", 200),
+      title: "Vendor Amount",
+      width: columnWidth("data.vendorAmount", 200),
       resizable: true,
-      hidden: visibilityController(
-        "projectInformation",
-        "data.estimatedIncomeBC"
-      ),
+      hidden: visibilityController("projectInformation", "data.vendorAmount"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1752,20 +1757,20 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.estimatedCostsBC",
+      key: "data.estimatedIncomeCC",
       group: "Project Information",
 
-      dataKey: "data.estimatedCostsBC",
-      title: "Estimated Costs (Budget Currency)",
-      width: columnWidth("data.estimatedCostsBC", 200),
+      dataKey: "data.estimatedIncomeCC",
+      title: "Estimated Income (Campaign Currency)",
+      width: columnWidth("data.estimatedIncomeCC", 200),
       resizable: true,
       hidden: visibilityController(
         "projectInformation",
-        "data.estimatedCostsBC"
+        "data.estimatedIncomeCC"
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -1776,20 +1781,45 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.estimatedResultBC",
-      dataKey: "data.estimatedResultBC",
-      title: "Estimated Result (Budget Currency)",
+      key: "data.estimatedCostsCC",
       group: "Project Information",
 
-      width: columnWidth("data.estimatedResultBC", 200),
+      dataKey: "data.estimatedCostsCC",
+      title: "Estimated Costs (Campaign Currency)",
+      width: columnWidth("data.estimatedCostsCC", 200),
       resizable: true,
       hidden: visibilityController(
         "projectInformation",
-        "data.estimatedResultBC"
+        "data.estimatedCostsCC"
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
+          backgroundColor="#f5faef"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    //
+    {
+      key: "data.estimatedResultCC",
+      dataKey: "data.estimatedResultCC",
+      title: "Estimated Result (Campaign Currency)",
+      group: "Project Information",
+
+      width: columnWidth("data.estimatedResultCC", 200),
+      resizable: true,
+      hidden: visibilityController(
+        "projectInformation",
+        "data.estimatedResultCC"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"number"}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}

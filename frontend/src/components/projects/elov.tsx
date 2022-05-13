@@ -37,6 +37,8 @@ const { Column, HeaderCell, Cell } = Table;
 interface Props {
   history: any;
   project: Project;
+  submission?: any;
+  children?: any[];
 }
 
 export default function Elov(props: Props) {
@@ -99,6 +101,93 @@ export default function Elov(props: Props) {
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
 
   const [render, rerender] = useState(0);
+
+  useEffect(() => {
+    if (props.submission) {
+      setRequestorsCompanyName({
+        label: props.submission.requestorsCompanyName,
+        value: {
+          name: props.submission.requestorsCompanyName,
+          code: props.submission.companyCode,
+          country: props.submission.requestorsCountry,
+        },
+      });
+      setCampaignName(props.submission.campaignName);
+      setCampaignDescription(props.submission.campaignDescription);
+      setTargetAudience(props.submission.targetAudience);
+      setCampaignChannel({
+        label: props.submission.campaignChannel,
+        value: props.submission.campaignChannel,
+      });
+      setYear({ label: props.submission.year, value: props.submission.year });
+      setProjectStartQuarter({
+        label: props.submission.projectStartQuarter,
+        value: props.submission.projectStartQuarter,
+      });
+      setProjectNumber(props.submission.projectNumber);
+      setRequestorsName(props.submission.requestorsName);
+      setFiscalQuarter({
+        label: props.submission.manufacturersFiscalQuarter,
+        value: props.submission.manufacturersFiscalQuarter,
+      });
+      setStartDate(new Date(props.submission.campaignStartDate));
+      setEndDate(new Date(props.submission.campaignEndDate));
+      setBudgetSource({
+        label: props.submission.budgetSource,
+        value: props.submission.budgetSource,
+      });
+      setBudgetApprovedByVendor(props.submission.budgetApprovedByVendor);
+      setExchangeRates({
+        label: props.submission.campaignBudgetsCurrency,
+        value: props.submission.campaignBudgetsCurrency,
+      });
+      setEstimatedIncomeBudgetCurrency(
+        props.submission.campaignEstimatedIncomeBudgetsCurrency.toString()
+      );
+      setEstimatedCostsBudgetCurrency(
+        props.submission.campaignEstimatedCostsBudgetsCurrency.toString()
+      );
+      setNetProfitTargetBudgetCurrency(
+        props.submission.campaignNetProfitTargetBudgetsCurrency.toString()
+      );
+      setComments(props.submission.comments);
+      setTotalEstimatedCostsLC(props.submission.totalEstimatedCostsLC);
+
+      //
+      if (props.children && props.children.length > 0) {
+        setVendorName({
+          label: props.children[0].vendorName,
+          value: props.children[0].vendorName,
+        });
+        setVendor({
+          vendor: props.children[0].vendorName,
+          projectManager: props.children[0].productionProjectManager,
+          creditor: props.children[0].sapCreditorNumber,
+          debitor: props.children[0].sapDebitorNumber,
+          manufacturer: props.children[0].manufacturerNumber,
+          bu: props.children[0].businessUnit,
+          ph: { label: props.children[0].PH1, value: props.children[0].PH1 },
+          budgetCurrency: {
+            label: props.children[0].budgetCurrency,
+            value: props.children[0].budgetCurrency,
+          },
+          budgetAmount: "",
+          localBudget: "",
+          eurBudget: "",
+          share: "100",
+          estimatedCostsCC: "",
+          estimatedIncomeCC: "",
+          estimatedCostsLC: "",
+          estimatedCostsEUR: "",
+          netProfitTargetVC: "",
+          netProfitTargetLC: "",
+          netProfitTargetEUR: "",
+        });
+      }
+    }
+    console.log(props.submission);
+    console.log(props.children);
+  }, [props.submission, props.children]);
 
   async function fetchDropdowns() {
     var dropdownsIds: string[] = [

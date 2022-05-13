@@ -14,6 +14,8 @@ import ProjectExplorer from "./pages/Projects/Explorer";
 import ProjectEditor from "./pages/Projects/Editor";
 import ProjectViewer from "./pages/Projects/Viewer";
 
+import SubmissionViewer from "./pages/Submissions/Viewer";
+
 import SubmissionsTableExplorer from "./pages/Submissions/TableExplorer";
 
 import VendorsTable from "./pages/Submissions/Vendors";
@@ -92,6 +94,12 @@ function App({ pca }: AppProps) {
             exact
             path="/submissions"
             render={(props) => <SubmissionsTableExplorer {...props} />}
+          />
+          <Route
+            path="/submissions/view/:id"
+            render={(props) => (
+              <SubmissionViewer isAdmin={isAdmin} create={false} {...props} />
+            )}
           />
           <Route
             exact
