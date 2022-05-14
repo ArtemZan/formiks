@@ -10,6 +10,10 @@ import {
   HStack,
   Textarea,
   Button,
+  AlertTitle,
+  AlertDescription,
+  AlertIcon,
+  Alert,
 } from "@chakra-ui/react";
 import Project from "../../types/project";
 import Select from "react-select";
@@ -454,6 +458,22 @@ export default function Elov(props: Props) {
             />
           </Box>
         </HStack>
+        <Alert
+          status="error"
+          display={
+            requestorsCompanyName.value.code !== "6110" &&
+            requestorsCompanyName.value.code !== ""
+              ? "flex"
+              : "none"
+          }
+        >
+          <AlertIcon />
+          <AlertTitle>Please change Requestor`s Company Name!</AlertTitle>
+          <AlertDescription>
+            Currently, only companies with '6110' code are allowed ('ALSO
+            Schweiz AG')
+          </AlertDescription>
+        </Alert>
         <Text as="b">Campaign`s Details</Text>
 
         <Box w="100%">
@@ -1260,7 +1280,6 @@ export default function Elov(props: Props) {
               businessUnit: vendor.bu,
               PH1: vendor.ph.label,
               budgetCurrency: vendor.budgetCurrency.label,
-              estimatedIncomeEur: parseFloat(estimatedIncome),
               vendorAmount: parseFloat(vendor.localBudget),
               // cbbudgetEur: parseFloat(vendor.eurBudget),
               vendorShare: 100,
@@ -1268,10 +1287,11 @@ export default function Elov(props: Props) {
               estimatedIncomeCC: parseFloat(estimatedIncomeBudgetCurrency),
               estimatedResultCC: parseFloat(netProfitTargetBudgetCurrency),
               // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-              estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
+              estimatedIncomeEUR: parseFloat(estimatedIncome),
+              estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
+              estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
               estimatedResultBC: parseFloat(netProfitTargetBudgetCurrency),
               // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
-              estimatedResultEur: parseFloat(vendor.netProfitTargetEUR),
             },
           });
 
@@ -1283,6 +1303,7 @@ export default function Elov(props: Props) {
             props.history.push("/vendors");
           });
         }}
+        isDisabled={requestorsCompanyName.value.code !== "6110"}
       >
         Submit
       </Button>

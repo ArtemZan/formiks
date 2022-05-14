@@ -10,6 +10,10 @@ import {
   HStack,
   Textarea,
   Button,
+  AlertTitle,
+  AlertDescription,
+  AlertIcon,
+  Alert,
 } from "@chakra-ui/react";
 import Project from "../../types/project";
 import Select from "react-select";
@@ -217,6 +221,22 @@ export default function Elov(props: Props) {
             />
           </Box>
         </HStack>
+        <Alert
+          status="error"
+          display={
+            requestorsCompanyName.value.code !== "6110" &&
+            requestorsCompanyName.value.code !== ""
+              ? "flex"
+              : "none"
+          }
+        >
+          <AlertIcon />
+          <AlertTitle>Please change Requestor`s Company Name!</AlertTitle>
+          <AlertDescription>
+            Currently, only companies with '6110' code are allowed ('ALSO
+            Schweiz AG')
+          </AlertDescription>
+        </Alert>
 
         <Box w="100%">
           <Text mb="8px">Project Number</Text>
@@ -661,6 +681,7 @@ export default function Elov(props: Props) {
             props.history.push("/vendors");
           });
         }}
+        isDisabled={requestorsCompanyName.value.code !== "6110"}
       >
         Submit
       </Button>

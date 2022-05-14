@@ -10,7 +10,10 @@ import {
   HStack,
   Textarea,
   Button,
-  Divider,
+  AlertTitle,
+  AlertDescription,
+  AlertIcon,
+  Alert,
 } from "@chakra-ui/react";
 import Project from "../../types/project";
 import Select from "react-select";
@@ -528,6 +531,22 @@ export default function Ermv(props: Props) {
             />
           </Box>
         </HStack>
+        <Alert
+          status="error"
+          display={
+            requestorsCompanyName.value.code !== "6110" &&
+            requestorsCompanyName.value.code !== ""
+              ? "flex"
+              : "none"
+          }
+        >
+          <AlertIcon />
+          <AlertTitle>Please change Requestor`s Company Name!</AlertTitle>
+          <AlertDescription>
+            Currently, only companies with '6110' code are allowed ('ALSO
+            Schweiz AG')
+          </AlertDescription>
+        </Alert>
         <Text as="b">Campaign`s Details</Text>
 
         <Box w="100%">
@@ -1769,18 +1788,18 @@ export default function Ermv(props: Props) {
                 businessUnit: vendor.bu,
                 PH1: vendor.ph.label,
                 budgetCurrency: vendor.budgetCurrency.label,
-                estimatedIncomeEur: parseFloat(vendor.budgetAmount),
                 vendorAmount: parseFloat(vendor.localBudget),
                 // cbbudgetEur: parseFloat(vendor.eurBudget),
-                vendorShare: parseFloat(vendor.share),
-                estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
-                estimatedIncomeCC: parseFloat(vendor.estimatedIncomeCC),
-                estimatedResultCC: parseFloat(vendor.netProfitTargetLC),
-
-                estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
-                estimatedResultBC: parseFloat(vendor.netProfitTargetVC),
+                vendorShare: 100,
+                estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
+                estimatedIncomeCC: parseFloat(estimatedIncomeBudgetCurrency),
+                estimatedResultCC: parseFloat(netProfitTargetBudgetCurrency),
+                // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+                estimatedIncomeEUR: parseFloat(estimatedIncome),
+                estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
+                estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
+                estimatedResultBC: parseFloat(netProfitTargetBudgetCurrency),
                 // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
-                estimatedResultEur: parseFloat(vendor.netProfitTargetEUR),
               },
             });
           });
@@ -1798,11 +1817,14 @@ export default function Ermv(props: Props) {
                 companyName: company.companyName,
                 companyCode: company.companyCode,
                 country: company.country,
+                countriesEMEA: company.country,
                 productionProjectManager: company.contactEmail,
                 projectNumber: company.projectNumber,
                 countryShare: parseFloat(company.share),
                 countryBudgetContributionEur: company.contribution,
                 countryCostEstimationEur: company.estimatedCosts,
+                countryBudgetContributionCC: parseFloat(company.contribution),
+                countryCostEstimationCC: parseFloat(company.estimatedCosts),
               },
             });
           });
@@ -1814,6 +1836,7 @@ export default function Ermv(props: Props) {
             props.history.push("/vendors");
           });
         }}
+        isDisabled={requestorsCompanyName.value.code !== "6110"}
       >
         Submit
       </Button>

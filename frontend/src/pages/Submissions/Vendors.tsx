@@ -229,13 +229,13 @@ const DisplayedColumnsList = [
       { label: "Countries EMEA", value: "data.country", type: "string" },
       { label: "% Country Share", value: "data.countryShare", type: "number" },
       {
-        label: "Country Budget Contribution (EUR)",
-        value: "data.countryBudgetContributionEUR",
+        label: "Country Budget Contribution (Campaign Currency)",
+        value: "data.countryBudgetContributionCC",
         type: "number",
       },
       {
-        label: "Country Cost Estimation (EUR)",
-        value: "data.countryCostEstimationEUR",
+        label: "Country Cost Estimation (Campaign Currency)",
+        value: "data.countryCostEstimationCC",
         type: "number",
       },
       {
@@ -1561,16 +1561,16 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.countryBudgetContributionEUR",
-      dataKey: "data.countryBudgetContributionEUR",
-      title: "Country Budget Contribution (EUR)",
-      width: columnWidth("data.countryBudgetContributionEUR", 250),
+      key: "data.countryBudgetContributionCC",
+      dataKey: "data.countryBudgetContributionCC",
+      title: "Country Budget Contribution (CC)",
+      width: columnWidth("data.countryBudgetContributionCC", 250),
       resizable: true,
       group: "Project Information",
 
       hidden: visibilityController(
         "projectInformation",
-        "data.countryBudgetContributionEUR"
+        "data.countryBudgetContributionCC"
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -1585,16 +1585,16 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.countryCostEstimationEUR",
-      dataKey: "data.countryCostEstimationEUR",
-      title: "Country Cost Estimation (EUR)",
-      width: columnWidth("data.countryCostEstimationEUR", 250),
+      key: "data.countryCostEstimationCC",
+      dataKey: "data.countryCostEstimationCC",
+      title: "Country Cost Estimation (CC)",
+      width: columnWidth("data.countryCostEstimationCC", 250),
       resizable: true,
       group: "Project Information",
 
       hidden: visibilityController(
         "projectInformation",
-        "data.countryCostEstimationEUR"
+        "data.countryCostEstimationCC"
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
