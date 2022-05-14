@@ -1713,6 +1713,7 @@ export default function Ermv(props: Props) {
               companyCode: requestorsCompanyName.value.code,
               requestorsCountry: requestorsCompanyName.value.country,
               campaignName: campaignName,
+              projectName: campaignName,
               campaignDescription: campaignDescription,
               targetAudience: targetAudience,
               campaignChannel: campaignChannel.label,
@@ -1720,7 +1721,7 @@ export default function Ermv(props: Props) {
               projectStartQuarter: projectStartQuarter.label,
               projectNumber: projectNumber,
               requestorsName: requestorsName,
-              projectApprover: "",
+              projectApprover: projectApproval,
               projectApproval: projectApproval,
               manufacturersFiscalQuarter: fiscalQuarter.label,
               campaignStartDate:
@@ -1729,6 +1730,7 @@ export default function Ermv(props: Props) {
               budgetSource: budgetSource.label,
               budgetApprovedByVendor: budgetApprovedByVendor,
               campaignBudgetsCurrency: exchangeRates.label,
+              campaignCurrency: exchangeRates.label,
               campaignEstimatedIncomeBudgetsCurrency: parseFloat(
                 estimatedIncomeBudgetCurrency
               ),
@@ -1743,6 +1745,7 @@ export default function Ermv(props: Props) {
               campaignNetProfitTargetEur: parseFloat(netProfitTarget),
               totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
               comments: comments,
+              additionalInformation: comments,
               projectType: "Regional Multi Vendor",
             },
           };
@@ -1760,19 +1763,20 @@ export default function Ermv(props: Props) {
               data: {
                 vendorName: vendor.vendor,
                 productionProjectManager: vendor.projectManager,
-                sapCreditorNumber: vendor.creditor,
-                sapDebitorNumber: vendor.debitor,
+                creditorNumber: vendor.creditor,
+                debitorNumber: vendor.debitor,
                 manufacturerNumber: vendor.manufacturer,
                 businessUnit: vendor.bu,
                 PH1: vendor.ph.label,
                 budgetCurrency: vendor.budgetCurrency.label,
                 estimatedIncomeEur: parseFloat(vendor.budgetAmount),
-                estimatedIncomeBC: parseFloat(vendor.localBudget),
+                vendorAmount: parseFloat(vendor.localBudget),
                 // cbbudgetEur: parseFloat(vendor.eurBudget),
                 vendorShare: parseFloat(vendor.share),
                 estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
                 estimatedIncomeCC: parseFloat(vendor.estimatedIncomeCC),
-                // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+                estimatedResultCC: parseFloat(vendor.netProfitTargetLC),
+
                 estimatedCostsEur: parseFloat(vendor.estimatedCostsEUR),
                 estimatedResultBC: parseFloat(vendor.netProfitTargetVC),
                 // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),

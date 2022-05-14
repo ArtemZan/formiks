@@ -624,37 +624,9 @@ export default function Elov(props: Props) {
               requestorsCompanyName: requestorsCompanyName.label,
               companyCode: requestorsCompanyName.value.code,
               requestorsCountry: requestorsCompanyName.value.country,
-              // campaignName: campaignName,
-              // campaignDescription: campaignDescription,
-              // targetAudience: targetAudience,
-              // campaignChannel: campaignChannel.label,
-              // year: year.label,
-              // projectStartQuarter: projectStartQuarter.label,
+              campaignName: campaignName,
               projectNumber: projectNumber,
               projectName: projectName,
-              // requestorsName: requestorsName,
-              // projectApprover: "",
-              // projectApproval: projectApproval,
-              // manufacturersFiscalQuarter: fiscalQuarter.label,
-              // campaignStartDate:
-              //   startDate === null ? null : startDate.toString(),
-              // campaignEndDate: endDate === null ? null : endDate.toString(),
-              // budgetSource: budgetSource.label,
-              // budgetApprovedByVendor: budgetApprovedByVendor,
-              // campaignBudgetsCurrency: exchangeRates.label,
-              // campaignEstimatedIncomeBudgetsCurrency: parseFloat(
-              //   estimatedIncomeBudgetCurrency
-              // ),
-              // campaignEstimatedCostsBudgetsCurrency: parseFloat(
-              //   estimatedCostsBudgetCurrency
-              // ),
-              // campaignNetProfitTargetBudgetsCurrency: parseFloat(
-              //   netProfitTargetBudgetCurrency
-              // ),
-              // campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
-              // campaignEstimatedCostsEur: parseFloat(estimatedCosts),
-              // campaignNetProfitTargetEur: parseFloat(netProfitTarget),
-              // totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
               comments: comments,
               projectType: "Purchase Order Request",
             },

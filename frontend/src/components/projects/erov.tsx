@@ -763,7 +763,10 @@ export default function Erov(props: Props) {
                 primary: "#3082CE",
               },
             })}
-            value={{ label: "", value: "" }}
+            value={{ label: projectApproval, value: projectApproval }}
+            onChange={(value) => {
+              setProjectApproval(value === null ? "" : value.label);
+            }}
             placeholder=""
             classNamePrefix="select"
             isClearable={false}
@@ -1448,7 +1451,7 @@ export default function Erov(props: Props) {
               projectStartQuarter: projectStartQuarter.label,
               projectNumber: projectNumber,
               requestorsName: requestorsName,
-              projectApprover: "",
+              projectApprover: projectApproval,
               projectApproval: projectApproval,
               manufacturersFiscalQuarter: fiscalQuarter.label,
               campaignStartDate:
@@ -1457,6 +1460,7 @@ export default function Erov(props: Props) {
               budgetSource: budgetSource.label,
               budgetApprovedByVendor: budgetApprovedByVendor,
               campaignBudgetsCurrency: exchangeRates.label,
+              campaignCurrency: exchangeRates.label,
               campaignEstimatedIncomeBudgetsCurrency: parseFloat(
                 estimatedIncomeBudgetCurrency
               ),
@@ -1471,6 +1475,7 @@ export default function Erov(props: Props) {
               campaignNetProfitTargetEur: parseFloat(netProfitTarget),
               totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
               comments: comments,
+              additionalInformation: comments,
               projectType: "Regional One Vendor",
             },
           };

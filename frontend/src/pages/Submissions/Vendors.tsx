@@ -738,7 +738,7 @@ const DisplayedColumnsListOptions = DisplayedColumnsList.map((group: any) => {
 export function VendorsTable(props: Props) {
   const [sourceSubmissions, setSourceSubmissions] = useState(new Map());
   const [currentUser, setCurrentUser] = useState({ displayName: "unknown" });
-  const [debugOverlayHidden, hideDebugOverlay] = useState(false);
+  const [debugOverlayHidden, hideDebugOverlay] = useState(true);
   const [filters, setFilters] = useState<FilterField[]>([]);
   const [displayedColumns, setDisplayedColumns] = useState<string[]>([
     "generalInformation",
@@ -764,7 +764,7 @@ export function VendorsTable(props: Props) {
   const [totalIncomeAmountLC, setTotalIncomeAmountLC] = useState(0);
   const [totalCostsInTool, setTotalCostsInTool] = useState(0);
   const [totalIncomeInTool, setTotalIncomeInTool] = useState(0);
-  const { fps, avgFps } = useFps(20);
+  // const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
@@ -787,12 +787,12 @@ export function VendorsTable(props: Props) {
     },
     [scrollLeft]
   );
-  const [heapInfo, setHeapInfo] = useState<any>({
-    total: 0,
-    allocated: 0,
-    current: 0,
-    domSize: 0,
-  });
+  // const [heapInfo, setHeapInfo] = useState<any>({
+  //   total: 0,
+  //   allocated: 0,
+  //   current: 0,
+  //   domSize: 0,
+  // });
   const [totalRequests, setTotalRequests] = useState(1);
 
   useEffect(() => {
@@ -800,14 +800,14 @@ export function VendorsTable(props: Props) {
   }, []);
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
-  useEffect(() => {
-    getHeapInfo();
-    const interval = setInterval(() => {
-      getHeapInfo();
-    }, 5000);
+  // useEffect(() => {
+  //   getHeapInfo();
+  //   const interval = setInterval(() => {
+  //     getHeapInfo();
+  //   }, 5000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   useEffect(() => {
     let tca = 0;
@@ -1115,18 +1115,18 @@ export function VendorsTable(props: Props) {
     }
   }, [filters, submissions, communicationSubmissions]);
 
-  const getHeapInfo = () => {
-    var memory = (window.performance as any).memory;
-    if (memory !== undefined) {
-      var info: any = {
-        total: memory.jsHeapSizeLimit,
-        allocated: memory.totalJSHeapSize,
-        current: memory.usedJSHeapSize,
-        domSize: document.getElementsByTagName("*").length,
-      };
-      setHeapInfo(info);
-    }
-  };
+  // const getHeapInfo = () => {
+  //   var memory = (window.performance as any).memory;
+  //   if (memory !== undefined) {
+  //     var info: any = {
+  //       total: memory.jsHeapSizeLimit,
+  //       allocated: memory.totalJSHeapSize,
+  //       current: memory.usedJSHeapSize,
+  //       domSize: document.getElementsByTagName("*").length,
+  //     };
+  //     setHeapInfo(info);
+  //   }
+  // };
   const getVisibleColumnIndices = (offset: number, columns: any) => {
     var netOffsets: any[] = [],
       offsetSum = 0,
@@ -2303,7 +2303,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2324,7 +2324,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2345,7 +2345,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2366,7 +2366,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2387,7 +2387,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2408,7 +2408,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2429,7 +2429,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2450,7 +2450,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2471,7 +2471,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           readonly={true}
           bold={props.rowData.parentId === null}
           onUpdate={handleCellUpdate}
@@ -2507,7 +2507,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2528,7 +2528,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2549,7 +2549,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           readonly={true}
           bold={props.rowData.parentId === null}
           onUpdate={handleCellUpdate}
@@ -2585,7 +2585,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fff7f8"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2607,7 +2607,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2628,7 +2628,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2649,7 +2649,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2670,7 +2670,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2691,7 +2691,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2712,7 +2712,7 @@ export function VendorsTable(props: Props) {
         <EditableTableCell
           type={"text"}
           readonly={true}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2736,7 +2736,7 @@ export function VendorsTable(props: Props) {
         <EditableTableCell
           type={"text"}
           readonly={true}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2757,7 +2757,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2778,7 +2778,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2799,7 +2799,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2823,7 +2823,7 @@ export function VendorsTable(props: Props) {
           type={"number"}
           readonly={true}
           bold={props.rowData.parentId === null}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2857,7 +2857,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2878,7 +2878,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2901,7 +2901,7 @@ export function VendorsTable(props: Props) {
           type={"number"}
           readonly={true}
           bold={props.rowData.parentId === null}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2935,7 +2935,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2f5fa"
+          backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2957,7 +2957,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2978,7 +2978,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -2999,7 +2999,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3020,7 +3020,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3044,7 +3044,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3065,7 +3065,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3088,7 +3088,7 @@ export function VendorsTable(props: Props) {
           type={"number"}
           readonly={true}
           bold={props.rowData.parentId === null}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3122,7 +3122,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3143,7 +3143,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3168,7 +3168,7 @@ export function VendorsTable(props: Props) {
           type={"number"}
           readonly={true}
           bold={props.rowData.parentId === null}
-          backgroundColor="#fcfcfe"
+          backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3206,7 +3206,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3230,7 +3230,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3254,7 +3254,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3278,7 +3278,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"date"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3302,7 +3302,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3326,7 +3326,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3347,7 +3347,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3373,7 +3373,7 @@ export function VendorsTable(props: Props) {
           type={"number"}
           readonly={true}
           bold={props.rowData.parentId === null}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3410,7 +3410,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3431,7 +3431,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3457,7 +3457,7 @@ export function VendorsTable(props: Props) {
           type={"number"}
           readonly={true}
           bold={props.rowData.parentId === null}
-          backgroundColor="#f2fcfc"
+          backgroundColor="#FFF7F1"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3806,7 +3806,7 @@ export function VendorsTable(props: Props) {
         rounded="md"
         borderColor="gray.100"
       >
-        <Tabs isLazy variant="enclosed">
+        <Tabs isLazy={true} variant="enclosed">
           <TabList>
             <Tab>Projects</Tab>
             <Tab>Invoice Request, Issue and Status</Tab>
@@ -3860,150 +3860,150 @@ export function VendorsTable(props: Props) {
                     rowKey="id"
                     headerHeight={[50, 50]}
                     rowHeight={55}
-                    overlayRenderer={
-                      <div>
-                        <DebugOverlay hidden={debugOverlayHidden}>
-                          <Box h="40px" w="100%">
-                            <CloseButton
-                              onClick={() => {
-                                hideDebugOverlay(true);
-                              }}
-                              mr="-10px"
-                              float="right"
-                            />
-                          </Box>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              Requested Heap Size:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              {heapInfo.total > 0
-                                ? bytesToSize(heapInfo.total)
-                                : "none"}
-                            </Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              Allocated Heap Size:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              {heapInfo.total > 0
-                                ? bytesToSize(heapInfo.allocated)
-                                : "none"}
-                            </Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              Active Heap Size:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              {heapInfo.total > 0
-                                ? bytesToSize(heapInfo.current)
-                                : "none"}
-                            </Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              DOM Elements:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              {heapInfo.domSize}
-                            </Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              Virtualization:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              partial
-                            </Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              Table Mode:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              editable
-                            </Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              Avg FPS:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              {avgFps}
-                            </Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              FPS:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              {fps[fps.length - 1]}
-                            </Text>
-                          </HStack>
-                          <Divider mt={"10px"} />
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              Active Sessions:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              1
-                            </Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              Total Requests:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              {totalRequests}
-                            </Text>
-                          </HStack>
-                          <HStack spacing={0}>
-                            <Text w="120%" float="left">
-                              Sync Protocol:
-                            </Text>
-                            <Text w="80%" textAlign="right">
-                              HTTP
-                            </Text>
-                          </HStack>
-                          <VStack align="end" mt="10px">
-                            <Button
-                              float="right"
-                              onClick={() => {
-                                RestAPI.updateVendorTableDefaultConfig(
-                                  JSON.parse(
-                                    localStorage.getItem(
-                                      "vendors.displayedColumns"
-                                    ) || "[]"
-                                  ),
-                                  JSON.parse(
-                                    localStorage.getItem("vendors.columns") ||
-                                      "{}"
-                                  )
-                                );
-                              }}
-                              colorScheme="blue"
-                            >
-                              update preset
-                            </Button>
-                            <Button
-                              float="left"
-                              onClick={() => {
-                                localStorage.removeItem(
-                                  "vendors.displayedColumns"
-                                );
-                                localStorage.removeItem("vendors.columns");
-                                window.location.reload();
-                              }}
-                              colorScheme="red"
-                            >
-                              clear cache
-                            </Button>
-                          </VStack>
-                        </DebugOverlay>
-                      </div>
-                    }
+                    // overlayRenderer={
+                    //   <div>
+                    //     <DebugOverlay hidden={debugOverlayHidden}>
+                    //       <Box h="40px" w="100%">
+                    //         <CloseButton
+                    //           onClick={() => {
+                    //             hideDebugOverlay(true);
+                    //           }}
+                    //           mr="-10px"
+                    //           float="right"
+                    //         />
+                    //       </Box>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           Requested Heap Size:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           {heapInfo.total > 0
+                    //             ? bytesToSize(heapInfo.total)
+                    //             : "none"}
+                    //         </Text>
+                    //       </HStack>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           Allocated Heap Size:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           {heapInfo.total > 0
+                    //             ? bytesToSize(heapInfo.allocated)
+                    //             : "none"}
+                    //         </Text>
+                    //       </HStack>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           Active Heap Size:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           {heapInfo.total > 0
+                    //             ? bytesToSize(heapInfo.current)
+                    //             : "none"}
+                    //         </Text>
+                    //       </HStack>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           DOM Elements:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           {heapInfo.domSize}
+                    //         </Text>
+                    //       </HStack>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           Virtualization:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           partial
+                    //         </Text>
+                    //       </HStack>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           Table Mode:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           editable
+                    //         </Text>
+                    //       </HStack>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           Avg FPS:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           {avgFps}
+                    //         </Text>
+                    //       </HStack>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           FPS:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           {fps[fps.length - 1]}
+                    //         </Text>
+                    //       </HStack>
+                    //       <Divider mt={"10px"} />
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           Active Sessions:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           1
+                    //         </Text>
+                    //       </HStack>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           Total Requests:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           {totalRequests}
+                    //         </Text>
+                    //       </HStack>
+                    //       <HStack spacing={0}>
+                    //         <Text w="120%" float="left">
+                    //           Sync Protocol:
+                    //         </Text>
+                    //         <Text w="80%" textAlign="right">
+                    //           HTTP
+                    //         </Text>
+                    //       </HStack>
+                    //       <VStack align="end" mt="10px">
+                    //         <Button
+                    //           float="right"
+                    //           onClick={() => {
+                    //             RestAPI.updateVendorTableDefaultConfig(
+                    //               JSON.parse(
+                    //                 localStorage.getItem(
+                    //                   "vendors.displayedColumns"
+                    //                 ) || "[]"
+                    //               ),
+                    //               JSON.parse(
+                    //                 localStorage.getItem("vendors.columns") ||
+                    //                   "{}"
+                    //               )
+                    //             );
+                    //           }}
+                    //           colorScheme="blue"
+                    //         >
+                    //           update preset
+                    //         </Button>
+                    //         <Button
+                    //           float="left"
+                    //           onClick={() => {
+                    //             localStorage.removeItem(
+                    //               "vendors.displayedColumns"
+                    //             );
+                    //             localStorage.removeItem("vendors.columns");
+                    //             window.location.reload();
+                    //           }}
+                    //           colorScheme="red"
+                    //         >
+                    //           clear cache
+                    //         </Button>
+                    //       </VStack>
+                    //     </DebugOverlay>
+                    //   </div>
+                    // }
                   ></BaseTable>
                 )}
               </AutoResizer>
