@@ -1587,7 +1587,7 @@ export default function Elmv(props: Props) {
                 manufacturerNumber: vendor.manufacturer,
                 businessUnit: vendor.bu,
                 PH1: vendor.ph.label,
-                budgetCurrency: vendor.budgetCurrency.label,
+                vendorBudgetCurrency: vendor.budgetCurrency.label,
                 vendorAmount: parseFloat(vendor.localBudget),
                 // cbbudgetEur: parseFloat(vendor.eurBudget),
                 vendorShare: 100,
