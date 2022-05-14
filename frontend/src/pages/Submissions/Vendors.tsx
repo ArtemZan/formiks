@@ -226,7 +226,7 @@ const DisplayedColumnsList = [
     label: "Project Information",
     value: "projectInformation",
     children: [
-      { label: "Countries EMEA", value: "data.countriesEMEA", type: "string" },
+      { label: "Countries EMEA", value: "data.country", type: "string" },
       { label: "% Country Share", value: "data.countryShare", type: "number" },
       {
         label: "Country Budget Contribution (EUR)",
@@ -1518,15 +1518,15 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.countriesEMEA",
-      dataKey: "data.countriesEMEA",
+      key: "data.country",
+      dataKey: "data.country",
       title: "Countries EMEA",
       header: "Project Information",
-      width: columnWidth("data.countriesEMEA", 250),
+      width: columnWidth("data.country", 250),
       resizable: true,
       group: "Project Information",
 
-      hidden: visibilityController("projectInformation", "data.countriesEMEA"),
+      hidden: visibilityController("projectInformation", "data.country"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -3806,7 +3806,7 @@ export function VendorsTable(props: Props) {
         rounded="md"
         borderColor="gray.100"
       >
-        <Tabs isLazy={true} variant="enclosed">
+        <Tabs isLazy={false} variant="enclosed">
           <TabList>
             <Tab>Projects</Tab>
             <Tab>Invoice Request, Issue and Status</Tab>

@@ -1527,6 +1527,7 @@ export default function Erov(props: Props) {
                 companyName: company.companyName,
                 companyCode: company.companyCode,
                 country: company.country,
+                countriesEMEA: company.country,
                 productionProjectManager: company.contactEmail,
                 projectNumber: company.projectNumber,
                 countryShare: parseFloat(company.share),
