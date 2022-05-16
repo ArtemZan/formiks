@@ -208,10 +208,10 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["documentDateIncomeGL"] = glChild.DocumentDate
 				data["documentNumberIncomeGL"] = glChild.DocumentNumber
 				data["incomeAccountIncomeGL"] = glChild.Account
-				data["name1IncomeGL"] = glChild.Name1
 				data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dcIncomeGL"] = glChild.DocumentCurrency
+				data["textIncomeGL"] = glChild.Text
 				data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 
 				group = "Income GL Postings"
@@ -258,6 +258,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dcCostGL"] = glChild.DocumentCurrency
+				data["textCostGL"] = glChild.Text
 				data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 
 				group = "Cost GL Postings"
@@ -324,10 +325,10 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["documentDateIncomeGL"] = glChild.DocumentDate
 				data["documentNumberIncomeGL"] = glChild.DocumentNumber
 				data["incomeAccountIncomeGL"] = glChild.Account
-				data["name1IncomeGL"] = glChild.Name1
 				data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dcIncomeGL"] = glChild.DocumentCurrency
+				data["textIncomeGL"] = glChild.Text
 				data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 
 				group = "Income GL Postings"
@@ -348,6 +349,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dcCostGL"] = glChild.DocumentCurrency
+				data["textCostGL"] = glChild.Text
 				data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 
 				group = "Cost GL Postings"
