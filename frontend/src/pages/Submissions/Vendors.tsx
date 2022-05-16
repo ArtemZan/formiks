@@ -408,11 +408,7 @@ const DisplayedColumnsList = [
         value: "data.documentNumberSI",
         type: "string",
       },
-      {
-        label: "Activity ID for Portal Vendors",
-        value: "data.activityIdSI",
-        type: "string",
-      },
+
       {
         label: "Invoice Number",
         value: "data.invoiceNumberSI",
@@ -443,6 +439,16 @@ const DisplayedColumnsList = [
       {
         label: "Invoice Status (Paid/Not Paid)",
         value: "data.invoiceStatusSI",
+        type: "string",
+      },
+      {
+        label: "Activity ID for Portal Vendors",
+        value: "data.activityIdSI",
+        type: "string",
+      },
+      {
+        label: "Additional Marketing Information",
+        value: "data.additionalMarketingInformation",
         type: "string",
       },
     ],
@@ -2713,51 +2719,6 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.activityIdSI",
-      group: "Sales Invoices",
-      dataKey: "data.activityIdSI",
-      title: "Activity ID for Portal Vendors",
-      width: columnWidth("data.activityIdSI", 200),
-      resizable: true,
-      hidden: visibilityController("salesInvoices", "data.activityIdSI"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          readonly={true}
-          backgroundColor="#fff7f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.additionalMarketingInformation",
-      group: "Sales Invoices",
-      dataKey: "data.additionalMarketingInformation",
-      title: "Additional Marketing Information",
-      width: columnWidth("data.additionalMarketingInformation", 200),
-      resizable: true,
-      hidden: visibilityController(
-        "salesInvoices",
-        "data.additionalMarketingInformation"
-      ),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          readonly={true}
-          backgroundColor="#fff7f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
       key: "data.invoiceNumberSI",
       dataKey: "data.invoiceNumberSI",
       group: "Sales Invoices",
@@ -2947,6 +2908,51 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
+          backgroundColor="#fff7f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.activityIdSI",
+      group: "Sales Invoices",
+      dataKey: "data.activityIdSI",
+      title: "Activity ID for Portal Vendors",
+      width: columnWidth("data.activityIdSI", 200),
+      resizable: true,
+      hidden: visibilityController("salesInvoices", "data.activityIdSI"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          readonly={true}
+          backgroundColor="#fff7f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.additionalMarketingInformation",
+      group: "Sales Invoices",
+      dataKey: "data.additionalMarketingInformation",
+      title: "Additional Marketing Information",
+      width: columnWidth("data.additionalMarketingInformation", 200),
+      resizable: true,
+      hidden: visibilityController(
+        "salesInvoices",
+        "data.additionalMarketingInformation"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          readonly={true}
           backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
