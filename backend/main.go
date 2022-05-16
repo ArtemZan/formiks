@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron"
 	"github.com/joho/godotenv"
 
 	"github.com/doublegrey/formiks/backend/api"
@@ -21,6 +22,7 @@ import (
 )
 
 func main() {
+	cron := gocron.NewScheduler(time.UTC)
 	if len(os.Getenv("DEV")) > 0 {
 		err := godotenv.Load()
 		if err != nil {
@@ -42,11 +44,10 @@ func main() {
 		// fmt.Println("account lines parsed...")
 		// sap.CreateSubmissionsForAccountLines()
 		// os.Exit(0)
-
-		for range time.NewTicker(time.Hour * 7).C {
+		cron.Every(1).Day().At("03:00").Do(func() {
 			sap.FetchAccountLines()
 			sap.CreateSubmissionsForAccountLines()
-		}
+		})
 	}()
 
 	go func() {
@@ -63,6 +64,7 @@ func main() {
 			dropdowns.SyncAll()
 		}
 	}()
+	cron.StartAsync()
 	r := gin.Default()
 	middlewares.Setup(r)
 	api.RegisterRoutes(r)
