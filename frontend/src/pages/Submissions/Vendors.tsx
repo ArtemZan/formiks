@@ -877,7 +877,7 @@ export function VendorsTable(props: Props) {
     if (filters.length > 0 && submissions.length > 0) {
       submissions.forEach((submission) => {
         var valid = true;
-        filters.forEach((filter) => {
+        for (let filter of filters) {
           if (
             filter.columnLabel.includes(
               "Input of Local Marketing Department"
@@ -902,10 +902,9 @@ export function VendorsTable(props: Props) {
               case "string":
                 switch (filter.filter) {
                   case "exact":
-                    valid =
-                      filter.selectedValues[0].toString() === value.toString();
                     if (
-                      !valid &&
+                      !filter.selectedValues[0].toString() ===
+                        value.toString() &&
                       (filter.columnValue === "data.documentNumber" ||
                         filter.columnValue === "data.costAccount" ||
                         filter.columnValue === "data.documentNumberSI" ||
@@ -915,15 +914,23 @@ export function VendorsTable(props: Props) {
                         filter.columnValue === "data.documentNumberIncomeGL" ||
                         filter.columnValue === "data.incomeAccountIncomeGL")
                     ) {
-                      valid = value
-                        .toString()
-                        .endsWith(filter.selectedValues[0].toString());
+                      if (
+                        !value
+                          .toString()
+                          .endsWith(filter.selectedValues[0].toString())
+                      ) {
+                        valid = false;
+                      }
                     }
                     break;
                   case "includes":
-                    valid = value
-                      .toString()
-                      .includes(filter.selectedValues[0].toString());
+                    if (
+                      !value
+                        .toString()
+                        .includes(filter.selectedValues[0].toString())
+                    ) {
+                      valid = false;
+                    }
                     break;
                 }
                 break;
@@ -946,6 +953,7 @@ export function VendorsTable(props: Props) {
                 switch (filter.filter) {
                   case "includes":
                     var exists = false;
+                    // eslint-disable-next-line no-loop-func
                     filter.selectedValues.forEach((filterValue) => {
                       if (filterValue.toString() === value) {
                         exists = true;
@@ -983,7 +991,11 @@ export function VendorsTable(props: Props) {
                 break;
             }
           }
-        });
+          if (!valid) {
+            return;
+          }
+        }
+
         if (valid) {
           if (submission.parentId !== null) {
             var parent = sourceSubmissions.get(submission.parentId);
@@ -4481,21 +4493,21 @@ export function VendorsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            type={"dropdown"}
+                            type={"text"}
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
                                 ? "#F5FAEF"
                                 : "#f7cdd6"
                             }
                             onUpdate={handleCommunicationCellUpdate}
-                            loadOptions={() => {
-                              return VendorsNames.map((vendor) => {
-                                return {
-                                  label: vendor.value.hersteller,
-                                  value: vendor.value.hersteller,
-                                };
-                              });
-                            }}
+                            // loadOptions={() => {
+                            //   return VendorsNames.map((vendor) => {
+                            //     return {
+                            //       label: vendor.value.hersteller,
+                            //       value: vendor.value.hersteller,
+                            //     };
+                            //   });
+                            // }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
