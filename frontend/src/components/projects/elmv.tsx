@@ -1590,7 +1590,7 @@ export default function Elmv(props: Props) {
                 vendorBudgetCurrency: vendor.budgetCurrency.label,
                 vendorAmount: parseFloat(vendor.localBudget),
                 // cbbudgetEur: parseFloat(vendor.eurBudget),
-                vendorShare: 100,
+                vendorShare: parseFloat(vendor.share),
                 estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
                 estimatedIncomeCC: parseFloat(estimatedIncomeBudgetCurrency),
                 estimatedResultCC: parseFloat(netProfitTargetBudgetCurrency),

@@ -1928,7 +1928,7 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
