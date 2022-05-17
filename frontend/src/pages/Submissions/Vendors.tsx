@@ -3575,12 +3575,12 @@ export function VendorsTable(props: Props) {
       key: "data.totalIncomeLC",
       dataKey: "data.totalIncomeLC",
       title: "Total Income (LC)",
-      header: "Control Checks",
+      header: "Project Results",
       width: columnWidth("data.totalIncomeLC", 200),
       resizable: true,
-      group: "Control Checks",
+      group: "Project Results",
 
-      hidden: visibilityController("controlChecks", "data.totalIncomeLC"),
+      hidden: visibilityController("projectResults", "data.totalIncomeLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
@@ -3616,9 +3616,9 @@ export function VendorsTable(props: Props) {
       title: "Total Costs (LC)",
       width: columnWidth("data.totalCostsLC", 200),
       resizable: true,
-      group: "Control Checks",
+      group: "Project Results",
 
-      hidden: visibilityController("controlChecks", "data.totalCostsLC"),
+      hidden: visibilityController("projectResults", "data.totalCostsLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
@@ -3654,9 +3654,9 @@ export function VendorsTable(props: Props) {
       title: "Total Profit (LC)",
       width: columnWidth("data.totalProfitLC", 200),
       resizable: true,
-      group: "Control Checks",
+      group: "Project Results",
 
-      hidden: visibilityController("controlChecks", "data.totalProfitLC"),
+      hidden: visibilityController("projectResults", "data.totalProfitLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
@@ -3684,9 +3684,9 @@ export function VendorsTable(props: Props) {
       title: "Total Loss (LC)",
       width: columnWidth("data.totalLossLC", 200),
       resizable: true,
-      group: "Control Checks",
+      group: "Project Results",
 
-      hidden: visibilityController("controlChecks", "data.totalLossLC"),
+      hidden: visibilityController("projectResults", "data.totalLossLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
@@ -3715,9 +3715,9 @@ export function VendorsTable(props: Props) {
       title: "Total Income (EUR)",
       width: columnWidth("data.totalIncomeEUR", 200),
       resizable: true,
-      group: "Control Checks",
+      group: "Project Results",
 
-      hidden: visibilityController("controlChecks", "data.totalIncomeEUR"),
+      hidden: visibilityController("projectResults", "data.totalIncomeEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
@@ -3753,9 +3753,9 @@ export function VendorsTable(props: Props) {
       title: "Total Costs (EUR)",
       width: columnWidth("data.totalCostsEUR", 200),
       resizable: true,
-      group: "Control Checks",
+      group: "Project Results",
 
-      hidden: visibilityController("controlChecks", "data.totalCostsEUR"),
+      hidden: visibilityController("projectResults", "data.totalCostsEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
@@ -3791,9 +3791,9 @@ export function VendorsTable(props: Props) {
       title: "Total Profit (EUR)",
       width: columnWidth("data.totalProfitEUR", 200),
       resizable: true,
-      group: "Control Checks",
+      group: "Project Results",
 
-      hidden: visibilityController("controlChecks", "data.totalProfitEUR"),
+      hidden: visibilityController("projectResults", "data.totalProfitEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
@@ -3821,9 +3821,9 @@ export function VendorsTable(props: Props) {
       title: "Total Loss (EUR)",
       width: columnWidth("data.totalLossEUR", 200),
       resizable: true,
-      group: "Control Checks",
+      group: "Project Results",
 
-      hidden: visibilityController("controlChecks", "data.totalLossEUR"),
+      hidden: visibilityController("projectResults", "data.totalLossEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"number"}
@@ -3848,6 +3848,83 @@ export function VendorsTable(props: Props) {
 
     ///
 
+    {
+      key: "data.totalCostsSAP",
+      dataKey: "data.totalCostsSAP",
+      title: "Total Costs In SAP",
+      width: columnWidth("data.totalCostsSAP", 200),
+      resizable: true,
+      header: "Control Checks",
+      group: "Control Checks",
+
+      hidden: visibilityController("controlChecks", "data.totalCostsSAP"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
+          backgroundColor="#f9f8f8"
+          onUpdate={() => {}}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalCostsInTool)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.costAmountLC ||
+                        0 + b.data.costAmountLCCostGL ||
+                        0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
+        />
+      ),
+    },
+    {
+      key: "data.totalIncomeSAP",
+      dataKey: "data.totalIncomeSAP",
+      title: "Total Income In SAP",
+      width: columnWidth("data.totalIncomeSAP", 200),
+      resizable: true,
+      group: "Control Checks",
+
+      hidden: visibilityController("controlChecks", "data.totalIncomeSAP"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
+          backgroundColor="#f9f8f8"
+          onUpdate={() => {}}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalIncomeInTool)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.incomeAmountLCSI ||
+                        0 + b.data.incomeAmountLCIncomeGL ||
+                        0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
+        />
+      ),
+    },
     ///
 
     {
