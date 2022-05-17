@@ -3847,7 +3847,45 @@ export function VendorsTable(props: Props) {
     },
 
     ///
+    {
+      key: "data.totalCostsTool",
+      dataKey: "data.totalCostsTool",
+      title: "Total Costs In Tool",
+      width: columnWidth("data.totalCostsTool", 200),
+      resizable: true,
+      header: "Control Checks",
+      group: "Control Checks",
 
+      hidden: visibilityController("controlChecks", "data.totalCostsTool"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
+          backgroundColor="#f9f8f8"
+          onUpdate={() => {}}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalCostsInTool)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.costAmountLC ||
+                        0 + b.data.costAmountLCCostGL ||
+                        0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
+        />
+      ),
+    },
     {
       key: "data.totalCostsSAP",
       dataKey: "data.totalCostsSAP",
@@ -3878,6 +3916,44 @@ export function VendorsTable(props: Props) {
                     (b.parentId === props.rowData.id
                       ? b.data.costAmountLC ||
                         0 + b.data.costAmountLCCostGL ||
+                        0
+                      : 0),
+                  0
+                )
+              : props.cellData
+          }
+        />
+      ),
+    },
+    {
+      key: "data.totalIncomeTool",
+      dataKey: "data.totalIncomeTool",
+      title: "Total Income In Tool",
+      width: columnWidth("data.totalIncomeTool", 200),
+      resizable: true,
+      group: "Control Checks",
+
+      hidden: visibilityController("controlChecks", "data.totalIncomeTool"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"number"}
+          readonly={true}
+          bold={props.rowData.parentId === null}
+          backgroundColor="#f9f8f8"
+          onUpdate={() => {}}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={
+            props.rowData.id === "total"
+              ? `TOTAL: ${numberWithCommas(totalIncomeInTool)}`
+              : props.rowData.parentId === null
+              ? filteredSubmissions.reduce(
+                  (a, b) =>
+                    a +
+                    (b.parentId === props.rowData.id
+                      ? b.data.incomeAmountLCSI ||
+                        0 + b.data.incomeAmountLCIncomeGL ||
                         0
                       : 0),
                   0
