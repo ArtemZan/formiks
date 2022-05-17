@@ -52,12 +52,15 @@ import { RestAPI } from "../../api/rest";
 import React from "react";
 import _ from "lodash";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
-import { BiPlusMedical } from "react-icons/all";
+import { BiPlusMedical, RiFileExcel2Line } from "react-icons/all";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
 import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
 import { numberWithCommas } from "../../utils/utils";
+
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
 
 interface Props {
   history: any;
@@ -4118,10 +4121,56 @@ export function VendorsTable(props: Props) {
   );
   return (
     <div>
+      <Box h="70px" textAlign={"end"}>
+        <IconButton
+          onClick={async () => {
+            interface FD {
+              [key: string]: any;
+            }
+            var formattedData: FD[] = [];
+            formattedData = filteredSubmissions.map((s) => {
+              let doc: FD = {
+                ID: s.id || "unknown",
+                Parent: s.parentId === null,
+                Group: s.group,
+                Created: s.created,
+                Title: s.title,
+                Author: s.author,
+              };
+              DisplayedColumnsList.forEach((group: any) => {
+                group.children.map((column: any) => {
+                  doc[`${column.label} (${group.label})`] = _.get(
+                    s,
+                    column.value
+                  );
+                });
+              });
+              return doc;
+            });
+            const ws = XLSX.utils.json_to_sheet(formattedData);
+            ws["!cols"] = Object.keys(formattedData[0]).map(() => {
+              return { wch: 30 };
+            });
+            const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+            const excelBuffer = XLSX.write(wb, {
+              bookType: "xlsx",
+              type: "array",
+            });
+            const data = new Blob([excelBuffer], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+            });
+            FileSaver.saveAs(data, "test" + ".xlsx");
+          }}
+          colorScheme="teal"
+          aria-label="export"
+          icon={<RiFileExcel2Line />}
+        ></IconButton>
+      </Box>
+
       <Box
         w={"100%"}
         bg={useColorModeValue("white", "#21252A")}
-        minH={"85vh"}
+        minH={"80vh"}
         mb={5}
         mt={"-20px"}
         border="1px"
@@ -4134,7 +4183,7 @@ export function VendorsTable(props: Props) {
             <Tab>Invoice Request, Issue and Status</Tab>
           </TabList>
           <TabPanels>
-            <TabPanel w="100%" h="85vh">
+            <TabPanel w="100%" h="80vh">
               <AutoResizer
                 onResize={({
                   width,
