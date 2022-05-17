@@ -389,9 +389,9 @@ export default function Elmv(props: Props) {
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
         (parseFloat(row.share) * 0.01 * parseFloat(netProfitTarget)).toFixed(2);
 
-      row.netProfitTargetLC =
-        `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (parseFloat(row.netProfitTargetEUR) * localExchangeRate).toFixed(2);
+      row.netProfitTargetLC = (
+        parseFloat(row.netProfitTargetEUR) * localExchangeRate
+      ).toFixed(2);
       row.netProfitTargetVC =
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
         (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
@@ -1593,7 +1593,9 @@ export default function Elmv(props: Props) {
                 vendorShare: parseFloat(vendor.share),
                 estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
                 estimatedIncomeCC: parseFloat(estimatedIncomeBudgetCurrency),
-                estimatedResultCC: parseFloat(netProfitTargetBudgetCurrency),
+                estimatedResultCC:
+                  parseFloat(netProfitTargetBudgetCurrency) *
+                  (budgetSource.value === "noBudget" ? -1 : 1),
                 // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
                 estimatedIncomeEUR: parseFloat(estimatedIncome),
                 estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
