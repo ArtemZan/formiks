@@ -922,24 +922,22 @@ export function VendorsTable(props: Props) {
                 switch (filter.filter) {
                   case "exact":
                     if (
-                      !filter.selectedValues[0].toString() ===
-                        value.toString() &&
-                      (filter.columnValue === "data.documentNumber" ||
-                        filter.columnValue === "data.costAccount" ||
-                        filter.columnValue === "data.documentNumberSI" ||
-                        filter.columnValue === "data.incomeAccountSI" ||
-                        filter.columnValue === "data.documentNumberCostGL" ||
-                        filter.columnValue === "data.costAccountCostGL" ||
-                        filter.columnValue === "data.documentNumberIncomeGL" ||
-                        filter.columnValue === "data.incomeAccountIncomeGL")
+                      filter.columnValue === "data.documentNumber" ||
+                      filter.columnValue === "data.costAccount" ||
+                      filter.columnValue === "data.documentNumberSI" ||
+                      filter.columnValue === "data.incomeAccountSI" ||
+                      filter.columnValue === "data.documentNumberCostGL" ||
+                      filter.columnValue === "data.costAccountCostGL" ||
+                      filter.columnValue === "data.documentNumberIncomeGL" ||
+                      filter.columnValue === "data.incomeAccountIncomeGL"
                     ) {
-                      if (
-                        !value
-                          .toString()
-                          .endsWith(filter.selectedValues[0].toString())
-                      ) {
-                        valid = false;
-                      }
+                      valid = value
+                        .toString()
+                        .endsWith(filter.selectedValues[0].toString());
+                    } else {
+                      valid =
+                        filter.selectedValues[0].toString() ===
+                        value.toString();
                     }
                     break;
                   case "includes":
