@@ -3892,7 +3892,6 @@ export function VendorsTable(props: Props) {
       title: "Total Costs In SAP",
       width: columnWidth("data.totalCostsSAP", 200),
       resizable: true,
-      header: "Control Checks",
       group: "Control Checks",
 
       hidden: visibilityController("controlChecks", "data.totalCostsSAP"),
