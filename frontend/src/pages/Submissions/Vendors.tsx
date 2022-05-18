@@ -860,10 +860,10 @@ export function VendorsTable(props: Props) {
         tiaigl += subm.data.incomeAmountEurIncomeGL || 0;
       }
     });
-    tcit = tcal + tcalcgl;
-    tiit = tial + tialigl;
-    tcite = tca + tcacgl;
-    tiite = tia + tiaigl;
+    tcit = -(tcal + tcalcgl);
+    tiit = -tial + tialigl;
+    tcite = -(tca + tcacgl);
+    tiite = -tia + tiaigl;
     setTotalCostAmount(tca);
     setTotalCostAmountCostGL(tcacgl);
     setTotalCostAmountLC(tcal);
@@ -3588,49 +3588,7 @@ export function VendorsTable(props: Props) {
         />
       ),
     },
-    // {
-    //   key: "data.resultLCPR",
-    //   dataKey: "data.resultLCPR",
-    //   title: "Result (LC)",
-    //   header: "Project Results",
-    //   group: "Project Results",
-
-    //   width: columnWidth("data.resultLCPR", 200),
-    //   resizable: true,
-    //   hidden: visibilityController("projectResults", "data.resultLCPR"),
-    //   cellRenderer: (props: any) => (
-    //     <EditableTableCell
-    //       type={"number"}
-    //       backgroundColor="#f9f8f8"
-    //       onUpdate={handleCellUpdate}
-    //       rowIndex={props.rowIndex}
-    //       columnKey={props.column.dataKey}
-    //       rowData={props.rowData}
-    //       initialValue={props.cellData}
-    //     />
-    //   ),
-    // },
-    // {
-    //   key: "data.resultEURPR",
-    //   dataKey: "data.resultEURPR",
-    //   title: "Result (EUR)",
-    //   width: columnWidth("data.resultEURPR", 200),
-    //   group: "Project Results",
-
-    //   resizable: true,
-    //   hidden: visibilityController("projectResults", "data.resultEURPR"),
-    //   cellRenderer: (props: any) => (
-    //     <EditableTableCell
-    //       type={"number"}
-    //       backgroundColor="#f9f8f8"
-    //       onUpdate={handleCellUpdate}
-    //       rowIndex={props.rowIndex}
-    //       columnKey={props.column.dataKey}
-    //       rowData={props.rowData}
-    //       initialValue={props.cellData}
-    //     />
-    //   ),
-    // },
+    //
     {
       key: "data.totalIncomeLC",
       dataKey: "data.totalIncomeLC",
@@ -3659,7 +3617,7 @@ export function VendorsTable(props: Props) {
                   (a, b) =>
                     a +
                     (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountLCSI ||
+                      ? -b.data.incomeAmountLCSI ||
                         0 + b.data.incomeAmountLCIncomeGL ||
                         0
                       : 0),
@@ -3697,9 +3655,11 @@ export function VendorsTable(props: Props) {
                   (a, b) =>
                     a +
                     (b.parentId === props.rowData.id
-                      ? b.data.costAmountLC ||
-                        0 + b.data.costAmountLCCostGL ||
-                        0
+                      ? -(
+                          b.data.costAmountLC ||
+                          0 + b.data.costAmountLCCostGL ||
+                          0
+                        )
                       : 0),
                   0
                 )
@@ -3728,10 +3688,10 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInTool - totalCostsInTool >= 0 &&
+            totalIncomeInTool + totalCostsInTool >= 0 &&
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(
-                  totalIncomeInTool - totalCostsInTool
+                  totalIncomeInTool + totalCostsInTool
                 )}`
               : ""
           }
@@ -3758,10 +3718,10 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInTool - totalCostsInTool < 0 &&
+            totalIncomeInTool + totalCostsInTool < 0 &&
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(
-                  (totalIncomeInTool - totalCostsInTool) * -1
+                  (totalIncomeInTool + totalCostsInTool) * -1
                 )}`
               : ""
           }
@@ -3796,7 +3756,7 @@ export function VendorsTable(props: Props) {
                   (a, b) =>
                     a +
                     (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountEURSI ||
+                      ? -b.data.incomeAmountEURSI ||
                         0 + b.data.incomeAmountEURIncomeGL ||
                         0
                       : 0),
@@ -3834,9 +3794,11 @@ export function VendorsTable(props: Props) {
                   (a, b) =>
                     a +
                     (b.parentId === props.rowData.id
-                      ? b.data.costAmountEUR ||
-                        0 + b.data.costAmountEURCostGL ||
-                        0
+                      ? -(
+                          b.data.costAmountEUR ||
+                          0 + b.data.costAmountEURCostGL ||
+                          0
+                        )
                       : 0),
                   0
                 )
@@ -3865,10 +3827,10 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInToolEUR - totalCostsInToolEUR >= 0 &&
+            totalIncomeInToolEUR + totalCostsInToolEUR >= 0 &&
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(
-                  totalIncomeInToolEUR - totalCostsInToolEUR
+                  totalIncomeInToolEUR + totalCostsInToolEUR
                 )}`
               : ""
           }
@@ -3895,10 +3857,10 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInToolEUR - totalCostsInToolEUR < 0 &&
+            totalIncomeInToolEUR + totalCostsInToolEUR < 0 &&
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(
-                  (totalIncomeInToolEUR - totalCostsInToolEUR) * -1
+                  (totalIncomeInToolEUR + totalCostsInToolEUR) * -1
                 )}`
               : ""
           }

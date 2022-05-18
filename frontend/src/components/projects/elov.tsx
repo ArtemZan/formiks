@@ -213,8 +213,6 @@ export default function Elov(props: Props) {
           netProfitTargetLC: "",
           netProfitTargetEUR: "",
         });
-        console.log(props.children[0].data);
-        console.log(vendor);
       }
     }
   }, [props.submission, props.children]);
