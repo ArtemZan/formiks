@@ -190,16 +190,16 @@ export default function Elov(props: Props) {
           vendor: props.children[0].data.vendorName ?? "",
           projectManager: props.children[0].data.productionProjectManager ?? "",
           creditor: props.children[0].data.sapCreditorNumber ?? "",
-          debitor: props.children[0].data.sapDebitorNumber ?? "",
+          debitor: props.children[0].data.debitorNumber ?? "",
           manufacturer: props.children[0].data.manufacturerNumber ?? "",
           bu: props.children[0].data.businessUnit ?? "",
           ph: {
-            label: props.children[0].data.PH1 ?? "",
-            value: props.children[0].data.PH1 ?? "",
+            label: props.children[0].data.PH1 || "1",
+            value: props.children[0].data.PH1 || "1",
           },
           budgetCurrency: {
-            label: props.children[0].data.budgetCurrency ?? "",
-            value: props.children[0].data.budgetCurrency ?? "",
+            label: props.children[0].data.budgetCurrency || "",
+            value: props.children[0].data.budgetCurrency || "",
           },
           budgetAmount: "",
           localBudget: "",
@@ -213,6 +213,8 @@ export default function Elov(props: Props) {
           netProfitTargetLC: "",
           netProfitTargetEUR: "",
         });
+        console.log(props.children[0].data);
+        console.log(vendor);
       }
     }
   }, [props.submission, props.children]);
@@ -312,7 +314,7 @@ export default function Elov(props: Props) {
   ]);
 
   useEffect(() => {
-    if (vendorName.value) {
+    if (vendorName.value && !props.submission) {
       setVendor({
         vendor: vendorName.label,
         projectManager: "",
