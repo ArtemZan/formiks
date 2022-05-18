@@ -122,9 +122,6 @@ export function Viewer(props: Props) {
 
       {predefinedProject === null ? (
         <Form
-          // onChange={(event: any) => {
-          //   console.log(event);
-          // }}
           onSubmit={(formio: any) => {
             delete formio.data["submit"];
             var submission: Submission = {

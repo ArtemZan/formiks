@@ -24,6 +24,7 @@ import isEqual from "lodash/isEqual";
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
+import { SubmissionsTransformer } from "../../utils/SubmissionsTransformer";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -137,8 +138,8 @@ export default function Elov(props: Props) {
         label: props.submission.data.manufacturersFiscalQuarter ?? "",
         value: props.submission.data.manufacturersFiscalQuarter ?? "",
       });
-      // setStartDate(new Date(props.submission.data.campaignStartDate));
-      // setEndDate(new Date(props.submission.data.campaignEndDate));
+      setStartDate(new Date(props.submission.data.campaignStartDate) || null);
+      setEndDate(new Date(props.submission.data.campaignEndDate) || null);
       setBudgetSource({
         label: props.submission.data.budgetSource ?? "",
         value: props.submission.data.budgetSource ?? "",
@@ -155,6 +156,15 @@ export default function Elov(props: Props) {
           props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
         ).toString()
       );
+      setEstimatedIncome(
+        props.submission.data.campaignEstimatedIncomeEur.toFixed(2) || "0.00"
+      );
+      setEstimatedCosts(
+        props.submission.data.campaignEstimatedCostsEur.toFixed(2) || "0.00"
+      );
+      setNetProfitTarget(
+        props.submission.data.campaignNetProfitTargetEur.toFixed(2) || "0.00"
+      );
       setEstimatedCostsBudgetCurrency(
         (
           props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
@@ -166,7 +176,9 @@ export default function Elov(props: Props) {
         ).toString()
       );
       setComments(props.submission.data.comments ?? "");
-      // setTotalEstimatedCostsLC(props.submission.data.totalEstimatedCostsLC);
+      setTotalEstimatedCostsLC(
+        props.submission.data.totalEstimatedCostsLC.toFixed(2) || "0.00"
+      );
 
       //
       if (props.children && props.children.length > 0) {
@@ -236,6 +248,9 @@ export default function Elov(props: Props) {
   }
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setTotalEstimatedCostsLC(
       (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
     );
@@ -323,6 +338,9 @@ export default function Elov(props: Props) {
   }, [vendorName]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setEstimatedCosts(
       (
         parseFloat(estimatedCostsBudgetCurrency) /
@@ -367,6 +385,9 @@ export default function Elov(props: Props) {
   ]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setProjectNumber(
       (requestorsCompanyName.value.code === ""
         ? "????"
@@ -541,6 +562,7 @@ export default function Elov(props: Props) {
             onChange={(value: any) => {
               setTargetAudience(value.label);
             }}
+            value={{ label: targetAudience, value: targetAudience }}
             classNamePrefix="select"
             isClearable={false}
             name="targetAudience"
@@ -582,6 +604,7 @@ export default function Elov(props: Props) {
             onChange={(value: any) => {
               setCampaignChannel(value);
             }}
+            value={campaignChannel}
             classNamePrefix="select"
             isClearable={false}
             name="campaignChannel"
