@@ -230,6 +230,16 @@ const DisplayedColumnsList = [
     value: "projectInformation",
     children: [
       { label: "Countries EMEA", value: "data.country", type: "string" },
+      {
+        label: "Country Code EMEA",
+        value: "data.countryCodeEMEA",
+        type: "string",
+      },
+      {
+        label: "Mirror Project Number",
+        value: "data.mirrorProjectNumber",
+        type: "string",
+      },
       { label: "% Country Share", value: "data.countryShare", type: "number" },
       {
         label: "Country Budget Contribution (Campaign Currency)",
@@ -1568,6 +1578,55 @@ export function VendorsTable(props: Props) {
         />
       ),
     },
+    {
+      key: "data.countryCodeEMEA",
+      dataKey: "data.countryCodeEMEA",
+      title: "Country Code EMEA",
+      width: columnWidth("data.countryCodeEMEA", 250),
+      resizable: true,
+      group: "Project Information",
+
+      hidden: visibilityController(
+        "projectInformation",
+        "data.countryCodeEMEA"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f5faef"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.mirrorProjectNumber",
+      dataKey: "data.mirrorProjectNumber",
+      title: "Mirror Project Number",
+      width: columnWidth("data.mirrorProjectNumber", 250),
+      resizable: true,
+      group: "Project Information",
+
+      hidden: visibilityController(
+        "projectInformation",
+        "data.mirrorProjectNumber"
+      ),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          backgroundColor="#f5faef"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    //
     {
       key: "data.countryShare",
       dataKey: "data.countryShare",
@@ -4178,7 +4237,7 @@ export function VendorsTable(props: Props) {
         <Tabs isLazy={false} variant="enclosed">
           <TabList>
             <Tab>Projects</Tab>
-            <Tab>Invoice Request, Issue and Status</Tab>
+            <Tab>Invoicing</Tab>
           </TabList>
           <TabPanels>
             <TabPanel w="100%" h="80vh">

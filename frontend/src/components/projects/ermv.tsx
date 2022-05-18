@@ -1257,6 +1257,7 @@ export default function Ermv(props: Props) {
                         ...provided,
                         zIndex: 1000000000,
                       }),
+                      menuPortal: (base) => ({ ...base, zIndex: 10000000 }),
                       singleValue: (provided) => ({
                         ...provided,
                         color: "#718196",
@@ -1507,8 +1508,9 @@ export default function Ermv(props: Props) {
             styles={{
               menu: (provided) => ({
                 ...provided,
-                zIndex: 1000000,
+                zIndex: 10000000,
               }),
+              menuPortal: (base) => ({ ...base, zIndex: 10000000 }),
               singleValue: (provided) => ({
                 ...provided,
                 color: "#718196",
@@ -1536,7 +1538,7 @@ export default function Ermv(props: Props) {
             onChange={(value: any) => {
               setCompaniesParticipating(value);
             }}
-            classNamePrefix="select"
+            // classNamePrefix="select"
             isClearable={false}
             name="companiesParticipating"
             options={Companies}
@@ -1765,7 +1767,7 @@ export default function Ermv(props: Props) {
               totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
               comments: comments,
               additionalInformation: comments,
-              projectType: "Regional Multi Vendor",
+              projectType: "European Multi Vendor",
             },
           };
           var children: Submission[] = [];
@@ -1815,11 +1817,11 @@ export default function Ermv(props: Props) {
               author: requestorsName,
               data: {
                 companyName: company.companyName,
-                companyCode: company.companyCode,
+                countryCodeEMEA: company.companyCode,
                 country: company.country,
                 countriesEMEA: company.country,
                 productionProjectManager: company.contactEmail,
-                projectNumber: company.projectNumber,
+                mirrorProjectNumber: company.projectNumber,
                 countryShare: parseFloat(company.share),
                 countryBudgetContributionEur: company.contribution,
                 countryCostEstimationEur: company.estimatedCosts,

@@ -462,29 +462,24 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Projects",
+    label: "Requests",
     children: [
       {
-        label: "Existing Projects",
-        subLabel: "Explore existing formiks projects",
+        label: "Existing Requests",
+        subLabel: "Explore existing formiks requests",
         href: "/projects",
       },
       {
-        label: "New Project",
-        subLabel: "Create new formiks project",
+        label: "New Request",
+        subLabel: "Create new formiks request",
         href: "/projects/create",
       },
     ],
   },
 
   {
-    label: "Submissions",
+    label: "Projects",
     children: [
-      {
-        label: "Vendors Viewer (concept)",
-        subLabel: "View and edit vendors with multiple tables",
-        href: "/vendors/new",
-      },
       {
         label: "Vendors Viewer",
         subLabel: "View and edit vendors with table view",
@@ -492,7 +487,7 @@ const NAV_ITEMS: Array<NavItem> = [
       },
       {
         label: "Table Viewer",
-        subLabel: "Filter and sort submissions with table view",
+        subLabel: "Filter and sort projects with table view",
         href: "/submissions",
       },
     ],
@@ -519,17 +514,12 @@ const NAV_ITEMS: Array<NavItem> = [
 ];
 const GUEST_NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Projects",
+    label: "Requests",
     href: "/projects",
   },
   {
-    label: "Submissions",
+    label: "Projects",
     children: [
-      {
-        label: "Vendors Viewer (concept)",
-        subLabel: "View and edit vendors with multiple tables",
-        href: "/vendors/new",
-      },
       {
         label: "Vendors Viewer",
         subLabel: "View and edit vendors with table view",
@@ -537,7 +527,7 @@ const GUEST_NAV_ITEMS: Array<NavItem> = [
       },
       {
         label: "Table Viewer",
-        subLabel: "Filter and sort submissions with table view",
+        subLabel: "Filter and sort projects with table view",
         href: "/submissions",
       },
     ],

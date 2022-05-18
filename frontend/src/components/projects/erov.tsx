@@ -1195,6 +1195,7 @@ export default function Erov(props: Props) {
                 ...provided,
                 zIndex: 1000000000,
               }),
+              menuPortal: (base) => ({ ...base, zIndex: 10000000 }),
               singleValue: (provided) => ({
                 ...provided,
                 color: "#718196",
@@ -1242,6 +1243,7 @@ export default function Erov(props: Props) {
                 ...provided,
                 zIndex: 1000000,
               }),
+              menuPortal: (base) => ({ ...base, zIndex: 10000000 }),
               singleValue: (provided) => ({
                 ...provided,
                 color: "#718196",
@@ -1495,7 +1497,7 @@ export default function Erov(props: Props) {
               totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
               comments: comments,
               additionalInformation: comments,
-              projectType: "Regional One Vendor",
+              projectType: "European One Vendor",
             },
           };
           var children: Submission[] = [];
@@ -1544,11 +1546,11 @@ export default function Erov(props: Props) {
               author: requestorsName,
               data: {
                 companyName: company.companyName,
-                companyCode: company.companyCode,
+                countryCodeEMEA: company.companyCode,
                 country: company.country,
                 countriesEMEA: company.country,
                 productionProjectManager: company.contactEmail,
-                projectNumber: company.projectNumber,
+                mirrorProjectNumber: company.projectNumber,
                 countryShare: parseFloat(company.share),
                 countryBudgetContributionEur: company.contribution,
                 countryCostEstimationEur: company.estimatedCosts,

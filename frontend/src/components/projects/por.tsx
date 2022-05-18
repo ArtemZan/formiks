@@ -627,58 +627,107 @@ export default function Elov(props: Props) {
         _hover={{
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
-        onClick={() => {
-          var projectId = "62610ab73a88d397b05cea12";
+        // onClick={() => {
+        //   var projectId = "62610ab73a88d397b05cea12";
 
-          var parent: Submission = {
-            project: projectId,
-            title: campaignName,
-            parentId: null,
-            group: null,
-            created: new Date(),
-            updated: new Date(),
-            status: "New",
-            author: requestorsName,
-            data: {
-              purchaseOrderServiceProvider: serviceProvider,
-              requestorsCompanyName: requestorsCompanyName.label,
-              companyCode: requestorsCompanyName.value.code,
-              requestorsCountry: requestorsCompanyName.value.country,
-              campaignName: campaignName,
-              projectNumber: projectNumber,
-              projectName: projectName,
-              comments: comments,
-              projectType: "Purchase Order Request",
-            },
-          };
-          var children: Submission[] = [];
+        //   var parent: Submission = {
+        //     project: projectId,
+        //     title: campaignName,
+        //     parentId: null,
+        //     group: null,
+        //     created: new Date(),
+        //     updated: new Date(),
+        //     status: "New",
+        //     author: requestorsName,
+        //     data: {
+        //       purchaseOrderServiceProvider: serviceProvider,
+        //       requestorsCompanyName: requestorsCompanyName.label,
+        //       companyCode: requestorsCompanyName.value.code,
+        //       requestorsCountry: requestorsCompanyName.value.country,
+        //       campaignName: campaignName,
+        //       projectNumber: projectNumber,
+        //       projectName: projectName,
+        //       comments: comments,
+        //       projectType: "Purchase Order Request",
+        //     },
+        //   };
+        //   var children: Submission[] = [];
 
-          services.forEach((service: any) => {
-            children.push({
-              project: projectId,
-              title: "",
-              parentId: "",
-              group: "vendor",
-              created: new Date(),
-              updated: new Date(),
-              status: "New",
-              author: requestorsName,
-              data: {
-                netValueOfServiceOrderedLC: service.netValueLC,
-                localCurrency: service.localCurrency,
-                netValuePOC: service.netValuePO,
-                purchaseOrderCurrency: service.poCurrencyCode,
-                netValueEur: service.netValueEUR,
-              },
-            });
-          });
+        //   services.forEach((service: any) => {
+        //     children.push({
+        //       project: projectId,
+        //       title: "",
+        //       parentId: "",
+        //       group: "vendor",
+        //       created: new Date(),
+        //       updated: new Date(),
+        //       status: "New",
+        //       author: requestorsName,
+        //       data: {
+        //         netValueOfServiceOrderedLC: service.netValueLC,
+        //         localCurrency: service.localCurrency,
+        //         netValuePOC: service.netValuePO,
+        //         purchaseOrderCurrency: service.poCurrencyCode,
+        //         netValueEur: service.netValueEUR,
+        //       },
+        //     });
+        //   });
 
-          var submission: SubmissionWithChildren = {
-            submission: parent,
-            children,
-          };
-          RestAPI.createSubmissionWithChildren(submission).then((response) => {
-            props.history.push("/vendors");
+        //   var submission: SubmissionWithChildren = {
+        //     submission: parent,
+        //     children,
+        //   };
+        //   RestAPI.createSubmissionWithChildren(submission).then((response) => {
+        //     props.history.push("/vendors");
+        //   });
+        // }}
+        onClick={async () => {
+          RestAPI.getSubmissions().then((response) => {
+            var subs = response.data;
+            var targetId = "";
+            for (let sub of subs) {
+              if (
+                sub.parentId === null &&
+                sub.data.projectNumber === projectNumber
+              ) {
+                targetId = sub.id || "";
+                break;
+              }
+            }
+            if (targetId.length > 0) {
+              RestAPI.updateSubmissionPartial(
+                targetId,
+                "data.purchaseOrderServiceProvider",
+                serviceProvider
+              );
+              RestAPI.updateSubmissionPartial(
+                targetId,
+                "data.vendorNamePO",
+                vendorsNames.map((v: any) => v.label).join(", ")
+              );
+              services.forEach(async (service: any) => {
+                await RestAPI.createSubmission({
+                  project: "62610ab73a88d397b05cea12",
+                  title: "",
+                  parentId: targetId,
+                  group: "vendor",
+                  created: new Date(),
+                  updated: new Date(),
+                  status: "New",
+                  author: requestorsName,
+                  data: {
+                    netValueOfServiceOrderedLC: service.netValueLC,
+                    localCurrency: service.localCurrency,
+                    netValuePOC: service.netValuePO,
+                    purchaseOrderCurrency: service.poCurrencyCode,
+                    netValueEur: service.netValueEUR,
+                  },
+                });
+              });
+              setTimeout(() => {
+                props.history.push("/vendors");
+              }, 2000);
+            }
           });
         }}
         isDisabled={requestorsCompanyName.value.code !== "6110"}
