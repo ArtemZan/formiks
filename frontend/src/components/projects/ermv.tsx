@@ -403,9 +403,9 @@ export default function Ermv(props: Props) {
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
         (parseFloat(row.share) * 0.01 * parseFloat(netProfitTarget)).toFixed(2);
 
-      row.netProfitTargetLC =
-        `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (parseFloat(row.netProfitTargetEUR) * localExchangeRate).toFixed(2);
+      row.netProfitTargetLC = (
+        parseFloat(row.netProfitTargetEUR) * localExchangeRate
+      ).toFixed(2);
       row.netProfitTargetVC =
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
         (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
