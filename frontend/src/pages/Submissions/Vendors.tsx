@@ -3872,7 +3872,7 @@ export function VendorsTable(props: Props) {
     {
       key: "data.totalCostsTool",
       dataKey: "data.totalCostsTool",
-      title: "Total Costs In Tool",
+      title: "Total Costs In Tool (LC)",
       width: columnWidth("data.totalCostsTool", 200),
       resizable: true,
       header: "Control Checks",
@@ -3911,7 +3911,7 @@ export function VendorsTable(props: Props) {
     {
       key: "data.totalCostsSAP",
       dataKey: "data.totalCostsSAP",
-      title: "Total Costs In SAP",
+      title: "Total Costs In SAP (LC)",
       width: columnWidth("data.totalCostsSAP", 200),
       resizable: true,
       group: "Control Checks",
@@ -3949,7 +3949,7 @@ export function VendorsTable(props: Props) {
     {
       key: "data.totalIncomeTool",
       dataKey: "data.totalIncomeTool",
-      title: "Total Income In Tool",
+      title: "Total Income In Tool (LC)",
       width: columnWidth("data.totalIncomeTool", 200),
       resizable: true,
       group: "Control Checks",
@@ -3987,7 +3987,7 @@ export function VendorsTable(props: Props) {
     {
       key: "data.totalIncomeSAP",
       dataKey: "data.totalIncomeSAP",
-      title: "Total Income In SAP",
+      title: "Total Income In SAP (LC)",
       width: columnWidth("data.totalIncomeSAP", 200),
       resizable: true,
       group: "Control Checks",

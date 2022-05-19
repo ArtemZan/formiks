@@ -20,6 +20,8 @@ import Select from "react-select";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
 import DatePicker from "react-datepicker";
 import isEqual from "lodash/isEqual";
+import { toast } from "react-toastify";
+import Toast from "../../components/Toast";
 
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
@@ -1516,108 +1518,148 @@ export default function Elmv(props: Props) {
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
         onClick={() => {
-          var projectId = "6246ec8efa2a446faadb8d9b";
+          RestAPI.getSubmissions().then((response) => {
+            var parentSubmissions = response.data.filter(
+              (s) => s.parentId === null
+            );
+            let isUnique = false;
+            let pn = projectNumber;
+            while (!isUnique) {
+              let found = false;
+              for (let s of parentSubmissions) {
+                if (s.data.projectNumber === pn) {
+                  found = true;
+                  break;
+                }
+              }
+              if (!found) {
+                isUnique = true;
+              } else {
+                var newSuffix: any = parseInt(pn.slice(-2)) + 1;
+                newSuffix = (newSuffix > 9 ? "" : "0") + newSuffix.toString();
+                pn = pn.slice(0, -2) + newSuffix;
+              }
+            }
+            if (pn !== projectNumber) {
+              // we changed project number. Notify user
+              setProjectNumber(pn);
+              toast(
+                <Toast
+                  title={"SAP Response"}
+                  message={`Project Number changed to prevent data loss: ${pn}`}
+                  type={"info"}
+                />
+              );
+              return;
+            } else {
+              var projectId = "6246ec8efa2a446faadb8d9b";
 
-          var parent: Submission = {
-            project: projectId,
-            title: campaignName,
-            parentId: null,
-            group: null,
-            created: new Date(),
-            updated: new Date(),
-            status: "New",
-            author: requestorsName,
-            data: {
-              requestorsCompanyName: requestorsCompanyName.label,
-              companyCode: requestorsCompanyName.value.code,
-              requestorsCountry: requestorsCompanyName.value.country,
-              campaignName: campaignName,
-              projectName: campaignName,
-              campaignDescription: campaignDescription,
-              targetAudience: targetAudience,
-              campaignChannel: campaignChannel.label,
-              year: year.label,
-              projectStartQuarter: projectStartQuarter.label,
-              projectNumber: projectNumber,
-              requestorsName: requestorsName,
-              projectApprover: projectApproval,
-              projectApproval: projectApproval,
-              manufacturersFiscalQuarter: fiscalQuarter.label,
-              campaignStartDate:
-                startDate === null ? null : startDate.toString(),
-              campaignEndDate: endDate === null ? null : endDate.toString(),
-              budgetSource: budgetSource.label,
-              budgetApprovedByVendor: budgetApprovedByVendor,
-              campaignBudgetsCurrency: exchangeRates.label,
-              campaignCurrency: exchangeRates.label,
-              campaignEstimatedIncomeBudgetsCurrency: parseFloat(
-                estimatedIncomeBudgetCurrency
-              ),
-              campaignEstimatedCostsBudgetsCurrency: parseFloat(
-                estimatedCostsBudgetCurrency
-              ),
-              campaignNetProfitTargetBudgetsCurrency: parseFloat(
-                netProfitTargetBudgetCurrency
-              ),
-              campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
-              campaignEstimatedCostsEur: parseFloat(estimatedCosts),
-              campaignNetProfitTargetEur: parseFloat(netProfitTarget),
-              totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
-              comments: comments,
-              additionalInformation: comments,
-              projectType: "Local Multi Vendor",
-            },
-          };
-          var children: Submission[] = [];
-          vendors.slice(0, -1).forEach((vendor: any) => {
-            children.push({
-              project: projectId,
-              title: "",
-              parentId: "",
-              group: "vendor",
-              created: new Date(),
-              updated: new Date(),
-              status: "New",
-              author: requestorsName,
-              data: {
-                vendorName: vendor.vendor,
-                productionProjectManager: vendor.projectManager,
-                creditorNumber: vendor.creditor,
-                debitorNumber: vendor.debitor,
-                manufacturerNumber: vendor.manufacturer,
-                businessUnit: vendor.bu,
-                PH1: vendor.ph.label,
-                vendorBudgetCurrency: vendor.budgetCurrency.label,
-                vendorAmount: parseFloat(vendor.localBudget),
-                // cbbudgetEur: parseFloat(vendor.eurBudget),
-                vendorShare: parseFloat(vendor.share),
-                estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
-                estimatedIncomeCC:
-                  parseFloat(estimatedIncomeBudgetCurrency) === null
-                    ? 0.0
-                    : parseFloat(estimatedIncomeBudgetCurrency),
-                estimatedResultCC:
-                  parseFloat(netProfitTargetBudgetCurrency) *
-                  (budgetSource.value === "noBudget" ? -1 : 1),
-                // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-                estimatedIncomeEUR:
-                  parseFloat(estimatedIncome) === null
-                    ? 0.0
-                    : parseFloat(estimatedIncome),
-                estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
-                estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
-                estimatedResultBC: parseFloat(netProfitTargetBudgetCurrency),
-                // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
-              },
-            });
-          });
+              var parent: Submission = {
+                project: projectId,
+                title: campaignName,
+                parentId: null,
+                group: null,
+                created: new Date(),
+                updated: new Date(),
+                status: "New",
+                author: requestorsName,
+                data: {
+                  requestorsCompanyName: requestorsCompanyName.label,
+                  companyCode: requestorsCompanyName.value.code,
+                  requestorsCountry: requestorsCompanyName.value.country,
+                  campaignName: campaignName,
+                  projectName: campaignName,
+                  campaignDescription: campaignDescription,
+                  targetAudience: targetAudience,
+                  campaignChannel: campaignChannel.label,
+                  year: year.label,
+                  projectStartQuarter: projectStartQuarter.label,
+                  projectNumber: projectNumber,
+                  requestorsName: requestorsName,
+                  projectApprover: projectApproval,
+                  projectApproval: projectApproval,
+                  manufacturersFiscalQuarter: fiscalQuarter.label,
+                  campaignStartDate:
+                    startDate === null ? null : startDate.toString(),
+                  campaignEndDate: endDate === null ? null : endDate.toString(),
+                  budgetSource: budgetSource.label,
+                  budgetApprovedByVendor: budgetApprovedByVendor,
+                  campaignBudgetsCurrency: exchangeRates.label,
+                  campaignCurrency: exchangeRates.label,
+                  campaignEstimatedIncomeBudgetsCurrency: parseFloat(
+                    estimatedIncomeBudgetCurrency
+                  ),
+                  campaignEstimatedCostsBudgetsCurrency: parseFloat(
+                    estimatedCostsBudgetCurrency
+                  ),
+                  campaignNetProfitTargetBudgetsCurrency: parseFloat(
+                    netProfitTargetBudgetCurrency
+                  ),
+                  campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
+                  campaignEstimatedCostsEur: parseFloat(estimatedCosts),
+                  campaignNetProfitTargetEur: parseFloat(netProfitTarget),
+                  totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
+                  comments: comments,
+                  additionalInformation: comments,
+                  projectType: "Local Multi Vendor",
+                },
+              };
+              var children: Submission[] = [];
+              vendors.slice(0, -1).forEach((vendor: any) => {
+                children.push({
+                  project: projectId,
+                  title: "",
+                  parentId: "",
+                  group: "vendor",
+                  created: new Date(),
+                  updated: new Date(),
+                  status: "New",
+                  author: requestorsName,
+                  data: {
+                    vendorName: vendor.vendor,
+                    productionProjectManager: vendor.projectManager,
+                    creditorNumber: vendor.creditor,
+                    debitorNumber: vendor.debitor,
+                    manufacturerNumber: vendor.manufacturer,
+                    businessUnit: vendor.bu,
+                    PH1: vendor.ph.label,
+                    vendorBudgetCurrency: vendor.budgetCurrency.label,
+                    vendorAmount: parseFloat(vendor.localBudget),
+                    // cbbudgetEur: parseFloat(vendor.eurBudget),
+                    vendorShare: parseFloat(vendor.share),
+                    estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
+                    estimatedIncomeCC:
+                      parseFloat(estimatedIncomeBudgetCurrency) === null
+                        ? 0.0
+                        : parseFloat(estimatedIncomeBudgetCurrency),
+                    estimatedResultCC:
+                      parseFloat(netProfitTargetBudgetCurrency) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
+                    // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+                    estimatedIncomeEUR:
+                      parseFloat(estimatedIncome) === null
+                        ? 0.0
+                        : parseFloat(estimatedIncome),
+                    estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
+                    estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
+                    estimatedResultBC: parseFloat(
+                      netProfitTargetBudgetCurrency
+                    ),
+                    // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+                  },
+                });
+              });
 
-          var submission: SubmissionWithChildren = {
-            submission: parent,
-            children,
-          };
-          RestAPI.createSubmissionWithChildren(submission).then((response) => {
-            props.history.push("/vendors");
+              var submission: SubmissionWithChildren = {
+                submission: parent,
+                children,
+              };
+              RestAPI.createSubmissionWithChildren(submission).then(
+                (response) => {
+                  props.history.push("/vendors");
+                }
+              );
+            }
           });
         }}
         isDisabled={requestorsCompanyName.value.code !== "6110"}

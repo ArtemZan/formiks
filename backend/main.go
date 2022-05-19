@@ -38,7 +38,6 @@ func main() {
 
 	go func() {
 		sap.FetchAccountLines()
-		// sap.CreateSubmissionsForAccountLines()
 
 		// driver.Conn.Mongo.Collection("submissions").Drop(context.TODO())
 		// fmt.Println("account lines parsed...")
