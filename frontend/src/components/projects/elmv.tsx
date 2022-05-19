@@ -1592,12 +1592,18 @@ export default function Elmv(props: Props) {
                 // cbbudgetEur: parseFloat(vendor.eurBudget),
                 vendorShare: parseFloat(vendor.share),
                 estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
-                estimatedIncomeCC: parseFloat(estimatedIncomeBudgetCurrency),
+                estimatedIncomeCC:
+                  parseFloat(estimatedIncomeBudgetCurrency) === null
+                    ? 0.0
+                    : parseFloat(estimatedIncomeBudgetCurrency),
                 estimatedResultCC:
                   parseFloat(netProfitTargetBudgetCurrency) *
                   (budgetSource.value === "noBudget" ? -1 : 1),
                 // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-                estimatedIncomeEUR: parseFloat(estimatedIncome),
+                estimatedIncomeEUR:
+                  parseFloat(estimatedIncome) === null
+                    ? 0.0
+                    : parseFloat(estimatedIncome),
                 estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
                 estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
                 estimatedResultBC: parseFloat(netProfitTargetBudgetCurrency),
