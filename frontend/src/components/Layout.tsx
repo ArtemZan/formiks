@@ -479,18 +479,7 @@ const NAV_ITEMS: Array<NavItem> = [
 
   {
     label: "Projects",
-    children: [
-      {
-        label: "Vendors Viewer",
-        subLabel: "View and edit vendors with table view",
-        href: "/vendors",
-      },
-      {
-        label: "Table Viewer",
-        subLabel: "Filter and sort projects with table view",
-        href: "/submissions",
-      },
-    ],
+    href: "/vendors",
   },
   {
     label: "Dropdowns",
@@ -519,18 +508,7 @@ const GUEST_NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: "Projects",
-    children: [
-      {
-        label: "Vendors Viewer",
-        subLabel: "View and edit vendors with table view",
-        href: "/vendors",
-      },
-      {
-        label: "Table Viewer",
-        subLabel: "Filter and sort projects with table view",
-        href: "/submissions",
-      },
-    ],
+    href: "/vendors",
   },
   {
     label: "Documentation",
