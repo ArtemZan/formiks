@@ -61,7 +61,6 @@ class EditableTableCell extends React.Component<
           break;
         case "number":
           value =
-            this.props.initialValue &&
             typeof this.props.initialValue === "number"
               ? numberWithCommas(this.props.initialValue)
               : "";

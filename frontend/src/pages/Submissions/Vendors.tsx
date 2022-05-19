@@ -1964,7 +1964,7 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -4055,10 +4055,10 @@ export function VendorsTable(props: Props) {
         ),
     },
     {
-      key: "__actions.edit",
-      dataKey: "__actions.edit",
-      title: "Edit",
-      width: columnWidth("__actions.edit", 100),
+      key: "__actions.view",
+      dataKey: "__actions.view",
+      title: "View",
+      width: columnWidth("__actions.view", 100),
       resizable: true,
       className: "red-border",
       cellRenderer: (props: any) =>
@@ -4079,7 +4079,7 @@ export function VendorsTable(props: Props) {
             rowIndex={props.rowIndex}
             columnKey={props.column.dataKey}
             rowData={props.rowData}
-            initialValue={"edit"}
+            initialValue={"view"}
           />
         ) : (
           <div
