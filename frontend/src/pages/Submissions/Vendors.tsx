@@ -877,27 +877,7 @@ export function VendorsTable(props: Props) {
     setTotalCostsInToolEUR(tcite);
     setTotalIncomeInToolEUR(tiite);
   }, [filteredSubmissions]);
-  // useEffect(() => {
-  //   RestAPI.getVendorTableDefaultConfig().then((response) => {
-  //     if (response.data.columnsWidth !== null) {
-  //       setDefaultColumnsWidth(response.data.columnsWidth);
-  //     }
-  //     if (response.data.displayedColumns !== null) {
-  //       if (response.data.displayedColumns.length > 0) {
-  //         setDisplayedColumns(response.data.displayedColumns);
-  //       }
-  //     }
 
-  //     var cw = localStorage.getItem("vendors.columns");
-  //     if (cw !== null) {
-  //       setDefaultColumnsWidth(JSON.parse(cw));
-  //     }
-  //     var dc = localStorage.getItem("vendors.displayedColumns");
-  //     if (dc !== null) {
-  //       setDisplayedColumns(JSON.parse(dc));
-  //     }
-  //   });
-  // }, []);
   useEffect(() => {
     var filteredMap = new Map();
     var filtered: Submission[] = [];
@@ -3891,7 +3871,9 @@ export function VendorsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalCostsInTool)}`
+              ? `TOTAL: ${numberWithCommas(
+                  totalCostAmountLC + totalCostAmountLCCostGL
+                )}`
               : props.rowData.parentId === null
               ? filteredSubmissions.reduce(
                   (a, b) =>
@@ -3929,7 +3911,9 @@ export function VendorsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalCostsInTool)}`
+              ? `TOTAL: ${numberWithCommas(
+                  totalCostAmountLC + totalCostAmountLCCostGL
+                )}`
               : props.rowData.parentId === null
               ? filteredSubmissions.reduce(
                   (a, b) =>
@@ -3967,7 +3951,9 @@ export function VendorsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalIncomeInTool)}`
+              ? `TOTAL: ${numberWithCommas(
+                  totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
+                )}`
               : props.rowData.parentId === null
               ? filteredSubmissions.reduce(
                   (a, b) =>
@@ -4005,7 +3991,9 @@ export function VendorsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalIncomeInTool)}`
+              ? `TOTAL: ${numberWithCommas(
+                  totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
+                )}`
               : props.rowData.parentId === null
               ? filteredSubmissions.reduce(
                   (a, b) =>
