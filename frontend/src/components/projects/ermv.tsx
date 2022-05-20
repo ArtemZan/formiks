@@ -1819,24 +1819,43 @@ export default function Ermv(props: Props) {
                   author: requestorsName,
                   data: {
                     vendorName: vendor.vendor,
-                    productionProjectManager: vendor.projectManager,
+                    marketingResponsible: vendor.projectManager,
                     creditorNumber: vendor.creditor,
                     debitorNumber: vendor.debitor,
                     manufacturerNumber: vendor.manufacturer,
                     businessUnit: vendor.bu,
                     PH1: vendor.ph.label,
-                    vendorBudgetCurrency: vendor.budgetCurrency.label,
-                    vendorAmount: parseFloat(vendor.localBudget),
+                    vendorBudgetCurrency:
+                      budgetSource.value === "noBudget"
+                        ? "N/A"
+                        : vendor.budgetCurrency.label,
+                    vendorAmount:
+                      isNaN(parseFloat(vendor.localBudget)) ||
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(vendor.localBudget),
                     // cbbudgetEur: parseFloat(vendor.eurBudget),
                     vendorShare: parseFloat(vendor.share),
                     estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
-                    estimatedIncomeCC: parseFloat(vendor.estimatedIncomeCC),
-                    estimatedResultCC: parseFloat(vendor.netProfitTargetVC),
+                    estimatedIncomeCC:
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(vendor.estimatedIncomeCC),
+                    estimatedResultCC:
+                      parseFloat(vendor.netProfitTargetVC) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
                     // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-                    estimatedIncomeEUR: parseFloat(vendor.eurBudget),
+                    estimatedIncomeEUR:
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(vendor.eurBudget),
                     estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
-                    estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
-                    estimatedResultBC: parseFloat(vendor.netProfitTargetLC),
+                    estimatedResultEUR:
+                      parseFloat(vendor.netProfitTargetEUR) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
+                    estimatedResultBC:
+                      parseFloat(vendor.netProfitTargetLC) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
                     // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
                   },
                 });
@@ -1861,9 +1880,11 @@ export default function Ermv(props: Props) {
                     countryShare: parseFloat(company.share),
                     countryBudgetContributionEur: company.contribution,
                     countryCostEstimationEur: company.estimatedCosts,
-                    countryBudgetContributionCC: parseFloat(
-                      company.contribution
-                    ),
+                    countryBudgetContributionCC: isNaN(
+                      parseFloat(company.contribution)
+                    )
+                      ? 0.0
+                      : parseFloat(company.contribution),
                     countryCostEstimationCC: parseFloat(company.estimatedCosts),
                   },
                 });

@@ -1617,7 +1617,7 @@ export default function Elmv(props: Props) {
                   author: requestorsName,
                   data: {
                     vendorName: vendor.vendor,
-                    productionProjectManager: vendor.projectManager,
+                    marketingResponsible: vendor.projectManager,
                     creditorNumber: vendor.creditor,
                     debitorNumber: vendor.debitor,
                     manufacturerNumber: vendor.manufacturer,

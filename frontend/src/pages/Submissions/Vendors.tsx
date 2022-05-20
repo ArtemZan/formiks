@@ -899,130 +899,132 @@ export function VendorsTable(props: Props) {
     if (filters.length > 0 && submissions.length > 0) {
       submissions.forEach((submission) => {
         var valid = true;
-        for (let filter of filters) {
-          if (
-            filter.columnLabel.includes(
-              "Input of Local Marketing Department"
-            ) ||
-            filter.columnLabel.includes(
-              "Input of Central Marketing Controlling Team"
-            )
-          ) {
-            return;
-          }
-
-          if (
-            filter.selectedValues !== null &&
-            filter.selectedValues.length > 0
-          ) {
-            var value = _.get(submission, filter.columnValue);
-            if (value === undefined) {
-              valid = false;
+        if (submission.parentId === null) {
+          for (let filter of filters) {
+            if (
+              filter.columnLabel.includes(
+                "Input of Local Marketing Department"
+              ) ||
+              filter.columnLabel.includes(
+                "Input of Central Marketing Controlling Team"
+              )
+            ) {
               return;
             }
-            switch (filter.type) {
-              case "string":
-                switch (filter.filter) {
-                  case "exact":
-                    if (
-                      filter.columnValue === "data.documentNumber" ||
-                      filter.columnValue === "data.costAccount" ||
-                      filter.columnValue === "data.documentNumberSI" ||
-                      filter.columnValue === "data.incomeAccountSI" ||
-                      filter.columnValue === "data.documentNumberCostGL" ||
-                      filter.columnValue === "data.costAccountCostGL" ||
-                      filter.columnValue === "data.documentNumberIncomeGL" ||
-                      filter.columnValue === "data.incomeAccountIncomeGL"
-                    ) {
-                      valid = value
-                        .toString()
-                        .endsWith(filter.selectedValues[0].toString());
-                    } else {
-                      valid =
-                        filter.selectedValues[0].toString() ===
-                        value.toString();
-                    }
-                    break;
-                  case "includes":
-                    if (
-                      !value
-                        .toString()
-                        .includes(filter.selectedValues[0].toString())
-                    ) {
-                      valid = false;
-                    }
-                    break;
-                }
-                break;
-              case "number":
-                switch (filter.filter) {
-                  case "exact":
-                    valid = filter.selectedValues[0] === value;
-                    break;
-                  case "range":
-                    if (filter.selectedValues.length === 2) {
-                      valid =
-                        value >= filter.selectedValues[0] &&
-                        value <= filter.selectedValues[1];
-                    }
-                    break;
-                }
-                break;
-              case "dropdown":
-              case "multiple-dropdown":
-                switch (filter.filter) {
-                  case "includes":
-                    var exists = false;
-                    // eslint-disable-next-line no-loop-func
-                    filter.selectedValues.forEach((filterValue) => {
-                      if (filterValue.toString() === value) {
-                        exists = true;
+
+            if (
+              filter.selectedValues !== null &&
+              filter.selectedValues.length > 0
+            ) {
+              var value = _.get(submission, filter.columnValue);
+              if (value === undefined) {
+                valid = false;
+                return;
+              }
+              switch (filter.type) {
+                case "string":
+                  switch (filter.filter) {
+                    case "exact":
+                      if (
+                        filter.columnValue === "data.documentNumber" ||
+                        filter.columnValue === "data.costAccount" ||
+                        filter.columnValue === "data.documentNumberSI" ||
+                        filter.columnValue === "data.incomeAccountSI" ||
+                        filter.columnValue === "data.documentNumberCostGL" ||
+                        filter.columnValue === "data.costAccountCostGL" ||
+                        filter.columnValue === "data.documentNumberIncomeGL" ||
+                        filter.columnValue === "data.incomeAccountIncomeGL"
+                      ) {
+                        valid = value
+                          .toString()
+                          .endsWith(filter.selectedValues[0].toString());
+                      } else {
+                        valid =
+                          filter.selectedValues[0].toString() ===
+                          value.toString();
                       }
-                    });
-                    if (!exists) {
+                      break;
+                    case "includes":
+                      if (
+                        !value
+                          .toString()
+                          .includes(filter.selectedValues[0].toString())
+                      ) {
+                        valid = false;
+                      }
+                      break;
+                  }
+                  break;
+                case "number":
+                  switch (filter.filter) {
+                    case "exact":
+                      valid = filter.selectedValues[0] === value;
+                      break;
+                    case "range":
+                      if (filter.selectedValues.length === 2) {
+                        valid =
+                          value >= filter.selectedValues[0] &&
+                          value <= filter.selectedValues[1];
+                      }
+                      break;
+                  }
+                  break;
+                case "dropdown":
+                case "multiple-dropdown":
+                  switch (filter.filter) {
+                    case "includes":
+                      var exists = false;
+                      // eslint-disable-next-line no-loop-func
+                      filter.selectedValues.forEach((filterValue) => {
+                        if (filterValue.toString() === value) {
+                          exists = true;
+                        }
+                      });
+                      if (!exists) {
+                        valid = false;
+                      }
+                      break;
+                    case "exact":
                       valid = false;
-                    }
-                    break;
-                  case "exact":
-                    valid = false;
-                    break;
-                }
-                break;
-              case "date":
-                var v = new Date(value).setHours(0, 0, 0, 0);
-                if (
-                  v !== null &&
-                  filter.filter === "range" &&
-                  filter.selectedValues.length === 2 &&
-                  filter.selectedValues[0] !== null &&
-                  filter.selectedValues[1] !== null
-                ) {
-                  valid =
-                    v >= filter.selectedValues[0].setHours(0, 0, 0, 0) &&
-                    v <= filter.selectedValues[1].setHours(0, 0, 0, 0);
-                } else if (
-                  v !== null &&
-                  filter.selectedValues[0] !== null &&
-                  filter.filter === "exact" &&
-                  filter.selectedValues.length === 1
-                ) {
-                  valid = v === filter.selectedValues[0].setHours(0, 0, 0, 0);
-                }
-                break;
+                      break;
+                  }
+                  break;
+                case "date":
+                  var v = new Date(value).setHours(0, 0, 0, 0);
+                  if (
+                    v !== null &&
+                    filter.filter === "range" &&
+                    filter.selectedValues.length === 2 &&
+                    filter.selectedValues[0] !== null &&
+                    filter.selectedValues[1] !== null
+                  ) {
+                    valid =
+                      v >= filter.selectedValues[0].setHours(0, 0, 0, 0) &&
+                      v <= filter.selectedValues[1].setHours(0, 0, 0, 0);
+                  } else if (
+                    v !== null &&
+                    filter.selectedValues[0] !== null &&
+                    filter.filter === "exact" &&
+                    filter.selectedValues.length === 1
+                  ) {
+                    valid = v === filter.selectedValues[0].setHours(0, 0, 0, 0);
+                  }
+                  break;
+              }
             }
-          }
-          if (!valid) {
-            return;
+            if (!valid) {
+              return;
+            }
           }
         }
 
         if (valid) {
-          if (submission.parentId !== null) {
-            var parent = sourceSubmissions.get(submission.parentId);
-            if (parent !== undefined && parent.id !== undefined) {
-              filteredMap.set(parent.id, parent);
-            }
-          }
+          // if (submission.parentId !== null) {
+          //   var parent = sourceSubmissions.get(submission.parentId);
+          //   if (parent !== undefined && parent.id !== undefined) {
+          //     filteredMap.set(parent.id, parent);
+          //   }
+          // }
           filteredMap.set(submission.id, submission);
         }
       });
@@ -2029,7 +2031,7 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           readonly={true}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}

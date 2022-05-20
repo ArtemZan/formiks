@@ -1336,7 +1336,6 @@ export default function Elov(props: Props) {
                 data: {
                   vendorName: vendorName.label,
                   marketingResponsible: vendor.projectManager,
-                  productionProjectManager: vendor.projectManager,
                   creditorNumber: vendor.creditor,
                   debitorNumber: vendor.debitor,
                   manufacturerNumber: vendor.manufacturer,
