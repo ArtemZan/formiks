@@ -1347,16 +1347,16 @@ export default function Elov(props: Props) {
                   // cbbudgetEur: parseFloat(vendor.eurBudget),
                   vendorShare: 100,
                   estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
-                  estimatedIncomeCC:
-                    parseFloat(estimatedIncomeBudgetCurrency) === null
-                      ? 0.0
-                      : parseFloat(estimatedIncomeBudgetCurrency),
+                  estimatedIncomeCC: isNaN(
+                    parseFloat(estimatedIncomeBudgetCurrency)
+                  )
+                    ? 0.0
+                    : parseFloat(estimatedIncomeBudgetCurrency),
                   estimatedResultCC: parseFloat(netProfitTargetBudgetCurrency),
                   // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-                  estimatedIncomeEUR:
-                    parseFloat(estimatedIncome) === null
-                      ? 0.0
-                      : parseFloat(estimatedIncome),
+                  estimatedIncomeEUR: isNaN(parseFloat(estimatedIncome))
+                    ? 0.0
+                    : parseFloat(estimatedIncome),
                   estimatedCostsEUR: parseFloat(estimatedCosts),
                   estimatedResultEUR: parseFloat(netProfitTarget),
                   estimatedResultBC: parseFloat(netProfitTargetBudgetCurrency),
