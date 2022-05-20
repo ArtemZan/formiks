@@ -1518,16 +1518,20 @@ export default function Erov(props: Props) {
                   budgetApprovedByVendor: budgetApprovedByVendor,
                   campaignBudgetsCurrency: exchangeRates.label,
                   campaignCurrency: exchangeRates.label,
-                  campaignEstimatedIncomeBudgetsCurrency: parseFloat(
-                    estimatedIncomeBudgetCurrency
-                  ),
+                  campaignEstimatedIncomeBudgetsCurrency:
+                    parseFloat(estimatedIncomeBudgetCurrency) === null
+                      ? 0.0
+                      : parseFloat(estimatedIncomeBudgetCurrency),
                   campaignEstimatedCostsBudgetsCurrency: parseFloat(
                     estimatedCostsBudgetCurrency
                   ),
                   campaignNetProfitTargetBudgetsCurrency: parseFloat(
                     netProfitTargetBudgetCurrency
                   ),
-                  campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
+                  campaignEstimatedIncomeEur:
+                    parseFloat(estimatedIncome) === null
+                      ? 0.0
+                      : parseFloat(estimatedIncome),
                   campaignEstimatedCostsEur: parseFloat(estimatedCosts),
                   campaignNetProfitTargetEur: parseFloat(netProfitTarget),
                   totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
@@ -1559,10 +1563,16 @@ export default function Erov(props: Props) {
                   // cbbudgetEur: parseFloat(vendor.eurBudget),
                   vendorShare: 100,
                   estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
-                  estimatedIncomeCC: parseFloat(estimatedIncomeBudgetCurrency),
+                  estimatedIncomeCC:
+                    parseFloat(estimatedIncomeBudgetCurrency) === null
+                      ? 0.0
+                      : parseFloat(estimatedIncomeBudgetCurrency),
                   estimatedResultCC: parseFloat(netProfitTargetBudgetCurrency),
                   // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-                  estimatedIncomeEUR: parseFloat(estimatedIncome),
+                  estimatedIncomeEUR:
+                    parseFloat(estimatedIncome) === null
+                      ? 0.0
+                      : parseFloat(estimatedIncome),
                   estimatedCostsEUR: parseFloat(estimatedCosts),
                   estimatedResultEUR: parseFloat(netProfitTarget),
                   estimatedResultBC: parseFloat(netProfitTargetBudgetCurrency),
