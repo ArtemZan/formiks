@@ -1639,22 +1639,15 @@ export default function Elmv(props: Props) {
                       budgetSource.value === "noBudget"
                         ? 0.0
                         : parseFloat(vendor.estimatedIncomeCC),
-                    estimatedResultCC:
-                      parseFloat(vendor.netProfitTargetVC) *
-                      (budgetSource.value === "noBudget" ? -1 : 1),
+                    estimatedResultCC: parseFloat(vendor.netProfitTargetVC),
                     // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
                     estimatedIncomeEUR:
                       budgetSource.value === "noBudget"
                         ? 0.0
                         : parseFloat(vendor.eurBudget),
                     estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
-                    estimatedResultEUR:
-                      parseFloat(vendor.netProfitTargetEUR) *
-                      (budgetSource.value === "noBudget" ? -1 : 1),
-                    estimatedResultBC:
-                      parseFloat(vendor.netProfitTargetLC) *
-                      (budgetSource.value === "noBudget" ? -1 : 1),
-                    // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+                    estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
+                    estimatedResultBC: parseFloat(vendor.netProfitTargetLC),
                   },
                 });
               });
