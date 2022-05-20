@@ -861,9 +861,11 @@ export function VendorsTable(props: Props) {
       }
     });
     tcit = -(tcal + tcalcgl);
-    tiit = -tial + tialigl;
+    tiit = -(tial + tialigl);
+    console.log(-tial);
+    console.log(tialigl);
     tcite = -(tca + tcacgl);
-    tiite = -tia + tiaigl;
+    tiite = -(tia + tiaigl);
     setTotalCostAmount(tca);
     setTotalCostAmountCostGL(tcacgl);
     setTotalCostAmountLC(tcal);
