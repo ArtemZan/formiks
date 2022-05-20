@@ -1558,24 +1558,37 @@ export default function Erov(props: Props) {
                   manufacturerNumber: vendor.manufacturer,
                   businessUnit: vendor.bu,
                   PH1: vendor.ph.label,
-                  budgetCurrency: vendor.budgetCurrency.label,
-                  vendorAmount: parseFloat(vendor.localBudget),
+                  vendorBudgetCurrency:
+                    budgetSource.value === "noBudget"
+                      ? "N/A"
+                      : vendor.budgetCurrency.label,
+                  vendorAmount:
+                    isNaN(parseFloat(vendor.localBudget)) ||
+                    budgetSource.value === "noBudget"
+                      ? 0.0
+                      : parseFloat(vendor.localBudget),
                   // cbbudgetEur: parseFloat(vendor.eurBudget),
                   vendorShare: 100,
                   estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
-                  estimatedIncomeCC: isNaN(
-                    parseFloat(estimatedIncomeBudgetCurrency)
-                  )
-                    ? 0.0
-                    : parseFloat(estimatedIncomeBudgetCurrency),
-                  estimatedResultCC: parseFloat(netProfitTargetBudgetCurrency),
+                  estimatedIncomeCC:
+                    budgetSource.value === "noBudget"
+                      ? 0.0
+                      : parseFloat(estimatedIncomeBudgetCurrency),
+                  estimatedResultCC:
+                    parseFloat(netProfitTargetBudgetCurrency) *
+                    (budgetSource.value === "noBudget" ? -1 : 1),
                   // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-                  estimatedIncomeEUR: isNaN(parseFloat(estimatedIncome))
-                    ? 0.0
-                    : parseFloat(estimatedIncome),
+                  estimatedIncomeEUR:
+                    budgetSource.value === "noBudget"
+                      ? 0.0
+                      : parseFloat(estimatedIncome),
                   estimatedCostsEUR: parseFloat(estimatedCosts),
-                  estimatedResultEUR: parseFloat(netProfitTarget),
-                  estimatedResultBC: parseFloat(netProfitTargetBudgetCurrency),
+                  estimatedResultEUR:
+                    parseFloat(netProfitTarget) *
+                    (budgetSource.value === "noBudget" ? -1 : 1),
+                  estimatedResultBC:
+                    parseFloat(netProfitTargetBudgetCurrency) *
+                    (budgetSource.value === "noBudget" ? -1 : 1),
                   // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
                 },
               });
