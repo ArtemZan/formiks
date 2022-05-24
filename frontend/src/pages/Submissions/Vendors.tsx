@@ -589,40 +589,78 @@ const DisplayedColumnsList = [
       },
     ],
   },
-  // {
-  //   label: "Project Results",
-  //   value: "projectResults",
-  //   children: [
-  //     { label: "Result (LC)", value: "data.resultLCPR", type: "number" },
-  //     { label: "Result (EUR)", value: "data.resultEURPR", type: "number" },
-  //   ],
-  // },
-  // {
-  //   label: "Control Checks",
-  //   value: "controlChecks",
-  //   children: [
-  //     {
-  //       label: "Total Costs in Tool",
-  //       value: "data.totalCostsInTool",
-  //       type: "formula",
-  //     },
-  //     {
-  //       label: "Total Costs in SAP",
-  //       value: "data.totalCostsInSAP",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Total Income in Tool",
-  //       value: "data.totalIncomeInTool",
-  //       type: "string",
-  //     },
-  //     {
-  //       label: "Total Income in SAP",
-  //       value: "data.totalIncomeInSAP",
-  //       type: "string",
-  //     },
-  //   ],
-  // },
+  {
+    label: "Project Results",
+    value: "projectResults",
+    children: [
+      {
+        label: "Total Income (LC)",
+        value: "data.totalIncomeLC",
+        type: "number",
+      },
+      {
+        label: "Total Costs (LC)",
+        value: "data.totalCostsLC",
+        type: "number",
+      },
+      {
+        label: "Total Profit (LC)",
+        value: "data.totalProfitLC",
+        type: "number",
+      },
+      {
+        label: "Total Loss (LC)",
+        value: "data.totalLossLC",
+        type: "number",
+      },
+      {
+        label: "Total Income (EUR)",
+        value: "data.totalIncomeEUR",
+        type: "number",
+      },
+      {
+        label: "Total Costs (EUR)",
+        value: "data.totalCostsEUR",
+        type: "number",
+      },
+      {
+        label: "Total Profit (EUR)",
+        value: "data.totalProfitEUR",
+        type: "number",
+      },
+      {
+        label: "Total Loss (EUR)",
+        value: "data.totalLossEUR",
+        type: "number",
+      },
+    ],
+  },
+  {
+    label: "Control Checks",
+    value: "controlChecks",
+    children: [
+      {
+        label: "Total Costs In Tool (LC)",
+        value: "data.totalCostsTool",
+        type: "number",
+      },
+      {
+        label: "Total Costs in SAP (LC)",
+        value: "data.totalCostsSAP",
+        type: "number",
+      },
+      {
+        label: "Total Income in Tool (LC)",
+        value: "data.totalIncomeTool",
+        type: "number",
+      },
+      {
+        label: "Total Income in SAP (LC)",
+        value: "data.totalIncomeSAP",
+        type: "number",
+      },
+    ],
+  },
   {
     label: "Input of Central Marketing Controlling Team",
     value: "CMCT",
@@ -1386,6 +1424,66 @@ export function VendorsTable(props: Props) {
         }
         ss.set(sub.id, sub);
       });
+
+      vSubs.map((sub) => {
+        if (sub.parentId === null) {
+          sub.data.costAmountLC = 0;
+          sub.data.costAmountEUR = 0;
+          sub.data.incomeAmountLCSI = 0;
+          sub.data.incomeAmountEURSI = 0;
+          sub.data.costAmountLCCostGL = 0;
+          sub.data.costAmountEURCostGL = 0;
+          sub.data.incomeAmountLCIncomeGL = 0;
+          sub.data.incomeAmountEurIncomeGL = 0;
+          sub.data.totalIncomeLC = 0;
+          sub.data.totalCostsLC = 0;
+          sub.data.totalIncomeEUR = 0;
+          sub.data.totalCostsEUR = 0;
+          sub.data.totalCostsTool = 0;
+          sub.data.totalIncomeTool = 0;
+          vSubs
+            .filter((s) => s.parentId === sub.id)
+            .forEach((cs) => {
+              sub.data.costAmountLC += cs.data.costAmountLC || 0;
+              sub.data.costAmountEUR += cs.data.costAmountEUR || 0;
+              sub.data.incomeAmountLCSI += cs.data.incomeAmountLCSI || 0;
+              sub.data.incomeAmountEURSI += cs.data.incomeAmountEURSI || 0;
+              sub.data.costAmountLCCostGL += cs.data.costAmountLCCostGL || 0;
+              sub.data.costAmountEURCostGL += cs.data.costAmountEURCostGL || 0;
+              sub.data.incomeAmountLCIncomeGL +=
+                cs.data.incomeAmountLCIncomeGL || 0;
+              sub.data.incomeAmountEurIncomeGL +=
+                cs.data.incomeAmountEurIncomeGL || 0;
+              sub.data.totalIncomeLC += -(
+                cs.data.incomeAmountLCSI ||
+                0 + cs.data.incomeAmountLCIncomeGL ||
+                0
+              );
+              sub.data.totalCostsLC += -(
+                cs.data.costAmountLC ||
+                0 + cs.data.costAmountLCCostGL ||
+                0
+              );
+              sub.data.totalIncomeEUR += -(
+                cs.data.incomeAmountEURSI ||
+                0 + cs.data.incomeAmountEURIncomeGL ||
+                0
+              );
+              sub.data.totalCostsEUR += -(
+                cs.data.costAmountEUR ||
+                0 + cs.data.costAmountEURCostGL ||
+                0
+              );
+              sub.data.totalCostsTool +=
+                cs.data.costAmountLC || 0 + cs.data.costAmountLCCostGL || 0;
+              sub.data.totalIncomeTool +=
+                cs.data.incomeAmountLCSI ||
+                0 + cs.data.incomeAmountLCIncomeGL ||
+                0;
+            });
+        }
+      });
+
       setCommunicationSubmissions(cSubs);
       setFilteredCommunicationSubmissions(cSubs);
       setSourceSubmissions(ss);
@@ -2613,15 +2711,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalCostAmountLC)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.costAmountLC || 0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -2693,15 +2782,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalCostAmount)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.costAmountEUR || 0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -2929,15 +3009,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalIncomeAmountLC)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountLCSI || 0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3009,15 +3080,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalIncomeAmount)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountEURSI || 0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3270,15 +3332,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalCostAmountLCCostGL)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.costAmountLCCostGL || 0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3352,15 +3405,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalCostAmountCostGL)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.costAmountEURCostGL || 0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3564,15 +3608,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalIncomeAmountLCIncomeGL)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountLCIncomeGL || 0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3650,15 +3685,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalIncomeAmountIncomeGL)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountEurIncomeGL || 0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3688,17 +3714,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalIncomeInTool)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? -b.data.incomeAmountLCSI ||
-                        0 + b.data.incomeAmountLCIncomeGL ||
-                        0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3726,19 +3741,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalCostsInTool)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? -(
-                          b.data.costAmountLC ||
-                          0 + b.data.costAmountLCCostGL ||
-                          0
-                        )
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3764,11 +3766,13 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInTool + totalCostsInTool >= 0 &&
-            props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(
-                  totalIncomeInTool + totalCostsInTool
-                )}`
+            totalIncomeInTool + totalCostsInTool >= 0
+              ? props.rowData.id === "total"
+                ? `TOTAL: ${numberWithCommas(
+                    totalIncomeInTool + totalCostsInTool
+                  )}`
+                : props.rowData.data.totalIncomeLC +
+                  props.rowData.data.totalCostsLC
               : ""
           }
         />
@@ -3794,11 +3798,14 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInTool + totalCostsInTool < 0 &&
-            props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(
-                  (totalIncomeInTool + totalCostsInTool) * -1
-                )}`
+            totalIncomeInTool + totalCostsInTool < 0
+              ? props.rowData.id === "total"
+                ? `TOTAL: ${numberWithCommas(
+                    (totalIncomeInTool + totalCostsInTool) * -1
+                  )}`
+                : (props.rowData.data.totalIncomeLC +
+                    props.rowData.data.totalCostsLC) *
+                  -1
               : ""
           }
         />
@@ -3827,17 +3834,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalIncomeInToolEUR)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? -b.data.incomeAmountEURSI ||
-                        0 + b.data.incomeAmountEURIncomeGL ||
-                        0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3865,19 +3861,6 @@ export function VendorsTable(props: Props) {
           initialValue={
             props.rowData.id === "total"
               ? `TOTAL: ${numberWithCommas(totalCostsInToolEUR)}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? -(
-                          b.data.costAmountEUR ||
-                          0 + b.data.costAmountEURCostGL ||
-                          0
-                        )
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -3903,11 +3886,13 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInToolEUR + totalCostsInToolEUR >= 0 &&
-            props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(
-                  totalIncomeInToolEUR + totalCostsInToolEUR
-                )}`
+            totalIncomeInToolEUR + totalCostsInToolEUR >= 0
+              ? props.rowData.id === "total"
+                ? `TOTAL: ${numberWithCommas(
+                    totalIncomeInToolEUR + totalCostsInToolEUR
+                  )}`
+                : props.rowData.data.totalIncomeEUR +
+                  props.rowData.data.totalCostsEUR
               : ""
           }
         />
@@ -3933,11 +3918,14 @@ export function VendorsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInToolEUR + totalCostsInToolEUR < 0 &&
-            props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(
-                  (totalIncomeInToolEUR + totalCostsInToolEUR) * -1
-                )}`
+            totalIncomeInToolEUR + totalCostsInToolEUR < 0
+              ? props.rowData.id === "total"
+                ? `TOTAL: ${numberWithCommas(
+                    (totalIncomeInToolEUR + totalCostsInToolEUR) * -1
+                  )}`
+                : (props.rowData.data.totalIncomeEUR +
+                    props.rowData.data.totalCostsEUR) *
+                  -1
               : ""
           }
         />
@@ -3970,17 +3958,6 @@ export function VendorsTable(props: Props) {
               ? `TOTAL: ${numberWithCommas(
                   totalCostAmountLC + totalCostAmountLCCostGL
                 )}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.costAmountLC ||
-                        0 + b.data.costAmountLCCostGL ||
-                        0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -4010,18 +3987,7 @@ export function VendorsTable(props: Props) {
               ? `TOTAL: ${numberWithCommas(
                   totalCostAmountLC + totalCostAmountLCCostGL
                 )}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.costAmountLC ||
-                        0 + b.data.costAmountLCCostGL ||
-                        0
-                      : 0),
-                  0
-                )
-              : props.cellData
+              : props.rowData.data.totalCostsTool
           }
         />
       ),
@@ -4050,17 +4016,6 @@ export function VendorsTable(props: Props) {
               ? `TOTAL: ${numberWithCommas(
                   totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
                 )}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountLCSI ||
-                        0 + b.data.incomeAmountLCIncomeGL ||
-                        0
-                      : 0),
-                  0
-                )
               : props.cellData
           }
         />
@@ -4090,18 +4045,7 @@ export function VendorsTable(props: Props) {
               ? `TOTAL: ${numberWithCommas(
                   totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
                 )}`
-              : props.rowData.parentId === null
-              ? filteredSubmissions.reduce(
-                  (a, b) =>
-                    a +
-                    (b.parentId === props.rowData.id
-                      ? b.data.incomeAmountLCSI ||
-                        0 + b.data.incomeAmountLCIncomeGL ||
-                        0
-                      : 0),
-                  0
-                )
-              : props.cellData
+              : props.rowData.data.totalIncomeTool
           }
         />
       ),
@@ -4231,6 +4175,33 @@ export function VendorsTable(props: Props) {
               [key: string]: any;
             }
             var formattedData: FD[] = [];
+            let init = false;
+            let header: FD[] = [
+              {
+                ID: "Summary",
+                Parent: "",
+                Group: "",
+                Created: "",
+                Title: "",
+                Author: "",
+              },
+              {
+                ID: "ID",
+                Parent: "Parent",
+                Group: "Group",
+                Created: "Created",
+                Title: "Title",
+                Author: "Author",
+              },
+              {
+                ID: "",
+                Parent: "",
+                Group: "",
+                Created: "",
+                Title: "",
+                Author: "",
+              },
+            ];
             formattedData = filteredSubmissions.map((s) => {
               let doc: FD = {
                 ID: s.id || "unknown",
@@ -4241,16 +4212,89 @@ export function VendorsTable(props: Props) {
                 Author: s.author,
               };
               DisplayedColumnsList.forEach((group: any) => {
-                group.children.map((column: any) => {
-                  doc[`${column.label} (${group.label})`] = _.get(
-                    s,
-                    column.value
-                  );
+                if (group.value === "CMCT" || group.value === "LMD") {
+                  return;
+                }
+                group.children.map((column: any, index: number) => {
+                  doc[column.value] = _.get(s, column.value);
+                  if (column.type === "number") {
+                    doc[column.value] = numberWithCommas(doc[column.value]);
+                  }
+                  if (!init) {
+                    header[0][column.value] = index === 0 ? group.label : "";
+                    header[1][column.value] = `${column.label}`;
+                  }
                 });
               });
+              init = true;
               return doc;
             });
-            const ws = XLSX.utils.json_to_sheet(formattedData);
+            header[2] = {
+              "data.costAmountLC": `TOTAL: ${numberWithCommas(
+                totalCostAmountLC
+              )}`,
+              "data.costAmountEUR": `TOTAL: ${numberWithCommas(
+                totalCostAmount
+              )}`,
+              "data.incomeAmountLCSI": `TOTAL: ${numberWithCommas(
+                totalIncomeAmountLC
+              )}`,
+              "data.incomeAmountEURSI": `TOTAL: ${numberWithCommas(
+                totalIncomeAmount
+              )}`,
+              "data.costAmountLCCostGL": `TOTAL: ${numberWithCommas(
+                totalCostAmountLCCostGL
+              )}`,
+              "data.costAmountEURCostGL": `TOTAL: ${numberWithCommas(
+                totalCostAmountCostGL
+              )}`,
+              "data.incomeAmountLCIncomeGL": `TOTAL: ${numberWithCommas(
+                totalIncomeAmountLCIncomeGL
+              )}`,
+              "data.incomeAmountEurIncomeGL": `TOTAL: ${numberWithCommas(
+                totalIncomeAmountIncomeGL
+              )}`,
+              "data.totalIncomeLC": `TOTAL: ${numberWithCommas(
+                totalIncomeInTool
+              )}`,
+              "data.totalCostsLC": `TOTAL: ${numberWithCommas(
+                totalCostsInTool
+              )}`,
+              "data.totalProfitLC": `TOTAL: ${numberWithCommas(
+                totalIncomeInTool + totalCostsInTool
+              )}`,
+              "data.totalLossLC": `TOTAL: ${numberWithCommas(
+                (totalIncomeInTool + totalCostsInTool) * -1
+              )}`,
+              "data.totalIncomeEUR": `TOTAL: ${numberWithCommas(
+                totalIncomeInToolEUR
+              )}`,
+              "data.totalCostsEUR": `TOTAL: ${numberWithCommas(
+                totalCostsInToolEUR
+              )}`,
+              "data.totalProfitEUR": `TOTAL: ${numberWithCommas(
+                totalIncomeInToolEUR + totalCostsInToolEUR
+              )}`,
+              "data.totalLossEUR": `TOTAL: ${numberWithCommas(
+                (totalIncomeInToolEUR + totalCostsInToolEUR) * -1
+              )}`,
+              "data.totalCostsTool": `TOTAL: ${numberWithCommas(
+                totalCostAmountLC + totalCostAmountLCCostGL
+              )}`,
+              "data.totalCostsSAP": `TOTAL: ${numberWithCommas(
+                totalCostAmountLC + totalCostAmountLCCostGL
+              )}`,
+              "data.totalIncomeTool": `TOTAL: ${numberWithCommas(
+                totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
+              )}`,
+              "data.totalIncomeSAP": `TOTAL: ${numberWithCommas(
+                totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
+              )}`,
+            };
+            formattedData.unshift(...header);
+            const ws = XLSX.utils.json_to_sheet(formattedData, {
+              skipHeader: true,
+            });
             ws["!cols"] = Object.keys(formattedData[0]).map(() => {
               return { wch: 30 };
             });
@@ -4482,7 +4526,7 @@ export function VendorsTable(props: Props) {
                 )}
               </AutoResizer>
             </TabPanel>
-            <TabPanel w="100%" h="85vh">
+            <TabPanel w="100%" h="80vh">
               <AutoResizer
                 onResize={({
                   width,
