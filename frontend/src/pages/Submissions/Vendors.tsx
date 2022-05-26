@@ -5051,7 +5051,10 @@ export function VendorsTable(props: Props) {
                         group: "Input of Local Marketing Department",
 
                         title: "ALSO Marketing Project Number",
-                        width: columnWidth("data.textLMD", 250),
+                        width: columnWidth(
+                          "data.alsoMarketingProjectNumberLMD",
+                          250
+                        ),
                         resizable: true,
                         hidden: visibilityController(
                           "LMD",
@@ -5061,7 +5064,11 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             maxLength={12}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.cellData && props.cellData.length > 0
+                                ? "#F5FAEF"
+                                : "#f7cdd6"
+                            }
                             // FIXME: limit to 12 chars
                             onUpdate={(
                               submission: string,
@@ -5467,6 +5474,9 @@ export function VendorsTable(props: Props) {
                                       ts.data.invoiceTypeLMD.length > 0 &&
                                       ts.data.materialNumberLMD &&
                                       ts.data.materialNumberLMD.length > 0 &&
+                                      ts.data.alsoMarketingProjectNumberLMD &&
+                                      ts.data.alsoMarketingProjectNumberLMD
+                                        .length > 0 &&
                                       ts.data.invoiceTextLMD &&
                                       ts.data.invoiceTextLMD.length > 0 &&
                                       ts.data.amountLMD &&
