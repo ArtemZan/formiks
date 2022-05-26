@@ -5367,7 +5367,14 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={
+                              props.rowData.data.paymentMethodLMD ===
+                              "Money in House"
+                                ? props.cellData && props.cellData.length > 0
+                                  ? "#F5FAEF"
+                                  : "#f7cdd6"
+                                : "#F5FAEF"
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -5488,7 +5495,12 @@ export function VendorsTable(props: Props) {
                                       ts.data.dunningStopLMD &&
                                       ts.data.dunningStopLMD.length > 0 &&
                                       ts.data.sendToLMD &&
-                                      ts.data.sendToLMD.length > 0
+                                      ts.data.sendToLMD.length > 0 &&
+                                      ts.data.paymentMethodLMD ===
+                                        "Money in House"
+                                        ? ts.data.depositNumberLMD &&
+                                          ts.data.depositNumberLMD.length > 0
+                                        : true
                                     ) {
                                       var today = new Date();
                                       today.setHours(23, 59, 59, 998);
