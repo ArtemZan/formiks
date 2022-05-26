@@ -43,6 +43,9 @@ class EditableTableCell extends React.Component<
   }
   componentDidUpdate(prevProps: any) {
     if (prevProps.initialValue !== this.props.initialValue) {
+      if (this.props.type === "number" && isNaN(this.props.initialValue)) {
+        return;
+      }
       this.setState({ cellValue: this.props.initialValue });
     }
   }

@@ -43,6 +43,8 @@ const { Column, HeaderCell, Cell } = Table;
 interface Props {
   history: any;
   project: Project;
+  submission?: any;
+  children?: any[];
 }
 
 export default function Ermv(props: Props) {
@@ -110,6 +112,146 @@ export default function Ermv(props: Props) {
 
   const [render, rerender] = useState(0);
 
+  useEffect(() => {
+    if (props.submission) {
+      setRequestorsCompanyName({
+        label: props.submission.data.requestorsCompanyName ?? "",
+        value: {
+          name: props.submission.data.requestorsCompanyName ?? "",
+          code: props.submission.data.companyCode ?? "",
+          country: props.submission.data.requestorsCountry ?? "",
+        },
+      });
+      setCampaignName(props.submission.data.campaignName ?? "");
+      setCampaignDescription(props.submission.data.campaignDescription ?? "");
+      setTargetAudience(props.submission.data.targetAudience ?? "");
+      setCampaignChannel({
+        label: props.submission.data.campaignChannel ?? "",
+        value: props.submission.data.campaignChannel ?? "",
+      });
+      setYear({
+        label: props.submission.data.year ?? "",
+        value: props.submission.data.year ?? "",
+      });
+      setProjectStartQuarter({
+        label: props.submission.data.projectStartQuarter ?? "",
+        value: props.submission.data.projectStartQuarter ?? "",
+      });
+      console.log(props.submission.data.projectNumber);
+      setProjectNumber(props.submission.data.projectNumber ?? "");
+      setRequestorsName(props.submission.data.requestorsName ?? "");
+      setFiscalQuarter({
+        label: props.submission.data.manufacturersFiscalQuarter ?? "",
+        value: props.submission.data.manufacturersFiscalQuarter ?? "",
+      });
+      setStartDate(new Date(props.submission.data.campaignStartDate) || null);
+      setEndDate(new Date(props.submission.data.campaignEndDate) || null);
+      setBudgetSource({
+        label: props.submission.data.budgetSource ?? "",
+        value: props.submission.data.budgetSource ?? "",
+      });
+      setBudgetApprovedByVendor(
+        props.submission.data.budgetApprovedByVendor ?? ""
+      );
+      setExchangeRates({
+        label: props.submission.data.campaignBudgetsCurrency ?? "",
+        value: props.submission.data.campaignBudgetsCurrency ?? "",
+      });
+      setEstimatedIncomeBudgetCurrency(
+        (
+          props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
+        ).toString()
+      );
+      setEstimatedIncome(
+        props.submission.data.campaignEstimatedIncomeEur.toFixed(2) || "0.00"
+      );
+      setEstimatedCosts(
+        props.submission.data.campaignEstimatedCostsEur.toFixed(2) || "0.00"
+      );
+      setNetProfitTarget(
+        props.submission.data.campaignNetProfitTargetEur.toFixed(2) || "0.00"
+      );
+      setEstimatedCostsBudgetCurrency(
+        (
+          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
+        ).toString()
+      );
+      setNetProfitTargetBudgetCurrency(
+        (
+          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
+        ).toString()
+      );
+      setComments(props.submission.data.comments ?? "");
+      setTotalEstimatedCostsLC(
+        props.submission.data.totalEstimatedCostsLC.toFixed(2) || "0.00"
+      );
+
+      //
+      if (props.children && props.children.length > 0) {
+        setVendorsNames(
+          props.children
+            .filter((s) => s.group === "vendor")
+            .map((s) => {
+              return { label: s.data.vendorName, value: s.data.vendorName };
+            })
+        );
+        var vendors: any[] = [];
+
+        props.children
+          .filter((s) => s.group === "vendor")
+          .forEach((s) => {
+            vendors.push({
+              vendor: s.data.vendorName,
+              projectManager: s.data.marketingResponsible,
+              creditor: s.data.creditorNumber,
+              debitor: s.data.debitorNumber,
+              manufacturer: s.data.manufacturerNumber,
+              bu: s.data.businessUnit,
+              ph: { label: s.data.PH1, value: s.data.PH1 },
+              budgetCurrency: {
+                label: s.data.vendorBudgetCurrency,
+                value: s.data.vendorBudgetCurrency,
+              },
+              budgetAmount: "",
+              localBudget: s.data.vendorAmount.toFixed(2) || "0.00",
+              eurBudget: s.data.estimatedIncomeEUR.toFixed(2) || "0.00",
+              share: s.data.vendorShare.toFixed(0) || "0",
+              estimatedCostsCC: s.data.estimatedCostsCC.toFixed(2) || "0.00",
+              estimatedIncomeCC: s.data.estimatedIncomeCC.toFixed(2) || "0.00",
+              estimatedCostsLC: "0.00",
+              estimatedCostsEUR: s.data.estimatedCostsEUR.toFixed(2) || "0.00",
+              netProfitTargetVC: s.data.estimatedResultCC.toFixed(2) || "0.00",
+              netProfitTargetLC: s.data.estimatedResultBC.toFixed(2) || "0.00",
+              netProfitTargetEUR:
+                s.data.estimatedResultEUR.toFixed(2) || "0.00",
+            });
+          });
+        vendors.push({
+          vendor: "TOTAL",
+          projectManager: "",
+          creditor: "",
+          debitor: "",
+          manufacturer: "",
+          bu: "",
+          ph: { label: "", value: "" },
+          budgetCurrency: { label: "", value: "" },
+          budgetAmount: "",
+          localBudget: "",
+          eurBudget: "",
+          share: "",
+          estimatedCostsCC: "",
+          estimatedIncomeCC: "",
+          estimatedCostsLC: "",
+          estimatedCostsEUR: "",
+          netProfitTargetVC: "",
+          netProfitTargetLC: "",
+          netProfitTargetEUR: "",
+        });
+        setVendors(vendors);
+      }
+    }
+  }, [props.submission, props.children]);
+
   async function fetchDropdowns() {
     var dropdownsIds: string[] = [
       "619b630a9a5a2bb37a93b23b",
@@ -141,6 +283,9 @@ export default function Ermv(props: Props) {
   }
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setTotalEstimatedCostsLC(
       (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
     );
@@ -157,6 +302,9 @@ export default function Ermv(props: Props) {
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     var data: any = [];
     vendorsNames.forEach((vendor: any) => {
       data.push({
@@ -222,6 +370,9 @@ export default function Ermv(props: Props) {
   }, [companiesParticipating]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     var totalShare = 0.0;
     var totalContribution = 0.0;
     var totalCosts = 0.0;
@@ -260,6 +411,9 @@ export default function Ermv(props: Props) {
   ]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setEstimatedCosts(
       (
         parseFloat(estimatedCostsBudgetCurrency) /
@@ -304,6 +458,9 @@ export default function Ermv(props: Props) {
   ]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setProjectNumber(
       (requestorsCompanyName.value.code === ""
         ? "????"
@@ -321,6 +478,9 @@ export default function Ermv(props: Props) {
   }, [year, campaignChannel, projectStartQuarter, requestorsCompanyName]);
 
   useEffect(() => {
+    // if (props.submission) {
+    //   return;
+    // }
     var totalBudgetEur = 0;
     var totalBudgetLC = 0;
     var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
@@ -616,6 +776,7 @@ export default function Ermv(props: Props) {
             onChange={(value: any) => {
               setTargetAudience(value.label);
             }}
+            value={{ label: targetAudience, value: targetAudience }}
             classNamePrefix="select"
             isClearable={false}
             name="targetAudience"
@@ -657,6 +818,7 @@ export default function Ermv(props: Props) {
             onChange={(value: any) => {
               setCampaignChannel(value);
             }}
+            value={campaignChannel}
             classNamePrefix="select"
             isClearable={false}
             name="campaignChannel"
@@ -1309,6 +1471,7 @@ export default function Ermv(props: Props) {
                         ...provided,
                         zIndex: 1000000000,
                       }),
+                      menuPortal: (base) => ({ ...base, zIndex: 10000000 }),
                       singleValue: (provided) => ({
                         ...provided,
                         color: "#718196",

@@ -4096,7 +4096,10 @@ export function VendorsTable(props: Props) {
             backgroundColor="#fef9fa"
             textColor={"yellow"}
             onUpdate={(submissionId: string) => {
-              if (props.rowData.data.projectType === "Local One Vendor") {
+              if (
+                props.rowData.data.projectType === "Local One Vendor" ||
+                props.rowData.data.projectType === "European Multi Vendor"
+              ) {
                 window.open(
                   "/submissions/view/" + submissionId,
                   "_blank",
