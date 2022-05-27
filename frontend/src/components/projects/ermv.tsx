@@ -204,7 +204,33 @@ export default function Ermv(props: Props) {
               return { label: s.data.vendorName, value: s.data.vendorName };
             })
         );
+        setCompaniesParticipating(
+          props.children
+            .filter((s) => s.group === "country")
+            .map((s) => {
+              return { label: s.data.companyName, value: s.data.companyName };
+            })
+        );
         var v: any[] = [];
+        var c: any[] = [];
+
+        props.children
+          .filter((s) => s.group === "country")
+          .forEach((s) => {
+            c.push({
+              companyName: s.data.companyName,
+              companyCode: s.data.countryCodeEMEA,
+              country: s.data.countriesEMEA,
+              contactEmail: s.data.productionProjectManager,
+              projectNumber: s.data.mirrorProjectNumber,
+              share: (s.data.countryShare || 0).toFixed(2),
+              contribution: (s.data.countryBudgetContributionCC || 0).toFixed(
+                2
+              ),
+              estimatedCosts: (s.data.countryCostEstimationCC || 0).toFixed(2),
+            });
+          });
+        setCostBreakdown([...c]);
 
         props.children
           .filter((s) => s.group === "vendor")
@@ -365,6 +391,9 @@ export default function Ermv(props: Props) {
     setVendors(data);
   }, [vendorsNames]);
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     var data: any = [];
     companiesParticipating.forEach((company: any) => {
       data.push({
@@ -382,9 +411,9 @@ export default function Ermv(props: Props) {
   }, [companiesParticipating]);
 
   useEffect(() => {
-    if (props.submission) {
-      return;
-    }
+    // if (props.submission) {
+    //   return;
+    // }
     var totalShare = 0.0;
     var totalContribution = 0.0;
     var totalCosts = 0.0;
