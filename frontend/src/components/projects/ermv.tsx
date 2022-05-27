@@ -120,6 +120,7 @@ export default function Ermv(props: Props) {
           name: props.submission.data.requestorsCompanyName ?? "",
           code: props.submission.data.companyCode ?? "",
           country: props.submission.data.requestorsCountry ?? "",
+          currency: props.submission.data.localCurrency ?? "",
         },
       });
       setCampaignName(props.submission.data.campaignName ?? "");
@@ -137,7 +138,6 @@ export default function Ermv(props: Props) {
         label: props.submission.data.projectStartQuarter ?? "",
         value: props.submission.data.projectStartQuarter ?? "",
       });
-      console.log(props.submission.data.projectNumber);
       setProjectNumber(props.submission.data.projectNumber ?? "");
       setRequestorsName(props.submission.data.requestorsName ?? "");
       setFiscalQuarter({
@@ -160,30 +160,39 @@ export default function Ermv(props: Props) {
       setEstimatedIncomeBudgetCurrency(
         (
           props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
-        ).toString()
+        ).toFixed(2)
       );
       setEstimatedIncome(
-        props.submission.data.campaignEstimatedIncomeEur.toFixed(2) || "0.00"
+        (props.submission.data.campaignEstimatedIncomeEur || 0).toFixed(2)
       );
       setEstimatedCosts(
-        props.submission.data.campaignEstimatedCostsEur.toFixed(2) || "0.00"
+        (props.submission.data.campaignEstimatedCostsEur || 0).toFixed(2)
       );
       setNetProfitTarget(
-        props.submission.data.campaignNetProfitTargetEur.toFixed(2) || "0.00"
+        (props.submission.data.campaignNetProfitTargetEur || 0).toFixed(2)
       );
       setEstimatedCostsBudgetCurrency(
         (
           props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
-        ).toString()
+        ).toFixed(2)
       );
       setNetProfitTargetBudgetCurrency(
         (
           props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
-        ).toString()
+        ).toFixed(2)
       );
       setComments(props.submission.data.comments ?? "");
       setTotalEstimatedCostsLC(
-        props.submission.data.totalEstimatedCostsLC.toFixed(2) || "0.00"
+        (props.submission.data.totalEstimatedCostsLC || 0).toFixed(2)
+      );
+      setLocalExchangeRate(
+        parseFloat(
+          (
+            ExchangeRates.find(
+              (rate) => rate.label === props.submission.data.localCurrency
+            ) || "0"
+          ).value
+        )
       );
 
       //
@@ -195,12 +204,12 @@ export default function Ermv(props: Props) {
               return { label: s.data.vendorName, value: s.data.vendorName };
             })
         );
-        var vendors: any[] = [];
+        var v: any[] = [];
 
         props.children
           .filter((s) => s.group === "vendor")
           .forEach((s) => {
-            vendors.push({
+            v.push({
               vendor: s.data.vendorName,
               projectManager: s.data.marketingResponsible,
               creditor: s.data.creditorNumber,
@@ -210,23 +219,26 @@ export default function Ermv(props: Props) {
               ph: { label: s.data.PH1, value: s.data.PH1 },
               budgetCurrency: {
                 label: s.data.vendorBudgetCurrency,
-                value: s.data.vendorBudgetCurrency,
+                value: (
+                  ExchangeRates.find(
+                    (er) => er.label === s.data.vendorBudgetCurrency
+                  ) || { value: "" }
+                ).value,
               },
-              budgetAmount: "",
-              localBudget: s.data.vendorAmount.toFixed(2) || "0.00",
-              eurBudget: s.data.estimatedIncomeEUR.toFixed(2) || "0.00",
+              budgetAmount: (s.data.vendorBudgetAmount || 0).toFixed(2),
+              localBudget: (s.data.vendorAmount || 0).toFixed(2),
+              eurBudget: (s.data.estimatedIncomeEUR || 0).toFixed(2),
               share: s.data.vendorShare.toFixed(0) || "0",
-              estimatedCostsCC: s.data.estimatedCostsCC.toFixed(2) || "0.00",
-              estimatedIncomeCC: s.data.estimatedIncomeCC.toFixed(2) || "0.00",
+              estimatedCostsCC: (s.data.estimatedCostsCC || 0).toFixed(2),
+              estimatedIncomeCC: (s.data.estimatedIncomeCC || 0).toFixed(2),
               estimatedCostsLC: "0.00",
-              estimatedCostsEUR: s.data.estimatedCostsEUR.toFixed(2) || "0.00",
-              netProfitTargetVC: s.data.estimatedResultCC.toFixed(2) || "0.00",
-              netProfitTargetLC: s.data.estimatedResultBC.toFixed(2) || "0.00",
-              netProfitTargetEUR:
-                s.data.estimatedResultEUR.toFixed(2) || "0.00",
+              estimatedCostsEUR: (s.data.estimatedCostsEUR || 0).toFixed(2),
+              netProfitTargetVC: (s.data.estimatedResultCC || 0).toFixed(2),
+              netProfitTargetLC: (s.data.estimatedResultBC || 0).toFixed(2),
+              netProfitTargetEUR: (s.data.estimatedResultEUR || 0).toFixed(2),
             });
           });
-        vendors.push({
+        v.push({
           vendor: "TOTAL",
           projectManager: "",
           creditor: "",
@@ -247,10 +259,10 @@ export default function Ermv(props: Props) {
           netProfitTargetLC: "",
           netProfitTargetEUR: "",
         });
-        setVendors(vendors);
+        setVendors([...v]);
       }
     }
-  }, [props.submission, props.children]);
+  }, [props.submission, props.children, ExchangeRates]);
 
   async function fetchDropdowns() {
     var dropdownsIds: string[] = [
@@ -568,6 +580,7 @@ export default function Ermv(props: Props) {
       row.netProfitTargetLC = (
         parseFloat(row.netProfitTargetEUR) * localExchangeRate
       ).toFixed(2);
+
       row.netProfitTargetVC =
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
         (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
@@ -1966,6 +1979,7 @@ export default function Ermv(props: Props) {
                   totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
                   comments: comments,
                   additionalInformation: comments,
+                  localCurrency: requestorsCompanyName.value.currency,
                   projectType: "European Multi Vendor",
                 },
               };
@@ -1997,6 +2011,11 @@ export default function Ermv(props: Props) {
                       budgetSource.value === "noBudget"
                         ? 0.0
                         : parseFloat(vendor.localBudget),
+                    vendorBudgetAmount:
+                      isNaN(parseFloat(vendor.budgetAmount)) ||
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(vendor.budgetAmount),
                     // cbbudgetEur: parseFloat(vendor.eurBudget),
                     vendorShare: parseFloat(vendor.share),
                     estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
