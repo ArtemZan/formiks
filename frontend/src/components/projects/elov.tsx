@@ -1388,7 +1388,9 @@ export default function Elov(props: Props) {
             }
           });
         }}
-        isDisabled={requestorsCompanyName.value.code !== "6110"}
+        isDisabled={
+          requestorsCompanyName.value.code !== "6110" || props.submission
+        }
       >
         Submit
       </Button>
