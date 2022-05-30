@@ -117,6 +117,7 @@ export default function Elov(props: Props) {
           name: props.submission.data.requestorsCompanyName ?? "",
           code: props.submission.data.companyCode ?? "",
           country: props.submission.data.requestorsCountry ?? "",
+          currency: props.submission.data.localCurrency ?? "",
         },
       });
       setCampaignName(props.submission.data.campaignName ?? "");
@@ -153,6 +154,15 @@ export default function Elov(props: Props) {
         label: props.submission.data.campaignBudgetsCurrency ?? "",
         value: props.submission.data.campaignBudgetsCurrency ?? "",
       });
+      setLocalExchangeRate(
+        parseFloat(
+          (
+            ExchangeRates.find(
+              (rate) => rate.label === props.submission.data.localCurrency
+            ) || "0"
+          ).value
+        )
+      );
       setEstimatedIncomeBudgetCurrency(
         (
           props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
@@ -190,7 +200,6 @@ export default function Elov(props: Props) {
         });
         setVendor({
           vendor: props.children[0].data.vendorName ?? "",
-          projectManager: props.children[0].data.productionProjectManager ?? "",
           creditor: props.children[0].data.sapCreditorNumber ?? "",
           debitor: props.children[0].data.debitorNumber ?? "",
           manufacturer: props.children[0].data.manufacturerNumber ?? "",
@@ -199,6 +208,7 @@ export default function Elov(props: Props) {
             label: props.children[0].data.PH1 || "1",
             value: props.children[0].data.PH1 || "1",
           },
+          projectManager: props.children[0].productionProjectManager || "",
           budgetCurrency: {
             label: props.children[0].data.budgetCurrency || "",
             value: props.children[0].data.budgetCurrency || "",
@@ -1319,6 +1329,7 @@ export default function Elov(props: Props) {
                   totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
                   comments: comments,
                   additionalInformation: comments,
+                  localCurrency: requestorsCompanyName.value.currency,
                   projectType: "Local One Vendor",
                 },
               };
@@ -1335,7 +1346,7 @@ export default function Elov(props: Props) {
                 author: requestorsName,
                 data: {
                   vendorName: vendorName.label,
-                  marketingResponsible: vendor.projectManager,
+                  productionProjectManager: vendor.projectManager,
                   creditorNumber: vendor.creditor,
                   debitorNumber: vendor.debitor,
                   manufacturerNumber: vendor.manufacturer,

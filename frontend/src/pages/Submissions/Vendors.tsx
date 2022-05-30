@@ -1065,7 +1065,7 @@ export function VendorsTable(props: Props) {
               if (s.parentId === submission.parentId) {
                 filteredMap.set(s.id, s);
               }
-            })
+            });
           }
           filteredMap.set(submission.id, submission);
         }
@@ -4100,16 +4100,11 @@ export function VendorsTable(props: Props) {
             backgroundColor="#fef9fa"
             textColor={"yellow"}
             onUpdate={(submissionId: string) => {
-              if (
-                props.rowData.data.projectType === "Local One Vendor" ||
-                props.rowData.data.projectType === "European Multi Vendor"
-              ) {
-                window.open(
-                  "/submissions/view/" + submissionId,
-                  "_blank",
-                  "noopener,noreferrer"
-                );
-              }
+              window.open(
+                "/submissions/view/" + submissionId,
+                "_blank",
+                "noopener,noreferrer"
+              );
             }}
             rowIndex={props.rowIndex}
             columnKey={props.column.dataKey}

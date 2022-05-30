@@ -43,6 +43,8 @@ const { Column, HeaderCell, Cell } = Table;
 interface Props {
   history: any;
   project: Project;
+  submission?: any;
+  children?: any[];
 }
 
 export default function Elmv(props: Props) {
@@ -94,7 +96,6 @@ export default function Elmv(props: Props) {
   const [estimatedIncome, setEstimatedIncome] = useState("");
   const [estimatedCosts, setEstimatedCosts] = useState("");
   const [netProfitTarget, setNetProfitTarget] = useState("");
-  const [companiesParticipating, setCompaniesParticipating] = useState<any>([]);
   const [comments, setComments] = useState("");
   const [vendors, setVendors] = useState<any>([]);
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
@@ -137,6 +138,9 @@ export default function Elmv(props: Props) {
   }
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setTotalEstimatedCostsLC(
       (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
     );
@@ -153,6 +157,162 @@ export default function Elmv(props: Props) {
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
+    if (props.submission) {
+      setRequestorsCompanyName({
+        label: props.submission.data.requestorsCompanyName ?? "",
+        value: {
+          name: props.submission.data.requestorsCompanyName ?? "",
+          code: props.submission.data.companyCode ?? "",
+          country: props.submission.data.requestorsCountry ?? "",
+          currency: props.submission.data.localCurrency ?? "",
+        },
+      });
+      setCampaignName(props.submission.data.campaignName ?? "");
+      setCampaignDescription(props.submission.data.campaignDescription ?? "");
+      setTargetAudience(props.submission.data.targetAudience ?? "");
+      setCampaignChannel({
+        label: props.submission.data.campaignChannel ?? "",
+        value: props.submission.data.campaignChannel ?? "",
+      });
+      setYear({
+        label: props.submission.data.year ?? "",
+        value: props.submission.data.year ?? "",
+      });
+      setProjectStartQuarter({
+        label: props.submission.data.projectStartQuarter ?? "",
+        value: props.submission.data.projectStartQuarter ?? "",
+      });
+      setProjectNumber(props.submission.data.projectNumber ?? "");
+      setRequestorsName(props.submission.data.requestorsName ?? "");
+      setFiscalQuarter({
+        label: props.submission.data.manufacturersFiscalQuarter ?? "",
+        value: props.submission.data.manufacturersFiscalQuarter ?? "",
+      });
+      setStartDate(new Date(props.submission.data.campaignStartDate) || null);
+      setEndDate(new Date(props.submission.data.campaignEndDate) || null);
+      setBudgetSource({
+        label: props.submission.data.budgetSource ?? "",
+        value: props.submission.data.budgetSource ?? "",
+      });
+      setBudgetApprovedByVendor(
+        props.submission.data.budgetApprovedByVendor ?? ""
+      );
+      setExchangeRates({
+        label: props.submission.data.campaignBudgetsCurrency ?? "",
+        value: props.submission.data.campaignBudgetsCurrency ?? "",
+      });
+      setEstimatedIncomeBudgetCurrency(
+        (
+          props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
+        ).toFixed(2)
+      );
+      setEstimatedIncome(
+        (props.submission.data.campaignEstimatedIncomeEur || 0).toFixed(2)
+      );
+      setEstimatedCosts(
+        (props.submission.data.campaignEstimatedCostsEur || 0).toFixed(2)
+      );
+      setNetProfitTarget(
+        (props.submission.data.campaignNetProfitTargetEur || 0).toFixed(2)
+      );
+      setEstimatedCostsBudgetCurrency(
+        (
+          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
+        ).toFixed(2)
+      );
+      setNetProfitTargetBudgetCurrency(
+        (
+          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
+        ).toFixed(2)
+      );
+      setComments(props.submission.data.comments ?? "");
+      setTotalEstimatedCostsLC(
+        (props.submission.data.totalEstimatedCostsLC || 0).toFixed(2)
+      );
+      setLocalExchangeRate(
+        parseFloat(
+          (
+            ExchangeRates.find(
+              (rate) => rate.label === props.submission.data.localCurrency
+            ) || "0"
+          ).value
+        )
+      );
+
+      //
+      if (props.children && props.children.length > 0) {
+        setVendorsNames(
+          props.children
+            .filter((s) => s.group === "vendor")
+            .map((s) => {
+              return { label: s.data.vendorName, value: s.data.vendorName };
+            })
+        );
+
+        var v: any[] = [];
+
+        props.children
+          .filter((s) => s.group === "vendor")
+          .forEach((s) => {
+            v.push({
+              vendor: s.data.vendorName,
+              projectManager: s.data.marketingResponsible,
+              creditor: s.data.creditorNumber,
+              debitor: s.data.debitorNumber,
+              manufacturer: s.data.manufacturerNumber,
+              bu: s.data.businessUnit,
+              ph: { label: s.data.PH1, value: s.data.PH1 },
+              budgetCurrency: {
+                label: s.data.vendorBudgetCurrency,
+                value: (
+                  ExchangeRates.find(
+                    (er) => er.label === s.data.vendorBudgetCurrency
+                  ) || { value: "" }
+                ).value,
+              },
+              budgetAmount: (s.data.vendorBudgetAmount || 0).toFixed(2),
+              localBudget: (s.data.vendorAmount || 0).toFixed(2),
+              eurBudget: (s.data.estimatedIncomeEUR || 0).toFixed(2),
+              share: s.data.vendorShare.toFixed(0) || "0",
+              estimatedCostsCC: (s.data.estimatedCostsCC || 0).toFixed(2),
+              estimatedIncomeCC: (s.data.estimatedIncomeCC || 0).toFixed(2),
+              estimatedCostsLC: "0.00",
+              estimatedCostsEUR: (s.data.estimatedCostsEUR || 0).toFixed(2),
+              netProfitTargetVC: (s.data.estimatedResultCC || 0).toFixed(2),
+              netProfitTargetLC: (s.data.estimatedResultBC || 0).toFixed(2),
+              netProfitTargetEUR: (s.data.estimatedResultEUR || 0).toFixed(2),
+            });
+          });
+        v.push({
+          vendor: "TOTAL",
+          projectManager: "",
+          creditor: "",
+          debitor: "",
+          manufacturer: "",
+          bu: "",
+          ph: { label: "", value: "" },
+          budgetCurrency: { label: "", value: "" },
+          budgetAmount: "",
+          localBudget: "",
+          eurBudget: "",
+          share: "",
+          estimatedCostsCC: "",
+          estimatedIncomeCC: "",
+          estimatedCostsLC: "",
+          estimatedCostsEUR: "",
+          netProfitTargetVC: "",
+          netProfitTargetLC: "",
+          netProfitTargetEUR: "",
+        });
+        setVendors([...v]);
+      }
+    }
+  }, [props.submission, props.children, ExchangeRates]);
+
+  useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     var data: any = [];
     vendorsNames.forEach((vendor: any) => {
       data.push({
@@ -200,22 +360,6 @@ export default function Elmv(props: Props) {
     });
     setVendors(data);
   }, [vendorsNames]);
-  useEffect(() => {
-    var data: any = [];
-    companiesParticipating.forEach((company: any) => {
-      data.push({
-        companyName: company.label,
-        companyCode: company.value.code,
-        country: company.value.country,
-        contactEmail: "",
-        projectNumber: "",
-        contribution: "",
-        estimatedCosts: "",
-        share: "",
-      });
-    });
-    setCostBreakdown(data);
-  }, [companiesParticipating]);
 
   useEffect(() => {
     var temp = [...costBreakdown];
@@ -246,6 +390,9 @@ export default function Elmv(props: Props) {
   ]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setEstimatedCosts(
       (
         parseFloat(estimatedCostsBudgetCurrency) /
@@ -290,6 +437,9 @@ export default function Elmv(props: Props) {
   ]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setProjectNumber(
       (requestorsCompanyName.value.code === ""
         ? "????"
@@ -603,6 +753,7 @@ export default function Elmv(props: Props) {
             onChange={(value: any) => {
               setTargetAudience(value.label);
             }}
+            value={{ label: targetAudience, value: targetAudience }}
             classNamePrefix="select"
             isClearable={false}
             name="targetAudience"
@@ -644,6 +795,7 @@ export default function Elmv(props: Props) {
             onChange={(value: any) => {
               setCampaignChannel(value);
             }}
+            value={campaignChannel}
             classNamePrefix="select"
             isClearable={false}
             name="campaignChannel"
@@ -1601,6 +1753,7 @@ export default function Elmv(props: Props) {
                   totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
                   comments: comments,
                   additionalInformation: comments,
+                  localCurrency: requestorsCompanyName.value.currency,
                   projectType: "Local Multi Vendor",
                 },
               };
@@ -1632,9 +1785,14 @@ export default function Elmv(props: Props) {
                       budgetSource.value === "noBudget"
                         ? 0.0
                         : parseFloat(vendor.localBudget),
+                    vendorBudgetAmount:
+                      isNaN(parseFloat(vendor.budgetAmount)) ||
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(vendor.budgetAmount),
                     // cbbudgetEur: parseFloat(vendor.eurBudget),
                     vendorShare: parseFloat(vendor.share),
-                    estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
+                    estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
                     estimatedIncomeCC:
                       budgetSource.value === "noBudget"
                         ? 0.0
@@ -1664,7 +1822,9 @@ export default function Elmv(props: Props) {
             }
           });
         }}
-        isDisabled={requestorsCompanyName.value.code !== "6110"}
+        isDisabled={
+          requestorsCompanyName.value.code !== "6110" || props.submission
+        }
       >
         Submit
       </Button>

@@ -43,6 +43,8 @@ const { Column, HeaderCell, Cell } = Table;
 interface Props {
   history: any;
   project: Project;
+  submission?: any;
+  children?: any[];
 }
 
 export default function Erov(props: Props) {
@@ -110,6 +112,155 @@ export default function Erov(props: Props) {
 
   const [render, rerender] = useState(0);
 
+  useEffect(() => {
+    if (props.submission) {
+      setRequestorsCompanyName({
+        label: props.submission.data.requestorsCompanyName ?? "",
+        value: {
+          name: props.submission.data.requestorsCompanyName ?? "",
+          code: props.submission.data.companyCode ?? "",
+          country: props.submission.data.requestorsCountry ?? "",
+          currency: props.submission.data.localCurrency ?? "",
+        },
+      });
+      setCampaignName(props.submission.data.campaignName ?? "");
+      setCampaignDescription(props.submission.data.campaignDescription ?? "");
+      setTargetAudience(props.submission.data.targetAudience ?? "");
+      setCampaignChannel({
+        label: props.submission.data.campaignChannel ?? "",
+        value: props.submission.data.campaignChannel ?? "",
+      });
+      setYear({
+        label: props.submission.data.year ?? "",
+        value: props.submission.data.year ?? "",
+      });
+      setProjectStartQuarter({
+        label: props.submission.data.projectStartQuarter ?? "",
+        value: props.submission.data.projectStartQuarter ?? "",
+      });
+      setProjectNumber(props.submission.data.projectNumber ?? "");
+      setRequestorsName(props.submission.data.requestorsName ?? "");
+      setFiscalQuarter({
+        label: props.submission.data.manufacturersFiscalQuarter ?? "",
+        value: props.submission.data.manufacturersFiscalQuarter ?? "",
+      });
+      setStartDate(new Date(props.submission.data.campaignStartDate) || null);
+      setEndDate(new Date(props.submission.data.campaignEndDate) || null);
+      setBudgetSource({
+        label: props.submission.data.budgetSource ?? "",
+        value: props.submission.data.budgetSource ?? "",
+      });
+      setBudgetApprovedByVendor(
+        props.submission.data.budgetApprovedByVendor ?? ""
+      );
+      setExchangeRates({
+        label: props.submission.data.campaignBudgetsCurrency ?? "",
+        value: props.submission.data.campaignBudgetsCurrency ?? "",
+      });
+      setEstimatedIncomeBudgetCurrency(
+        (
+          props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
+        ).toString()
+      );
+      setEstimatedIncome(
+        props.submission.data.campaignEstimatedIncomeEur.toFixed(2) || "0.00"
+      );
+      setEstimatedCosts(
+        props.submission.data.campaignEstimatedCostsEur.toFixed(2) || "0.00"
+      );
+      setNetProfitTarget(
+        props.submission.data.campaignNetProfitTargetEur.toFixed(2) || "0.00"
+      );
+      setEstimatedCostsBudgetCurrency(
+        (
+          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
+        ).toString()
+      );
+      setNetProfitTargetBudgetCurrency(
+        (
+          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
+        ).toString()
+      );
+      setLocalExchangeRate(
+        parseFloat(
+          (
+            ExchangeRates.find(
+              (rate) => rate.label === props.submission.data.localCurrency
+            ) || "0"
+          ).value
+        )
+      );
+      setComments(props.submission.data.comments ?? "");
+      setTotalEstimatedCostsLC(
+        props.submission.data.totalEstimatedCostsLC.toFixed(2) || "0.00"
+      );
+
+      //
+
+      if (props.children && props.children.length > 0) {
+        var vs = props.children.find((s) => s.group === "vendor");
+        setVendorName({
+          label: vs.data.vendorName ?? "",
+          value: vs.data.vendorName ?? "",
+        });
+        setVendor({
+          vendor: vs.data.vendorName ?? "",
+          projectManager: vs.data.productionProjectManager ?? "",
+          creditor: vs.data.creditorNumber ?? "",
+          debitor: vs.data.debitorNumber ?? "",
+          manufacturer: vs.data.manufacturerNumber ?? "",
+          bu: vs.data.businessUnit ?? "",
+          ph: {
+            label: vs.data.PH1 || "1",
+            value: vs.data.PH1 || "1",
+          },
+          budgetCurrency: {
+            label: vs.data.budgetCurrency || "",
+            value: vs.data.budgetCurrency || "",
+          },
+          budgetAmount: "",
+          localBudget: "",
+          eurBudget: "",
+          share: "100",
+          estimatedCostsCC: "",
+          estimatedIncomeCC: "",
+          estimatedCostsLC: "",
+          estimatedCostsEUR: "",
+          netProfitTargetVC: "",
+          netProfitTargetLC: "",
+          netProfitTargetEUR: "",
+        });
+        setCompaniesParticipating(
+          props.children
+            .filter((s) => s.group === "country")
+            .map((s) => {
+              console.log(s);
+              return { label: s.data.companyName, value: s.data.companyName };
+            })
+        );
+        var c: any[] = [];
+        props.children
+          .filter((s) => s.group === "country")
+          .forEach((s) => {
+            console.log(s);
+            c.push({
+              companyName: s.data.companyName,
+              companyCode: s.data.countryCodeEMEA,
+              country: s.data.countriesEMEA,
+              contactEmail: s.data.productionProjectManager,
+              projectNumber: s.data.mirrorProjectNumber,
+              share: (s.data.countryShare || 0).toFixed(2),
+              contribution: (s.data.countryBudgetContributionCC || 0).toFixed(
+                2
+              ),
+              estimatedCosts: (s.data.countryCostEstimationCC || 0).toFixed(2),
+            });
+          });
+        setCostBreakdown([...c]);
+      }
+    }
+  }, [props.submission, props.children, ExchangeRates]);
+
   async function fetchDropdowns() {
     var dropdownsIds: string[] = [
       "619b630a9a5a2bb37a93b23b",
@@ -141,6 +292,9 @@ export default function Erov(props: Props) {
   }
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setTotalEstimatedCostsLC(
       (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
     );
@@ -157,6 +311,9 @@ export default function Erov(props: Props) {
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     var data: any = [];
     companiesParticipating.forEach((company: any) => {
       data.push({
@@ -211,6 +368,9 @@ export default function Erov(props: Props) {
   ]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     if (vendorName.value) {
       setVendor({
         vendor: vendorName.label,
@@ -237,6 +397,9 @@ export default function Erov(props: Props) {
   }, [vendorName]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setEstimatedCosts(
       (
         parseFloat(estimatedCostsBudgetCurrency) /
@@ -281,6 +444,9 @@ export default function Erov(props: Props) {
   ]);
 
   useEffect(() => {
+    if (props.submission) {
+      return;
+    }
     setProjectNumber(
       (requestorsCompanyName.value.code === ""
         ? "????"
@@ -594,6 +760,7 @@ export default function Erov(props: Props) {
               setTargetAudience(value.label);
             }}
             classNamePrefix="select"
+            value={{ label: targetAudience, value: targetAudience }}
             isClearable={false}
             name="targetAudience"
             options={TargetAudience}
@@ -630,6 +797,7 @@ export default function Erov(props: Props) {
                 primary: "#3082CE",
               },
             })}
+            value={campaignChannel}
             placeholder=""
             onChange={(value: any) => {
               setCampaignChannel(value);
@@ -1537,6 +1705,8 @@ export default function Erov(props: Props) {
                   totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
                   comments: comments,
                   additionalInformation: comments,
+                  localCurrency: requestorsCompanyName.value.currency,
+
                   projectType: "European One Vendor",
                 },
               };
@@ -1608,14 +1778,16 @@ export default function Erov(props: Props) {
                     countryCodeEMEA: company.companyCode,
                     country: company.country,
                     countriesEMEA: company.country,
-                    marketingResponsible: company.contactEmail,
+                    productionProjectManager: company.contactEmail,
                     mirrorProjectNumber: company.projectNumber,
                     countryShare: parseFloat(company.share),
                     countryBudgetContributionEur: company.contribution,
                     countryCostEstimationEur: company.estimatedCosts,
-                    countryBudgetContributionCC: parseFloat(
-                      company.contribution
-                    ),
+                    countryBudgetContributionCC: isNaN(
+                      parseFloat(company.contribution)
+                    )
+                      ? 0.0
+                      : parseFloat(company.contribution),
                     countryCostEstimationCC: parseFloat(company.estimatedCosts),
                   },
                 });
@@ -1632,7 +1804,9 @@ export default function Erov(props: Props) {
             }
           });
         }}
-        isDisabled={requestorsCompanyName.value.code !== "6110"}
+        isDisabled={
+          requestorsCompanyName.value.code !== "6110" || props.submission
+        }
       >
         Submit
       </Button>

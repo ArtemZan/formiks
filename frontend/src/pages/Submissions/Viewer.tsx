@@ -72,8 +72,8 @@ export function Viewer(props: Props) {
             setPredefinedProject(
               <Erov
                 project={project}
-                // submission={response.data.submission}
-                // children={response.data.children}
+                submission={response.data.submission}
+                children={response.data.children}
                 history={props.history}
               />
             );
@@ -82,8 +82,8 @@ export function Viewer(props: Props) {
             setPredefinedProject(
               <Elmv
                 project={project}
-                // submission={response.data.submission}
-                // children={response.data.children}
+                submission={response.data.submission}
+                children={response.data.children}
                 history={props.history}
               />
             );
