@@ -52,7 +52,13 @@ import { RestAPI } from "../../api/rest";
 import React from "react";
 import _ from "lodash";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
-import { BiPlusMedical, RiFileExcel2Line } from "react-icons/all";
+import {
+  BiPlusMedical,
+  RiFileExcel2Line,
+  RiUserFill,
+  RiGroupFill,
+  RiTeamFill,
+} from "react-icons/all";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
@@ -854,6 +860,7 @@ export function VendorsTable(props: Props) {
   const [communicationSubmissions, setCommunicationSubmissions] = useState<
     Submission[]
   >([]);
+  const [onlyMine, setOnlyMine] = useState(false);
   const [scrollLeft, setScrollLeft] = React.useState(0);
   const [defaultColumnsWidth, setDefaultColumnsWidth] = useState({});
   const onScroll = React.useCallback(
@@ -934,11 +941,24 @@ export function VendorsTable(props: Props) {
     var filtered: Submission[] = [];
     var cFilteredMap = new Map();
     var filteredCommunication: Submission[] = [];
-    if (filters.length > 0 && submissions.length > 0) {
+
+    var f: FilterField[] = JSON.parse(JSON.stringify(filters));
+
+    if (onlyMine) {
+      f.push({
+        columnValue: "data.marketingResponsible",
+        columnLabel: "Marketing Responsible",
+        type: "string",
+        filter: "exact",
+        values: [],
+        selectedValues: [currentUser.displayName],
+      } as FilterField);
+    }
+    if (f.length > 0 && submissions.length > 0) {
       submissions.forEach((submission) => {
         var valid = true;
 
-        for (let filter of filters) {
+        for (let filter of f) {
           if (
             filter.columnLabel.includes(
               "Input of Local Marketing Department"
@@ -1189,7 +1209,7 @@ export function VendorsTable(props: Props) {
       setFilteredSubmissions(submissions);
       setFilteredCommunicationSubmissions(communicationSubmissions);
     }
-  }, [filters, submissions, communicationSubmissions]);
+  }, [filters, submissions, communicationSubmissions, onlyMine]);
 
   // const getHeapInfo = () => {
   //   var memory = (window.performance as any).memory;
@@ -4172,6 +4192,15 @@ export function VendorsTable(props: Props) {
     <div>
       <Box h="70px" textAlign={"end"}>
         <IconButton
+          icon={onlyMine ? <RiUserFill /> : <RiGroupFill />}
+          onClick={() => {
+            setOnlyMine(!onlyMine);
+          }}
+          aria-label="filter"
+          colorScheme="blue"
+          mr="10px"
+        />
+        <IconButton
           onClick={async () => {
             interface FD {
               [key: string]: any;
@@ -5470,7 +5499,8 @@ export function VendorsTable(props: Props) {
                                     });
                                   }
 
-                                  is.forEach((ts) => {
+                                  is.forEach((ts, tsi) => {
+                                    console.log(ts.data.invoicingDateLMD);
                                     if (
                                       ts.data.invoicingDateLMD &&
                                       ts.data.invoicingDateLMD.length > 0 &&
@@ -5495,11 +5525,11 @@ export function VendorsTable(props: Props) {
                                       ts.data.dunningStopLMD.length > 0 &&
                                       ts.data.sendToLMD &&
                                       ts.data.sendToLMD.length > 0 &&
-                                      ts.data.paymentMethodLMD ===
-                                        "Money in House"
+                                      (ts.data.paymentMethodLMD ===
+                                      "Money in House"
                                         ? ts.data.depositNumberLMD &&
                                           ts.data.depositNumberLMD.length > 0
-                                        : true
+                                        : true)
                                     ) {
                                       var today = new Date();
                                       today.setHours(23, 59, 59, 998);
@@ -5520,7 +5550,28 @@ export function VendorsTable(props: Props) {
                                           "OK FOR INVOICING"
                                         );
                                       }
+                                      toast(
+                                        <Toast
+                                          title={"Successful Validation"}
+                                          message={
+                                            (tsi === 0 ? `Parent` : "Child") +
+                                            " submission validated successfully"
+                                          }
+                                          type={"success"}
+                                        />
+                                      );
                                     } else {
+                                      toast(
+                                        <Toast
+                                          title={"Incomplete Request"}
+                                          message={
+                                            (tsi === 0 ? `Parent` : "Child") +
+                                            " submission could not be validated: incomplete data"
+                                          }
+                                          type={"error"}
+                                        />
+                                      );
+
                                       handleCommunicationCellUpdate(
                                         ts.id!,
                                         "data.statusLMD",
