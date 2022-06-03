@@ -947,7 +947,7 @@ export function VendorsTable(props: Props) {
 
     if (onlyMine) {
       f.push({
-        columnValue: "data.author",
+        columnValue: "author",
         columnLabel: "Author",
         type: "string",
         filter: "exact",
@@ -1658,13 +1658,13 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.author",
-      dataKey: "data.author",
+      key: "author",
+      dataKey: "author",
       title: "Author",
       group: "General Information",
-      width: columnWidth("data.author", 250),
+      width: columnWidth("author", 250),
       resizable: true,
-      hidden: visibilityController("generalInformation", "data.author"),
+      hidden: visibilityController("generalInformation", "author"),
       type: "text",
       cellRenderer: (props: any) => (
         <EditableTableCell
