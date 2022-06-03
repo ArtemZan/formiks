@@ -241,6 +241,7 @@ const DisplayedColumnsList = [
         type: "date",
       },
       { label: "Project Type", value: "data.projectType", type: "dropdown" },
+      { label: "Author", value: "data.author", type: "string" },
       { label: "Status", value: "data.status", type: "string" },
     ],
   },
@@ -946,8 +947,8 @@ export function VendorsTable(props: Props) {
 
     if (onlyMine) {
       f.push({
-        columnValue: "data.marketingResponsible",
-        columnLabel: "Marketing Responsible",
+        columnValue: "data.author",
+        columnLabel: "Author",
         type: "string",
         filter: "exact",
         values: [],
@@ -1649,6 +1650,28 @@ export function VendorsTable(props: Props) {
           backgroundColor="#f4fcf9"
           onUpdate={handleCellUpdate}
           loadOptions={loadOptions}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.author",
+      dataKey: "data.author",
+      title: "Author",
+      group: "General Information",
+      width: columnWidth("data.author", 250),
+      resizable: true,
+      hidden: visibilityController("generalInformation", "data.author"),
+      type: "text",
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          readonly={true}
+          backgroundColor="#f4fcf9"
+          onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
