@@ -241,7 +241,7 @@ const DisplayedColumnsList = [
         type: "date",
       },
       { label: "Project Type", value: "data.projectType", type: "dropdown" },
-      { label: "Author", value: "data.author", type: "string" },
+      { label: "Author", value: "author", type: "string" },
       { label: "Status", value: "data.status", type: "string" },
     ],
   },

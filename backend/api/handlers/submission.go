@@ -90,7 +90,7 @@ func (r *Submission) FetchByIDWithChildren(c *gin.Context) {
 }
 
 func (r *Submission) Create(c *gin.Context) {
-	email, emailExists := c.Get("Email")
+	_, emailExists := c.Get("Email")
 	if !emailExists {
 		c.Status(http.StatusForbidden)
 		return
@@ -105,7 +105,6 @@ func (r *Submission) Create(c *gin.Context) {
 	submission.ID = primitive.NewObjectID()
 	submission.Created = time.Now()
 	submission.Updated = time.Now()
-	submission.Author = email.(string)
 	submission.Data["status"] = "New"
 	submission, err = r.repo.Create(c.Request.Context(), submission)
 	if err != nil {
@@ -117,7 +116,7 @@ func (r *Submission) Create(c *gin.Context) {
 }
 
 func (r *Submission) CreateWithChildren(c *gin.Context) {
-	email, emailExists := c.Get("Email")
+	_, emailExists := c.Get("Email")
 	if !emailExists {
 		c.Status(http.StatusForbidden)
 		return
@@ -132,7 +131,6 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	submissionWithChildren.Submission.ID = primitive.NewObjectID()
 	submissionWithChildren.Submission.Created = time.Now()
 	submissionWithChildren.Submission.Updated = time.Now()
-	submissionWithChildren.Submission.Author = email.(string)
 	submissionWithChildren.Submission.ParentID = nil
 	submissionWithChildren.Submission.Data["status"] = "New"
 	for index := range submissionWithChildren.Children {
