@@ -926,6 +926,7 @@ export function VendorsTable(props: Props) {
     setTotalCostAmount(tca);
     setTotalCostAmountCostGL(tcacgl);
     setTotalCostAmountLC(tcal);
+    console.log(tcal);
     setTotalCostAmountLCCostGL(tcalcgl);
     setTotalIncomeAmount(tia);
     setTotalIncomeAmountLCIncomeGL(tialigl);
@@ -935,6 +936,7 @@ export function VendorsTable(props: Props) {
     setTotalIncomeInTool(tiit);
     setTotalCostsInToolEUR(tcite);
     setTotalIncomeInToolEUR(tiite);
+    forceUpdate();
   }, [filteredSubmissions]);
 
   useEffect(() => {
@@ -4398,6 +4400,7 @@ export function VendorsTable(props: Props) {
               >
                 {({ width, height }) => (
                   <BaseTable
+                    key={ignored}
                     scrollLeft={scrollLeft}
                     onScroll={onScroll}
                     onColumnResizeEnd={({

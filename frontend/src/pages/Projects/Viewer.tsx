@@ -23,6 +23,7 @@ import { Submission } from "../../types/submission";
 import { API, RestAPI } from "../../api/rest";
 import { FiSettings, FiRefreshCw } from "react-icons/all";
 
+import Cerov from "../../components/projects/cerov";
 import Ermv from "../../components/projects/ermv";
 import Erov from "../../components/projects/erov";
 import Elmv from "../../components/projects/elmv";
@@ -81,6 +82,11 @@ export function Viewer(props: Props) {
         if (props.match.params.id === "62610ab73a88d397b05cea12") {
           setPredefinedProject(
             <Por project={project} history={props.history} />
+          );
+        }
+        if (props.match.params.id === "629dfb3f55d209262194a3e6") {
+          setPredefinedProject(
+            <Cerov project={project} history={props.history} />
           );
         }
       });
