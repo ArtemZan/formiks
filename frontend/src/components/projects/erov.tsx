@@ -163,13 +163,13 @@ export default function Erov(props: Props) {
         ).toString()
       );
       setEstimatedIncome(
-        props.submission.data.campaignEstimatedIncomeEur.toFixed(2) || "0.00"
+        (props.submission.data.campaignEstimatedIncomeEur || 0).toFixed(2)
       );
       setEstimatedCosts(
-        props.submission.data.campaignEstimatedCostsEur.toFixed(2) || "0.00"
+        (props.submission.data.campaignEstimatedCostsEur || 0).toFixed(2)
       );
       setNetProfitTarget(
-        props.submission.data.campaignNetProfitTargetEur.toFixed(2) || "0.00"
+        (props.submission.data.campaignNetProfitTargetEur || 0).toFixed(2)
       );
       setEstimatedCostsBudgetCurrency(
         (
@@ -192,7 +192,7 @@ export default function Erov(props: Props) {
       );
       setComments(props.submission.data.comments ?? "");
       setTotalEstimatedCostsLC(
-        props.submission.data.totalEstimatedCostsLC.toFixed(2) || "0.00"
+        (props.submission.data.totalEstimatedCostsLC || 0).toFixed(2)
       );
 
       //
@@ -1722,7 +1722,7 @@ export default function Erov(props: Props) {
                 author: requestorsName,
                 data: {
                   vendorName: vendorName.label,
-                  productionProjectManager: vendor.projectManager,
+                  marketingResponsible: vendor.projectManager,
                   creditorNumber: vendor.creditor,
                   debitorNumber: vendor.debitor,
                   manufacturerNumber: vendor.manufacturer,
