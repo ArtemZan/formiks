@@ -76,6 +76,7 @@ export default function Cerov(props: Props) {
     label: "",
     value: "",
   });
+  const [organizingCompany, setOrganizingCompany] = useState("");
   const [startDate, setStartDate] = useState<any>(null);
   const [endDate, setEndDate] = useState<any>(null);
   const [budgetSource, setBudgetSource] = useState<any>({
@@ -279,6 +280,7 @@ export default function Cerov(props: Props) {
         return RestAPI.getDropdownValues(di);
       })
     );
+    console.log(responses[1].data);
     PH1 = responses[0].data;
     Companies = responses[1].data;
     VendorsNames = responses[2].data;
@@ -451,9 +453,7 @@ export default function Cerov(props: Props) {
       (requestorsCompanyName.value.code === ""
         ? "????"
         : requestorsCompanyName.value.code) +
-        (requestorsCompanyName.value.country === ""
-          ? "??"
-          : requestorsCompanyName.value.country) +
+        (organizingCompany === "" ? "??" : organizingCompany) +
         (year.value === "" ? "??" : year.value) +
         (campaignChannel.value === "" ? "?" : campaignChannel.value) +
         (projectStartQuarter.value === ""
@@ -461,7 +461,13 @@ export default function Cerov(props: Props) {
           : projectStartQuarter.value.slice(1)) +
         "01"
     );
-  }, [year, campaignChannel, projectStartQuarter, requestorsCompanyName]);
+  }, [
+    year,
+    organizingCompany,
+    campaignChannel,
+    projectStartQuarter,
+    requestorsCompanyName,
+  ]);
 
   // useEffect(() => {
   //   var totalBudgetEur = 0;
@@ -692,6 +698,55 @@ export default function Cerov(props: Props) {
             Schweiz AG')
           </AlertDescription>
         </Alert>
+        <Box w="100%">
+          <Text mb="8px">Organizing Company</Text>
+          <Select
+            menuPortalTarget={document.body}
+            styles={{
+              menu: (provided) => ({
+                ...provided,
+                zIndex: 1000000,
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: "#718196",
+              }),
+              control: (base, state) => ({
+                ...base,
+                minHeight: 40,
+                border: "1px solid #E2E8F0",
+                transition: "0.3s",
+                "&:hover": {
+                  border: "1px solid #CBD5E0",
+                },
+              }),
+            }}
+            theme={(theme) => ({
+              ...theme,
+              borderRadius: 6,
+              colors: {
+                ...theme.colors,
+                primary: "#3082CE",
+              },
+            })}
+            value={{
+              label: organizingCompany,
+              value: organizingCompany,
+            }}
+            onChange={(selected: any) => {
+              setOrganizingCompany(selected.value);
+            }}
+            classNamePrefix="select"
+            isClearable={false}
+            name="organizingCompany"
+            options={Companies.map((company) => {
+              return {
+                label: company.value.country,
+                value: company.value.country,
+              };
+            })}
+          />
+        </Box>
         <Text as="b">Campaign`s Details</Text>
 
         <Box w="100%">

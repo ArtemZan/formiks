@@ -3,11 +3,13 @@ package project
 import (
 	"context"
 
-	"github.com/doublegrey/formiks/backend/models"
-	"github.com/doublegrey/formiks/backend/repositories"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"github.com/doublegrey/formiks/backend/models"
+	"github.com/doublegrey/formiks/backend/repositories"
 )
 
 func NewProjectRepo(Conn *mongo.Database) repositories.ProjectRepo {
@@ -22,7 +24,7 @@ type projectRepo struct {
 
 func (r *projectRepo) Fetch(ctx context.Context, filter interface{}) ([]models.Project, error) {
 	var projects []models.Project
-	cursor, err := r.Conn.Collection("projects").Find(ctx, filter)
+	cursor, err := r.Conn.Collection("projects").Find(ctx, filter, options.Find().SetSort(bson.D{{"created", -1}}))
 	if err != nil {
 		return projects, err
 	}

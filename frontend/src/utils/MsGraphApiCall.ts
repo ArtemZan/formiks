@@ -44,7 +44,7 @@ export async function getUserPhoto() {
     method: "GET",
     headers: {
       Authorization: `Bearer ${response.accessToken}`,
-      "Content-Type": "application/json",
+      "Content-Type": "image/jpeg",
     },
   })
     .then((response) => response.blob())

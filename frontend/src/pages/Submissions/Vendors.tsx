@@ -1813,7 +1813,7 @@ export function VendorsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           readonly={true}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
