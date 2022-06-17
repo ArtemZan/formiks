@@ -15,7 +15,7 @@ func ZsdMdfOrder(submission models.Submission) (int, string) {
 	var r FRequest
 	r.Request.FUNCTION = "ZSD_MDF_INT_ORDER"
 	r.Request.IM_ORDER = fmt.Sprintf("%v", submission.Data["projectNumber"])
-	r.Request.IM_ORDER_TYPE = "ZMDE"
+	r.Request.IM_ORDER_TYPE = "ZMCH"
 	r.Request.IM_ORDER_NAME = fmt.Sprintf("%v", submission.Data["campaignName"])
 	r.Request.IM_COMP_CODE = fmt.Sprintf("%v", submission.Data["companyCode"])
 	r.Request.IM_PERSON_RESP = fmt.Sprintf("%v", submission.Data["budgetApprovedByVendor"])
