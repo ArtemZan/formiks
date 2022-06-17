@@ -20,7 +20,7 @@ func ZsdMdfOrder(submission models.Submission) (int, string) {
 	r.Request.IM_COMP_CODE = fmt.Sprintf("%v", submission.Data["companyCode"])
 	r.Request.IM_PERSON_RESP = fmt.Sprintf("%v", submission.Data["budgetApprovedByVendor"])
 	r.Request.IM_CURRENCY = fmt.Sprintf("%v", submission.Data["campaignBudgetsCurrency"])
-	r.Request.IM_CO_AREA = "A001"
+	r.Request.IM_CO_AREA = "A002"
 
 	bs, _ := json.Marshal(r)
 	fmt.Println(string(bs))
