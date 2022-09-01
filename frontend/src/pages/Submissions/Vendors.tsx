@@ -32,6 +32,7 @@ import {
   useState,
 } from "react";
 import EditableTableCell from "../../components/EditableTableCell";
+import Creatable from "react-select/creatable";
 
 import { useFps } from "react-fps";
 import Select from "react-select";
@@ -57,7 +58,7 @@ import {
   RiFileExcel2Line,
   RiUserFill,
   RiGroupFill,
-  RiTeamFill,
+  IoSave,
 } from "react-icons/all";
 import moment from "moment";
 import { toast } from "react-toastify";
@@ -67,6 +68,7 @@ import { numberWithCommas } from "../../utils/utils";
 
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
+import { FilterField, Template } from "../../types/template";
 
 interface Props {
   history: any;
@@ -104,6 +106,20 @@ var CostStatuses: any[] = [
   { label: "Cost Invoiced", value: "Cost Invoiced" },
   { label: "Cost Not Invoiced", value: "Cost Not Invoiced" },
   { label: "Not Relevant", value: "Not Relevant" },
+];
+
+var defaultColumns = [
+  "generalInformation",
+  "projectInformation",
+  "purchaseOrder",
+  "costInvoices",
+  "salesInvoices",
+  "costGlPostings",
+  "incomeGlPostings",
+  "projectResults",
+  "controlChecks",
+  "CMCT",
+  "LMD",
 ];
 
 async function fetchDropdowns() {
@@ -196,14 +212,6 @@ function bytesToSize(bytes: number) {
   return (bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
 }
 
-interface FilterField {
-  columnValue: string;
-  columnLabel: string;
-  type: string;
-  filter: string;
-  values: any[];
-  selectedValues: any[];
-}
 const filterTypes = {
   string: [
     { label: "Exact", value: "exact" },
@@ -818,23 +826,14 @@ const DisplayedColumnsListOptions = DisplayedColumnsList.map((group: any) => {
 }).flat(1);
 
 export function VendorsTable(props: Props) {
+  const [selectedTemplate, setSelectedTemplate] = useState("local");
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [sourceSubmissions, setSourceSubmissions] = useState(new Map());
   const [currentUser, setCurrentUser] = useState({ displayName: "unknown" });
   const [debugOverlayHidden, hideDebugOverlay] = useState(true);
   const [filters, setFilters] = useState<FilterField[]>([]);
-  const [displayedColumns, setDisplayedColumns] = useState<string[]>([
-    "generalInformation",
-    "projectInformation",
-    "purchaseOrder",
-    "costInvoices",
-    "salesInvoices",
-    "costGlPostings",
-    "incomeGlPostings",
-    "projectResults",
-    "controlChecks",
-    "CMCT",
-    "LMD",
-  ]);
+  const [displayedColumns, setDisplayedColumns] =
+    useState<string[]>(defaultColumns);
   const [totalCostAmount, setTotalCostAmount] = useState(0);
   const [totalCostAmountCostGL, setTotalCostAmountCostGL] = useState(0);
   const [totalCostAmountLC, setTotalCostAmountLC] = useState(0);
@@ -926,7 +925,6 @@ export function VendorsTable(props: Props) {
     setTotalCostAmount(tca);
     setTotalCostAmountCostGL(tcacgl);
     setTotalCostAmountLC(tcal);
-    console.log(tcal);
     setTotalCostAmountLCCostGL(tcalcgl);
     setTotalIncomeAmount(tia);
     setTotalIncomeAmountLCIncomeGL(tialigl);
@@ -1437,6 +1435,21 @@ export function VendorsTable(props: Props) {
   //   }
 
   useEffect(() => {
+    var selected = localStorage.getItem("template") || "local";
+    setSelectedTemplate(selected);
+    var template = templates.find((t) => t.name == selected);
+    if (template) {
+      setDisplayedColumns(template.columns);
+      setFilters(template.filters);
+    }
+  }, [templates]);
+
+  useEffect(() => {
+    localStorage.setItem("template", selectedTemplate);
+  }, [selectedTemplate]);
+
+  useEffect(() => {
+    RestAPI.getTemplates().then((response) => setTemplates(response.data));
     RestAPI.getSubmissions().then((response) => {
       var vSubs: Submission[] = [];
       var subs = response.data;
@@ -4217,10 +4230,43 @@ export function VendorsTable(props: Props) {
     <div>
       <Box h="70px" textAlign={"end"}>
         <IconButton
+          icon={<IoSave />}
+          isDisabled={
+            selectedTemplate === "local"
+            // currentUser.displayName === "unknown"
+          }
+          onClick={() => {
+            var template: Template = {
+              name: selectedTemplate,
+              columns: displayedColumns,
+              filters,
+            };
+            RestAPI.updateTemplate(template).then(() => {
+              toast(
+                <Toast
+                  title={"Preset updated"}
+                  message={
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: "Preset successfully saved",
+                      }}
+                    />
+                  }
+                  type={"success"}
+                />
+              );
+            });
+          }}
+          aria-label="save"
+          colorScheme="blue"
+          mr="10px"
+        />
+        <IconButton
           icon={onlyMine ? <RiUserFill /> : <RiGroupFill />}
           onClick={() => {
             setOnlyMine(!onlyMine);
           }}
+          // isDisabled={currentUser.displayName === "unknown"}
           aria-label="filter"
           colorScheme="blue"
           mr="10px"
@@ -4410,7 +4456,7 @@ export function VendorsTable(props: Props) {
                       column: any;
                       width: number;
                     }) => {
-                      handleResize(column.dataKey, width);
+                      // handleResize(column.dataKey, width);
                     }}
                     rowRenderer={rowRenderer}
                     overscanRowCount={10}
@@ -4606,7 +4652,7 @@ export function VendorsTable(props: Props) {
                       column: any;
                       width: number;
                     }) => {
-                      handleResize(column.dataKey, width);
+                      // handleResize(column.dataKey, width);
                     }}
                     rowRenderer={rowRenderer}
                     overscanRowCount={10}
@@ -5526,7 +5572,6 @@ export function VendorsTable(props: Props) {
                                   }
 
                                   is.forEach((ts, tsi) => {
-                                    console.log(ts.data.invoicingDateLMD);
                                     if (
                                       ts.data.invoicingDateLMD &&
                                       ts.data.invoicingDateLMD.length > 0 &&
@@ -5785,27 +5830,19 @@ export function VendorsTable(props: Props) {
             onChange={(value) => {
               var values: string[] = [];
               if (value.length < 1) {
-                values = [
-                  "generalInformation",
-                  "purchaseOrder",
-                  "costActuals",
-                  "salesActuals",
-                  "actualsInEur",
-                  "costGlPostings",
-                  "incomeGlPostings",
-                  "CMCT",
-                  "LMD",
-                ];
+                values = defaultColumns;
               } else {
                 value.forEach((v) => {
                   values.push(v.toString());
                 });
               }
 
-              localStorage.setItem(
-                "vendors.displayedColumns",
-                JSON.stringify(values)
-              );
+              if (selectedTemplate === "local") {
+                localStorage.setItem(
+                  "vendors.displayedColumns",
+                  JSON.stringify(values)
+                );
+              }
               setDisplayedColumns(values);
             }}
             value={displayedColumns}
@@ -5834,7 +5871,7 @@ export function VendorsTable(props: Props) {
           </Box>
           <Box w="100%">
             <Text mb="8px">Preset</Text>
-            <Select
+            <Creatable
               menuPortalTarget={document.body}
               styles={{
                 menu: (provided) => ({
@@ -5863,15 +5900,44 @@ export function VendorsTable(props: Props) {
                   primary: "#3082CE",
                 },
               })}
-              value={{
-                label: "",
-                value: "",
-              }}
-              onChange={(value: any) => {}}
               classNamePrefix="select"
-              isClearable={false}
+              isClearable
+              onCreateOption={(name) => {
+                if (name.toLowerCase() === "local" || name.trim().length < 1) {
+                  return;
+                }
+                setSelectedTemplate(name);
+                var template: Template = {
+                  name,
+                  columns: displayedColumns,
+                  filters: filters,
+                };
+                RestAPI.updateTemplate(template).then(() => {
+                  setTemplates([...templates, template]);
+                });
+              }}
+              value={{ label: selectedTemplate, value: selectedTemplate }}
+              onChange={(name) => {
+                if (name === null || name.label === "local") {
+                  setSelectedTemplate("local");
+                  setDisplayedColumns(defaultColumns);
+                  setFilters([]);
+                  return;
+                }
+                setSelectedTemplate(name.label);
+                var template = templates.find((t) => t.name == name.label);
+                if (template) {
+                  setDisplayedColumns(template.columns);
+                  setFilters(template.filters);
+                }
+              }}
               name="presets"
-              options={[]}
+              options={[
+                { label: "local", value: "local" },
+                ...templates.map((t) => {
+                  return { label: t.name, value: t.name };
+                }),
+              ]}
             />
           </Box>
         </Stack>
@@ -5985,6 +6051,7 @@ export function VendorsTable(props: Props) {
                           temp[index].selectedValues = value;
                           setFilters(temp);
                         }}
+                        value={filters[index].selectedValues}
                         data={loadOptions(filter.columnValue)}
                         block
                       />

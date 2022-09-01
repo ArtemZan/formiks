@@ -724,7 +724,12 @@ export default function Erov(props: Props) {
             rows={5}
           />
         </Box>
-        <Box w="100%">
+        <Box
+          w="100%"
+          display={
+            requestorsCompanyName.value.code !== "6110" ? "block" : "none"
+          }
+        >
           <Text mb="8px">Target Audience</Text>
           <Select
             menuPortalTarget={document.body}
@@ -921,7 +926,12 @@ export default function Erov(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
-        <Box w="100%">
+        <Box
+          w="100%"
+          display={
+            requestorsCompanyName.value.code !== "6110" ? "block" : "none"
+          }
+        >
           <Text mb="8px">ALSO Project Approver</Text>
           <Select
             menuPortalTarget={document.body}
@@ -963,7 +973,12 @@ export default function Erov(props: Props) {
             options={[]}
           />
         </Box>
-        <Box w="100%">
+        <Box
+          w="100%"
+          display={
+            requestorsCompanyName.value.code !== "6110" ? "block" : "none"
+          }
+        >
           <Text mb="8px">ALSO Project Approval (attachments)</Text>
           <Uploader action="" draggable>
             <div style={{ lineHeight: "200px" }}>
@@ -971,7 +986,12 @@ export default function Erov(props: Props) {
             </div>
           </Uploader>
         </Box>
-        <Box w="100%">
+        <Box
+          w="100%"
+          display={
+            requestorsCompanyName.value.code !== "6110" ? "block" : "none"
+          }
+        >
           <Text mb="8px">Manufacturer`s Fiscal Period</Text>
           <Select
             menuPortalTarget={document.body}
@@ -1091,7 +1111,12 @@ export default function Erov(props: Props) {
             options={Budget}
           />
         </Box>
-        <Box w="100%">
+        <Box
+          w="100%"
+          display={
+            requestorsCompanyName.value.code !== "6110" ? "block" : "none"
+          }
+        >
           <Text mb="8px">Budget Approved by Vendor (name and surname)</Text>
           <Input
             disabled={budgetSource.value === "noBudget"}
@@ -1103,7 +1128,12 @@ export default function Erov(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
-        <Box w="100%">
+        <Box
+          w="100%"
+          display={
+            requestorsCompanyName.value.code !== "6110" ? "block" : "none"
+          }
+        >
           <Text mb="8px">Budget Approved by Vendor (attachments)</Text>
           <Uploader
             action=""
@@ -1297,7 +1327,12 @@ export default function Erov(props: Props) {
           />
         </Box>
         {/*  */}
-        <Box w="100%">
+        <Box
+          w="100%"
+          display={
+            requestorsCompanyName.value.code !== "6110" ? "block" : "none"
+          }
+        >
           <Text mb="8px">ALSO Marketing Manager</Text>
           <Input
             bgColor={"white"}

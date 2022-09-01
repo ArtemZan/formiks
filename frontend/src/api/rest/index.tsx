@@ -3,6 +3,7 @@ import Bookmark from "../../types/bookmark";
 import Dropdown from "../../types/dropdown";
 import Project from "../../types/project";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
+import { Template } from "../../types/template";
 
 export class API {
   public baseUrl =
@@ -14,6 +15,7 @@ export class API {
   public bookmarksUrl = `${this.baseUrl}/bookmarks/`;
   public submissionsUrl = `${this.baseUrl}/submissions/`;
   public dropdownsUrl = `${this.baseUrl}/dropdowns/`;
+  public templatesUrl = `${this.baseUrl}/templates/`;
 
   getRoles(): Promise<AxiosResponse<string[]>> {
     return axios.get(`${this.usersUrl}roles`);
@@ -130,6 +132,16 @@ export class API {
 
   getVendorTableDefaultConfig(): Promise<AxiosResponse<any>> {
     return axios.get<any>(`${this.submissionsUrl}vendorTable`);
+  }
+
+  getTemplates(): Promise<AxiosResponse<Template[]>> {
+    return axios.get<Template[]>(this.templatesUrl);
+  }
+  updateTemplate(template: Template): Promise<AxiosResponse> {
+    return axios.put<Template>(
+      `${this.templatesUrl}${template.name}`,
+      JSON.stringify(template)
+    );
   }
 
   updateVendorTableDefaultConfig(

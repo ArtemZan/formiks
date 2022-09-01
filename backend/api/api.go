@@ -13,6 +13,7 @@ func RegisterRoutes(r *gin.Engine) {
 	dropdownHandler := handlers.NewDropdownHandler(driver.Conn)
 	submissionHandler := handlers.NewSubmissionHandler(driver.Conn)
 	userHandler := handlers.NewUserHandler(driver.Conn)
+	templateHandler := handlers.NewTemplateHandler(driver.Conn)
 	apiGroup := r.Group("api")
 	projectsGroup := apiGroup.Group("projects")
 	bookmarksGroup := apiGroup.Group("bookmarks")
@@ -20,6 +21,7 @@ func RegisterRoutes(r *gin.Engine) {
 	submissionsGroup := apiGroup.Group("submissions")
 	usersGroup := apiGroup.Group("users")
 	pipelinesGroup := apiGroup.Group("pipelines")
+	templatesGroup := apiGroup.Group("templates")
 
 	projectsGroup.GET("/", projectHandler.Fetch)        // get all projects available to user
 	projectsGroup.GET("/:id", projectHandler.FetchByID) // get project
@@ -63,4 +65,8 @@ func RegisterRoutes(r *gin.Engine) {
 	dropdownsGroup.POST("/", msal.Admin(), dropdownHandler.Create)      // create custom dropdown
 	dropdownsGroup.PUT("/:id", msal.Admin(), dropdownHandler.Update)    // update custom dropdown
 	dropdownsGroup.DELETE("/:id", msal.Admin(), dropdownHandler.Delete) // delete custom dropdown
+
+	templatesGroup.GET("/", templateHandler.Fetch)
+	templatesGroup.PUT("/:name", templateHandler.Update)
+
 }
