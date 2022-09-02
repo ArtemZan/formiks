@@ -5031,6 +5031,10 @@ export function VendorsTable(props: Props) {
                             loadOptions={() => {
                               return [
                                 {
+                                  label: "Future",
+                                  value: "Future",
+                                },
+                                {
                                   label: "Invoice",
                                   value: "Invoice",
                                 },
@@ -5051,7 +5055,23 @@ export function VendorsTable(props: Props) {
                                 ? "#F5FAEF"
                                 : "#f7cdd6"
                             }
-                            onUpdate={handleCommunicationCellUpdate}
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.sendToLMD",
+                                "none"
+                              );
+                            }}
+                            // onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -5526,6 +5546,10 @@ export function VendorsTable(props: Props) {
                               props.cellData && props.cellData.length > 0
                                 ? "#F5FAEF"
                                 : "#f7cdd6"
+                            }
+                            readonly={
+                              props.rowData.data.invoiceTypeLMD ===
+                              "Internal Invoice"
                             }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}

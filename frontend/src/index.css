@@ -280,7 +280,7 @@ button[name="data[submit]"]:hover {
 
 .vendors-table-cell.active {
   outline-width: 0 !important;
-  border: 1px solid #a0bfe3 !important;
+  border: 3px solid blue !important;
   border-radius: 2px !important;
 }
 .react-datepicker__day--selected {
