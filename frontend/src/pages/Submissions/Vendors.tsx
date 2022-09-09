@@ -2697,7 +2697,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          readonly={true}
+          readonly={props.rowData.data.budgetSource === "No budget"}
           backgroundColor="#f2fcfc"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -2994,7 +2994,7 @@ export function VendorsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          readonly={true}
+          readonly={props.rowData.data.budgetSource === "No budget"}
           backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
@@ -5060,6 +5060,18 @@ export function VendorsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
+                              if (value === "Pre-Invoice") {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.materialNumberLMD",
+                                  "7000100"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.alsoMarketingProjectNumberLMD",
+                                  "6110VZ01"
+                                );
+                              }
                               handleCommunicationCellUpdate(
                                 submission,
                                 path,
