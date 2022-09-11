@@ -1539,6 +1539,19 @@ export function VendorsTable(props: Props) {
     });
   }, []);
 
+  function findSubmissionsByPO(po: string) {
+    var s: Submission[] = [];
+    var parent = submissions.find(
+      (submission) =>
+        submission.data.projectNumber === po && submission.parentId === null
+    );
+    if (parent !== undefined) {
+      s.push(parent);
+      s.push(...submissions.filter((sub) => sub.parentId === parent?.id));
+    }
+    return s;
+  }
+
   function visibilityController(group: string, key: string) {
     return !displayedColumns.includes(group) && !displayedColumns.includes(key);
   }
@@ -4889,6 +4902,30 @@ export function VendorsTable(props: Props) {
                           <EditableTableCell
                             type={"dropdown"}
                             loadOptions={() => {
+                              if (
+                                props.rowData.data
+                                  .alsoMarketingProjectNumberLMD !== undefined
+                              ) {
+                                var vs = findSubmissionsByPO(
+                                  props.rowData.data
+                                    .alsoMarketingProjectNumberLMD
+                                );
+                                if (vs.length > 0) {
+                                  var v: any[] = [];
+                                  vs.forEach((s) => {
+                                    if (s.data.vendorName !== undefined) {
+                                      v.push({
+                                        label: s.data.vendorName,
+                                        value: s.data.vendorName,
+                                      });
+                                    }
+                                  });
+                                  if (v.length > 0) {
+                                    return v;
+                                  }
+                                }
+                              }
+
                               return VendorsNames;
                             }}
                             backgroundColor={
@@ -5156,27 +5193,6 @@ export function VendorsTable(props: Props) {
                           />
                         ),
                       },
-                      // {
-                      //   key: "data.reasonLMD",
-                      //   dataKey: "data.reasonLMD",
-                      //   title: "Reason",
-                      //   width: columnWidth("data.reasonLMD", 200),
-                      //   group: "Input of Local Marketing Department",
-
-                      //   resizable: true,
-                      //   hidden: visibilityController("LMD", "data.reasonLMD"),
-                      //   cellRenderer: (props: any) => (
-                      //     <EditableTableCell
-                      //       type={"text"}
-                      //       backgroundColor="#F5FAEF"
-                      //       onUpdate={handleCommunicationCellUpdate}
-                      //       rowIndex={props.rowIndex}
-                      //       columnKey={props.column.dataKey}
-                      //       rowData={props.rowData}
-                      //       initialValue={props.cellData}
-                      //     />
-                      //   ),
-                      // },
                       {
                         key: "data.alsoMarketingProjectNumberLMD",
                         dataKey: "data.alsoMarketingProjectNumberLMD",
@@ -5201,7 +5217,6 @@ export function VendorsTable(props: Props) {
                                 ? "#F5FAEF"
                                 : "#f7cdd6"
                             }
-                            // FIXME: limit to 12 chars
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -5212,6 +5227,57 @@ export function VendorsTable(props: Props) {
                                 path,
                                 value
                               );
+                              var vs = findSubmissionsByPO(value);
+                              if (vs.length < 1) {
+                                toast(
+                                  <Toast
+                                    title={"Unknown Project Number"}
+                                    message={"Project Number not found"}
+                                    type={"error"}
+                                  />
+                                );
+                              } else {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.invoiceTextLMD",
+                                  vs[0].data.campaignDescription
+                                );
+                                var amount = 0;
+                                switch (vs[0].data.projectType) {
+                                  case "Local One Vendor" ||
+                                    "European One Vendor":
+                                    amount =
+                                      vs[0].data
+                                        .campaignEstimatedIncomeBudgetsCurrency;
+                                    break;
+                                  case "Local Multi Vendor" ||
+                                    "European Multi Vendor":
+                                    vs.map((s) => {
+                                      if (!isNaN(s.data.vendorBudgetAmount)) {
+                                        amount += Number(
+                                          s.data.vendorBudgetAmount
+                                        );
+                                      }
+                                    });
+                                    break;
+                                  default:
+                                    amount = NaN;
+                                }
+                                if (!isNaN(amount)) {
+                                  handleCommunicationCellUpdate(
+                                    submission,
+                                    "data.amountLMD",
+                                    amount
+                                  );
+                                }
+                                toast(
+                                  <Toast
+                                    title={"Project Found"}
+                                    message={"Data copied from parent project"}
+                                    type={"success"}
+                                  />
+                                );
+                              }
                             }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
