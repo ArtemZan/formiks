@@ -1205,12 +1205,20 @@ export default function Cerov(props: Props) {
             value={vendorName}
             placeholder=""
             onChange={(value: any) => {
+              if (typeof value.label === "string") {
+                value.label = value.label.split("(")[0];
+              }
               setVendorName(value);
             }}
             classNamePrefix="select"
             isClearable={false}
             name="vendorsName"
-            options={VendorsNames}
+            options={VendorsNames.map((option) => {
+              return {
+                label: `${option.label} (${option.value.debitorischer} - ${option.value.bu})`,
+                value: option.value,
+              };
+            })}
           />
         </Box>
         {/*  */}
