@@ -376,7 +376,7 @@ export default function Cerov(props: Props) {
     if (vendorName.value) {
       setVendor({
         vendor: vendorName.label,
-        projectManager: "",
+        projectManager: vendorName.value.alsoMarketingConsultant,
         creditor: vendorName.value.kreditor,
         debitor: vendorName.value.debitorischer,
         manufacturer: vendorName.value.hersteller,
