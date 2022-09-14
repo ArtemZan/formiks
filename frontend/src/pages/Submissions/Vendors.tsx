@@ -5237,6 +5237,30 @@ export function VendorsTable(props: Props) {
                                   />
                                 );
                               } else {
+                                var currentVendor =
+                                  props.rowData.data.vendorLMD;
+                                if (typeof currentVendor === "string") {
+                                  var valid = false;
+                                  vs.forEach((s) => {
+                                    if (
+                                      s.data.vendorName !== undefined &&
+                                      currentVendor === s.data.vendorName
+                                    ) {
+                                      valid = true;
+                                    }
+                                  });
+                                  if (!valid) {
+                                    toast(
+                                      <Toast
+                                        title={"Unknown Vendor Selected"}
+                                        message={
+                                          "Vendor does not exist under this project"
+                                        }
+                                        type={"error"}
+                                      />
+                                    );
+                                  }
+                                }
                                 handleCommunicationCellUpdate(
                                   submission,
                                   "data.invoiceTextLMD",
