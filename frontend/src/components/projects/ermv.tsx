@@ -1953,7 +1953,7 @@ export default function Ermv(props: Props) {
               toast(
                 <Toast
                   title={"SAP Response"}
-                  message={`Project Number already exists. Changed to: ${pn}`}
+                  message={`Project Number already exists. Changed to: ${pn}. Press submit again.`}
                   type={"info"}
                 />
               );
