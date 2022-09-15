@@ -4705,6 +4705,9 @@ export function VendorsTable(props: Props) {
                                 "OK FOR INVOICING" &&
                               props.rowData.data.statusLMD !== "INVOICED"
                             }
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -4837,6 +4840,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"date"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
                                 ? "#F5FAEF"
@@ -4880,6 +4886,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -4901,6 +4910,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             loadOptions={() => {
                               if (
                                 props.rowData.data
@@ -4992,6 +5004,9 @@ export function VendorsTable(props: Props) {
                         hidden: visibilityController("LMD", "data.vodLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             type={"text"}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
@@ -5014,6 +5029,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -5064,6 +5082,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             readonly={props.rowData.parentId !== null}
                             loadOptions={() => {
                               return [
@@ -5142,6 +5163,9 @@ export function VendorsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             type={"text"}
                             readonly={
                               props.rowData.data.invoiceTypeLMD !==
@@ -5172,6 +5196,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
                                 ? "#F5FAEF"
@@ -5211,6 +5238,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             maxLength={12}
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
@@ -5324,6 +5354,9 @@ export function VendorsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             type={"text"}
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
@@ -5356,6 +5389,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -5381,6 +5417,9 @@ export function VendorsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             type={"text"}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
@@ -5403,6 +5442,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"number"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             backgroundColor={
                               props.cellData &&
                               props.cellData !== 0 &&
@@ -5459,6 +5501,9 @@ export function VendorsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             type={"dropdown"}
                             loadOptions={() => {
                               return ExchangeRates;
@@ -5491,6 +5536,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             loadOptions={() => {
                               return [
                                 { label: "Payment", value: "Payment" },
@@ -5554,6 +5602,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             loadOptions={() => {
                               return [
                                 { label: "Yes", value: "Yes" },
@@ -5589,6 +5640,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             backgroundColor={
                               props.rowData.data.paymentMethodLMD ===
                               "Money in House"
@@ -5623,6 +5677,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -5643,6 +5700,9 @@ export function VendorsTable(props: Props) {
                         hidden: visibilityController("LMD", "data.sendToLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             type={"text"}
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
@@ -5673,6 +5733,9 @@ export function VendorsTable(props: Props) {
                         cellRenderer: (props: any) =>
                           props.rowData.parentId === null ? (
                             <EditableTableCell
+                              invoiced={
+                                props.rowData.data.statusLMD === "INVOICED"
+                              }
                               type={"button"}
                               backgroundColor="#fef9fa"
                               textColor={"green"}
@@ -5804,6 +5867,9 @@ export function VendorsTable(props: Props) {
                           props.rowData.parentId === null ? (
                             <EditableTableCell
                               type={"button"}
+                              invoiced={
+                                props.rowData.data.statusLMD === "INVOICED"
+                              }
                               backgroundColor="#fef9fa"
                               textColor={"blue"}
                               onUpdate={(submissionId: string) => {
@@ -5850,6 +5916,9 @@ export function VendorsTable(props: Props) {
                         className: "red-border",
                         cellRenderer: (props: any) => (
                           <EditableTableCell
+                            invoiced={
+                              props.rowData.data.statusLMD === "INVOICED"
+                            }
                             type={"button"}
                             textColor={"red"}
                             backgroundColor="#fef9fa"

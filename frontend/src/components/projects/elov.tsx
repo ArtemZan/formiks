@@ -1269,7 +1269,7 @@ export default function Elov(props: Props) {
               toast(
                 <Toast
                   title={"SAP Response"}
-                  message={`Project Number already exists. Changed to: ${pn}. Press submit again`}
+                  message={`Project Number already exists. Changed to: ${pn}. Press submit again.`}
                   type={"info"}
                 />
               );

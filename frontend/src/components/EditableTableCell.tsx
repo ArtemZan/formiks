@@ -25,6 +25,7 @@ class EditableTableCell extends React.Component<
     readonly?: boolean;
     bold?: boolean;
     maxLength?: number;
+    invoiced?: boolean;
   },
   {
     cellValue: any;
@@ -127,7 +128,11 @@ class EditableTableCell extends React.Component<
             ? "vendors-table-cell active"
             : `content-preview ${
                 this.props.textColor ? this.props.textColor : ""
-              } ${this.props.readonly ? "readonly" : ""}`
+              } ${
+                this.props.readonly || this.props.invoiced === true
+                  ? "readonly"
+                  : ""
+              }`
         }
         onClick={() => {
           if (
