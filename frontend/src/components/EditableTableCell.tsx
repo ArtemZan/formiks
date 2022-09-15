@@ -138,6 +138,7 @@ class EditableTableCell extends React.Component<
           if (
             !this.state.editing &&
             !this.props.readonly &&
+            this.props.invoiced !== true &&
             this.props.rowData.id !== "total"
           ) {
             this.setState({ editing: true });
