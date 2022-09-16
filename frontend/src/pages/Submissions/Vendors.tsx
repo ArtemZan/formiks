@@ -5089,10 +5089,6 @@ export function VendorsTable(props: Props) {
                             loadOptions={() => {
                               return [
                                 {
-                                  label: "Future",
-                                  value: "Future",
-                                },
-                                {
                                   label: "Invoice",
                                   value: "Invoice",
                                 },
@@ -5984,7 +5980,9 @@ export function VendorsTable(props: Props) {
                               title: "",
                               author: "",
                               status: "",
-                              data: {},
+                              data: {
+                                materalNumberLMD: "7000100",
+                              },
                             };
                             RestAPI.createSubmission(submission).then(
                               (response) => {

@@ -642,48 +642,6 @@ export default function Cerov(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Target Audience</Text>
-          <Select
-            menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 6,
-              colors: {
-                ...theme.colors,
-                primary: "#3082CE",
-              },
-            })}
-            placeholder=""
-            onChange={(value: any) => {
-              setTargetAudience(value.label);
-            }}
-            classNamePrefix="select"
-            value={{ label: targetAudience, value: targetAudience }}
-            isClearable={false}
-            name="targetAudience"
-            options={TargetAudience}
-          />
-        </Box>
-        <Box w="100%">
           <Text mb="8px">Campaign Channel</Text>
           <Select
             menuPortalTarget={document.body}
@@ -838,99 +796,6 @@ export default function Cerov(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
-        <Box w="100%">
-          <Text mb="8px">ALSO Project Approver</Text>
-          <Select
-            menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 6,
-              colors: {
-                ...theme.colors,
-                primary: "#3082CE",
-              },
-            })}
-            value={{ label: projectApproval, value: projectApproval }}
-            onChange={(value) => {
-              setProjectApproval(value === null ? "" : value.label);
-            }}
-            placeholder=""
-            classNamePrefix="select"
-            isClearable={false}
-            name="projectApprover"
-            options={[]}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">ALSO Project Approval (attachments)</Text>
-          <Uploader action="" draggable>
-            <div style={{ lineHeight: "200px" }}>
-              Click or Drag files to this area to upload
-            </div>
-          </Uploader>
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Manufacturer`s Fiscal Period</Text>
-          <Select
-            menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 6,
-              colors: {
-                ...theme.colors,
-                primary: "#3082CE",
-              },
-            })}
-            value={fiscalQuarter}
-            onChange={(value) => {
-              setFiscalQuarter(value);
-            }}
-            placeholder=""
-            classNamePrefix="select"
-            isClearable={false}
-            name="fiscalQuarter"
-            options={FiscalQuarter}
-          />
-        </Box>
-
         <HStack w="100%">
           <Box w="100%">
             <Text mb="8px">Campaign Start Date</Text>
@@ -1007,30 +872,6 @@ export default function Cerov(props: Props) {
             name="fiscalQuarter"
             options={Budget}
           />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Budget Approved by Vendor (name and surname)</Text>
-          <Input
-            disabled={budgetSource.value === "noBudget"}
-            value={budgetApprovedByVendor}
-            onChange={(event) => {
-              setBudgetApprovedByVendor(event.target.value);
-            }}
-            bg={useColorModeValue("white", "#2C313C")}
-            color={useColorModeValue("gray.800", "#ABB2BF")}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Budget Approved by Vendor (attachments)</Text>
-          <Uploader
-            action=""
-            disabled={budgetSource.value === "noBudget"}
-            draggable
-          >
-            <div style={{ lineHeight: "200px" }}>
-              Click or Drag files to this area to upload
-            </div>
-          </Uploader>
         </Box>
         <Box w="100%">
           <Text mb="8px">Local Currency</Text>
@@ -1219,19 +1060,6 @@ export default function Cerov(props: Props) {
                 value: option.value,
               };
             })}
-          />
-        </Box>
-        {/*  */}
-        <Box w="100%">
-          <Text mb="8px">ALSO Marketing Manager</Text>
-          <Input
-            bgColor={"white"}
-            value={vendor.projectManager}
-            onChange={(event) => {
-              var temp = { ...vendor };
-              temp.projectManager = event.target.value;
-              setVendor(temp);
-            }}
           />
         </Box>
         <Box w="100%">
