@@ -5276,6 +5276,11 @@ export function VendorsTable(props: Props) {
                                     }
                                   });
                                   if (!valid) {
+                                    handleCommunicationCellUpdate(
+                                      submission,
+                                      "data.vendorLMD",
+                                      ""
+                                    );
                                     toast(
                                       <Toast
                                         title={"Unknown Vendor Selected"}
@@ -5981,7 +5986,7 @@ export function VendorsTable(props: Props) {
                               author: "",
                               status: "",
                               data: {
-                                materalNumberLMD: "7000100",
+                                materialNumberLMD: "7000100",
                               },
                             };
                             RestAPI.createSubmission(submission).then(
