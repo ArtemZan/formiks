@@ -347,7 +347,7 @@ export default function Ermv(props: Props) {
     vendorsNames.forEach((vendor: any) => {
       data.push({
         vendor: vendor.label,
-        projectManager: "",
+        projectManager: vendor.value.alsoMarketingConsultant,
         creditor: vendor.value.kreditor,
         debitor: vendor.value.debitorischer,
         manufacturer: vendor.value.hersteller,
@@ -784,48 +784,6 @@ export default function Ermv(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Target Audience</Text>
-          <Select
-            menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 6,
-              colors: {
-                ...theme.colors,
-                primary: "#3082CE",
-              },
-            })}
-            placeholder=""
-            onChange={(value: any) => {
-              setTargetAudience(value.label);
-            }}
-            value={{ label: targetAudience, value: targetAudience }}
-            classNamePrefix="select"
-            isClearable={false}
-            name="targetAudience"
-            options={TargetAudience}
-          />
-        </Box>
-        <Box w="100%">
           <Text mb="8px">Campaign Channel</Text>
           <Select
             menuPortalTarget={document.body}
@@ -980,96 +938,6 @@ export default function Ermv(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
-        <Box w="100%">
-          <Text mb="8px">ALSO Project Approver</Text>
-          <Select
-            menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 6,
-              colors: {
-                ...theme.colors,
-                primary: "#3082CE",
-              },
-            })}
-            value={{ label: "", value: "" }}
-            placeholder=""
-            classNamePrefix="select"
-            isClearable={false}
-            name="projectApprover"
-            options={[]}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">ALSO Project Approval (attachments)</Text>
-          <Uploader action="" draggable>
-            <div style={{ lineHeight: "200px" }}>
-              Click or Drag files to this area to upload
-            </div>
-          </Uploader>
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Manufacturer`s Fiscal Period</Text>
-          <Select
-            menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 6,
-              colors: {
-                ...theme.colors,
-                primary: "#3082CE",
-              },
-            })}
-            value={fiscalQuarter}
-            onChange={(value) => {
-              setFiscalQuarter(value);
-            }}
-            placeholder=""
-            classNamePrefix="select"
-            isClearable={false}
-            name="fiscalQuarter"
-            options={FiscalQuarter}
-          />
-        </Box>
-
         <HStack w="100%">
           <Box w="100%">
             <Text mb="8px">Campaign Start Date</Text>
@@ -1146,30 +1014,6 @@ export default function Ermv(props: Props) {
             name="fiscalQuarter"
             options={Budget}
           />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Budget Approved by Vendor (name and surname)</Text>
-          <Input
-            disabled={budgetSource.value === "noBudget"}
-            value={budgetApprovedByVendor}
-            onChange={(event) => {
-              setBudgetApprovedByVendor(event.target.value);
-            }}
-            bg={useColorModeValue("white", "#2C313C")}
-            color={useColorModeValue("gray.800", "#ABB2BF")}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Budget Approved by Vendor (attachments)</Text>
-          <Uploader
-            action=""
-            disabled={budgetSource.value === "noBudget"}
-            draggable
-          >
-            <div style={{ lineHeight: "200px" }}>
-              Click or Drag files to this area to upload
-            </div>
-          </Uploader>
         </Box>
         <Box w="100%">
           <Text mb="8px">Local Currency</Text>
@@ -1346,12 +1190,24 @@ export default function Ermv(props: Props) {
             value={vendorsNames}
             placeholder=""
             onChange={(value: any) => {
-              setVendorsNames(value);
+              var val: any = value;
+              if (value !== null && value.length > 0) {
+                val = val.map((v: any) => {
+                  v.label = value.label.split("(")[0];
+                  return v;
+                });
+              }
+              setVendorsNames(val);
             }}
             classNamePrefix="select"
             isClearable={false}
             name="vendorsName"
-            options={VendorsNames}
+            options={VendorsNames.map((option) => {
+              return {
+                label: `${option.label} (${option.value.debitorischer} - ${option.value.bu})`,
+                value: option.value,
+              };
+            })}
           />
         </Box>
 
@@ -1367,22 +1223,6 @@ export default function Ermv(props: Props) {
                     onChange={(event) => {
                       var temp = [...vendors];
                       temp[index!].vendor = event.target.value;
-                      setVendors(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-
-            <Column width={200} resizable>
-              <HeaderCell>ALSO Marketing Manager</HeaderCell>
-              <Cell dataKey="projectManager">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.projectManager}
-                    onChange={(event) => {
-                      var temp = [...vendors];
-                      temp[index!].projectManager = event.target.value;
                       setVendors(temp);
                     }}
                   />
