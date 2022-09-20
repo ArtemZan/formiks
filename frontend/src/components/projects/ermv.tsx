@@ -1864,6 +1864,7 @@ export default function Ermv(props: Props) {
                   status: "New",
                   author: requestorsName,
                   data: {
+                    projectType: "European Multi Vendor",
                     vendorName: vendor.vendor,
                     marketingResponsible: vendor.projectManager,
                     creditorNumber: vendor.creditor,
@@ -1908,19 +1909,46 @@ export default function Ermv(props: Props) {
                 children.push({
                   project: projectId,
                   title: "",
-                  parentId: "",
+                  parentId: null,
                   group: "country",
                   created: new Date(),
                   updated: new Date(),
                   status: "New",
                   author: requestorsName,
                   data: {
+                    projectName: campaignName,
+                    additionalInformation: comments,
+                    campaignChannel: campaignChannel.label,
+                    mirrorProjectNumber:
+                      company.companyCode + projectNumber.substring(4),
+                    projectNumber: company.projectNumber,
+                    campaignStartDate:
+                      startDate === null ? null : startDate.toString(),
+                    campaignEndDate:
+                      endDate === null ? null : endDate.toString(),
+                    budgetSource: budgetSource.label,
+                    campaignCurrency: exchangeRates.label,
+                    // vendorName: vendorName.label,
+                    // businessUnit: vendor.bu,
+                    // PH1: vendor.ph.label,
+                    vendorShare: 100,
+                    estimatedIncomeEUR:
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(estimatedIncome),
+                    estimatedCostsEUR: parseFloat(estimatedCosts),
+                    estimatedResultEUR:
+                      parseFloat(netProfitTarget) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
+                    estimatedResultBC:
+                      parseFloat(netProfitTargetBudgetCurrency) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
+                    projectType: "European Multi Vendor",
                     companyName: company.companyName,
                     countryCodeEMEA: company.companyCode,
                     country: company.country,
                     countriesEMEA: company.country,
                     productionProjectManager: company.contactEmail,
-                    mirrorProjectNumber: company.projectNumber,
                     countryShare: parseFloat(company.share),
                     countryBudgetContributionEur: company.contribution,
                     countryCostEstimationEur: company.estimatedCosts,

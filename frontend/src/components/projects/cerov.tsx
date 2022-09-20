@@ -1046,20 +1046,12 @@ export default function Cerov(props: Props) {
             value={vendorName}
             placeholder=""
             onChange={(value: any) => {
-              if (typeof value.label === "string") {
-                value.label = value.label.split("(")[0];
-              }
               setVendorName(value);
             }}
             classNamePrefix="select"
             isClearable={false}
             name="vendorsName"
-            options={VendorsNames.map((option) => {
-              return {
-                label: `${option.label} (${option.value.debitorischer} - ${option.value.bu})`,
-                value: option.value,
-              };
-            })}
+            options={VendorsNames}
           />
         </Box>
         <Box w="100%">
@@ -1512,6 +1504,7 @@ export default function Cerov(props: Props) {
                   estimatedResultBC:
                     parseFloat(netProfitTargetBudgetCurrency) *
                     (budgetSource.value === "noBudget" ? -1 : 1),
+                  projectType: "European One Vendor",
                   // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
                 },
               });
@@ -1520,19 +1513,46 @@ export default function Cerov(props: Props) {
                 children.push({
                   project: projectId,
                   title: "",
-                  parentId: "",
+                  parentId: null,
                   group: "country",
                   created: new Date(),
                   updated: new Date(),
                   status: "New",
                   author: requestorsName,
                   data: {
+                    projectName: campaignName,
+                    additionalInformation: comments,
+                    campaignChannel: campaignChannel.label,
+                    mirrorProjectNumber:
+                      company.companyCode + projectNumber.substring(4),
+                    projectNumber: company.projectNumber,
+                    campaignStartDate:
+                      startDate === null ? null : startDate.toString(),
+                    campaignEndDate:
+                      endDate === null ? null : endDate.toString(),
+                    budgetSource: budgetSource.label,
+                    campaignCurrency: exchangeRates.label,
+                    vendorName: vendorName.label,
+                    businessUnit: vendor.bu,
+                    PH1: vendor.ph.label,
+                    vendorShare: 100,
+                    estimatedIncomeEUR:
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(estimatedIncome),
+                    estimatedCostsEUR: parseFloat(estimatedCosts),
+                    estimatedResultEUR:
+                      parseFloat(netProfitTarget) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
+                    estimatedResultBC:
+                      parseFloat(netProfitTargetBudgetCurrency) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
+                    projectType: "European One Vendor",
                     companyName: company.companyName,
                     countryCodeEMEA: company.companyCode,
                     country: company.country,
                     countriesEMEA: company.country,
                     productionProjectManager: company.contactEmail,
-                    mirrorProjectNumber: company.projectNumber,
                     countryShare: parseFloat(company.share),
                     countryBudgetContributionEur: company.contribution,
                     countryCostEstimationEur: company.estimatedCosts,

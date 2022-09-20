@@ -248,6 +248,11 @@ const DisplayedColumnsList = [
         value: "data.campaignStartDate",
         type: "date",
       },
+      {
+        label: "Campaign End Date",
+        value: "data.campaignEndDate",
+        type: "date",
+      },
       { label: "Project Type", value: "data.projectType", type: "dropdown" },
       { label: "Author", value: "author", type: "string" },
       { label: "Status", value: "data.status", type: "string" },
@@ -1646,6 +1651,32 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController(
         "generalInformation",
         "data.campaignStartDate"
+      ),
+      type: "date",
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"date"}
+          readonly={true}
+          backgroundColor="#f4fcf9"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.campaignEndDate",
+      dataKey: "data.campaignEndDate",
+      title: "Campaign End Date",
+      group: "General Information",
+
+      width: columnWidth("data.campaignEndDate", 200),
+      resizable: true,
+      hidden: visibilityController(
+        "generalInformation",
+        "data.campaignEndDate"
       ),
       type: "date",
       cellRenderer: (props: any) => (

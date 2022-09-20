@@ -135,7 +135,9 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	submissionWithChildren.Submission.Data["status"] = "New"
 	for index := range submissionWithChildren.Children {
 		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
-		submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
+		if _, ok := submissionWithChildren.Children[index].ParentID.(string); ok {
+			submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
+		}
 		submissionWithChildren.Children[index].Created = time.Now()
 		submissionWithChildren.Children[index].Updated = time.Now()
 		submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
@@ -144,10 +146,11 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	children := sap.GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, submissionWithChildren.Submission.Data["projectNumber"].(string), []models.Submission{})
 	submissionWithChildren.Children = append(submissionWithChildren.Children, children...)
 
-	r.repo.Create(c.Request.Context(), submissionWithChildren.Submission)
 	for _, child := range submissionWithChildren.Children {
-		r.repo.Create(c.Request.Context(), child)
+		r.repo.Create(context.TODO(), child)
 	}
+	r.repo.Create(context.TODO(), submissionWithChildren.Submission)
+
 	c.JSON(http.StatusOK, submissionWithChildren.Submission)
 }
 
