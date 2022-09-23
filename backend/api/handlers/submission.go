@@ -105,7 +105,6 @@ func (r *Submission) Create(c *gin.Context) {
 	submission.ID = primitive.NewObjectID()
 	submission.Created = time.Now()
 	submission.Updated = time.Now()
-	submission.Data["status"] = "New"
 	submission, err = r.repo.Create(c.Request.Context(), submission)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to create submission", err)
@@ -137,11 +136,12 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
 		if _, ok := submissionWithChildren.Children[index].ParentID.(string); ok {
 			submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
+			submissionWithChildren.Children[index].Data["status"] = "New"
 		}
 		submissionWithChildren.Children[index].Created = time.Now()
 		submissionWithChildren.Children[index].Updated = time.Now()
 		submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
-		submissionWithChildren.Children[index].Data["status"] = "New"
+
 	}
 	children := sap.GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, submissionWithChildren.Submission.Data["projectNumber"].(string), []models.Submission{})
 	submissionWithChildren.Children = append(submissionWithChildren.Children, children...)

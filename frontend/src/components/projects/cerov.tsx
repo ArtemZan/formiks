@@ -243,7 +243,6 @@ export default function Cerov(props: Props) {
         props.children
           .filter((s) => s.group === "country")
           .forEach((s) => {
-            console.log(s);
             c.push({
               companyName: s.data.companyName,
               companyCode: s.data.countryCodeEMEA,
@@ -323,7 +322,10 @@ export default function Cerov(props: Props) {
         companyCode: company.value.code,
         country: company.value.country,
         contactEmail: "",
-        projectNumber: "",
+        projectNumber:
+          projectNumber.length > 0
+            ? company.value.code + projectNumber.substring(4)
+            : "",
         contribution: "",
         estimatedCosts: "",
         share: "",
@@ -1523,8 +1525,7 @@ export default function Cerov(props: Props) {
                     projectName: campaignName,
                     additionalInformation: comments,
                     campaignChannel: campaignChannel.label,
-                    mirrorProjectNumber:
-                      company.companyCode + projectNumber.substring(4),
+                    mirrorProjectNumber: projectNumber,
                     projectNumber: company.projectNumber,
                     campaignStartDate:
                       startDate === null ? null : startDate.toString(),
@@ -1582,6 +1583,85 @@ export default function Cerov(props: Props) {
         }
       >
         Submit
+      </Button>
+      <Button
+        float="right"
+        mb={"80px"}
+        mr="15px"
+        color={"white"}
+        bg={useColorModeValue("green.400", "#4D97E2")}
+        _hover={{
+          bg: useColorModeValue("green.300", "#377bbf"),
+        }}
+        isDisabled={
+          !costBreakdown.some((company: any) => company.companyCode === "6110")
+        }
+        onClick={() => {
+          var company = costBreakdown.find(
+            (c: any) => c.companyCode === "6110"
+          );
+          if (company === undefined) {
+            return;
+          }
+          var parent = {
+            project: "6246bc93fa2a446faadb8d9a",
+            title: "",
+            parentId: null,
+            group: "country",
+            created: new Date(),
+            updated: new Date(),
+            status: "Incomplete",
+            author: requestorsName,
+            data: {
+              status: "Incomplete",
+              projectName: campaignName,
+              additionalInformation: comments,
+              campaignChannel: campaignChannel.label,
+              mirrorProjectNumber: projectNumber,
+              projectNumber: company.projectNumber,
+              campaignStartDate:
+                startDate === null ? null : startDate.toString(),
+              campaignEndDate: endDate === null ? null : endDate.toString(),
+              budgetSource: budgetSource.label,
+              campaignCurrency: exchangeRates.label,
+              vendorName: vendorName.label,
+              businessUnit: vendor.bu,
+              PH1: vendor.ph.label,
+              vendorShare: 100,
+              estimatedIncomeEUR:
+                budgetSource.value === "noBudget"
+                  ? 0.0
+                  : parseFloat(estimatedIncome),
+              estimatedCostsEUR: parseFloat(estimatedCosts),
+              estimatedResultEUR:
+                parseFloat(netProfitTarget) *
+                (budgetSource.value === "noBudget" ? -1 : 1),
+              estimatedResultBC:
+                parseFloat(netProfitTargetBudgetCurrency) *
+                (budgetSource.value === "noBudget" ? -1 : 1),
+              projectType: "European One Vendor",
+              companyName: company.companyName,
+              countryCodeEMEA: company.companyCode,
+              country: company.country,
+              countriesEMEA: company.country,
+              productionProjectManager: company.contactEmail,
+              countryShare: parseFloat(company.share),
+              countryBudgetContributionEur: company.contribution,
+              countryCostEstimationEur: company.estimatedCosts,
+              countryBudgetContributionCC: isNaN(
+                parseFloat(company.contribution)
+              )
+                ? 0.0
+                : parseFloat(company.contribution),
+              countryCostEstimationCC: parseFloat(company.estimatedCosts),
+            },
+          };
+          RestAPI.createSubmission(parent).then((response) => {
+            props.history.push("/vendors");
+          });
+        }}
+      >
+        Local
       </Button>
     </Box>
   );
