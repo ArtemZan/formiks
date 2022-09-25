@@ -22,6 +22,9 @@ import Select from "react-select";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
 import DatePicker from "react-datepicker";
 import isEqual from "lodash/isEqual";
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
+import moment from "moment";
 
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
@@ -1360,6 +1363,149 @@ export default function Cerov(props: Props) {
         float="right"
         mb={"80px"}
         color={"white"}
+        bg={useColorModeValue("green.400", "#4D97E2")}
+        _hover={{
+          bg: useColorModeValue("green.300", "#377bbf"),
+        }}
+        onClick={() => {
+          interface FD {
+            [key: string]: any;
+          }
+
+          var formattedData = [];
+          formattedData.push(["Request", "European One Vendor"]);
+          formattedData.push([
+            "Requestor`s Company Name",
+            requestorsCompanyName.label,
+          ]);
+          formattedData.push([
+            "Requestor`s Company Code",
+            requestorsCompanyName.value.code,
+          ]);
+          formattedData.push([
+            "Requestor`s Country",
+            requestorsCompanyName.value.country,
+          ]);
+          formattedData.push(["Organizing Company", organizingCompany]);
+          formattedData.push(["Campaign Name", campaignName]);
+          formattedData.push(["Campaign Description", campaignDescription]);
+          formattedData.push(["Campaign Channel", campaignChannel.label]);
+          formattedData.push(["Year", year.label]);
+          formattedData.push([
+            "Campaign/Project Start Quarter (ALSO Quarter)",
+            projectStartQuarter.label,
+          ]);
+          formattedData.push(["Project Number", projectNumber]);
+          formattedData.push(["Requestor`s Name", requestorsName]);
+          formattedData.push([
+            "Campaign Start Date",
+            moment(startDate).format("DD.MM.yyyy"),
+          ]);
+          formattedData.push([
+            "Campaign End Date",
+            moment(endDate).format("DD.MM.yyyy"),
+          ]);
+          formattedData.push(["Budget Source", budgetSource.label]);
+          formattedData.push([
+            "Local Currency",
+            requestorsCompanyName.value.currency,
+          ]);
+          formattedData.push(["Campaign Currency", exchangeRates.label]);
+          formattedData.push([
+            "Campaign Estimated Income in Campaign Currency",
+            estimatedIncomeBudgetCurrency,
+          ]);
+          formattedData.push([
+            "Campaign Estimated Costs in Campaign Currency",
+            estimatedCostsBudgetCurrency,
+          ]);
+          formattedData.push([
+            budgetSource.value === "noBudget"
+              ? "Campaign Loss in Campaign currency"
+              : "Campaign Net Profit Target in Campaign Currency",
+            netProfitTargetBudgetCurrency,
+          ]);
+          formattedData.push([
+            "Campaign Estimated Income in EUR",
+            estimatedIncome,
+          ]);
+          formattedData.push([
+            "Campaign Estimated Costs in EUR",
+            estimatedCosts,
+          ]);
+          formattedData.push([
+            budgetSource.value === "noBudget"
+              ? "Campaign Loss in EUR"
+              : "Campaign Net Profit Target in EUR",
+            netProfitTarget,
+          ]);
+          formattedData.push([
+            "Total Estimated Costs in Local Currency",
+            totalEstimatedCostsLC,
+          ]);
+          formattedData.push(["Vendor Name", vendorName.label]);
+          formattedData.push(["VOD", vendor.debitor]);
+          formattedData.push(["Creditor", vendor.creditor]);
+          formattedData.push(["Manufacturer", vendor.manufacturer]);
+          formattedData.push(["Business Unit", vendor.bu]);
+          formattedData.push(["PH1", vendor.ph.label]);
+          formattedData.push(["Comments", comments]);
+          formattedData.push([
+            "Companies Participating",
+            companiesParticipating.map((v: any) => v.label).join(", "),
+          ]);
+          formattedData.push([]);
+          formattedData.push([
+            "Company Name",
+            "Company Code",
+            "Country",
+            "Contact Person's Email",
+            "Local Project Number",
+            "Share %",
+            "Budget Contribution in Campaign Currency",
+            "Total Estimated Costs in Campaign Currency",
+          ]);
+          costBreakdown.forEach((company: any) => {
+            formattedData.push([
+              company.companyName,
+              company.companyCode,
+              company.country,
+              company.contactEmail,
+              company.projectNumber,
+              company.contribution,
+              company.estimatedCosts,
+              company.share,
+            ]);
+          });
+          formattedData.push([
+            "TOTAL",
+            "",
+            "",
+            "",
+            "",
+            totalcbContribution + " " + exchangeRates.label,
+            totalcbCosts + " " + exchangeRates.label,
+            totalcbShare + "%",
+          ]);
+          var ws = XLSX.utils.aoa_to_sheet(formattedData);
+          const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+          const excelBuffer = XLSX.write(wb, {
+            bookType: "xlsx",
+            type: "array",
+          });
+          const data = new Blob([excelBuffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+          });
+          FileSaver.saveAs(data, "test" + ".xlsx");
+        }}
+      >
+        Export
+      </Button>
+      <Button
+        float="right"
+        mb={"80px"}
+        mr="15px"
+        color={"white"}
         bg={useColorModeValue("blue.400", "#4D97E2")}
         _hover={{
           bg: useColorModeValue("blue.300", "#377bbf"),
@@ -1589,9 +1735,9 @@ export default function Cerov(props: Props) {
         mb={"80px"}
         mr="15px"
         color={"white"}
-        bg={useColorModeValue("green.400", "#4D97E2")}
+        bg={useColorModeValue("teal.400", "#4D97E2")}
         _hover={{
-          bg: useColorModeValue("green.300", "#377bbf"),
+          bg: useColorModeValue("teal.300", "#377bbf"),
         }}
         isDisabled={
           !costBreakdown.some((company: any) => company.companyCode === "6110")
