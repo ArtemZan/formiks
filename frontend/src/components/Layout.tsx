@@ -474,6 +474,11 @@ const NAV_ITEMS: Array<NavItem> = [
         subLabel: "Create new formiks request",
         href: "/projects/create",
       },
+      {
+        label: "Drafts",
+        subLabel: "Explore unpublished submissions",
+        href: "/drafts",
+      },
     ],
   },
 

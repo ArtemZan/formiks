@@ -14,6 +14,8 @@ import ProjectExplorer from "./pages/Projects/Explorer";
 import ProjectEditor from "./pages/Projects/Editor";
 import ProjectViewer from "./pages/Projects/Viewer";
 
+import DraftExplorer from "./pages/Drafts/Explorer";
+
 import SubmissionViewer from "./pages/Submissions/Viewer";
 
 import SubmissionsTableExplorer from "./pages/Submissions/TableExplorer";
@@ -89,6 +91,11 @@ function App({ pca }: AppProps) {
             render={(props) => (
               <ProjectViewer isAdmin={isAdmin} create={false} {...props} />
             )}
+          />
+          <Route
+            exact
+            path="/drafts"
+            render={(props) => <DraftExplorer isAdmin={isAdmin} {...props} />}
           />
           <Route
             exact
