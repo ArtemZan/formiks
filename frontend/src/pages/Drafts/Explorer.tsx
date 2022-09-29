@@ -67,9 +67,19 @@ export function Explorer(props: Props) {
               <Box bg="white" w="100%" p="15px">
                 <Box w="100%" h="60px">
                   <Heading size="lg" float="left">
-                    Test Draft #1
+                    request name (campaign name) #2
                   </Heading>
-                  <Button colorScheme={"blue"} float="right">
+                  <Button
+                    colorScheme={"blue"}
+                    float="right"
+                    onClick={() => {
+                      window.open(
+                        "/drafts/view/" + "63203b5e0fd5126299e1f3d7",
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                    }}
+                  >
                     Continue
                   </Button>
                 </Box>
@@ -90,7 +100,7 @@ export function Explorer(props: Props) {
               <Box bg="white" w="100%" p="15px">
                 <Box w="100%" h="60px">
                   <Heading size="lg" float="left">
-                    Test Draft #2
+                    request name (campaign name) #1
                   </Heading>
                   <Button colorScheme={"blue"} float="right">
                     Continue
