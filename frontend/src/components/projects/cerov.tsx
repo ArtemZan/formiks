@@ -48,6 +48,7 @@ interface Props {
   project: Project;
   submission?: any;
   children?: any[];
+  isDraft?: boolean;
 }
 
 export default function Cerov(props: Props) {
@@ -138,6 +139,7 @@ export default function Cerov(props: Props) {
         label: props.submission.data.year ?? "",
         value: props.submission.data.year ?? "",
       });
+      setOrganizingCompany(props.submission.data.organizingCompany ?? "");
       setProjectStartQuarter({
         label: props.submission.data.projectStartQuarter ?? "",
         value: props.submission.data.projectStartQuarter ?? "",
@@ -1725,10 +1727,206 @@ export default function Cerov(props: Props) {
           });
         }}
         isDisabled={
-          requestorsCompanyName.value.code !== "6110" || props.submission
+          requestorsCompanyName.value.code !== "6110" ||
+          (props.submission && !props.isDraft)
         }
       >
         Submit
+      </Button>
+      <Button
+        float="right"
+        mb={"80px"}
+        mr="15px"
+        color={"white"}
+        bg={useColorModeValue("blue.400", "#4D97E2")}
+        _hover={{
+          bg: useColorModeValue("blue.300", "#377bbf"),
+        }}
+        onClick={() => {
+          var projectId = "629dfb3f55d209262194a3e6";
+
+          var parent: Submission = {
+            project: projectId,
+            title: campaignName,
+            parentId: null,
+            group: null,
+            created: new Date(),
+            updated: new Date(),
+            status: "New",
+            author: requestorsName,
+            data: {
+              requestorsCompanyName: requestorsCompanyName.label,
+              companyCode: requestorsCompanyName.value.code,
+              requestorsCountry: requestorsCompanyName.value.country,
+              campaignName: campaignName,
+              projectName: campaignName,
+              campaignDescription: campaignDescription,
+              targetAudience: targetAudience,
+              campaignChannel: campaignChannel.label,
+              year: year.label,
+              organizingCompany: organizingCompany,
+              projectStartQuarter: projectStartQuarter.label,
+              projectNumber: projectNumber,
+              requestorsName: requestorsName,
+              projectApprover: projectApproval,
+              projectApproval: projectApproval,
+              manufacturersFiscalQuarter: fiscalQuarter.label,
+              campaignStartDate:
+                startDate === null ? null : startDate.toString(),
+              campaignEndDate: endDate === null ? null : endDate.toString(),
+              budgetSource: budgetSource.label,
+              budgetApprovedByVendor: budgetApprovedByVendor,
+              campaignBudgetsCurrency: exchangeRates.label,
+              campaignCurrency: exchangeRates.label,
+              campaignEstimatedIncomeBudgetsCurrency:
+                parseFloat(estimatedIncomeBudgetCurrency) === null
+                  ? 0.0
+                  : parseFloat(estimatedIncomeBudgetCurrency),
+              campaignEstimatedCostsBudgetsCurrency: parseFloat(
+                estimatedCostsBudgetCurrency
+              ),
+              campaignNetProfitTargetBudgetsCurrency: parseFloat(
+                netProfitTargetBudgetCurrency
+              ),
+              campaignEstimatedIncomeEur:
+                parseFloat(estimatedIncome) === null
+                  ? 0.0
+                  : parseFloat(estimatedIncome),
+              campaignEstimatedCostsEur: parseFloat(estimatedCosts),
+              campaignNetProfitTargetEur: parseFloat(netProfitTarget),
+              totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
+              comments: comments,
+              additionalInformation: comments,
+              localCurrency: requestorsCompanyName.value.currency,
+
+              projectType: "European One Vendor",
+            },
+          };
+          var children: Submission[] = [];
+          children.push({
+            project: projectId,
+            title: "",
+            parentId: "",
+            group: "vendor",
+            created: new Date(),
+            updated: new Date(),
+            status: "New",
+            author: requestorsName,
+            data: {
+              vendorName: vendorName.label,
+              productionProjectManager: vendor.projectManager,
+              creditorNumber: vendor.creditor,
+              debitorNumber: vendor.debitor,
+              manufacturerNumber: vendor.manufacturer,
+              businessUnit: vendor.bu,
+              PH1: vendor.ph.label,
+              vendorBudgetCurrency:
+                budgetSource.value === "noBudget"
+                  ? "N/A"
+                  : vendor.budgetCurrency.label,
+              vendorAmount:
+                isNaN(parseFloat(vendor.localBudget)) ||
+                budgetSource.value === "noBudget"
+                  ? 0.0
+                  : parseFloat(vendor.localBudget),
+              // cbbudgetEur: parseFloat(vendor.eurBudget),
+              vendorShare: 100,
+              estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
+              estimatedIncomeCC:
+                budgetSource.value === "noBudget"
+                  ? 0.0
+                  : parseFloat(estimatedIncomeBudgetCurrency),
+              estimatedResultCC:
+                parseFloat(netProfitTargetBudgetCurrency) *
+                (budgetSource.value === "noBudget" ? -1 : 1),
+              // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+              estimatedIncomeEUR:
+                budgetSource.value === "noBudget"
+                  ? 0.0
+                  : parseFloat(estimatedIncome),
+              estimatedCostsEUR: parseFloat(estimatedCosts),
+              estimatedResultEUR:
+                parseFloat(netProfitTarget) *
+                (budgetSource.value === "noBudget" ? -1 : 1),
+              estimatedResultBC:
+                parseFloat(netProfitTargetBudgetCurrency) *
+                (budgetSource.value === "noBudget" ? -1 : 1),
+              projectType: "European One Vendor",
+              // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+            },
+          });
+
+          costBreakdown.forEach((company: any) => {
+            children.push({
+              project: projectId,
+              title: "",
+              parentId: "",
+              group: "country",
+              created: new Date(),
+              updated: new Date(),
+              status: "New",
+              author: requestorsName,
+              data: {
+                projectName: campaignName,
+                additionalInformation: comments,
+                campaignChannel: campaignChannel.label,
+                mirrorProjectNumber: projectNumber,
+                projectNumber: company.projectNumber,
+                campaignStartDate:
+                  startDate === null ? null : startDate.toString(),
+                campaignEndDate: endDate === null ? null : endDate.toString(),
+                budgetSource: budgetSource.label,
+                campaignCurrency: exchangeRates.label,
+                vendorName: vendorName.label,
+                businessUnit: vendor.bu,
+                PH1: vendor.ph.label,
+                vendorShare: 100,
+                estimatedIncomeEUR:
+                  budgetSource.value === "noBudget"
+                    ? 0.0
+                    : parseFloat(estimatedIncome),
+                estimatedCostsEUR: parseFloat(estimatedCosts),
+                estimatedResultEUR:
+                  parseFloat(netProfitTarget) *
+                  (budgetSource.value === "noBudget" ? -1 : 1),
+                estimatedResultBC:
+                  parseFloat(netProfitTargetBudgetCurrency) *
+                  (budgetSource.value === "noBudget" ? -1 : 1),
+                projectType: "European One Vendor",
+                companyName: company.companyName,
+                countryCodeEMEA: company.companyCode,
+                country: company.country,
+                countriesEMEA: company.country,
+                productionProjectManager: company.contactEmail,
+                countryShare: parseFloat(company.share),
+                countryBudgetContributionEur: company.contribution,
+                countryCostEstimationEur: company.estimatedCosts,
+                countryBudgetContributionCC: isNaN(
+                  parseFloat(company.contribution)
+                )
+                  ? 0.0
+                  : parseFloat(company.contribution),
+                countryCostEstimationCC: parseFloat(company.estimatedCosts),
+              },
+            });
+          });
+          var submission: SubmissionWithChildren = {
+            submission: parent,
+            children,
+          };
+          if (props.isDraft) {
+            submission.submission.id = props.submission.id;
+            RestAPI.updateDraft(submission).then((response) => {
+              props.history.push("/");
+            });
+          } else {
+            RestAPI.createDraft(submission).then((response) => {
+              props.history.push("/");
+            });
+          }
+        }}
+      >
+        Draft
       </Button>
       <Button
         float="right"

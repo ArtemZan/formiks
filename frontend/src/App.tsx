@@ -111,7 +111,12 @@ function App({ pca }: AppProps) {
           <Route
             path="/drafts/view/:id"
             render={(props) => (
-              <SubmissionViewer isAdmin={isAdmin} create={false} {...props} />
+              <SubmissionViewer
+                isDraft={true}
+                isAdmin={isAdmin}
+                create={true}
+                {...props}
+              />
             )}
           />
           <Route

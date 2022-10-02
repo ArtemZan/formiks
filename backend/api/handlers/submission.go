@@ -90,11 +90,6 @@ func (r *Submission) FetchByIDWithChildren(c *gin.Context) {
 }
 
 func (r *Submission) Create(c *gin.Context) {
-	_, emailExists := c.Get("Email")
-	if !emailExists {
-		c.Status(http.StatusForbidden)
-		return
-	}
 	var submission models.Submission
 	err := c.BindJSON(&submission)
 	if err != nil {
@@ -115,11 +110,6 @@ func (r *Submission) Create(c *gin.Context) {
 }
 
 func (r *Submission) CreateWithChildren(c *gin.Context) {
-	_, emailExists := c.Get("Email")
-	if !emailExists {
-		c.Status(http.StatusForbidden)
-		return
-	}
 	var submissionWithChildren models.SubmissionWithChildrenRequest
 	err := c.BindJSON(&submissionWithChildren)
 	if err != nil {

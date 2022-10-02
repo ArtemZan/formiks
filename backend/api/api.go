@@ -14,6 +14,7 @@ func RegisterRoutes(r *gin.Engine) {
 	submissionHandler := handlers.NewSubmissionHandler(driver.Conn)
 	userHandler := handlers.NewUserHandler(driver.Conn)
 	templateHandler := handlers.NewTemplateHandler(driver.Conn)
+	draftHandler := handlers.NewDraftHandler(driver.Conn)
 	apiGroup := r.Group("api")
 	projectsGroup := apiGroup.Group("projects")
 	bookmarksGroup := apiGroup.Group("bookmarks")
@@ -22,6 +23,7 @@ func RegisterRoutes(r *gin.Engine) {
 	usersGroup := apiGroup.Group("users")
 	pipelinesGroup := apiGroup.Group("pipelines")
 	templatesGroup := apiGroup.Group("templates")
+	draftsGroup := apiGroup.Group("drafts")
 
 	projectsGroup.GET("/", projectHandler.Fetch)        // get all projects available to user
 	projectsGroup.GET("/:id", projectHandler.FetchByID) // get project
@@ -69,4 +71,9 @@ func RegisterRoutes(r *gin.Engine) {
 	templatesGroup.GET("/", templateHandler.Fetch)
 	templatesGroup.PUT("/:name", templateHandler.Update)
 
+	draftsGroup.GET("/", draftHandler.Fetch)
+	draftsGroup.GET("/:id", draftHandler.FetchByID)
+	draftsGroup.POST("/", draftHandler.Create)
+	draftsGroup.PUT("/:id", draftHandler.Update)
+	draftsGroup.DELETE("/:id", draftHandler.Delete)
 }

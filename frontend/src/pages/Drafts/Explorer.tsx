@@ -32,6 +32,8 @@ import CreateBookmark from "../../components/CreateBookmark";
 import ProjectCard from "../../components/ProjectCard";
 import Bookmark from "../../types/bookmark";
 import Project from "../../types/project";
+import moment from "moment";
+import { Submission } from "../../types/submission";
 
 interface Props {
   history: any;
@@ -40,101 +42,93 @@ interface Props {
 
 export function Explorer(props: Props) {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-  const [createBookmarkModal, setCreateBookMarkModal] = useState(false);
+  const [drafts, setDrafts] = useState<Submission[]>([]);
 
   useEffect(() => {
-    RestAPI.getBookmarks().then((response) => setBookmarks(response.data));
     RestAPI.getProjects().then((response) => {
       setProjects(response.data);
+    });
+    RestAPI.getDrafts().then((response) => {
+      console.log(response.data);
+      setDrafts(response.data);
     });
   }, []);
 
   return (
     <div>
       <Accordion defaultIndex={[0]} allowMultiple>
-        <AccordionItem>
-          <h2>
-            <AccordionButton>
-              <Box flex="1" textAlign="left">
-                Local One Vendor
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>
-            <VStack w="100%" spacing={"1.5em"}>
-              <Box bg="white" w="100%" p="15px">
-                <Box w="100%" h="60px">
-                  <Heading size="lg" float="left">
-                    request name (campaign name) #2
-                  </Heading>
-                  <Button
-                    colorScheme={"blue"}
-                    float="right"
-                    onClick={() => {
-                      window.open(
-                        "/drafts/view/" + "63203b5e0fd5126299e1f3d7",
-                        "_blank",
-                        "noopener,noreferrer"
+        {projects.map((project) => {
+          var pd = drafts.filter((draft) => draft.project === project.id);
+          return (
+            <AccordionItem key={project.id}>
+              <h2>
+                <AccordionButton>
+                  <Box flex="1" textAlign="left">
+                    {project.title}
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>
+                {pd.length > 0 ? (
+                  <VStack w="100%" spacing={"1.5em"}>
+                    {pd.map((draft, index) => {
+                      return (
+                        <Box key={draft.id} bg="white" w="100%" p="15px">
+                          <Box w="100%" h="60px">
+                            <Heading size="lg" float="left">
+                              {draft.data.requestorsCompanyName} (
+                              {draft.data.campaignName}) #{pd.length - index}
+                            </Heading>
+                            <Button
+                              colorScheme={"blue"}
+                              float="right"
+                              onClick={() => {
+                                window.open(
+                                  "/drafts/view/" + draft.id,
+                                  "_blank",
+                                  "noopener,noreferrer"
+                                );
+                              }}
+                            >
+                              Edit
+                            </Button>
+                          </Box>
+                          <Box w="100%">
+                            <VStack align={"start"} w="100%">
+                              <p>
+                                Requestor`s Company Name:{" "}
+                                {draft.data.requestorsCompanyName}
+                              </p>
+                              <p>
+                                Organizing Company:{" "}
+                                {draft.data.organizingCompany}
+                              </p>
+                              <p>Campaign Name: {draft.data.campaignName}</p>
+                              <p>Project Number: {draft.data.projectNumber}</p>
+                              <p>Comments: {draft.data.comments}</p>
+                            </VStack>
+                            <VStack float="right">
+                              <p>
+                                Saved:{" "}
+                                {moment(draft.created).format(
+                                  "DD.MM.YYYY HH:mm"
+                                )}
+                              </p>
+                              <p>Author: {draft.author}</p>
+                            </VStack>
+                          </Box>
+                        </Box>
                       );
-                    }}
-                  >
-                    Continue
-                  </Button>
-                </Box>
-                <Box w="100%">
-                  <VStack align={"start"} w="100%">
-                    <p>Requestor`s Company Name: Company Name</p>
-                    <p>Organizing Company: Company</p>
-                    <p>Campaign Name: Campaign</p>
-                    <p>Project Number: pn</p>
-                    <p>Comments: comment</p>
+                    })}
                   </VStack>
-                  <VStack float="right">
-                    <p>Saved: 28.09.2022 14:06</p>
-                    <p>Author: Sergejs Podolaks</p>
-                  </VStack>
-                </Box>
-              </Box>
-              <Box bg="white" w="100%" p="15px">
-                <Box w="100%" h="60px">
-                  <Heading size="lg" float="left">
-                    request name (campaign name) #1
-                  </Heading>
-                  <Button colorScheme={"blue"} float="right">
-                    Continue
-                  </Button>
-                </Box>
-                <Box w="100%">
-                  <VStack align={"start"} w="100%">
-                    <p>Requestor`s Company Name: Company Name</p>
-                    <p>Organizing Company: Company</p>
-                    <p>Campaign Name: Campaign</p>
-                    <p>Project Number: pn</p>
-                    <p>Comments: comment</p>
-                  </VStack>
-                  <VStack float="right">
-                    <p>Saved: 28.09.2022 15:30</p>
-                    <p>Author: Sergejs Podolaks</p>
-                  </VStack>
-                </Box>
-              </Box>
-            </VStack>
-          </AccordionPanel>
-        </AccordionItem>
-
-        <AccordionItem>
-          <h2>
-            <AccordionButton>
-              <Box flex="1" textAlign="left">
-                Local Multi Vendor
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>No drafts saved</AccordionPanel>
-        </AccordionItem>
+                ) : (
+                  "No drafts saved"
+                )}
+              </AccordionPanel>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
     </div>
   );

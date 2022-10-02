@@ -16,6 +16,7 @@ export class API {
   public submissionsUrl = `${this.baseUrl}/submissions/`;
   public dropdownsUrl = `${this.baseUrl}/dropdowns/`;
   public templatesUrl = `${this.baseUrl}/templates/`;
+  public draftsUrl = `${this.baseUrl}/drafts/`;
 
   getRoles(): Promise<AxiosResponse<string[]>> {
     return axios.get(`${this.usersUrl}roles`);
@@ -142,6 +143,30 @@ export class API {
       `${this.templatesUrl}${template.name}`,
       JSON.stringify(template)
     );
+  }
+
+  getDrafts(): Promise<AxiosResponse<Submission[]>> {
+    return axios.get<Submission[]>(this.draftsUrl);
+  }
+  getDraft(id: string): Promise<AxiosResponse<SubmissionWithChildren>> {
+    return axios.get<SubmissionWithChildren>(`${this.draftsUrl}${id}`);
+  }
+  createDraft(
+    draft: SubmissionWithChildren
+  ): Promise<AxiosResponse<SubmissionWithChildren>> {
+    return axios.post<SubmissionWithChildren>(
+      `${this.draftsUrl}`,
+      JSON.stringify(draft)
+    );
+  }
+  updateDraft(draft: SubmissionWithChildren): Promise<AxiosResponse> {
+    return axios.put<SubmissionWithChildren>(
+      `${this.draftsUrl}${draft.submission.id}`,
+      JSON.stringify(draft)
+    );
+  }
+  deleteDraft(id: string): Promise<AxiosResponse> {
+    return axios.delete(`${this.draftsUrl}${id}`);
   }
 
   updateVendorTableDefaultConfig(
