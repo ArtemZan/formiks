@@ -115,6 +115,8 @@ export default function Cerov(props: Props) {
 
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
 
+  const [injectionReady, setInjectionReady] = useState(false);
+
   const [render, rerender] = useState(0);
 
   useEffect(() => {
@@ -133,7 +135,10 @@ export default function Cerov(props: Props) {
       setTargetAudience(props.submission.data.targetAudience ?? "");
       setCampaignChannel({
         label: props.submission.data.campaignChannel ?? "",
-        value: props.submission.data.campaignChannel ?? "",
+        value:
+          props.submission.data.campaignChannel.length > 0
+            ? props.submission.data.campaignChannel.substr(0, 1)
+            : "",
       });
       setYear({
         label: props.submission.data.year ?? "",
@@ -142,7 +147,10 @@ export default function Cerov(props: Props) {
       setOrganizingCompany(props.submission.data.organizingCompany ?? "");
       setProjectStartQuarter({
         label: props.submission.data.projectStartQuarter ?? "",
-        value: props.submission.data.projectStartQuarter ?? "",
+        value:
+          props.submission.data.projectStartQuarter.length > 0
+            ? props.submission.data.projectStartQuarter.substr(0, 2)
+            : "",
       });
       setProjectNumber(props.submission.data.projectNumber ?? "");
       setRequestorsName(props.submission.data.requestorsName ?? "");
@@ -240,8 +248,13 @@ export default function Cerov(props: Props) {
           props.children
             .filter((s) => s.group === "country")
             .map((s) => {
-              console.log(s);
-              return { label: s.data.companyName, value: s.data.companyName };
+              return {
+                label: s.data.companyName,
+                value: {
+                  code: s.data.countryCodeEMEA,
+                  country: s.data.countriesEMEA,
+                },
+              };
             })
         );
         var c: any[] = [];
@@ -253,7 +266,7 @@ export default function Cerov(props: Props) {
               companyCode: s.data.countryCodeEMEA,
               country: s.data.countriesEMEA,
               contactEmail: s.data.productionProjectManager,
-              projectNumber: s.data.mirrorProjectNumber,
+              projectNumber: s.data.projectNumber,
               share: (s.data.countryShare || 0).toFixed(2),
               contribution: (s.data.countryBudgetContributionCC || 0).toFixed(
                 2
@@ -263,6 +276,10 @@ export default function Cerov(props: Props) {
           });
         setCostBreakdown([...c]);
       }
+
+      setTimeout(() => {
+        setInjectionReady(true);
+      }, 1000);
     }
   }, [props.submission, props.children, ExchangeRates]);
 
@@ -298,7 +315,7 @@ export default function Cerov(props: Props) {
   }
 
   useEffect(() => {
-    if (props.submission) {
+    if (props.submission && !injectionReady) {
       return;
     }
     setTotalEstimatedCostsLC(
@@ -317,7 +334,7 @@ export default function Cerov(props: Props) {
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
-    if (props.submission) {
+    if (props.submission && !injectionReady) {
       return;
     }
     var data: any = [];
@@ -377,7 +394,7 @@ export default function Cerov(props: Props) {
   ]);
 
   useEffect(() => {
-    if (props.submission) {
+    if (props.submission && !injectionReady) {
       return;
     }
     if (vendorName.value) {
@@ -406,7 +423,7 @@ export default function Cerov(props: Props) {
   }, [vendorName]);
 
   useEffect(() => {
-    if (props.submission) {
+    if (props.submission && !injectionReady) {
       return;
     }
     setEstimatedCosts(
@@ -453,9 +470,10 @@ export default function Cerov(props: Props) {
   ]);
 
   useEffect(() => {
-    if (props.submission) {
+    if (props.submission && !injectionReady) {
       return;
     }
+
     setProjectNumber(
       (requestorsCompanyName.value.code === ""
         ? "????"
@@ -1663,7 +1681,7 @@ export default function Cerov(props: Props) {
                 children.push({
                   project: projectId,
                   title: "",
-                  parentId: null,
+                  parentId: "",
                   group: "country",
                   created: new Date(),
                   updated: new Date(),
