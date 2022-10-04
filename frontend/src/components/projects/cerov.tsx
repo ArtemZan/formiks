@@ -1492,9 +1492,9 @@ export default function Cerov(props: Props) {
               company.country,
               company.contactEmail,
               company.projectNumber,
+              company.share,
               company.contribution,
               company.estimatedCosts,
-              company.share,
             ]);
           });
           formattedData.push([
@@ -1503,9 +1503,9 @@ export default function Cerov(props: Props) {
             "",
             "",
             "",
+            totalcbShare + "%",
             totalcbContribution + " " + exchangeRates.label,
             totalcbCosts + " " + exchangeRates.label,
-            totalcbShare + "%",
           ]);
           var ws = XLSX.utils.aoa_to_sheet(formattedData);
           const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
