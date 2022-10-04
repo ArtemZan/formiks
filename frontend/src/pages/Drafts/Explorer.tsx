@@ -86,8 +86,7 @@ export function Explorer(props: Props) {
                               onClick={() => {
                                 window.open(
                                   "/drafts/view/" + draft.id,
-                                  "_blank",
-                                  "noopener,noreferrer"
+                                  "_self"
                                 );
                               }}
                             >
