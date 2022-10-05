@@ -33,6 +33,7 @@ import { RestAPI } from "../../api/rest";
 var PH1: any[] = [];
 var Companies: any[] = [];
 var VendorsNames: any[] = [];
+var BUs: any[] = [];
 var CampaignChannel: any[] = [];
 var TargetAudience: any[] = [];
 var Budget: any[] = [];
@@ -295,6 +296,7 @@ export default function Cerov(props: Props) {
       "619b66defe27d06ad17d75ac",
       "619b6754fe27d06ad17d75ad",
       "619b6799fe27d06ad17d75ae",
+      "633d2f58d64289bf1335bb3f",
     ];
     var responses = await Promise.all(
       dropdownsIds.map((di) => {
@@ -312,6 +314,7 @@ export default function Cerov(props: Props) {
     FiscalQuarter = responses[7].data;
     Year = responses[8].data;
     ProjectStartQuarter = responses[9].data;
+    BUs = responses[10].data;
   }
 
   useEffect(() => {
@@ -404,7 +407,7 @@ export default function Cerov(props: Props) {
         creditor: vendorName.value.kreditor,
         debitor: vendorName.value.debitorischer,
         manufacturer: vendorName.value.hersteller,
-        bu: vendorName.value.bu,
+        bu: vendor.bu,
         ph: { label: "", value: "" },
         budgetCurrency: { label: "", value: "" },
         budgetAmount: "",
@@ -1117,14 +1120,50 @@ export default function Cerov(props: Props) {
         </Box>
         <Box w="100%">
           <Text mb="8px">Business Unit</Text>
-          <Input
-            bgColor={"white"}
-            value={vendor.bu}
-            onChange={(event) => {
+          <Select
+            styles={{
+              menu: (provided) => ({
+                ...provided,
+                zIndex: 1000000,
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: "#718196",
+              }),
+              control: (base, state) => ({
+                ...base,
+                minHeight: 40,
+                border: "1px solid #E2E8F0",
+                transition: "0.3s",
+                "&:hover": {
+                  border: "1px solid #CBD5E0",
+                },
+              }),
+            }}
+            theme={(theme) => ({
+              ...theme,
+              borderRadius: 6,
+              colors: {
+                ...theme.colors,
+                primary: "#3082CE",
+              },
+            })}
+            value={{
+              label: vendor.bu,
+              value:
+                typeof vendor.bu === "string" ? vendor.bu.substr(0, 3) : "",
+            }}
+            placeholder=""
+            onChange={(value: any) => {
+              console.log(value);
               var temp = { ...vendor };
-              temp.bu = event.target.value;
+              temp.bu = value.label;
               setVendor(temp);
             }}
+            classNamePrefix="select"
+            isClearable={false}
+            name="BUs"
+            options={BUs}
           />
         </Box>
         <Box w="100%">
