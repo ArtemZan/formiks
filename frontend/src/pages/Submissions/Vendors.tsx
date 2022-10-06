@@ -98,6 +98,7 @@ var ExchangeRates: any[] = [];
 var FiscalQuarter: any[] = [];
 var Year: any[] = [];
 var ProjectStartQuarter: any[] = [];
+var BUs: any[] = [];
 var SapStatus: any[] = [
   { label: "Created", value: "created" },
   { label: "None", value: "none" },
@@ -136,6 +137,7 @@ async function fetchDropdowns() {
     "619b6799fe27d06ad17d75ae",
     "619b7b9efe27d06ad17d75af",
     "619b7b9efe27d06ad17d75af",
+    "633e93ed5a7691ac30c977fc",
   ];
   var responses = await Promise.all(
     dropdownsIds.map((di) => {
@@ -153,6 +155,7 @@ async function fetchDropdowns() {
   Year = responses[8].data;
   ProjectStartQuarter = responses[9].data;
   ProjectType = responses[10].data;
+  BUs = responses[12].data;
 }
 
 const loadOptions = (identifier: string) => {
@@ -171,6 +174,8 @@ const loadOptions = (identifier: string) => {
       "data.vendorBudgetCurrency" ||
       "data.campaignCurrency":
       return ExchangeRates;
+    case "data.buLMD":
+      return BUs;
     case "data.sapStatus":
       return SapStatus;
     case "data.caVendorName":
@@ -5059,7 +5064,10 @@ export function VendorsTable(props: Props) {
                         hidden: visibilityController("LMD", "data.buLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            type={"text"}
+                            type={"dropdown"}
+                            loadOptions={() => {
+                              return BUs;
+                            }}
                             invoiced={
                               props.rowData.data.statusLMD === "INVOICED"
                             }
