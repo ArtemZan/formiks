@@ -353,32 +353,52 @@ export default function Cerov(props: Props) {
             : "",
         contribution: "",
         estimatedCosts: "",
+        contributionEur: "",
+        estimatedCostsEur: "",
         share: "",
       });
     });
     setCostBreakdown(data);
-  }, [companiesParticipating]);
+  }, [companiesParticipating, projectNumber]);
 
   useEffect(() => {
     var totalShare = 0.0;
     var totalContribution = 0.0;
     var totalCosts = 0.0;
     var temp = [...costBreakdown];
+    // contributionEur: "",
+    // estimatedCostsEur: "",
     temp.forEach((row: any) => {
       if (budgetSource.value === "noBudget") {
         row.contribution = "0.00";
+        row.contributionEur = "0.00";
       } else {
         row.contribution = (
           parseFloat(row.share) *
           0.01 *
           parseFloat(estimatedIncomeBudgetCurrency)
         ).toFixed(2);
+        row.contributionEur = (
+          parseFloat(row.share) *
+          0.01 *
+          parseFloat(estimatedIncome)
+        ).toFixed(2);
+        console.log(
+          (parseFloat(row.share) * 0.01 * parseFloat(estimatedIncome)).toFixed(
+            2
+          )
+        );
       }
 
       row.estimatedCosts = (
         parseFloat(row.share) *
         0.01 *
         parseFloat(estimatedCostsBudgetCurrency)
+      ).toFixed(2);
+      row.estimatedCostsEur = (
+        parseFloat(row.share) *
+        0.01 *
+        parseFloat(estimatedCosts)
       ).toFixed(2);
       totalShare += parseFloat(row.share) || 0;
       totalContribution += parseFloat(row.contribution) || 0;
@@ -582,10 +602,13 @@ export default function Cerov(props: Props) {
           }
         >
           <AlertIcon />
-          <AlertTitle>Please change Requestor`s Company Name!</AlertTitle>
+          <AlertTitle>Attention!</AlertTitle>
           <AlertDescription>
-            Currently, only companies with '6110' code are allowed ('ALSO
-            Schweiz AG')
+            Please note no actual project for 1550 will be created in the tool
+            just yet, this still needs to be done via the usual process. But a
+            project for Switzerland will be created if they are part of the
+            campaign, as they are using the tool. Other countries and 1550 will
+            follow.
           </AlertDescription>
         </Alert>
         <Box w="100%">
@@ -1271,6 +1294,8 @@ export default function Cerov(props: Props) {
                 share: totalcbShare + "%",
                 contribution: totalcbContribution + " " + exchangeRates.label,
                 estimatedCosts: totalcbCosts + " " + exchangeRates.label,
+                contributionEur: estimatedIncome + " EUR",
+                estimatedCostsEur: estimatedCosts + " EUR",
               },
             ]}
           >
@@ -1401,6 +1426,28 @@ export default function Cerov(props: Props) {
                 )}
               </Cell>
             </Column>
+            <Column width={400} resizable>
+              <HeaderCell>Budget contribution in Euro</HeaderCell>
+              <Cell dataKey="budgetContributionEur">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.contributionEur}
+                    onChange={(event) => {}}
+                  />
+                )}
+              </Cell>
+            </Column>
+            <Column width={400} resizable>
+              <HeaderCell>Total estimated costs in Euro</HeaderCell>
+              <Cell dataKey="estimatedCostsEur">
+                {(rowData, index) => (
+                  <Input
+                    value={rowData.estimatedCostsEur}
+                    onChange={(event) => {}}
+                  />
+                )}
+              </Cell>
+            </Column>
           </Table>
         </Box>
         <Box w="100%">
@@ -1523,6 +1570,8 @@ export default function Cerov(props: Props) {
             "Share %",
             "Budget Contribution in Campaign Currency",
             "Total Estimated Costs in Campaign Currency",
+            "Budget Contribution in EUR",
+            "Total Estimated Costs in EUR",
           ]);
           costBreakdown.forEach((company: any) => {
             formattedData.push([
@@ -1534,6 +1583,8 @@ export default function Cerov(props: Props) {
               company.share,
               company.contribution,
               company.estimatedCosts,
+              company.contributionEur,
+              company.estimatedCostsEur,
             ]);
           });
           formattedData.push([
@@ -1545,6 +1596,8 @@ export default function Cerov(props: Props) {
             totalcbShare + "%",
             totalcbContribution + " " + exchangeRates.label,
             totalcbCosts + " " + exchangeRates.label,
+            estimatedIncome + " EUR",
+            estimatedCosts + " EUR",
           ]);
           var ws = XLSX.utils.aoa_to_sheet(formattedData);
           const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
