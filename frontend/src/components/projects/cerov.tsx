@@ -303,7 +303,6 @@ export default function Cerov(props: Props) {
         return RestAPI.getDropdownValues(di);
       })
     );
-    console.log(responses[1].data);
     PH1 = responses[0].data;
     Companies = responses[1].data;
     VendorsNames = responses[2].data;
@@ -602,7 +601,6 @@ export default function Cerov(props: Props) {
           }
         >
           <AlertIcon />
-          <AlertTitle>Attention!</AlertTitle>
           <AlertDescription>
             Please note no actual project for 1550 will be created in the tool
             just yet, this still needs to be done via the usual process. But a

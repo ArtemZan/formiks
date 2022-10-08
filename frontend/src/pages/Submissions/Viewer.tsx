@@ -61,9 +61,19 @@ export function Viewer(props: Props) {
         RestAPI.getDraft(props.match.params.id).then((response) => {
           setForm({ display: "form", components: [] });
           if (response.data.submission.project === "629dfb3f55d209262194a3e6") {
-            console.log(response.data);
             setPredefinedProject(
               <Cerov
+                project={project}
+                submission={response.data.submission}
+                children={response.data.children}
+                history={props.history}
+                isDraft={true}
+              />
+            );
+          }
+          if (response.data.submission.project === "624ac98682eeddf1a9b6a622") {
+            setPredefinedProject(
+              <Elov
                 project={project}
                 submission={response.data.submission}
                 children={response.data.children}
