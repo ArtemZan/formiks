@@ -82,6 +82,17 @@ export function Viewer(props: Props) {
               />
             );
           }
+          if (response.data.submission.project === "6246ec8efa2a446faadb8d9b") {
+            setPredefinedProject(
+              <Elmv
+                project={project}
+                submission={response.data.submission}
+                children={response.data.children}
+                history={props.history}
+                isDraft={true}
+              />
+            );
+          }
         });
       } else {
         RestAPI.getSubmissionWithChildren(props.match.params.id).then(
