@@ -1087,17 +1087,17 @@ export function VendorsTable(props: Props) {
         }
 
         if (valid) {
-          if (submission.parentId !== null) {
-            var parent = sourceSubmissions.get(submission.parentId);
-            if (parent !== undefined && parent.id !== undefined) {
-              filteredMap.set(parent.id, parent);
-            }
-            submissions.forEach((s) => {
-              if (s.parentId === submission.parentId) {
-                filteredMap.set(s.id, s);
-              }
-            });
-          }
+          // if (submission.parentId !== null) {
+          //   var parent = sourceSubmissions.get(submission.parentId);
+          //   if (parent !== undefined && parent.id !== undefined) {
+          //     filteredMap.set(parent.id, parent);
+          //   }
+          //   submissions.forEach((s) => {
+          //     if (s.parentId === submission.parentId) {
+          //       filteredMap.set(s.id, s);
+          //     }
+          //   });
+          // }
           filteredMap.set(submission.id, submission);
         }
       });
@@ -1196,12 +1196,12 @@ export function VendorsTable(props: Props) {
           }
         });
         if (valid) {
-          if (submission.parentId !== null) {
-            var parent = sourceSubmissions.get(submission.parentId);
-            if (parent !== undefined && parent.id !== undefined) {
-              cFilteredMap.set(parent.id, parent);
-            }
-          }
+          // if (submission.parentId !== null) {
+          //   var parent = sourceSubmissions.get(submission.parentId);
+          //   if (parent !== undefined && parent.id !== undefined) {
+          //     cFilteredMap.set(parent.id, parent);
+          //   }
+          // }
           cFilteredMap.set(submission.id, submission);
         }
       });
