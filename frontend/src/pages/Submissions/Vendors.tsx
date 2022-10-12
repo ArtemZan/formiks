@@ -4999,11 +4999,6 @@ export function VendorsTable(props: Props) {
                                     "data.vodLMD",
                                     v.value.debitorischer
                                   );
-                                  handleCommunicationCellUpdate(
-                                    submission,
-                                    "data.buLMD",
-                                    v.value.bu
-                                  );
                                   set = true;
                                   return false;
                                 }
@@ -5165,6 +5160,11 @@ export function VendorsTable(props: Props) {
                                   "6110VZ01"
                                 );
                               }
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.statusLMD",
+                                ""
+                              );
                               handleCommunicationCellUpdate(
                                 submission,
                                 path,
@@ -5602,6 +5602,11 @@ export function VendorsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.statusLMD",
+                                ""
+                              );
                               var dunningStop = "No";
                               if (
                                 value === "Money in House" ||
@@ -5682,6 +5687,12 @@ export function VendorsTable(props: Props) {
                             type={"text"}
                             invoiced={
                               props.rowData.data.statusLMD === "INVOICED"
+                            }
+                            readonly={
+                              typeof props.rowData.data.dunningStopLMD ===
+                                "string" &&
+                              props.rowData.data.dunningStopLMD.toLowerCase() ===
+                                "no"
                             }
                             backgroundColor={
                               props.rowData.data.paymentMethodLMD ===
