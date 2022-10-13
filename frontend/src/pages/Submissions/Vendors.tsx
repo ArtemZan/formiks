@@ -1087,6 +1087,7 @@ export function VendorsTable(props: Props) {
         }
 
         if (valid) {
+          submission.parentId = null;
           // if (submission.parentId !== null) {
           //   var parent = sourceSubmissions.get(submission.parentId);
           //   if (parent !== undefined && parent.id !== undefined) {
@@ -1196,6 +1197,7 @@ export function VendorsTable(props: Props) {
           }
         });
         if (valid) {
+          submission.parentId = null;
           // if (submission.parentId !== null) {
           //   var parent = sourceSubmissions.get(submission.parentId);
           //   if (parent !== undefined && parent.id !== undefined) {
