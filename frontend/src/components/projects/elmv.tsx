@@ -281,7 +281,7 @@ export default function Elmv(props: Props) {
                 ).value,
               },
               budgetAmount: (s.data.vendorBudgetAmount || 0).toFixed(2),
-              localBudget: (s.data.vendorAmount || 0).toFixed(2),
+              localBudget: (s.data.vendorAmountLC || 0).toFixed(2),
               eurBudget: (s.data.estimatedIncomeEUR || 0).toFixed(2),
               share: s.data.vendorShare.toFixed(0) || "0",
               estimatedCostsCC: (s.data.estimatedCostsCC || 0).toFixed(2),
@@ -331,7 +331,7 @@ export default function Elmv(props: Props) {
         creditor: vendor.value.kreditor,
         debitor: vendor.value.debitorischer,
         manufacturer: vendor.value.hersteller,
-        bu: vendor.value.bu,
+        bu: "",
         ph: { label: "", value: "" },
         budgetCurrency: { label: "", value: "" },
         budgetAmount: "",
@@ -549,10 +549,12 @@ export default function Elmv(props: Props) {
       }
       row.netProfitTargetEUR =
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (parseFloat(row.share) * 0.01 * parseFloat(netProfitTarget)).toFixed(2);
+        (parseFloat(row.eurBudget) - parseFloat(row.estimatedCostsEUR)).toFixed(
+          2
+        );
 
       row.netProfitTargetLC = (
-        parseFloat(row.netProfitTargetEUR) * localExchangeRate
+        parseFloat(row.localBudget) - parseFloat(row.estimatedCostsLC)
       ).toFixed(2);
       row.netProfitTargetVC =
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
@@ -1537,7 +1539,7 @@ export default function Elmv(props: Props) {
           }
 
           var formattedData = [];
-          formattedData.push(["Request", "European One Vendor"]);
+          formattedData.push(["Request", "Local Multi Vendor"]);
           formattedData.push([
             "Requestor`s Company Name",
             requestorsCompanyName.label,
@@ -1577,7 +1579,9 @@ export default function Elmv(props: Props) {
           formattedData.push(["Campaign Currency", exchangeRates.label]);
           formattedData.push([
             "Campaign Estimated Income in Campaign Currency",
-            estimatedIncomeBudgetCurrency,
+            budgetSource.value === "noBudget"
+              ? "N/A"
+              : estimatedIncomeBudgetCurrency,
           ]);
           formattedData.push([
             "Campaign Estimated Costs in Campaign Currency",
@@ -1646,8 +1650,8 @@ export default function Elmv(props: Props) {
               v.localBudget,
               v.eurBudget,
               v.share,
-              v.estimatedCostsCC,
               v.estimatedIncomeCC,
+              v.estimatedCostsCC,
               v.estimatedCostsLC,
               v.estimatedCostsEUR,
               v.netProfitTargetVC,
@@ -1664,7 +1668,7 @@ export default function Elmv(props: Props) {
           const data = new Blob([excelBuffer], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
           });
-          FileSaver.saveAs(data, "test" + ".xlsx");
+          FileSaver.saveAs(data, campaignName + ".xlsx");
         }}
       >
         Export
@@ -1789,11 +1793,16 @@ export default function Elmv(props: Props) {
                       budgetSource.value === "noBudget"
                         ? "N/A"
                         : vendor.budgetCurrency.label,
-                    vendorAmount:
+                    vendorAmountLC:
                       isNaN(parseFloat(vendor.localBudget)) ||
                       budgetSource.value === "noBudget"
                         ? 0.0
                         : parseFloat(vendor.localBudget),
+                    vendorAmount:
+                      isNaN(parseFloat(vendor.budgetAmount)) ||
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(vendor.budgetAmount),
                     vendorBudgetAmount:
                       isNaN(parseFloat(vendor.budgetAmount)) ||
                       budgetSource.value === "noBudget"
@@ -1926,11 +1935,16 @@ export default function Elmv(props: Props) {
                   budgetSource.value === "noBudget"
                     ? "N/A"
                     : vendor.budgetCurrency.label,
-                vendorAmount:
+                vendorAmountLC:
                   isNaN(parseFloat(vendor.localBudget)) ||
                   budgetSource.value === "noBudget"
                     ? 0.0
                     : parseFloat(vendor.localBudget),
+                vendorAmount:
+                  isNaN(parseFloat(vendor.budgetAmount)) ||
+                  budgetSource.value === "noBudget"
+                    ? 0.0
+                    : parseFloat(vendor.budgetAmount),
                 vendorBudgetAmount:
                   isNaN(parseFloat(vendor.budgetAmount)) ||
                   budgetSource.value === "noBudget"

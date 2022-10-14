@@ -604,10 +604,12 @@ export default function Ermv(props: Props) {
       }
       row.netProfitTargetEUR =
         `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (parseFloat(row.share) * 0.01 * parseFloat(netProfitTarget)).toFixed(2);
+        (parseFloat(row.eurBudget) - parseFloat(row.estimatedCostsEUR)).toFixed(
+          2
+        );
 
       row.netProfitTargetLC = (
-        parseFloat(row.netProfitTargetEUR) * localExchangeRate
+        parseFloat(row.localBudget) - parseFloat(row.estimatedCostsLC)
       ).toFixed(2);
 
       row.netProfitTargetVC =

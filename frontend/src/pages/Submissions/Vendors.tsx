@@ -1397,15 +1397,7 @@ export function VendorsTable(props: Props) {
             type={"success"}
           />
         );
-        var submissionIndex = submissions.findIndex(
-          (s) => s.id === submissionId
-        );
-        if (submissionIndex > -1) {
-          var temp = [...submissions];
-          temp[submissionIndex].data["sapStatus"] = "created";
-          partialUpdate(submissionId, "data.sapStatus", "created");
-          setSubmissions(temp);
-        }
+        handleCellUpdate(submissionId, "data.status", "Created");
       })
       .catch((error) => {
         toast(

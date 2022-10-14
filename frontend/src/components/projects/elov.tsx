@@ -173,9 +173,9 @@ export default function Elov(props: Props) {
         )
       );
       setEstimatedIncomeBudgetCurrency(
-        (
-          props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
-        ).toString()
+        props.submission.data.campaignEstimatedIncomeBudgetsCurrency.toFixed(
+          2
+        ) || "0.00"
       );
       setEstimatedIncome(
         props.submission.data.campaignEstimatedIncomeEur.toFixed(2) || "0.00"
@@ -1168,7 +1168,7 @@ export default function Elov(props: Props) {
           }
 
           var formattedData = [];
-          formattedData.push(["Request", "European One Vendor"]);
+          formattedData.push(["Request", "Local One Vendor"]);
           formattedData.push([
             "Requestor`s Company Name",
             requestorsCompanyName.label,
@@ -1208,7 +1208,9 @@ export default function Elov(props: Props) {
           formattedData.push(["Campaign Currency", exchangeRates.label]);
           formattedData.push([
             "Campaign Estimated Income in Campaign Currency",
-            estimatedIncomeBudgetCurrency,
+            budgetSource.value === "noBudget"
+              ? "N/A"
+              : estimatedIncomeBudgetCurrency,
           ]);
           formattedData.push([
             "Campaign Estimated Costs in Campaign Currency",
@@ -1255,7 +1257,7 @@ export default function Elov(props: Props) {
           const data = new Blob([excelBuffer], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
           });
-          FileSaver.saveAs(data, "test" + ".xlsx");
+          FileSaver.saveAs(data, campaignName + ".xlsx");
         }}
       >
         Export

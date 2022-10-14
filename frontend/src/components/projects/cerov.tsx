@@ -1517,7 +1517,9 @@ export default function Cerov(props: Props) {
           formattedData.push(["Campaign Currency", exchangeRates.label]);
           formattedData.push([
             "Campaign Estimated Income in Campaign Currency",
-            estimatedIncomeBudgetCurrency,
+            budgetSource.value === "noBudget"
+              ? "N/A"
+              : estimatedIncomeBudgetCurrency,
           ]);
           formattedData.push([
             "Campaign Estimated Costs in Campaign Currency",
@@ -1606,7 +1608,7 @@ export default function Cerov(props: Props) {
           const data = new Blob([excelBuffer], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
           });
-          FileSaver.saveAs(data, "test" + ".xlsx");
+          FileSaver.saveAs(data, campaignName + ".xlsx");
         }}
       >
         Export
