@@ -15,6 +15,10 @@ import {
   IconButton,
   useColorModeValue,
   Tag,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import CreatableSelect from "react-select/creatable";
 import { useEffect, useState } from "react";
@@ -184,6 +188,26 @@ export function Viewer(props: Props) {
           />
         </Box>
       </HStack>
+
+      <Alert
+        display={props.isDraft ? "none" : "block"}
+        status="error"
+        variant="subtle"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="center"
+        height="180px"
+        mb="2em"
+      >
+        <AlertIcon boxSize="40px" mr={0} />
+        <AlertTitle mt={4} mb={1} fontSize="lg">
+          You are viewing existing project!
+        </AlertTitle>
+        <AlertDescription maxWidth="sm">
+          Please note that submitting this form will create a new project
+        </AlertDescription>
+      </Alert>
 
       {predefinedProject === null ? (
         <Form
