@@ -222,7 +222,7 @@ export default function Ermv(props: Props) {
               companyCode: s.data.countryCodeEMEA,
               country: s.data.countriesEMEA,
               contactEmail: s.data.productionProjectManager,
-              projectNumber: s.data.mirrorProjectNumber,
+              projectNumber: s.data.parentProjectNumber,
               share: (s.data.countryShare || 0).toFixed(2),
               contribution: (s.data.countryBudgetContributionCC || 0).toFixed(
                 2
@@ -1921,7 +1921,7 @@ export default function Ermv(props: Props) {
                     projectName: campaignName,
                     additionalInformation: comments,
                     campaignChannel: campaignChannel.label,
-                    mirrorProjectNumber:
+                    parentProjectNumber:
                       company.companyCode + projectNumber.substring(4),
                     projectNumber: company.projectNumber,
                     campaignStartDate:

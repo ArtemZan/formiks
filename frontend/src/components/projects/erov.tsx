@@ -248,7 +248,7 @@ export default function Erov(props: Props) {
               companyCode: s.data.countryCodeEMEA,
               country: s.data.countriesEMEA,
               contactEmail: s.data.productionProjectManager,
-              projectNumber: s.data.mirrorProjectNumber,
+              projectNumber: s.data.parentProjectNumber,
               share: (s.data.countryShare || 0).toFixed(2),
               contribution: (s.data.countryBudgetContributionCC || 0).toFixed(
                 2
@@ -1814,7 +1814,7 @@ export default function Erov(props: Props) {
                     country: company.country,
                     countriesEMEA: company.country,
                     productionProjectManager: company.contactEmail,
-                    mirrorProjectNumber: company.projectNumber,
+                    parentProjectNumber: company.projectNumber,
                     countryShare: parseFloat(company.share),
                     countryBudgetContributionEur: company.contribution,
                     countryCostEstimationEur: company.estimatedCosts,

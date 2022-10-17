@@ -274,8 +274,8 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
-        label: "Mirror Project Number",
-        value: "data.mirrorProjectNumber",
+        label: "Parent Project Number",
+        value: "data.parentProjectNumber",
         type: "string",
       },
       { label: "% Country Share", value: "data.countryShare", type: "number" },
@@ -300,11 +300,11 @@ const DisplayedColumnsList = [
         value: "data.debitorNumber",
         type: "string",
       },
-      {
-        label: "SAP Creditor Number",
-        value: "data.creditorNumber",
-        type: "string",
-      },
+      // {
+      //   label: "SAP Creditor Number",
+      //   value: "data.creditorNumber",
+      //   type: "string",
+      // },
       { label: "Budget Source", value: "data.budgetSource", type: "dropdown" },
       {
         label: "Vendor Budget Currency",
@@ -1808,16 +1808,16 @@ export function VendorsTable(props: Props) {
       ),
     },
     {
-      key: "data.mirrorProjectNumber",
-      dataKey: "data.mirrorProjectNumber",
-      title: "Mirror Project Number",
-      width: columnWidth("data.mirrorProjectNumber", 250),
+      key: "data.parentProjectNumber",
+      dataKey: "data.parentProjectNumber",
+      title: "Parent Project Number",
+      width: columnWidth("data.parentProjectNumber", 250),
       resizable: true,
       group: "Project Information",
 
       hidden: visibilityController(
         "projectInformation",
-        "data.mirrorProjectNumber"
+        "data.parentProjectNumber"
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -1844,7 +1844,7 @@ export function VendorsTable(props: Props) {
       hidden: visibilityController("projectInformation", "data.countryShare"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           readonly={true}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
@@ -1921,7 +1921,13 @@ export function VendorsTable(props: Props) {
         <EditableTableCell
           type={"text"}
           readonly={props.rowData.data.status !== "Incomplete"}
-          backgroundColor="#f5faef"
+          backgroundColor={
+            props.rowData.data.status === "Incomplete"
+              ? props.cellData && props.cellData.length > 0
+                ? "#f5faef"
+                : "#f7cdd6"
+              : "#f5faef"
+          }
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1966,7 +1972,13 @@ export function VendorsTable(props: Props) {
         <EditableTableCell
           type={"text"}
           readonly={props.rowData.data.status !== "Incomplete"}
-          backgroundColor="#f5faef"
+          backgroundColor={
+            props.rowData.data.status === "Incomplete"
+              ? props.cellData && props.cellData.length > 0
+                ? "#f5faef"
+                : "#f7cdd6"
+              : "#f5faef"
+          }
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -1975,28 +1987,34 @@ export function VendorsTable(props: Props) {
         />
       ),
     },
-    {
-      key: "data.creditorNumber",
-      dataKey: "data.creditorNumber",
-      group: "Project Information",
+    // {
+    //   key: "data.creditorNumber",
+    //   dataKey: "data.creditorNumber",
+    //   group: "Project Information",
 
-      title: "SAP Creditor Number",
-      width: columnWidth("data.creditorNumber", 200),
-      resizable: true,
-      hidden: visibilityController("projectInformation", "data.creditorNumber"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          readonly={props.rowData.data.status !== "Incomplete"}
-          backgroundColor="#f5faef"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
+    //   title: "SAP Creditor Number",
+    //   width: columnWidth("data.creditorNumber", 200),
+    //   resizable: true,
+    //   hidden: visibilityController("projectInformation", "data.creditorNumber"),
+    //   cellRenderer: (props: any) => (
+    //     <EditableTableCell
+    //       type={"text"}
+    //       readonly={props.rowData.data.status !== "Incomplete"}
+    //       backgroundColor={
+    //         props.rowData.data.status === "Incomplete"
+    //           ? props.cellData && props.cellData.length > 0
+    //             ? "#f5faef"
+    //             : "#f7cdd6"
+    //           : "#f5faef"
+    //       }
+    //       onUpdate={handleCellUpdate}
+    //       rowIndex={props.rowIndex}
+    //       columnKey={props.column.dataKey}
+    //       rowData={props.rowData}
+    //       initialValue={props.cellData}
+    //     />
+    //   ),
+    // },
     {
       key: "data.budgetSource",
       dataKey: "data.budgetSource",
