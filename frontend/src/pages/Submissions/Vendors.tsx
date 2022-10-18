@@ -247,6 +247,7 @@ const DisplayedColumnsList = [
     children: [
       { label: "Company Code", value: "data.companyCode", type: "string" },
       { label: "Project Number", value: "data.projectNumber", type: "string" },
+      { label: "Local Project Number", value: "data.localProjectNumber", type: "string" },
       { label: "Project Name", value: "data.projectName", type: "string" },
       {
         label: "Campaign Start Date",
@@ -1604,6 +1605,28 @@ export function VendorsTable(props: Props) {
       group: "General Information",
 
       hidden: visibilityController("generalInformation", "data.projectNumber"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          readonly={true}
+          type={"text"}
+          backgroundColor="#f4fcf9"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
+    {
+      key: "data.localProjectNumber",
+      dataKey: "data.localProjectNumber",
+      title: "Local Project Number",
+      width: columnWidth("data.localProjectNumber", 150),
+      resizable: true,
+      group: "General Information",
+
+      hidden: visibilityController("generalInformation", "data.localProjectNumber"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           readonly={true}

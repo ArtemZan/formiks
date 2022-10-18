@@ -268,7 +268,7 @@ export default function Cerov(props: Props) {
               companyCode: s.data.countryCodeEMEA,
               country: s.data.countriesEMEA,
               contactEmail: s.data.productionProjectManager,
-              projectNumber: s.data.projectNumber,
+              projectNumber: s.data.localProjectNumber,
               share: (s.data.countryShare || 0).toFixed(2),
               contribution: (s.data.countryBudgetContributionCC || 0).toFixed(
                 2
@@ -1704,7 +1704,7 @@ export default function Cerov(props: Props) {
                         additionalInformation: comments,
                         campaignChannel: campaignChannel.label,
                         parentProjectNumber: projectNumber,
-                        projectNumber: company.projectNumber,
+                        localProjectNumber: company.projectNumber,
                         campaignStartDate:
                           startDate === null ? null : startDate.toString(),
                         campaignEndDate:
@@ -2123,7 +2123,7 @@ export default function Cerov(props: Props) {
                     additionalInformation: comments,
                     campaignChannel: campaignChannel.label,
                     parentProjectNumber: projectNumber,
-                    projectNumber: company.projectNumber,
+                    localProjectNumber: company.projectNumber,
                     campaignStartDate:
                       startDate === null ? null : startDate.toString(),
                     campaignEndDate:
