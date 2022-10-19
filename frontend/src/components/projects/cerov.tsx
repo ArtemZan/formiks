@@ -1785,51 +1785,96 @@ export default function Cerov(props: Props) {
               if (company === undefined) {
                 return;
               }
-              var parent = {
-                project: "6246bc93fa2a446faadb8d9a",
-                title: "",
-                parentId: null,
-                group: "country",
-                created: new Date(),
-                updated: new Date(),
-                status: "Incomplete",
-                author: requestorsName,
-                data: {
+              RestAPI.getSubmissions().then((response) => {
+                var parentSubmissions = response.data.filter(
+                  (s) => s.parentId === null
+                );
+                var changed: boolean = false;
+                let isUnique = false;
+                let pn = `${company.projectNumber}`;
+                while (!isUnique) {
+                  let found = false;
+                  for (let s of parentSubmissions) {
+                    if (s.data.projectNumber === pn) {
+                      found = true;
+                      break;
+                    }
+                  }
+                  if (!found) {
+                    isUnique = true;
+                  } else {
+                    var newSuffix: any = parseInt(pn.slice(-2)) + 1;
+                    newSuffix =
+                      (newSuffix > 9 ? "" : "0") + newSuffix.toString();
+                    pn = pn.slice(0, -2) + newSuffix;
+                    changed = true;
+                  }
+                }
+                if (changed) {
+                  var temp = [...costBreakdown];
+                  var ti = costBreakdown.findIndex(
+                    (c: any) => c.companyCode === "6110"
+                  );
+                  temp[ti].projectNumber = pn;
+                  setCostBreakdown(temp);
+                  setProjectNumber(pn);
+                  toast(
+                    <Toast
+                      title={"Duplicate"}
+                      message={`Project Number already exists. Changed to: ${pn}. Press submit again.`}
+                      type={"info"}
+                    />
+                  );
+                  return;
+                }
+
+                var parent = {
+                  project: "6246bc93fa2a446faadb8d9a",
+                  title: "",
+                  parentId: null,
+                  group: "country",
+                  created: new Date(),
+                  updated: new Date(),
                   status: "Incomplete",
-                  projectName: campaignName,
-                  additionalInformation: comments,
-                  campaignChannel: campaignChannel.label,
-                  parentProjectNumber: projectNumber,
-                  projectNumber: company.projectNumber,
-                  campaignStartDate:
-                    startDate === null ? null : startDate.toString(),
-                  campaignEndDate: endDate === null ? null : endDate.toString(),
-                  budgetSource: budgetSource.label,
-                  campaignCurrency: exchangeRates.label,
-                  vendorName: vendorName.label,
-                  businessUnit: vendor.bu,
-                  PH1: vendor.ph.label,
-                  vendorShare: 100,
-                  projectType: "European One Vendor",
-                  companyName: company.companyName,
-                  companyCode: company.companyCode,
-                  country: company.country,
-                  countriesEMEA: company.country,
-                  productionProjectManager: company.contactEmail,
-                  countryShare: parseFloat(company.share),
-                  countryBudgetContributionEur: company.contribution,
-                  countryCostEstimationEur: company.estimatedCosts,
-                  countryBudgetContributionCC: isNaN(
-                    parseFloat(company.contribution)
-                  )
-                    ? 0.0
-                    : parseFloat(company.contribution),
-                  countryCostEstimationCC: parseFloat(company.estimatedCosts),
-                },
-              };
-              RestAPI.createSubmission(parent).then((response) => {
-                setLocalSubmitted(true);
-                // props.history.push("/vendors");
+                  author: requestorsName,
+                  data: {
+                    status: "Incomplete",
+                    projectName: campaignName,
+                    additionalInformation: comments,
+                    campaignChannel: campaignChannel.label,
+                    parentProjectNumber: projectNumber,
+                    projectNumber: company.projectNumber,
+                    campaignStartDate:
+                      startDate === null ? null : startDate.toString(),
+                    campaignEndDate:
+                      endDate === null ? null : endDate.toString(),
+                    budgetSource: budgetSource.label,
+                    campaignCurrency: exchangeRates.label,
+                    vendorName: vendorName.label,
+                    businessUnit: vendor.bu,
+                    PH1: vendor.ph.label,
+                    vendorShare: 100,
+                    projectType: "European One Vendor",
+                    companyName: company.companyName,
+                    companyCode: company.companyCode,
+                    country: company.country,
+                    countriesEMEA: company.country,
+                    productionProjectManager: company.contactEmail,
+                    countryShare: parseFloat(company.share),
+                    countryBudgetContributionEur: company.contribution,
+                    countryCostEstimationEur: company.estimatedCosts,
+                    countryBudgetContributionCC: isNaN(
+                      parseFloat(company.contribution)
+                    )
+                      ? 0.0
+                      : parseFloat(company.contribution),
+                    countryCostEstimationCC: parseFloat(company.estimatedCosts),
+                  },
+                };
+                RestAPI.createSubmission(parent).then((response) => {
+                  setLocalSubmitted(true);
+                  // props.history.push("/vendors");
+                });
               });
             }}
           >
