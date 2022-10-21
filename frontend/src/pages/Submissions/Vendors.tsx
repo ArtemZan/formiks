@@ -247,7 +247,11 @@ const DisplayedColumnsList = [
     children: [
       { label: "Company Code", value: "data.companyCode", type: "string" },
       { label: "Project Number", value: "data.projectNumber", type: "string" },
-      { label: "Local Project Number", value: "data.localProjectNumber", type: "string" },
+      {
+        label: "Local Project Number",
+        value: "data.localProjectNumber",
+        type: "string",
+      },
       { label: "Project Name", value: "data.projectName", type: "string" },
       {
         label: "Campaign Start Date",
@@ -918,7 +922,7 @@ export function VendorsTable(props: Props) {
     let tialigl = 0;
     let tiaigl = 0;
     filteredSubmissions.forEach((subm) => {
-      if (subm.parentId !== null) {
+      if (subm.parentId === null) {
         tca += subm.data.costAmountEUR || 0;
         tcacgl += subm.data.costAmountEURCostGL || 0;
         tcal += subm.data.costAmountLC || 0;
@@ -1088,7 +1092,7 @@ export function VendorsTable(props: Props) {
         }
 
         if (valid) {
-          submission.parentId = null;
+          // submission.parentId = null;
           // if (submission.parentId !== null) {
           //   var parent = sourceSubmissions.get(submission.parentId);
           //   if (parent !== undefined && parent.id !== undefined) {
@@ -1198,7 +1202,7 @@ export function VendorsTable(props: Props) {
           }
         });
         if (valid) {
-          submission.parentId = null;
+          // submission.parentId = null;
           // if (submission.parentId !== null) {
           //   var parent = sourceSubmissions.get(submission.parentId);
           //   if (parent !== undefined && parent.id !== undefined) {
@@ -1211,9 +1215,19 @@ export function VendorsTable(props: Props) {
       ///
 
       cFilteredMap.forEach((value) => {
+        if (value.parentId !== null) {
+          if (!cFilteredMap.has(value.parentId)) {
+            value.parentId = null;
+          }
+        }
         filteredCommunication.push(value);
       });
       filteredMap.forEach((value) => {
+        if (value.parentId !== null) {
+          if (!filteredMap.has(value.parentId)) {
+            value.parentId = null;
+          }
+        }
         filtered.push(value);
       });
 
@@ -1626,7 +1640,10 @@ export function VendorsTable(props: Props) {
       resizable: true,
       group: "General Information",
 
-      hidden: visibilityController("generalInformation", "data.localProjectNumber"),
+      hidden: visibilityController(
+        "generalInformation",
+        "data.localProjectNumber"
+      ),
       cellRenderer: (props: any) => (
         <EditableTableCell
           readonly={true}
