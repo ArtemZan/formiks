@@ -919,6 +919,10 @@ export default function Cerov(props: Props) {
             value={budgetSource}
             onChange={(value) => {
               setBudgetSource(value);
+              if (value.value === "noBudget") {
+                setEstimatedIncomeBudgetCurrency("");
+                setEstimatedIncome("");
+              }
             }}
             placeholder=""
             classNamePrefix="select"

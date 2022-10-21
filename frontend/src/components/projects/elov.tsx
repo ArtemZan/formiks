@@ -177,14 +177,21 @@ export default function Elov(props: Props) {
           2
         ) || "0.00"
       );
+      console.log(props.submission.data.campaignEstimatedIncomeEur);
       setEstimatedIncome(
-        props.submission.data.campaignEstimatedIncomeEur.toFixed(2) || "0.00"
+        typeof props.submission.data.campaignEstimatedIncomeEur === "number"
+          ? props.submission.data.campaignEstimatedIncomeEur.toFixed(2)
+          : "0.00"
       );
       setEstimatedCosts(
-        props.submission.data.campaignEstimatedCostsEur.toFixed(2) || "0.00"
+        typeof props.submission.data.campaignEstimatedCostsEur === "number"
+          ? props.submission.data.campaignEstimatedCostsEur.toFixed(2)
+          : "0.00"
       );
       setNetProfitTarget(
-        props.submission.data.campaignNetProfitTargetEur.toFixed(2) || "0.00"
+        typeof props.submission.data.campaignNetProfitTargetEur === "number"
+          ? props.submission.data.campaignNetProfitTargetEur.toFixed(2)
+          : "0.00"
       );
       setEstimatedCostsBudgetCurrency(
         (
@@ -198,7 +205,9 @@ export default function Elov(props: Props) {
       );
       setComments(props.submission.data.comments ?? "");
       setTotalEstimatedCostsLC(
-        props.submission.data.totalEstimatedCostsLC.toFixed(2) || "0.00"
+        typeof props.submission.data.totalEstimatedCostsLC === "number"
+          ? props.submission.data.totalEstimatedCostsLC.toFixed(2)
+          : "0.00"
       );
 
       //
@@ -822,6 +831,10 @@ export default function Elov(props: Props) {
             value={budgetSource}
             onChange={(value) => {
               setBudgetSource(value);
+              if (value.value === "noBudget") {
+                setEstimatedIncomeBudgetCurrency("");
+                setEstimatedIncome("");
+              }
             }}
             placeholder=""
             classNamePrefix="select"
@@ -1224,7 +1237,7 @@ export default function Elov(props: Props) {
           ]);
           formattedData.push([
             "Campaign Estimated Income in EUR",
-            estimatedIncome,
+            estimatedIncome === "" ? "NaN" : estimatedIncome,
           ]);
           formattedData.push([
             "Campaign Estimated Costs in EUR",
@@ -1387,12 +1400,12 @@ export default function Elov(props: Props) {
                   vendorBudgetCurrency:
                     budgetSource.value === "noBudget"
                       ? "N/A"
-                      : vendor.budgetCurrency.label,
+                      : exchangeRates.label,
                   vendorAmount:
-                    isNaN(parseFloat(vendor.localBudget)) ||
+                    isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
                     budgetSource.value === "noBudget"
                       ? 0.0
-                      : parseFloat(vendor.localBudget),
+                      : parseFloat(estimatedIncomeBudgetCurrency),
                   // cbbudgetEur: parseFloat(vendor.eurBudget),
                   vendorShare: 100,
                   estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
@@ -1522,14 +1535,12 @@ export default function Elov(props: Props) {
               businessUnit: vendor.bu,
               PH1: vendor.ph.label,
               vendorBudgetCurrency:
-                budgetSource.value === "noBudget"
-                  ? "N/A"
-                  : vendor.budgetCurrency.label,
+                budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
               vendorAmount:
-                isNaN(parseFloat(vendor.localBudget)) ||
+                isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
                 budgetSource.value === "noBudget"
                   ? 0.0
-                  : parseFloat(vendor.localBudget),
+                  : parseFloat(estimatedIncomeBudgetCurrency),
               // cbbudgetEur: parseFloat(vendor.eurBudget),
               vendorShare: 100,
               estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
