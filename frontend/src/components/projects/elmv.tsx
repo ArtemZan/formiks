@@ -681,6 +681,24 @@ export default function Elmv(props: Props) {
             />
           </Box>
         </HStack>
+        <Alert
+          status="error"
+          display={
+            requestorsCompanyName.value.code !== "6110" &&
+            requestorsCompanyName.value.code !== ""
+              ? "flex"
+              : "none"
+          }
+        >
+          <AlertIcon />
+          <AlertDescription>
+            Please note no actual project for 1550 will be created in the tool
+            just yet, this still needs to be done via the usual process. But a
+            project for Switzerland will be created if they are part of the
+            campaign, as they are using the tool. Other countries and 1550 will
+            follow.
+          </AlertDescription>
+        </Alert>
 
         <Text as="b">Campaign`s Details</Text>
 
@@ -1844,6 +1862,10 @@ export default function Elmv(props: Props) {
             }
           });
         }}
+        isDisabled={
+          requestorsCompanyName.value.code !== "6110" ||
+          (props.submission && !props.isDraft)
+        }
       >
         Submit
       </Button>

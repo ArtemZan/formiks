@@ -727,6 +727,24 @@ export default function Ermv(props: Props) {
               color={useColorModeValue("gray.800", "#ABB2BF")}
             />
           </Box>
+          <Alert
+            status="error"
+            display={
+              requestorsCompanyName.value.code !== "6110" &&
+              requestorsCompanyName.value.code !== ""
+                ? "flex"
+                : "none"
+            }
+          >
+            <AlertIcon />
+            <AlertDescription>
+              Please note no actual project for 1550 will be created in the tool
+              just yet, this still needs to be done via the usual process. But a
+              project for Switzerland will be created if they are part of the
+              campaign, as they are using the tool. Other countries and 1550
+              will follow.
+            </AlertDescription>
+          </Alert>
           <Box w="100%">
             <Text mb="8px">Requestor`s Country</Text>
             <Input

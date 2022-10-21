@@ -1780,7 +1780,7 @@ export default function Cerov(props: Props) {
             isDisabled={
               !costBreakdown.some(
                 (company: any) => company.companyCode === "6110"
-              )
+              ) || requestorsCompanyName.value.code === "6110"
             }
             onClick={() => {
               var company = costBreakdown.find(
