@@ -251,6 +251,127 @@ export default function Elov(props: Props) {
     }
   }, [props.submission, props.children, ExchangeRates]);
 
+  async function updateDraft() {
+    var projectId = "624ac98682eeddf1a9b6a622";
+
+    var parent: Submission = {
+      project: projectId,
+      title: campaignName,
+      parentId: null,
+      group: null,
+      created: new Date(),
+      updated: new Date(),
+      status: "New",
+      author: requestorsName,
+      data: {
+        requestorsCompanyName: requestorsCompanyName.label,
+        companyCode: requestorsCompanyName.value.code,
+        requestorsCountry: requestorsCompanyName.value.country,
+        campaignName: campaignName,
+        projectName: campaignName,
+        campaignDescription: campaignDescription,
+        targetAudience: targetAudience,
+        campaignChannel: campaignChannel.label,
+        year: year.label,
+        organizingCompany: organizingCompany,
+        projectStartQuarter: projectStartQuarter.label,
+        projectNumber: projectNumber,
+        requestorsName: requestorsName,
+        projectApprover: projectApproval,
+        projectApproval: projectApproval,
+        manufacturersFiscalQuarter: fiscalQuarter.label,
+        campaignStartDate: startDate === null ? null : startDate.toString(),
+        campaignEndDate: endDate === null ? null : endDate.toString(),
+        budgetSource: budgetSource.label,
+        budgetApprovedByVendor: budgetApprovedByVendor,
+        campaignBudgetsCurrency: exchangeRates.label,
+        campaignCurrency: exchangeRates.label,
+        campaignEstimatedIncomeBudgetsCurrency:
+          parseFloat(estimatedIncomeBudgetCurrency) === null
+            ? 0.0
+            : parseFloat(estimatedIncomeBudgetCurrency),
+        campaignEstimatedCostsBudgetsCurrency: parseFloat(
+          estimatedCostsBudgetCurrency
+        ),
+        campaignNetProfitTargetBudgetsCurrency: parseFloat(
+          netProfitTargetBudgetCurrency
+        ),
+        campaignEstimatedIncomeEur:
+          parseFloat(estimatedIncome) === null
+            ? 0.0
+            : parseFloat(estimatedIncome),
+        campaignEstimatedCostsEur: parseFloat(estimatedCosts),
+        campaignNetProfitTargetEur: parseFloat(netProfitTarget),
+        totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
+        comments: comments,
+        additionalInformation: comments,
+        localCurrency: requestorsCompanyName.value.currency,
+
+        projectType: "European One Vendor",
+      },
+    };
+    var children: Submission[] = [];
+    children.push({
+      project: projectId,
+      title: "",
+      parentId: "",
+      group: "vendor",
+      created: new Date(),
+      updated: new Date(),
+      status: "New",
+      author: requestorsName,
+      data: {
+        vendorName: vendorName.label,
+        productionProjectManager: vendor.projectManager,
+        creditorNumber: vendor.creditor,
+        debitorNumber: vendor.debitor,
+        manufacturerNumber: vendor.manufacturer,
+        businessUnit: vendor.bu,
+        PH1: vendor.ph.label,
+        vendorBudgetCurrency:
+          budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
+        vendorAmount:
+          isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
+          budgetSource.value === "noBudget"
+            ? 0.0
+            : parseFloat(estimatedIncomeBudgetCurrency),
+        // cbbudgetEur: parseFloat(vendor.eurBudget),
+        vendorShare: 100,
+        estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
+        estimatedIncomeCC:
+          budgetSource.value === "noBudget"
+            ? 0.0
+            : parseFloat(estimatedIncomeBudgetCurrency),
+        estimatedResultCC:
+          parseFloat(netProfitTargetBudgetCurrency) *
+          (budgetSource.value === "noBudget" ? -1 : 1),
+        // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+        estimatedIncomeEUR:
+          budgetSource.value === "noBudget" ? 0.0 : parseFloat(estimatedIncome),
+        estimatedCostsEUR: parseFloat(estimatedCosts),
+        estimatedResultEUR:
+          parseFloat(netProfitTarget) *
+          (budgetSource.value === "noBudget" ? -1 : 1),
+        estimatedResultBC:
+          parseFloat(netProfitTargetBudgetCurrency) *
+          (budgetSource.value === "noBudget" ? -1 : 1),
+        projectType: "European One Vendor",
+        // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+      },
+    });
+
+    var submission: SubmissionWithChildren = {
+      submission: parent,
+      children,
+    };
+    if (props.isDraft) {
+      submission.submission.id = props.submission.id;
+      return RestAPI.updateDraft(submission);
+    } else {
+      return RestAPI.createDraft(submission);
+    }
+  }
+
   async function fetchDropdowns() {
     var dropdownsIds: string[] = [
       "619b630a9a5a2bb37a93b23b",
@@ -499,6 +620,7 @@ export default function Elov(props: Props) {
               });
               setLocalExchangeRate(ler);
               setRequestorsCompanyName(value);
+              setOrganizingCompany(value.value.country);
             }}
             classNamePrefix="select"
             isClearable={false}
@@ -1331,7 +1453,7 @@ export default function Elov(props: Props) {
               toast(
                 <Toast
                   title={"SAP Response"}
-                  message={`Project Number already exists. Changed to: ${pn}. Press submit again.`}
+                  message={`Project number changed to first available: ${pn}. Press submit again.`}
                   type={"info"}
                 />
               );
@@ -1454,11 +1576,13 @@ export default function Elov(props: Props) {
                 submission: parent,
                 children,
               };
-              RestAPI.createSubmissionWithChildren(submission).then(
-                (response) => {
-                  props.history.push("/vendors");
-                }
-              );
+              RestAPI.deleteSubmission(props.submission.id).then(() => {
+                RestAPI.createSubmissionWithChildren(submission).then(
+                  (response) => {
+                    props.history.push("/vendors");
+                  }
+                );
+              });
             }
           });
         }}
@@ -1479,134 +1603,18 @@ export default function Elov(props: Props) {
           bg: useColorModeValue("blue.300", "#377bbf"),
         }}
         onClick={() => {
-          var projectId = "624ac98682eeddf1a9b6a622";
-
-          var parent: Submission = {
-            project: projectId,
-            title: campaignName,
-            parentId: null,
-            group: null,
-            created: new Date(),
-            updated: new Date(),
-            status: "New",
-            author: requestorsName,
-            data: {
-              requestorsCompanyName: requestorsCompanyName.label,
-              companyCode: requestorsCompanyName.value.code,
-              requestorsCountry: requestorsCompanyName.value.country,
-              campaignName: campaignName,
-              projectName: campaignName,
-              campaignDescription: campaignDescription,
-              targetAudience: targetAudience,
-              campaignChannel: campaignChannel.label,
-              year: year.label,
-              organizingCompany: organizingCompany,
-              projectStartQuarter: projectStartQuarter.label,
-              projectNumber: projectNumber,
-              requestorsName: requestorsName,
-              projectApprover: projectApproval,
-              projectApproval: projectApproval,
-              manufacturersFiscalQuarter: fiscalQuarter.label,
-              campaignStartDate:
-                startDate === null ? null : startDate.toString(),
-              campaignEndDate: endDate === null ? null : endDate.toString(),
-              budgetSource: budgetSource.label,
-              budgetApprovedByVendor: budgetApprovedByVendor,
-              campaignBudgetsCurrency: exchangeRates.label,
-              campaignCurrency: exchangeRates.label,
-              campaignEstimatedIncomeBudgetsCurrency:
-                parseFloat(estimatedIncomeBudgetCurrency) === null
-                  ? 0.0
-                  : parseFloat(estimatedIncomeBudgetCurrency),
-              campaignEstimatedCostsBudgetsCurrency: parseFloat(
-                estimatedCostsBudgetCurrency
-              ),
-              campaignNetProfitTargetBudgetsCurrency: parseFloat(
-                netProfitTargetBudgetCurrency
-              ),
-              campaignEstimatedIncomeEur:
-                parseFloat(estimatedIncome) === null
-                  ? 0.0
-                  : parseFloat(estimatedIncome),
-              campaignEstimatedCostsEur: parseFloat(estimatedCosts),
-              campaignNetProfitTargetEur: parseFloat(netProfitTarget),
-              totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
-              comments: comments,
-              additionalInformation: comments,
-              localCurrency: requestorsCompanyName.value.currency,
-
-              projectType: "European One Vendor",
-            },
-          };
-          var children: Submission[] = [];
-          children.push({
-            project: projectId,
-            title: "",
-            parentId: "",
-            group: "vendor",
-            created: new Date(),
-            updated: new Date(),
-            status: "New",
-            author: requestorsName,
-            data: {
-              vendorName: vendorName.label,
-              productionProjectManager: vendor.projectManager,
-              creditorNumber: vendor.creditor,
-              debitorNumber: vendor.debitor,
-              manufacturerNumber: vendor.manufacturer,
-              businessUnit: vendor.bu,
-              PH1: vendor.ph.label,
-              vendorBudgetCurrency:
-                budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
-              vendorAmount:
-                isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
-                budgetSource.value === "noBudget"
-                  ? 0.0
-                  : parseFloat(estimatedIncomeBudgetCurrency),
-              // cbbudgetEur: parseFloat(vendor.eurBudget),
-              vendorShare: 100,
-              estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
-              estimatedIncomeCC:
-                budgetSource.value === "noBudget"
-                  ? 0.0
-                  : parseFloat(estimatedIncomeBudgetCurrency),
-              estimatedResultCC:
-                parseFloat(netProfitTargetBudgetCurrency) *
-                (budgetSource.value === "noBudget" ? -1 : 1),
-              // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-              estimatedIncomeEUR:
-                budgetSource.value === "noBudget"
-                  ? 0.0
-                  : parseFloat(estimatedIncome),
-              estimatedCostsEUR: parseFloat(estimatedCosts),
-              estimatedResultEUR:
-                parseFloat(netProfitTarget) *
-                (budgetSource.value === "noBudget" ? -1 : 1),
-              estimatedResultBC:
-                parseFloat(netProfitTargetBudgetCurrency) *
-                (budgetSource.value === "noBudget" ? -1 : 1),
-              projectType: "European One Vendor",
-              // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
-            },
+          updateDraft().then(() => {
+            toast(
+              <Toast
+                title={"Draft save"}
+                message={`Draft has been successfully saved.`}
+                type={"info"}
+              />
+            );
           });
-
-          var submission: SubmissionWithChildren = {
-            submission: parent,
-            children,
-          };
-          if (props.isDraft) {
-            submission.submission.id = props.submission.id;
-            RestAPI.updateDraft(submission).then((response) => {
-              props.history.push("/");
-            });
-          } else {
-            RestAPI.createDraft(submission).then((response) => {
-              props.history.push("/");
-            });
-          }
         }}
       >
-        Draft
+        {props.isDraft ? "Update" : "Draft"}
       </Button>
     </Box>
   );

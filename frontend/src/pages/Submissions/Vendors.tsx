@@ -3702,9 +3702,9 @@ export function VendorsTable(props: Props) {
     {
       key: "data.textIncomeGL",
       dataKey: "data.textIncomeGL",
-      group: "Text",
+      group: "Income GL Postings",
 
-      title: "Document Number",
+      title: "Text",
       width: columnWidth("data.textIncomeGL", 200),
       resizable: true,
       hidden: visibilityController("incomeGlPostings", "data.textIncomeGL"),
@@ -4224,7 +4224,10 @@ export function VendorsTable(props: Props) {
       header: "Actions",
       className: "red-border",
       cellRenderer: (props: any) =>
-        props.rowData.parentId === null ? (
+        props.rowData.parentId === null &&
+        props.rowData.data.status !== "Created" &&
+        props.rowData.author !== "formiks" &&
+        props.rowData.id !== "total" ? (
           <EditableTableCell
             type={"button"}
             backgroundColor="#fef9fa"
