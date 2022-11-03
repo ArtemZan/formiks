@@ -177,7 +177,6 @@ export default function Elov(props: Props) {
           2
         ) || "0.00"
       );
-      console.log(props.submission.data.campaignEstimatedIncomeEur);
       setEstimatedIncome(
         typeof props.submission.data.campaignEstimatedIncomeEur === "number"
           ? props.submission.data.campaignEstimatedIncomeEur.toFixed(2)
@@ -286,20 +285,20 @@ export default function Elov(props: Props) {
         budgetApprovedByVendor: budgetApprovedByVendor,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
-        campaignEstimatedIncomeBudgetsCurrency:
-          parseFloat(estimatedIncomeBudgetCurrency) === null
-            ? 0.0
-            : parseFloat(estimatedIncomeBudgetCurrency),
+        campaignEstimatedIncomeBudgetsCurrency: isNaN(
+          parseFloat(estimatedIncomeBudgetCurrency)
+        )
+          ? 0.0
+          : parseFloat(estimatedIncomeBudgetCurrency),
         campaignEstimatedCostsBudgetsCurrency: parseFloat(
           estimatedCostsBudgetCurrency
         ),
         campaignNetProfitTargetBudgetsCurrency: parseFloat(
           netProfitTargetBudgetCurrency
         ),
-        campaignEstimatedIncomeEur:
-          parseFloat(estimatedIncome) === null
-            ? 0.0
-            : parseFloat(estimatedIncome),
+        campaignEstimatedIncomeEur: isNaN(parseFloat(estimatedIncome))
+          ? 0.0
+          : parseFloat(estimatedIncome),
         campaignEstimatedCostsEur: parseFloat(estimatedCosts),
         campaignNetProfitTargetEur: parseFloat(netProfitTarget),
         totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
@@ -307,7 +306,7 @@ export default function Elov(props: Props) {
         additionalInformation: comments,
         localCurrency: requestorsCompanyName.value.currency,
 
-        projectType: "European One Vendor",
+        projectType: "Local One Vendor",
       },
     };
     var children: Submission[] = [];
@@ -322,6 +321,7 @@ export default function Elov(props: Props) {
       author: requestorsName,
       data: {
         vendorName: vendorName.label,
+        projectNumber: projectNumber,
         productionProjectManager: vendor.projectManager,
         creditorNumber: vendor.creditor,
         debitorNumber: vendor.debitor,
@@ -355,7 +355,7 @@ export default function Elov(props: Props) {
         estimatedResultBC:
           parseFloat(netProfitTargetBudgetCurrency) *
           (budgetSource.value === "noBudget" ? -1 : 1),
-        projectType: "European One Vendor",
+        projectType: "Local One Vendor",
         // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
       },
     });
@@ -1377,7 +1377,7 @@ export default function Elov(props: Props) {
           ]);
           formattedData.push([
             "Campaign Estimated Income in EUR",
-            estimatedIncome === "" ? "NaN" : estimatedIncome,
+            estimatedIncome === "" ? "N/A" : estimatedIncome,
           ]);
           formattedData.push([
             "Campaign Estimated Costs in EUR",
@@ -1531,6 +1531,7 @@ export default function Elov(props: Props) {
                 author: requestorsName,
                 data: {
                   vendorName: vendorName.label,
+                  projectNumber: projectNumber,
                   productionProjectManager: vendor.projectManager,
                   creditorNumber: vendor.creditor,
                   debitorNumber: vendor.debitor,
@@ -1576,12 +1577,21 @@ export default function Elov(props: Props) {
                 submission: parent,
                 children,
               };
-
-              RestAPI.createSubmissionWithChildren(submission).then(
-                (response) => {
-                  props.history.push("/vendors");
-                }
-              );
+              if (props.isDraft) {
+                RestAPI.deleteDraft(props.submission.id).then(() => {
+                  RestAPI.createSubmissionWithChildren(submission).then(
+                    (response) => {
+                      props.history.push("/vendors");
+                    }
+                  );
+                });
+              } else {
+                RestAPI.createSubmissionWithChildren(submission).then(
+                  (response) => {
+                    props.history.push("/vendors");
+                  }
+                );
+              }
             }
           });
         }}

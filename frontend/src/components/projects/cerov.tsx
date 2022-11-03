@@ -1649,6 +1649,7 @@ export default function Cerov(props: Props) {
                     author: requestorsName,
                     data: {
                       vendorName: vendorName.label,
+                      projectNumber: projectNumber,
                       productionProjectManager: vendor.projectManager,
                       creditorNumber: vendor.creditor,
                       debitorNumber: vendor.debitor,
@@ -1708,6 +1709,7 @@ export default function Cerov(props: Props) {
                         additionalInformation: comments,
                         campaignChannel: campaignChannel.label,
                         parentProjectNumber: projectNumber,
+                        projectNumber: projectNumber,
                         localProjectNumber: company.projectNumber,
                         campaignStartDate:
                           startDate === null ? null : startDate.toString(),
@@ -1754,11 +1756,21 @@ export default function Cerov(props: Props) {
                     submission: parent,
                     children,
                   };
-                  RestAPI.createSubmissionWithChildren(submission).then(
-                    (response) => {
-                      props.history.push("/vendors");
-                    }
-                  );
+                  if (props.isDraft) {
+                    RestAPI.deleteDraft(props.submission.id).then(() => {
+                      RestAPI.createSubmissionWithChildren(submission).then(
+                        (response) => {
+                          props.history.push("/vendors");
+                        }
+                      );
+                    });
+                  } else {
+                    RestAPI.createSubmissionWithChildren(submission).then(
+                      (response) => {
+                        props.history.push("/vendors");
+                      }
+                    );
+                  }
                 }
               });
             }}
@@ -1955,7 +1967,7 @@ export default function Cerov(props: Props) {
               ]);
               formattedData.push([
                 "Campaign Estimated Income in EUR",
-                estimatedIncome,
+                estimatedIncome === "" ? "N/A" : estimatedIncome,
               ]);
               formattedData.push([
                 "Campaign Estimated Costs in EUR",
@@ -2115,6 +2127,7 @@ export default function Cerov(props: Props) {
                 author: requestorsName,
                 data: {
                   vendorName: vendorName.label,
+                  projectNumber: projectNumber,
                   productionProjectManager: vendor.projectManager,
                   creditorNumber: vendor.creditor,
                   debitorNumber: vendor.debitor,
@@ -2172,6 +2185,7 @@ export default function Cerov(props: Props) {
                     additionalInformation: comments,
                     campaignChannel: campaignChannel.label,
                     parentProjectNumber: projectNumber,
+                    projectNumber: projectNumber,
                     localProjectNumber: company.projectNumber,
                     campaignStartDate:
                       startDate === null ? null : startDate.toString(),
@@ -2219,16 +2233,28 @@ export default function Cerov(props: Props) {
               if (props.isDraft) {
                 submission.submission.id = props.submission.id;
                 RestAPI.updateDraft(submission).then((response) => {
-                  props.history.push("/");
+                  toast(
+                    <Toast
+                      title={"Draft save"}
+                      message={`Draft has been successfully saved.`}
+                      type={"info"}
+                    />
+                  );
                 });
               } else {
                 RestAPI.createDraft(submission).then((response) => {
-                  props.history.push("/");
+                  toast(
+                    <Toast
+                      title={"Draft save"}
+                      message={`Draft has been successfully saved.`}
+                      type={"info"}
+                    />
+                  );
                 });
               }
             }}
           >
-            Draft
+            {props.isDraft ? "Update" : "Draft"}
           </Button>
         </Box>
       </VStack>

@@ -94,7 +94,7 @@ func FetchAccountLines() error {
     }
 	}`)
 
-	client := &http.Client{Timeout: time.Minute * 2}
+	client := &http.Client{Timeout: time.Minute * 5}
 	req, err := http.NewRequest(http.MethodPost, "https://b2b-test.also.com/rad/ActWebServices.Wrike:api/getGLAccountLines", payload)
 
 	if err != nil {

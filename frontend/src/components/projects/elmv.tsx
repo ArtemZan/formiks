@@ -1617,7 +1617,7 @@ export default function Elmv(props: Props) {
           ]);
           formattedData.push([
             "Campaign Estimated Income in EUR",
-            estimatedIncome,
+            estimatedIncome === "" ? "N/A" : estimatedIncome,
           ]);
           formattedData.push([
             "Campaign Estimated Costs in EUR",
@@ -1806,6 +1806,7 @@ export default function Elmv(props: Props) {
                   data: {
                     vendorName: vendor.vendor,
                     marketingResponsible: vendor.projectManager,
+                    projectNumber: projectNumber,
                     creditorNumber: vendor.creditor,
                     debitorNumber: vendor.debitor,
                     manufacturerNumber: vendor.manufacturer,
@@ -1854,11 +1855,21 @@ export default function Elmv(props: Props) {
                 submission: parent,
                 children,
               };
-              RestAPI.createSubmissionWithChildren(submission).then(
-                (response) => {
-                  props.history.push("/vendors");
-                }
-              );
+              if (props.isDraft) {
+                RestAPI.deleteDraft(props.submission.id).then(() => {
+                  RestAPI.createSubmissionWithChildren(submission).then(
+                    (response) => {
+                      props.history.push("/vendors");
+                    }
+                  );
+                });
+              } else {
+                RestAPI.createSubmissionWithChildren(submission).then(
+                  (response) => {
+                    props.history.push("/vendors");
+                  }
+                );
+              }
             }
           });
         }}
@@ -1914,20 +1925,20 @@ export default function Elmv(props: Props) {
               budgetApprovedByVendor: budgetApprovedByVendor,
               campaignBudgetsCurrency: exchangeRates.label,
               campaignCurrency: exchangeRates.label,
-              campaignEstimatedIncomeBudgetsCurrency:
-                parseFloat(estimatedIncomeBudgetCurrency) === null
-                  ? 0.0
-                  : parseFloat(estimatedIncomeBudgetCurrency),
+              campaignEstimatedIncomeBudgetsCurrency: isNaN(
+                parseFloat(estimatedIncomeBudgetCurrency)
+              )
+                ? 0.0
+                : parseFloat(estimatedIncomeBudgetCurrency),
               campaignEstimatedCostsBudgetsCurrency: parseFloat(
                 estimatedCostsBudgetCurrency
               ),
               campaignNetProfitTargetBudgetsCurrency: parseFloat(
                 netProfitTargetBudgetCurrency
               ),
-              campaignEstimatedIncomeEur:
-                parseFloat(estimatedIncome) === null
-                  ? 0.0
-                  : parseFloat(estimatedIncome),
+              campaignEstimatedIncomeEur: isNaN(parseFloat(estimatedIncome))
+                ? 0.0
+                : parseFloat(estimatedIncome),
               campaignEstimatedCostsEur: parseFloat(estimatedCosts),
               campaignNetProfitTargetEur: parseFloat(netProfitTarget),
               totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
@@ -1954,6 +1965,7 @@ export default function Elmv(props: Props) {
                 marketingResponsible: vendor.projectManager,
                 creditorNumber: vendor.creditor,
                 debitorNumber: vendor.debitor,
+                projectNumber: projectNumber,
                 manufacturerNumber: vendor.manufacturer,
                 businessUnit: vendor.bu,
                 PH1: vendor.ph.label,
@@ -2003,16 +2015,28 @@ export default function Elmv(props: Props) {
           if (props.isDraft) {
             submission.submission.id = props.submission.id;
             RestAPI.updateDraft(submission).then((response) => {
-              props.history.push("/");
+              toast(
+                <Toast
+                  title={"Draft save"}
+                  message={`Draft has been successfully saved.`}
+                  type={"info"}
+                />
+              );
             });
           } else {
             RestAPI.createDraft(submission).then((response) => {
-              props.history.push("/");
+              toast(
+                <Toast
+                  title={"Draft save"}
+                  message={`Draft has been successfully saved.`}
+                  type={"info"}
+                />
+              );
             });
           }
         }}
       >
-        Draft
+        {props.isDraft ? "Update" : "Draft"}
       </Button>
     </Box>
   );

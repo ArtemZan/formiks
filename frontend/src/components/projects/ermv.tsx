@@ -1890,6 +1890,7 @@ export default function Ermv(props: Props) {
                   data: {
                     projectType: "European Multi Vendor",
                     vendorName: vendor.vendor,
+                    projectNumber: projectNumber,
                     marketingResponsible: vendor.projectManager,
                     creditorNumber: vendor.creditor,
                     debitorNumber: vendor.debitor,

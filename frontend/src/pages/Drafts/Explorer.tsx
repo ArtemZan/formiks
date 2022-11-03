@@ -56,7 +56,7 @@ export function Explorer(props: Props) {
 
   return (
     <div>
-      <Accordion defaultIndex={[0]} allowMultiple>
+      <Accordion allowMultiple>
         {projects.map((project) => {
           var pd = drafts.filter((draft) => draft.project === project.id);
           return (

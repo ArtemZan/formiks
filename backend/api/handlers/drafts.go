@@ -69,18 +69,25 @@ func (d *Draft) Create(c *gin.Context) {
 		return
 	}
 
+	submissionWithChildren.Submission.ID = primitive.NewObjectID()
+	submissionWithChildren.Submission.Created = time.Now()
+
 	c.JSON(http.StatusOK, create(d, submissionWithChildren))
 }
 func create(d *Draft, submissionWithChildren models.SubmissionWithChildrenRequest) models.Submission {
-	submissionWithChildren.Submission.ID = primitive.NewObjectID()
-	submissionWithChildren.Submission.Created = time.Now()
 	submissionWithChildren.Submission.Updated = time.Now()
 	submissionWithChildren.Submission.ParentID = nil
-	submissionWithChildren.Submission.Data["status"] = "New"
+
+	if _, ok := submissionWithChildren.Submission.Data["status"].(string); !ok {
+		submissionWithChildren.Submission.Data["status"] = "New"
+	}
+
 	for index := range submissionWithChildren.Children {
 		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
 		if _, ok := submissionWithChildren.Children[index].ParentID.(string); ok {
 			submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
+		}
+		if _, ok := submissionWithChildren.Children[index].Data["status"].(string); !ok {
 			submissionWithChildren.Children[index].Data["status"] = "New"
 		}
 		submissionWithChildren.Children[index].Created = time.Now()
@@ -111,7 +118,12 @@ func (d *Draft) Update(c *gin.Context) {
 		return
 	}
 	d.db.Collection("drafts").DeleteOne(context.TODO(), bson.M{"_id": id})
-	d.db.Collection("drafts").DeleteMany(context.TODO(), bson.M{"parentId": id})
+	d.db.Collection("drafts").DeleteMany(context.TODO(), bson.M{"parentId": id.Hex()})
+
+	draft.Submission.ID = id
+	for _, child := range draft.Children {
+		child.ParentID = id.Hex()
+	}
 
 	create(d, draft)
 
