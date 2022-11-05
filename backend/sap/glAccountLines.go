@@ -383,6 +383,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 			Created:  time.Now(),
 			Updated:  time.Now(),
 			Project:  parentProject,
+			Author:   "formiks",
 			Data:     make(map[string]interface{}),
 		}
 		for _, records := range groups {
@@ -412,6 +413,17 @@ func CreateSubmissionsForAccountLines() {
 		if len(cd) < 1 {
 			continue
 		}
+		parentID := primitive.NilObjectID
+		parentExists := false
+
+		for _, s := range existingSubmissions {
+			if s.ParentID == nil && s.Data["projectNumber"] == projectNumber {
+				parentID = s.ID
+				parentExists = true
+				break
+			}
+		}
+
 		submissionWithChildren := models.SubmissionWithChildrenRequest{
 			Submission: models.Submission{
 				ID:       primitive.NewObjectID(),
@@ -423,15 +435,22 @@ func CreateSubmissionsForAccountLines() {
 				Data:     make(map[string]interface{}),
 			},
 		}
+
+		if !parentExists {
+			parentID = submissionWithChildren.Submission.ID
+		}
+
 		submissionWithChildren.Submission.Data["status"] = "Created"
 		submissionWithChildren.Submission.Data["projectNumber"] = projectNumber
-		children := GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, projectNumber, existingSubmissions)
+		children := GetAccountLinesChildren(parentID.Hex(), submissionWithChildren.Submission.Project, projectNumber, existingSubmissions)
 		submissionWithChildren.Children = children
 		if len(children) < 1 {
 			continue
 		}
 
-		driver.Conn.Mongo.Collection("submissions").InsertOne(context.TODO(), submissionWithChildren.Submission)
+		if !parentExists {
+			driver.Conn.Mongo.Collection("submissions").InsertOne(context.TODO(), submissionWithChildren.Submission)
+		}
 		for _, child := range submissionWithChildren.Children {
 			driver.Conn.Mongo.Collection("submissions").InsertOne(context.TODO(), child)
 		}
@@ -445,4 +464,35 @@ func isValid(account string, group string) bool {
 		}
 	}
 	return false
+}
+
+func RemoveGeneratedSubmissions() error {
+	parentSubmissions := make([]models.Submission, 0)
+	cursor, err := driver.Conn.Mongo.Collection("new_submissions").Find(context.TODO(), bson.M{"author": "formiks", "parentId": nil})
+	if err != nil {
+		return err
+	}
+
+	err = cursor.All(context.TODO(), &parentSubmissions)
+	if err != nil {
+		return err
+	}
+
+	ids := make([]string, 0, len(parentSubmissions))
+
+	for _, parent := range parentSubmissions {
+		ids = append(ids, parent.ID.Hex())
+	}
+
+	_, err = driver.Conn.Mongo.Collection("new_submissions").DeleteMany(context.TODO(), bson.D{{Key: "parentId", Value: bson.D{{Key: "$in", Value: ids}}}})
+	if err != nil {
+		return err
+	}
+
+	_, err = driver.Conn.Mongo.Collection("new_submissions").DeleteMany(context.TODO(), bson.M{"author": "formiks", "parentId": nil})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

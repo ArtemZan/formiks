@@ -131,7 +131,6 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		submissionWithChildren.Children[index].Created = time.Now()
 		submissionWithChildren.Children[index].Updated = time.Now()
 		submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
-
 	}
 	children := sap.GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, submissionWithChildren.Submission.Data["projectNumber"].(string), []models.Submission{})
 	submissionWithChildren.Children = append(submissionWithChildren.Children, children...)
