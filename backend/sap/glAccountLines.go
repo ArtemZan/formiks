@@ -162,6 +162,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 		}
 		var group string
 		data := make(map[string]interface{})
+		data["companyCode"] = glChild.CompanyCode
 		dcIndicator := 1.0
 		if glChild.DebitCreditIndicator == "H" {
 			dcIndicator = -1.0
