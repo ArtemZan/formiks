@@ -162,7 +162,6 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 		}
 		var group string
 		data := make(map[string]interface{})
-		data["companyCode"] = glChild.CompanyCode
 		dcIndicator := 1.0
 		if glChild.DebitCreditIndicator == "H" {
 			dcIndicator = -1.0
@@ -356,6 +355,8 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				group = "Cost GL Postings"
 			}
 		}
+
+		data["companyCode"] = glChild.CompanyCode
 		data["projectNumber"] = projectNumber
 		data["status"] = "Created"
 		if exists && es.Data["status"] != "Created" && len(existingSubmissions) > 0 {
