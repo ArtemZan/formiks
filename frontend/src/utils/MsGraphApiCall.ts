@@ -26,27 +26,3 @@ export async function getAccountInfo() {
     .then((response) => response.json())
     .catch((error) => console.log(error));
 }
-
-export async function getUserPhoto() {
-  const account = msalInstance.getActiveAccount();
-  if (!account) {
-    return;
-  }
-
-  const response = await msalInstance.acquireTokenSilent({
-    ...loginRequest,
-    account: account,
-  });
-
-  var url = "https://graph.microsoft.com/v1.0/me/photo/$value";
-
-  return fetch(url, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${response.accessToken}`,
-      "Content-Type": "image/jpeg",
-    },
-  })
-    .then((response) => response.blob())
-    .then((photoBlob) => URL.createObjectURL(photoBlob));
-}

@@ -75,7 +75,7 @@ export default function ProjectCard(props: Props) {
       </Stack>
 
       <Stack mt={6} direction={"row"} spacing={4} align={"center"}>
-        <Avatar src={""} alt={"Author"} />
+        <Avatar name={props.project.author} alt={"Author"} />
         <Stack direction={"column"} spacing={0} fontSize={"sm"}>
           <Text fontWeight={600}>{props.project.author}</Text>
           <Tooltip

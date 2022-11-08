@@ -1859,14 +1859,14 @@ export default function Elmv(props: Props) {
                 RestAPI.deleteDraft(props.submission.id).then(() => {
                   RestAPI.createSubmissionWithChildren(submission).then(
                     (response) => {
-                      props.history.push("/vendors");
+                      props.history.push("/submissions");
                     }
                   );
                 });
               } else {
                 RestAPI.createSubmissionWithChildren(submission).then(
                   (response) => {
-                    props.history.push("/vendors");
+                    props.history.push("/submissions");
                   }
                 );
               }

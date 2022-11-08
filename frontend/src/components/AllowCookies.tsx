@@ -1,5 +1,5 @@
 import React from "react";
-import { Stack, Text, Button } from "@chakra-ui/react";
+import { Stack, Text, Button, useColorModeValue } from "@chakra-ui/react";
 
 export default function CookiePreference(props: any) {
   return (
@@ -11,7 +11,7 @@ export default function CookiePreference(props: any) {
       width="90%"
       p="6"
       boxShadow="lg"
-      bg="white"
+      bg={useColorModeValue("white", "#464A51")}
       ml="auto"
       mr="auto"
       mb={"3vh"}
@@ -26,12 +26,13 @@ export default function CookiePreference(props: any) {
         direction={{ base: "column", md: "row" }}
         justifyContent="space-between"
       >
-        <Text fontSize={{ base: "sm" }} textAlign={"left"} maxW={"6xl"}>
+        <Text fontSize={{ base: "sm" }} textAlign={"left"}>
           We use cookies and similar technologies to help personalise content
           and provide a better experience. By clicking OK or turning an option
           on in Cookie Preferences, you agree to this, as outlined in our Cookie
-          Policy. To change preferences or withdraw consent, please update your
-          Cookie Preferences.
+          Policy. <br />
+          To change preferences or withdraw consent, please update your Cookie
+          Preferences.
         </Text>
         <Stack direction={{ base: "column", md: "row" }}>
           <Button variant="outline" colorScheme="twitter">

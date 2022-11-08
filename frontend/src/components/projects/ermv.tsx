@@ -1992,7 +1992,7 @@ export default function Ermv(props: Props) {
               };
               RestAPI.createSubmissionWithChildren(submission).then(
                 (response) => {
-                  props.history.push("/vendors");
+                  props.history.push("/submissions");
                 }
               );
             }

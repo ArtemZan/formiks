@@ -448,6 +448,8 @@ func CreateSubmissionsForAccountLines() {
 		submissionWithChildren.Children = children
 		if len(children) < 1 {
 			continue
+		} else {
+			submissionWithChildren.Submission.Data["companyCode"] = children[0].Data["companyCode"]
 		}
 
 		if !parentExists {

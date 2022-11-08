@@ -32,6 +32,8 @@ interface Props {
 
 export function Explorer(props: Props) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [selectedBookmark, setSelectedBookmark] = useState("");
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [createBookmarkModal, setCreateBookMarkModal] = useState(false);
 
@@ -39,11 +41,12 @@ export function Explorer(props: Props) {
     RestAPI.getBookmarks().then((response) => setBookmarks(response.data));
     RestAPI.getProjects().then((response) => {
       setProjects(response.data);
+      setFilteredProjects(response.data);
     });
   }, []);
 
   return (
-    <div>
+    <div style={{ paddingBottom: "3em" }}>
       <CreateBookmark
         isOpen={createBookmarkModal}
         addBookmark={(bookmark: Bookmark) => {
@@ -58,18 +61,19 @@ export function Explorer(props: Props) {
       <Center mb={"5em"}>
         <Wrap maxW={{ base: "100%", lg: "50%" }} justify="center">
           {bookmarks
-            ? bookmarks.map((bookmark, index) => {
+            ? bookmarks.map((bookmark) => {
                 return (
-                  <WrapItem key={`bookmark-${index}`}>
+                  <WrapItem key={`bookmark-${bookmark.id}`}>
                     <Tag
                       fontWeight={"400"}
                       size={"lg"}
-                      // colorScheme="cyan"
+                      colorScheme={
+                        selectedBookmark === bookmark.id ? "cyan" : undefined
+                      }
                       cursor="pointer"
                       key={bookmark.id}
                       onContextMenu={(e) => {
                         e.preventDefault();
-                        console.log(bookmark.id);
                         if (bookmark.id) {
                           RestAPI.deleteBookmark(bookmark.id);
                           setBookmarks(
@@ -78,8 +82,18 @@ export function Explorer(props: Props) {
                         }
                       }}
                       onClick={() => {
-                        // FIXME: filter projects
-                        console.log(bookmark.tags);
+                        setSelectedBookmark(
+                          selectedBookmark !== bookmark.id ? bookmark.id! : ""
+                        );
+                        setFilteredProjects(
+                          selectedBookmark !== bookmark.id
+                            ? projects.filter((project) =>
+                                project.tags.some((t) =>
+                                  bookmark.tags.includes(t)
+                                )
+                              )
+                            : projects
+                        );
                       }}
                     >
                       {bookmark.title}
@@ -94,7 +108,6 @@ export function Explorer(props: Props) {
               onClick={() => {
                 setCreateBookMarkModal(true);
               }}
-              colorScheme="cyan"
               fontWeight={"400"}
               size={"lg"}
               cursor="pointer"
@@ -109,7 +122,7 @@ export function Explorer(props: Props) {
         spacing={{ base: "40px", lg: "3em" }}
         mx={{ base: 0, "2xl": "300px" }}
       >
-        {projects.map((project) => {
+        {filteredProjects.map((project) => {
           return (
             <WrapItem key={`wrap-${project.id}`}>
               <ProjectCard history={props.history} project={project} />

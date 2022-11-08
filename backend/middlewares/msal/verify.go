@@ -19,11 +19,9 @@ import (
 )
 
 var (
-	AllowedDomains []string
-	EnableGuests   bool
-	ClientID       string
-	PubKey         []byte
-	UserRepo       repositories.UserRepo
+	EnableGuests bool
+	PubKey       []byte
+	UserRepo     repositories.UserRepo
 )
 
 type Discovery struct {
@@ -131,20 +129,11 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 		return name, email, roles
 	}
 
-	se := strings.Split(email, "@")
-	allowed := false
-	for _, prefix := range AllowedDomains {
-		if se[len(se)-1] == prefix {
-			allowed = true
-			break
-		}
+	user, _ := UserRepo.FetchByEmail(ctx, strings.ToLower(email))
+	if len(user.Roles) > 0 {
+		roles = user.Roles
 	}
-	if allowed && payload.Aud == ClientID {
-		user, _ := UserRepo.FetchByEmail(ctx, email)
-		if len(user.Roles) > 0 {
-			roles = user.Roles
-		}
-	}
+
 	return name, email, roles
 }
 

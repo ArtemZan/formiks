@@ -17,8 +17,6 @@ func Setup(r *gin.Engine) {
 		enableGuests = true
 	}
 	msal.EnableGuests = enableGuests
-	msal.ClientID = os.Getenv("MSAL_CLIENT")
-	msal.AllowedDomains = strings.Split(os.Getenv("ALLOWED_EMAIL_DOMAINS"), ",")
 	msal.UserRepo = user.NewUserRepo(driver.Conn.Mongo)
 	r.Use(cors.AllowAll())
 	r.Use(msal.SetRoles())

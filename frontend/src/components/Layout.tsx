@@ -48,14 +48,12 @@ import { FiChevronDown } from "react-icons/all";
 import CookiePreference from "./AllowCookies";
 import { msalInstance } from "../index";
 import { InteractionStatus } from "@azure/msal-browser";
-import { getUserPhoto } from "../utils/MsGraphApiCall";
 import { RestAPI } from "../api/rest";
 import { loginRequest } from "../authConfig";
 
 function Layout(props: any) {
   const { instance, inProgress } = useMsal();
 
-  const [userPhoto, setUserPhoto] = useState<undefined | string>(undefined);
   const [cookieConsent, setCookieConsent] = useState(false);
   const [roles, setRoles] = useState<string[]>([]);
   const isAuthenticated = useIsAuthenticated();
@@ -67,16 +65,6 @@ function Layout(props: any) {
     }
     RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    if (
-      isAuthenticated &&
-      !userPhoto &&
-      inProgress === InteractionStatus.None
-    ) {
-      getUserPhoto().then((response) => setUserPhoto(response));
-    }
-  }, [inProgress, userPhoto, instance, isAuthenticated]);
 
   const { children } = props;
   const { isOpen, onToggle } = useDisclosure();
@@ -162,7 +150,11 @@ function Layout(props: any) {
               <Menu>
                 <MenuButton>
                   <HStack>
-                    <Avatar src={userPhoto} mr={"10px"} size={"sm"} />
+                    <Avatar
+                      name={msalInstance.getActiveAccount()?.name}
+                      mr={"10px"}
+                      size={"sm"}
+                    />
                     <VStack
                       display={{ base: "none", md: "flex" }}
                       alignItems="flex-start"
@@ -178,7 +170,7 @@ function Layout(props: any) {
                       </Text>
 
                       <Text fontSize="xs" color="gray.500">
-                        <Tooltip hasArrow label="Search places">
+                        <Tooltip hasArrow label="Settings">
                           {roles.join(", ")}
                         </Tooltip>
                       </Text>
@@ -190,7 +182,6 @@ function Layout(props: any) {
                 </MenuButton>
 
                 <MenuList
-                  // mt={4}
                   m={0}
                   mr={-3.0}
                   bg={useColorModeValue("white", "#21252A")}
@@ -199,12 +190,24 @@ function Layout(props: any) {
                   zIndex={2000000}
                 >
                   <MenuGroup title="Profile">
-                    <MenuItem onClick={() => {}}>My Account</MenuItem>
+                    <MenuItem isDisabled onClick={() => {}}>
+                      My Account
+                    </MenuItem>
                   </MenuGroup>
                   <MenuDivider />
                   <MenuGroup title="Help">
                     <MenuItem onClick={() => {}}>Documentation</MenuItem>
-                    <MenuItem>Report a Bug</MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        window.open(
+                          `mailto:sk@innovatio.lv?subject=Formiks Bug Report&body=Hello! I found the bug while using: ${window.location.href}`,
+                          "_blank",
+                          "noopener,noreferrer"
+                        );
+                      }}
+                    >
+                      Report a Bug
+                    </MenuItem>
                   </MenuGroup>
                   <MenuDivider />
                   <MenuItem
@@ -262,51 +265,58 @@ const DesktopNav = () => {
   const linkColor = useColorModeValue("gray.600", "#ABB2BF");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const popoverContentBgColor = useColorModeValue("white", "#21252A");
-  const isAuthenticated = useIsAuthenticated();
 
   return (
     <Stack direction={"row"} spacing={4}>
-      {(isAuthenticated ? NAV_ITEMS : GUEST_NAV_ITEMS).map((navItem) => {
+      {NAV_ITEMS.map((navItem) => {
         return (
           <Box key={navItem.label}>
             <Popover trigger={"hover"} placement={"bottom-start"}>
-              <PopoverTrigger>
-                <Button
-                  variant="link"
-                  p={2}
-                  onClick={() => {
-                    if (navItem.href) {
-                      history.push(navItem.href);
-                    }
-                  }}
-                  fontSize={"sm"}
-                  fontWeight={500}
-                  color={linkColor}
-                  _hover={{
-                    textDecoration: "none",
-                    color: linkHoverColor,
-                  }}
-                >
-                  {navItem.label}
-                </Button>
-              </PopoverTrigger>
+              {({ isOpen, onClose }) => (
+                <>
+                  <PopoverTrigger>
+                    <Button
+                      variant="link"
+                      p={2}
+                      onClick={() => {
+                        if (navItem.href) {
+                          history.push(navItem.href);
+                        }
+                      }}
+                      fontSize={"sm"}
+                      fontWeight={500}
+                      color={linkColor}
+                      _hover={{
+                        textDecoration: "none",
+                        color: linkHoverColor,
+                      }}
+                    >
+                      {navItem.label}
+                    </Button>
+                  </PopoverTrigger>
 
-              {navItem.children && (
-                <PopoverContent
-                  border={0}
-                  boxShadow={"xl"}
-                  bg={popoverContentBgColor}
-                  p={4}
-                  rounded={"xl"}
-                  minW={"sm"}
-                  mt={"20px"}
-                >
-                  <Stack>
-                    {navItem.children.map((child) => (
-                      <DesktopSubNav key={child.label} {...child} />
-                    ))}
-                  </Stack>
-                </PopoverContent>
+                  {navItem.children && (
+                    <PopoverContent
+                      border={0}
+                      boxShadow={"xl"}
+                      bg={popoverContentBgColor}
+                      p={4}
+                      rounded={"xl"}
+                      minW={"sm"}
+                      mt={"20px"}
+                    >
+                      <Stack>
+                        {navItem.children.map((child) => (
+                          <DesktopSubNav
+                            onClose={onClose}
+                            key={child.label}
+                            {...child}
+                          />
+                        ))}
+                      </Stack>
+                    </PopoverContent>
+                  )}
+                </>
               )}
             </Popover>
           </Box>
@@ -316,13 +326,16 @@ const DesktopNav = () => {
   );
 };
 
-const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
+const DesktopSubNav = ({ label, href, subLabel, onClose }: NavItem) => {
   const history = useHistory();
   return (
     <Link
       onClick={() => {
         if (href) {
           history.push(href);
+          if (onClose) {
+            onClose();
+          }
         }
       }}
       role={"group"}
@@ -342,7 +355,11 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
           >
             {label}
           </Text>
-          <Text ml={2} fontSize={"sm"}>
+          <Text
+            ml={2}
+            fontSize={"sm"}
+            color={useColorModeValue("#4A5667", "#718196")}
+          >
             {subLabel}
           </Text>
         </Box>
@@ -368,14 +385,13 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
 };
 
 const MobileNav = (props: any) => {
-  const isAuthenticated = useIsAuthenticated();
   return (
     <Stack
-      bg={useColorModeValue("white", "gray.800")}
+      bg={useColorModeValue("white", "#21252A")}
       p={4}
       display={{ md: "none" }}
     >
-      {(isAuthenticated ? NAV_ITEMS : GUEST_NAV_ITEMS).map((navItem) => (
+      {NAV_ITEMS.map((navItem) => (
         <MobileNavItem
           closeMenu={props.closeMenu}
           key={navItem.label}
@@ -458,21 +474,35 @@ interface NavItem {
   subLabel?: string;
   children?: Array<NavItem>;
   href?: string;
+  onClose?: any;
+  isAdmin?: boolean;
 }
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Requests",
+    label: "Projects",
     children: [
       {
-        label: "Existing Requests",
-        subLabel: "Explore existing formiks requests",
+        label: "Existing Projects",
+        subLabel: "Explore existing projects",
         href: "/projects",
       },
       {
-        label: "New Request",
-        subLabel: "Create new formiks request",
+        label: "New Project",
+        subLabel: "Create new project",
         href: "/projects/create",
+        isAdmin: true,
+      },
+    ],
+  },
+
+  {
+    label: "Submissions",
+    children: [
+      {
+        label: "Submissions Table",
+        subLabel: "Explore all active submissions",
+        href: "/submissions",
       },
       {
         label: "Drafts",
@@ -481,43 +511,21 @@ const NAV_ITEMS: Array<NavItem> = [
       },
     ],
   },
-
-  {
-    label: "Projects",
-    href: "/vendors",
-  },
   {
     label: "Dropdowns",
     children: [
       {
         label: "Existing Dropdowns",
-        subLabel: "Explore existing adaptive dropdown",
+        subLabel: "Explore existing adaptive dropdowns",
         href: "/dropdowns",
       },
       {
         label: "New Dropdown",
         subLabel: "Create new adaptive dropdown",
         href: "/dropdowns/create",
+        isAdmin: true,
       },
     ],
-  },
-  {
-    label: "Pipelines",
-    href: "/pipelines",
-  },
-];
-const GUEST_NAV_ITEMS: Array<NavItem> = [
-  {
-    label: "Requests",
-    href: "/projects",
-  },
-  {
-    label: "Projects",
-    href: "/vendors",
-  },
-  {
-    label: "Documentation",
-    href: "/documentation",
   },
 ];
 

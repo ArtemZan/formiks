@@ -678,7 +678,7 @@ export default function Elov(props: Props) {
         //     children,
         //   };
         //   RestAPI.createSubmissionWithChildren(submission).then((response) => {
-        //     props.history.push("/vendors");
+        //     props.history.push("/submissions");
         //   });
         // }}
         onClick={async () => {
@@ -725,7 +725,7 @@ export default function Elov(props: Props) {
                 });
               });
               setTimeout(() => {
-                props.history.push("/vendors");
+                props.history.push("/submissions");
               }, 2000);
             }
           });

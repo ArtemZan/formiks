@@ -29,10 +29,12 @@ import moment from "moment";
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
+import { DefaultSelectStyles } from "../../utils/Color";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
 var VendorsNames: any[] = [];
+var AlsoInternationalVendorsNames: any[] = [];
 var BUs: any[] = [];
 var CampaignChannel: any[] = [];
 var TargetAudience: any[] = [];
@@ -298,6 +300,7 @@ export default function Cerov(props: Props) {
       "619b6754fe27d06ad17d75ad",
       "619b6799fe27d06ad17d75ae",
       "633e93ed5a7691ac30c977fc",
+      "636abbd43927f9c7703b19c4",
     ];
     var responses = await Promise.all(
       dropdownsIds.map((di) => {
@@ -315,6 +318,7 @@ export default function Cerov(props: Props) {
     Year = responses[8].data;
     ProjectStartQuarter = responses[9].data;
     BUs = responses[10].data;
+    AlsoInternationalVendorsNames = responses[11].data;
   }
 
   useEffect(() => {
@@ -528,25 +532,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Requestor`s Company Name</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -618,25 +604,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Organizing Company</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -699,25 +667,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Channel</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -742,25 +692,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Year</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -784,25 +716,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign/Project Start Quarter (ALSO Quarter)</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -889,25 +803,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Budget Source</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -944,25 +840,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Currency</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1074,25 +952,7 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Vendor Name</Text>
           <Select
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1109,14 +969,19 @@ export default function Cerov(props: Props) {
             classNamePrefix="select"
             isClearable={false}
             name="vendorsName"
-            options={VendorsNames}
+            options={
+              requestorsCompanyName.value.code === "1550"
+                ? AlsoInternationalVendorsNames
+                : VendorsNames
+            }
           />
         </Box>
         <Box w="100%">
           <Text mb="8px">VOD</Text>
           <Input
-            bgColor={"white"}
             value={vendor.debitor}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
             onChange={(event) => {
               var temp = { ...vendor };
               temp.debitor = event.target.value;
@@ -1127,7 +992,8 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Creditor</Text>
           <Input
-            bgColor={"white"}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
             value={vendor.creditor}
             onChange={(event) => {
               var temp = { ...vendor };
@@ -1139,7 +1005,8 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Manufacturer</Text>
           <Input
-            bgColor={"white"}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
             value={vendor.manufacturer}
             onChange={(event) => {
               var temp = { ...vendor };
@@ -1151,25 +1018,7 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Business Unit</Text>
           <Select
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1199,26 +1048,7 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">PH1</Text>
           <Select
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000000,
-              }),
-              menuPortal: (base) => ({ ...base, zIndex: 10000000 }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1247,26 +1077,7 @@ export default function Cerov(props: Props) {
           <Select
             menuPortalTarget={document.body}
             isMulti
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              menuPortal: (base) => ({ ...base, zIndex: 10000000 }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(useColorModeValue)}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1290,6 +1101,10 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Country Breakdown</Text>
           <Table
+            className={`${useColorModeValue("", "dark-table")}`}
+            rowClassName={(rowData) =>
+              `${useColorModeValue("", "dark-table-row")}`
+            }
             shouldUpdateScroll={false}
             hover={false}
             autoHeight
@@ -1760,14 +1575,14 @@ export default function Cerov(props: Props) {
                     RestAPI.deleteDraft(props.submission.id).then(() => {
                       RestAPI.createSubmissionWithChildren(submission).then(
                         (response) => {
-                          props.history.push("/vendors");
+                          props.history.push("/submissions");
                         }
                       );
                     });
                   } else {
                     RestAPI.createSubmissionWithChildren(submission).then(
                       (response) => {
-                        props.history.push("/vendors");
+                        props.history.push("/submissions");
                       }
                     );
                   }
@@ -1889,7 +1704,7 @@ export default function Cerov(props: Props) {
                 };
                 RestAPI.createSubmission(parent).then((response) => {
                   setLocalSubmitted(true);
-                  // props.history.push("/vendors");
+                  // props.history.push("/submissions");
                 });
               });
             }}

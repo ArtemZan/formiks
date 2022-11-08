@@ -30,7 +30,6 @@ func ZsdMdfOrder(submission models.Submission) (int, string) {
 	req.Header.Add("Content-Type", "application/json")
 	res, _ := client.Do(req)
 	b, _ := ioutil.ReadAll(res.Body)
-	fmt.Println(string(b))
 	comment := "No response from SAP"
 	var response struct {
 		FileName string `json:"fileName"`
@@ -50,7 +49,7 @@ func ZsdMdfOrder(submission models.Submission) (int, string) {
 		} `json:"body"`
 	}
 	json.Unmarshal(b, &response)
-	fmt.Println(response.Header.Lines.Message)
+	fmt.Println(string(b))
 	if len(response.Header.Lines.Message) > 0 {
 		comment = response.Header.Lines.Message
 	}

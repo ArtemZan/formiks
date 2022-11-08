@@ -16,6 +16,7 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
+  useColorModeValue,
   ModalCloseButton,
   Accordion,
   AccordionItem,
@@ -74,7 +75,13 @@ export function Explorer(props: Props) {
                   <VStack w="100%" spacing={"1.5em"}>
                     {pd.map((draft, index) => {
                       return (
-                        <Box key={draft.id} bg="white" w="100%" p="15px">
+                        <Box
+                          key={draft.id}
+                          bg="white"
+                          _dark={{ bg: "#21252A" }}
+                          w="100%"
+                          p="15px"
+                        >
                           <Box w="100%" h="60px">
                             <Heading size="lg" float="left">
                               {draft.data.requestorsCompanyName} (

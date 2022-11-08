@@ -331,3 +331,20 @@ button[name="data[submit]"]:hover {
 .BaseTable .expand {
   padding-left: 15px !important;
 }
+
+.rs-table-column-resize-spanner .rs-table-cell {
+  border-color: white;
+}
+
+.dark-table-row,
+.dark-table-row .rs-table-cell {
+  color: #abb2bf;
+  background: #2c313c;
+}
+.dark-table .rs-table-cell {
+  border-color: #565f70;
+}
+
+.dark-table .rs-table-column-resize-spanner {
+  border-color: #565f70;
+}

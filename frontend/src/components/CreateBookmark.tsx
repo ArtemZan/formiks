@@ -20,6 +20,7 @@ import CreatableSelect from "react-select/creatable";
 import Project from "../types/project";
 import { RestAPI } from "../api/rest";
 import Bookmark from "../types/bookmark";
+import { DefaultSelectStyles } from "../utils/Color";
 
 interface Props {
   isOpen: boolean;
@@ -85,65 +86,7 @@ export default function CreateBookmark(props: Props) {
               <Text mb="8px">Tags</Text>
               <CreatableSelect
                 placeholder=""
-                styles={{
-                  control: (base, state) => ({
-                    ...base,
-                    background: useColorModeValue("white", "#2C313C"),
-                    minHeight: 40,
-                    border: useColorModeValue(
-                      "1px solid #E2E8F0",
-                      "1px solid #4E525C"
-                    ),
-                    transition: "0.3s",
-                    "&:hover": {
-                      border: useColorModeValue(
-                        "1px solid #CBD5E0",
-                        "1px solid #5E626B"
-                      ),
-                    },
-                  }),
-                  option: (
-                    styles,
-                    { data, isDisabled, isFocused, isSelected }
-                  ) => {
-                    return {
-                      ...styles,
-                      backgroundColor: useColorModeValue("white", "#2C313C"),
-                      color: useColorModeValue("#4A5667", "white"),
-                      transition: "0.3s",
-                      "&:hover": {
-                        backgroundColor: useColorModeValue(
-                          "#DEEBFF",
-                          "#343945"
-                        ),
-                      },
-                    };
-                  },
-                  menu: (styles) => ({
-                    ...styles,
-                    color: useColorModeValue("#4A5667", "white"),
-                    background: useColorModeValue("white", "#2C313C"),
-                  }),
-                  multiValue: (styles, { data }) => ({
-                    ...styles,
-                    color: "white",
-                    background: useColorModeValue("#E6E6E6", "#464A51"),
-                  }),
-                  multiValueLabel: (styles, { data }) => ({
-                    ...styles,
-                    color: useColorModeValue("#464646", "white"),
-                    background: useColorModeValue("#E6E6E6", "#464A51"),
-                  }),
-                  multiValueRemove: (styles, { data }) => ({
-                    ...styles,
-                    color: useColorModeValue("#4A5667", "white"),
-                    background: useColorModeValue("#E6E6E6", "#464A51"),
-                    "&:hover": {
-                      color: useColorModeValue("#DE360C", "#ed636e"),
-                      backgroundColor: useColorModeValue("#FFBDAD", "#4f5259"),
-                    },
-                  }),
-                }}
+                styles={DefaultSelectStyles(useColorModeValue)}
                 theme={(theme) => ({
                   ...theme,
                   borderRadius: 6,
