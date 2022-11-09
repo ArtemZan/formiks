@@ -1683,6 +1683,8 @@ export default function Cerov(props: Props) {
                     campaignCurrency: exchangeRates.label,
                     vendorName: vendorName.label,
                     businessUnit: vendor.bu,
+                    manufacturerNumber: vendor.manufacturer,
+                    debitorNumber: vendor.debitor,
                     PH1: vendor.ph.label,
                     vendorShare: 100,
                     projectType: "European One Vendor",

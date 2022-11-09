@@ -4512,7 +4512,7 @@ export function SubmissionsTable(props: Props) {
             const data = new Blob([excelBuffer], {
               type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
             });
-            FileSaver.saveAs(data, "test" + ".xlsx");
+            FileSaver.saveAs(data, "exported_submissions" + ".xlsx");
           }}
           colorScheme="teal"
           aria-label="export"

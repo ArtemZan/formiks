@@ -200,7 +200,7 @@ function Layout(props: any) {
                     <MenuItem
                       onClick={() => {
                         window.open(
-                          `mailto:sk@innovatio.lv?subject=Formiks Bug Report&body=Hello! I found the bug while using: ${window.location.href}`,
+                          `mailto:sk@innovatio.lv,sp@innovatio.lv?subject=Formiks Bug Report&body=Hello! I found the bug while using: ${window.location.href}`,
                           "_blank",
                           "noopener,noreferrer"
                         );
