@@ -1474,12 +1474,12 @@ export default function Cerov(props: Props) {
                       vendorBudgetCurrency:
                         budgetSource.value === "noBudget"
                           ? "N/A"
-                          : vendor.budgetCurrency.label,
+                          : exchangeRates.label,
                       vendorAmount:
-                        isNaN(parseFloat(vendor.localBudget)) ||
+                        isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
                         budgetSource.value === "noBudget"
                           ? 0.0
-                          : parseFloat(vendor.localBudget),
+                          : parseFloat(estimatedIncomeBudgetCurrency),
                       // cbbudgetEur: parseFloat(vendor.eurBudget),
                       vendorShare: 100,
                       estimatedCostsCC: parseFloat(
@@ -1686,6 +1686,15 @@ export default function Cerov(props: Props) {
                     manufacturerNumber: vendor.manufacturer,
                     debitorNumber: vendor.debitor,
                     PH1: vendor.ph.label,
+                    vendorBudgetCurrency:
+                      budgetSource.value === "noBudget"
+                        ? "N/A"
+                        : exchangeRates.label,
+                    vendorAmount:
+                      isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(estimatedIncomeBudgetCurrency),
                     vendorShare: 100,
                     projectType: "European One Vendor",
                     companyName: company.companyName,
@@ -1706,6 +1715,13 @@ export default function Cerov(props: Props) {
                 };
                 RestAPI.createSubmission(parent).then((response) => {
                   setLocalSubmitted(true);
+                  toast(
+                    <Toast
+                      title={"Project Created"}
+                      message={`Local project with number ${pn} has been created.`}
+                      type={"success"}
+                    />
+                  );
                   // props.history.push("/submissions");
                 });
               });
