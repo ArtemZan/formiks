@@ -87,6 +87,15 @@ class EditableTableCell extends React.Component<
                 }
               : { label: "", value: "" };
           break;
+        case "value-dropdown":
+          value =
+            typeof this.props.initialValue === "string"
+              ? {
+                  label: this.props.initialValue,
+                  value: this.props.initialValue,
+                }
+              : { label: "", value: "" };
+          break;
         case "multiple-dropdown":
           value = [];
           if (
@@ -248,6 +257,7 @@ class EditableTableCell extends React.Component<
             dateFormat="dd.MM.yyyy"
           />
         ) : this.props.type === "dropdown" ||
+          this.props.type === "value-dropdown" ||
           this.props.type === "multiple-dropdown" ? (
           <Creatable
             menuPortalTarget={document.body}
@@ -296,6 +306,9 @@ class EditableTableCell extends React.Component<
               }
               if (value !== null && !Array.isArray(value)) {
                 v = value.label;
+                if (this.props.type === "value-dropdown") {
+                  v = value.value;
+                }
               }
               this.props.onUpdate(
                 this.props.rowData.id,

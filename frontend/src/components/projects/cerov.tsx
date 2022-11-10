@@ -1536,14 +1536,6 @@ export default function Cerov(props: Props) {
                         businessUnit: vendor.bu,
                         PH1: vendor.ph.label,
                         vendorShare: 100,
-                        estimatedIncomeEUR:
-                          budgetSource.value === "noBudget"
-                            ? 0.0
-                            : parseFloat(estimatedIncome),
-                        estimatedCostsEUR: parseFloat(estimatedCosts),
-                        estimatedResultEUR:
-                          parseFloat(netProfitTarget) *
-                          (budgetSource.value === "noBudget" ? -1 : 1),
                         estimatedResultBC:
                           parseFloat(netProfitTargetBudgetCurrency) *
                           (budgetSource.value === "noBudget" ? -1 : 1),
@@ -1553,6 +1545,26 @@ export default function Cerov(props: Props) {
                         country: company.country,
                         countriesEMEA: company.country,
                         productionProjectManager: company.contactEmail,
+                        estimatedCostsCC: parseFloat(company.estimatedCosts),
+                        estimatedIncomeCC:
+                          budgetSource.value === "noBudget"
+                            ? 0.0
+                            : parseFloat(company.contribution),
+                        estimatedResultCC:
+                          (parseFloat(company.contribution) -
+                            parseFloat(company.estimatedCosts)) *
+                          (budgetSource.value === "noBudget" ? -1 : 1),
+                        estimatedIncomeEUR:
+                          budgetSource.value === "noBudget"
+                            ? 0.0
+                            : parseFloat(company.contributionEur),
+                        estimatedCostsEUR: parseFloat(
+                          company.estimatedCostsEur
+                        ),
+                        estimatedResultEUR:
+                          (parseFloat(company.contributionEur) -
+                            parseFloat(company.estimatedCostsEur)) *
+                          (budgetSource.value === "noBudget" ? -1 : 1),
                         countryShare: parseFloat(company.share),
                         countryBudgetContributionEur: company.contribution,
                         countryCostEstimationEur: company.estimatedCosts,
@@ -1683,8 +1695,26 @@ export default function Cerov(props: Props) {
                     campaignCurrency: exchangeRates.label,
                     vendorName: vendorName.label,
                     businessUnit: vendor.bu,
-                    manufacturerNumber: vendor.manufacturer,
-                    debitorNumber: vendor.debitor,
+                    // manufacturerNumber: vendor.manufacturer,
+                    // debitorNumber: vendor.debitor,
+                    estimatedCostsCC: parseFloat(company.estimatedCosts),
+                    estimatedIncomeCC:
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(company.contribution),
+                    estimatedResultCC:
+                      (parseFloat(company.contribution) -
+                        parseFloat(company.estimatedCosts)) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
+                    estimatedIncomeEUR:
+                      budgetSource.value === "noBudget"
+                        ? 0.0
+                        : parseFloat(company.contributionEur),
+                    estimatedCostsEUR: parseFloat(company.estimatedCostsEur),
+                    estimatedResultEUR:
+                      (parseFloat(company.contributionEur) -
+                        parseFloat(company.estimatedCostsEur)) *
+                      (budgetSource.value === "noBudget" ? -1 : 1),
                     PH1: vendor.ph.label,
                     vendorBudgetCurrency:
                       budgetSource.value === "noBudget"

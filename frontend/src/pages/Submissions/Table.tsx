@@ -91,6 +91,7 @@ var ProjectType: any[] = [];
 var PH1: any[] = [];
 var Companies: any[] = [];
 var VendorsNames: any[] = [];
+var InternationalVendorsNames: any[] = [];
 var CampaignChannel: any[] = [];
 var TargetAudience: any[] = [];
 var Budget: any[] = [];
@@ -138,6 +139,7 @@ async function fetchDropdowns() {
     "619b7b9efe27d06ad17d75af",
     "619b7b9efe27d06ad17d75af",
     "633e93ed5a7691ac30c977fc",
+    "636abbd43927f9c7703b19c4",
   ];
   var responses = await Promise.all(
     dropdownsIds.map((di) => {
@@ -156,6 +158,7 @@ async function fetchDropdowns() {
   ProjectStartQuarter = responses[9].data;
   ProjectType = responses[10].data;
   BUs = responses[12].data;
+  InternationalVendorsNames = responses[13].data;
 }
 
 const loadOptions = (identifier: string) => {
@@ -1945,6 +1948,37 @@ export function SubmissionsTable(props: Props) {
         />
       ),
     },
+    // {
+    //   key: "data.manufacturerNumber",
+    //   dataKey: "data.manufacturerNumber",
+    //   title: "Manufacturer Number",
+    //   group: "Project Information",
+
+    //   width: columnWidth("data.manufacturerNumber", 200),
+    //   resizable: true,
+    //   hidden: visibilityController(
+    //     "projectInformation",
+    //     "data.manufacturerNumber"
+    //   ),
+    //   cellRenderer: (props: any) => (
+    //     <EditableTableCell
+    //       type={"text"}
+    //       readonly={props.rowData.data.status !== "Incomplete"}
+    //       backgroundColor={
+    //         props.rowData.data.status === "Incomplete"
+    //           ? props.cellData && props.cellData.length > 0
+    //             ? "#f5faef"
+    //             : "#f7cdd6"
+    //           : "#f5faef"
+    //       }
+    //       onUpdate={handleCellUpdate}
+    //       rowIndex={props.rowIndex}
+    //       columnKey={props.column.dataKey}
+    //       rowData={props.rowData}
+    //       initialValue={props.cellData}
+    //     />
+    //   ),
+    // },
     {
       key: "data.manufacturerNumber",
       dataKey: "data.manufacturerNumber",
@@ -1959,8 +1993,13 @@ export function SubmissionsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"value-dropdown"}
           readonly={props.rowData.data.status !== "Incomplete"}
+          loadOptions={() => {
+            return props.rowData.data.companyCode === "1550"
+              ? InternationalVendorsNames
+              : VendorsNames;
+          }}
           backgroundColor={
             props.rowData.data.status === "Incomplete"
               ? props.cellData && props.cellData.length > 0
@@ -1968,7 +2007,15 @@ export function SubmissionsTable(props: Props) {
                 : "#f7cdd6"
               : "#f5faef"
           }
-          onUpdate={handleCellUpdate}
+          onUpdate={(id: string, path: string, value: any) => {
+            if (typeof value === "object") {
+              handleCellUpdate(id, path, value.hersteller);
+              handleCellUpdate(id, "data.debitorNumber", value.debitorischer);
+            } else {
+              handleCellUpdate(id, path, "");
+              handleCellUpdate(id, "data.debitorNumber", "");
+            }
+          }}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
           rowData={props.rowData}
