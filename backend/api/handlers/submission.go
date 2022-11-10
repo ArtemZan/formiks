@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -111,18 +114,60 @@ func (r *Submission) Create(c *gin.Context) {
 
 func (r *Submission) CreateWithChildren(c *gin.Context) {
 	var submissionWithChildren models.SubmissionWithChildrenRequest
+	projectNumberChanges := make([]models.ProjectNumberChange, 0)
 	err := c.BindJSON(&submissionWithChildren)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to bind request JSON", err)
 		c.Status(http.StatusBadRequest)
 		return
 	}
+	if pn, exists := submissionWithChildren.Submission.Data["projectNumber"].(string); exists {
+		var changed bool
+		submissionWithChildren.Submission.Data["projectNumber"], changed, err = r.generateUniqueProjectNumber(pn)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		if changed {
+			projectNumberChanges = append(projectNumberChanges, models.ProjectNumberChange{
+				Original:  pn,
+				Generated: submissionWithChildren.Submission.Data["projectNumber"].(string),
+				Child:     false,
+			})
+		}
+	}
+
 	submissionWithChildren.Submission.ID = primitive.NewObjectID()
 	submissionWithChildren.Submission.Created = time.Now()
 	submissionWithChildren.Submission.Updated = time.Now()
 	submissionWithChildren.Submission.ParentID = nil
 	submissionWithChildren.Submission.Data["status"] = "New"
 	for index := range submissionWithChildren.Children {
+		if _, exists := submissionWithChildren.Children[index].Data["companyCode"].(string); !exists {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+		if _, exists := submissionWithChildren.Children[index].Data["projectNumber"].(string); !exists {
+			c.Status(http.StatusBadRequest)
+			return
+		}
+
+		pn := fmt.Sprintf("%s%s", submissionWithChildren.Children[index].Data["companyCode"].(string), submissionWithChildren.Children[index].Data["projectNumber"].(string)[4:])
+
+		var changed bool
+		submissionWithChildren.Children[index].Data["projectNumber"], changed, err = r.generateUniqueProjectNumber(pn)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		if changed {
+			projectNumberChanges = append(projectNumberChanges, models.ProjectNumberChange{
+				Original:  pn,
+				Generated: submissionWithChildren.Children[index].Data["projectNumber"].(string),
+				Child:     true,
+			})
+		}
+
 		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
 		if _, ok := submissionWithChildren.Children[index].ParentID.(string); ok {
 			submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
@@ -132,15 +177,38 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		submissionWithChildren.Children[index].Updated = time.Now()
 		submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
 	}
-	children := sap.GetAccountLinesChildren(submissionWithChildren.Submission.ID.Hex(), submissionWithChildren.Submission.Project, submissionWithChildren.Submission.Data["projectNumber"].(string), []models.Submission{})
-	submissionWithChildren.Children = append(submissionWithChildren.Children, children...)
 
 	for _, child := range submissionWithChildren.Children {
 		r.repo.Create(context.TODO(), child)
 	}
+
 	r.repo.Create(context.TODO(), submissionWithChildren.Submission)
 
-	c.JSON(http.StatusOK, submissionWithChildren.Submission)
+	c.JSON(http.StatusOK, models.SubmissionWithChildrenResponse{
+		Submission: submissionWithChildren.Submission,
+		Children:   submissionWithChildren.Children,
+		Changes:    projectNumberChanges,
+	})
+}
+
+func (r *Submission) generateUniqueProjectNumber(pn string) (string, bool, error) {
+	var changed bool
+	for {
+		if r.repo.Exists(context.TODO(), bson.M{"data.projectNumber": pn}) {
+			changed = true
+			suffix := pn[len(pn)-2:]
+			iSuffix, err := strconv.Atoi(suffix)
+			if err != nil {
+				return pn, changed, err
+			}
+			if iSuffix > 99 {
+				return pn, changed, errors.New("suffix out of range")
+			}
+			pn = fmt.Sprintf("%s%02d", pn[:len(pn)-2], iSuffix+1)
+		} else {
+			return pn, changed, nil
+		}
+	}
 }
 
 func (r *Submission) Update(c *gin.Context) {

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/doublegrey/formiks/backend/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -23,6 +24,7 @@ type SubmissionRepo interface {
 	Create(ctx context.Context, submission models.Submission) (models.Submission, error)
 	Update(ctx context.Context, submission models.Submission) error
 	Delete(ctx context.Context, id primitive.ObjectID, children bool) error
+	Exists(ctx context.Context, filter bson.M) bool
 }
 
 type UserRepo interface {

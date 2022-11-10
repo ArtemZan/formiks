@@ -19,9 +19,21 @@ type Submission struct {
 	Data     map[string]interface{} `json:"data" bson:"data"`
 }
 
+type ProjectNumberChange struct {
+	Original  string `json:"original"`
+	Generated string `json:"generated"`
+	Child     bool   `json:"child"`
+}
+
 type SubmissionWithChildrenRequest struct {
 	Submission Submission   `json:"submission"`
 	Children   []Submission `json:"children"`
+}
+
+type SubmissionWithChildrenResponse struct {
+	Submission Submission            `json:"submission"`
+	Children   []Submission          `json:"children"`
+	Changes    []ProjectNumberChange `json:"changes"`
 }
 
 type PartialUpdateRequest struct {

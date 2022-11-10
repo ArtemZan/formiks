@@ -76,3 +76,8 @@ func (r *submissionRepo) Delete(ctx context.Context, id primitive.ObjectID, chil
 	}
 	return err
 }
+
+func (r *submissionRepo) Exists(ctx context.Context, filter bson.M) bool {
+	result, err := r.Conn.Collection("submissions").CountDocuments(ctx, filter, options.Count().SetLimit(1))
+	return err == nil && result > 0
+}
