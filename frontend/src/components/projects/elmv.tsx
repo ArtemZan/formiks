@@ -200,7 +200,7 @@ export default function Elmv(props: Props) {
       });
       setStartDate(new Date(props.submission.data.campaignStartDate) || null);
       setEndDate(new Date(props.submission.data.campaignEndDate) || null);
-      if (Budget.length > 0) {
+      if (Budget.length > 0 && props.submission.data.budgetSource !== "") {
         setBudgetSource({
           label: props.submission.data.budgetSource ?? "",
           value:
@@ -480,7 +480,7 @@ export default function Elmv(props: Props) {
     var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
     var totalCostsLC = parseFloat(totalEstimatedCostsLC);
     var totalCostsEur = parseFloat(estimatedCosts);
-
+    console.log(vendors);
     var temp = [...vendors];
     temp.slice(0, -1).forEach((row: any) => {
       row.eurBudget = (

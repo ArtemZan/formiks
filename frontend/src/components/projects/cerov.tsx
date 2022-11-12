@@ -107,7 +107,12 @@ export default function Cerov(props: Props) {
   const [netProfitTarget, setNetProfitTarget] = useState("");
   const [companiesParticipating, setCompaniesParticipating] = useState<any>([]);
   const [comments, setComments] = useState("");
-  const [vendor, setVendor] = useState<any>({});
+  const [vendor, setVendor] = useState<any>({
+    ph: {
+      label: "",
+      value: "",
+    },
+  });
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
 
   const [totalcbShare, setTotalcbShare] = useState("0.00");
@@ -164,7 +169,7 @@ export default function Cerov(props: Props) {
       });
       setStartDate(new Date(props.submission.data.campaignStartDate) || null);
       setEndDate(new Date(props.submission.data.campaignEndDate) || null);
-      if (Budget.length > 0) {
+      if (Budget.length > 0 && props.submission.data.budgetSource !== "") {
         setBudgetSource({
           label: props.submission.data.budgetSource ?? "",
           value:
@@ -1432,20 +1437,22 @@ export default function Cerov(props: Props) {
                       budgetApprovedByVendor: budgetApprovedByVendor,
                       campaignBudgetsCurrency: exchangeRates.label,
                       campaignCurrency: exchangeRates.label,
-                      campaignEstimatedIncomeBudgetsCurrency:
-                        parseFloat(estimatedIncomeBudgetCurrency) === null
-                          ? 0.0
-                          : parseFloat(estimatedIncomeBudgetCurrency),
+                      campaignEstimatedIncomeBudgetsCurrency: isNaN(
+                        parseFloat(estimatedIncomeBudgetCurrency)
+                      )
+                        ? 0.0
+                        : parseFloat(estimatedIncomeBudgetCurrency),
                       campaignEstimatedCostsBudgetsCurrency: parseFloat(
                         estimatedCostsBudgetCurrency
                       ),
                       campaignNetProfitTargetBudgetsCurrency: parseFloat(
                         netProfitTargetBudgetCurrency
                       ),
-                      campaignEstimatedIncomeEur:
-                        parseFloat(estimatedIncome) === null
-                          ? 0.0
-                          : parseFloat(estimatedIncome),
+                      campaignEstimatedIncomeEur: isNaN(
+                        parseFloat(estimatedIncome)
+                      )
+                        ? 0.0
+                        : parseFloat(estimatedIncome),
                       campaignEstimatedCostsEur: parseFloat(estimatedCosts),
                       campaignNetProfitTargetEur: parseFloat(netProfitTarget),
                       totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
@@ -1921,23 +1928,35 @@ export default function Cerov(props: Props) {
                   budgetApprovedByVendor: budgetApprovedByVendor,
                   campaignBudgetsCurrency: exchangeRates.label,
                   campaignCurrency: exchangeRates.label,
-                  campaignEstimatedIncomeBudgetsCurrency:
-                    parseFloat(estimatedIncomeBudgetCurrency) === null
-                      ? 0.0
-                      : parseFloat(estimatedIncomeBudgetCurrency),
-                  campaignEstimatedCostsBudgetsCurrency: parseFloat(
-                    estimatedCostsBudgetCurrency
-                  ),
-                  campaignNetProfitTargetBudgetsCurrency: parseFloat(
-                    netProfitTargetBudgetCurrency
-                  ),
-                  campaignEstimatedIncomeEur:
-                    parseFloat(estimatedIncome) === null
-                      ? 0.0
-                      : parseFloat(estimatedIncome),
-                  campaignEstimatedCostsEur: parseFloat(estimatedCosts),
-                  campaignNetProfitTargetEur: parseFloat(netProfitTarget),
-                  totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
+                  campaignEstimatedIncomeBudgetsCurrency: isNaN(
+                    parseFloat(estimatedIncomeBudgetCurrency)
+                  )
+                    ? 0.0
+                    : parseFloat(estimatedIncomeBudgetCurrency),
+                  campaignEstimatedCostsBudgetsCurrency: isNaN(
+                    parseFloat(estimatedCostsBudgetCurrency)
+                  )
+                    ? 0.0
+                    : parseFloat(estimatedCostsBudgetCurrency),
+                  campaignNetProfitTargetBudgetsCurrency: isNaN(
+                    parseFloat(netProfitTargetBudgetCurrency)
+                  )
+                    ? 0.0
+                    : parseFloat(netProfitTargetBudgetCurrency),
+                  campaignEstimatedIncomeEur: isNaN(parseFloat(estimatedIncome))
+                    ? 0.0
+                    : parseFloat(estimatedIncome),
+                  campaignEstimatedCostsEur: isNaN(parseFloat(estimatedCosts))
+                    ? 0.0
+                    : parseFloat(estimatedCosts),
+                  campaignNetProfitTargetEur: isNaN(parseFloat(netProfitTarget))
+                    ? 0.0
+                    : parseFloat(netProfitTarget),
+                  totalEstimatedCostsLC: isNaN(
+                    parseFloat(totalEstimatedCostsLC)
+                  )
+                    ? 0.0
+                    : parseFloat(totalEstimatedCostsLC),
                   comments: comments,
                   additionalInformation: comments,
                   localCurrency: requestorsCompanyName.value.currency,

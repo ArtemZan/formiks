@@ -104,7 +104,13 @@ export default function Elov(props: Props) {
   const [netProfitTarget, setNetProfitTarget] = useState("");
   const [companiesParticipating, setCompaniesParticipating] = useState<any>([]);
   const [comments, setComments] = useState("");
-  const [vendor, setVendor] = useState<any>({});
+  const [vendor, setVendor] = useState<any>({
+    ph: {
+      label: "",
+      value: "",
+    },
+  });
+
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
   const [organizingCompany, setOrganizingCompany] = useState("");
 
@@ -152,7 +158,7 @@ export default function Elov(props: Props) {
       });
       setStartDate(new Date(props.submission.data.campaignStartDate) || null);
       setEndDate(new Date(props.submission.data.campaignEndDate) || null);
-      if (Budget.length > 0) {
+      if (Budget.length > 0 && props.submission.data.budgetSource !== "") {
         setBudgetSource({
           label: props.submission.data.budgetSource ?? "",
           value:
