@@ -147,7 +147,7 @@ export default function Elmv(props: Props) {
   }
 
   useEffect(() => {
-    if (props.submission) {
+    if (props.submission && !injectionReady) {
       return;
     }
     setTotalEstimatedCostsLC(
@@ -200,10 +200,14 @@ export default function Elmv(props: Props) {
       });
       setStartDate(new Date(props.submission.data.campaignStartDate) || null);
       setEndDate(new Date(props.submission.data.campaignEndDate) || null);
-      setBudgetSource({
-        label: props.submission.data.budgetSource ?? "",
-        value: props.submission.data.budgetSource ?? "",
-      });
+      if (Budget.length > 0) {
+        setBudgetSource({
+          label: props.submission.data.budgetSource ?? "",
+          value:
+            Budget.find((b) => b.label === props.submission.data.budgetSource)
+              .value ?? "",
+        });
+      }
       setBudgetApprovedByVendor(
         props.submission.data.budgetApprovedByVendor ?? ""
       );
@@ -317,10 +321,13 @@ export default function Elmv(props: Props) {
         setVendors([...v]);
       }
     }
+    setTimeout(() => {
+      setInjectionReady(true);
+    }, 1000);
   }, [props.submission, props.children, ExchangeRates]);
 
   useEffect(() => {
-    if (props.submission) {
+    if (props.submission && !injectionReady) {
       return;
     }
     var data: any = [];
@@ -400,7 +407,7 @@ export default function Elmv(props: Props) {
   ]);
 
   useEffect(() => {
-    if (props.submission) {
+    if (props.submission && !injectionReady) {
       return;
     }
     setEstimatedCosts(
@@ -447,7 +454,7 @@ export default function Elmv(props: Props) {
   ]);
 
   useEffect(() => {
-    if (props.submission) {
+    if (props.submission && !injectionReady) {
       return;
     }
     setProjectNumber(
@@ -547,11 +554,9 @@ export default function Elmv(props: Props) {
           }
         }
       }
-      row.netProfitTargetEUR =
-        `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (parseFloat(row.eurBudget) - parseFloat(row.estimatedCostsEUR)).toFixed(
-          2
-        );
+      row.netProfitTargetEUR = (
+        parseFloat(row.eurBudget) - parseFloat(row.estimatedCostsEUR)
+      ).toFixed(2);
 
       row.netProfitTargetLC = (
         parseFloat(row.localBudget) - parseFloat(row.estimatedCostsLC)

@@ -152,10 +152,14 @@ export default function Elov(props: Props) {
       });
       setStartDate(new Date(props.submission.data.campaignStartDate) || null);
       setEndDate(new Date(props.submission.data.campaignEndDate) || null);
-      setBudgetSource({
-        label: props.submission.data.budgetSource ?? "",
-        value: props.submission.data.budgetSource ?? "",
-      });
+      if (Budget.length > 0) {
+        setBudgetSource({
+          label: props.submission.data.budgetSource ?? "",
+          value:
+            Budget.find((b) => b.label === props.submission.data.budgetSource)
+              .value ?? "",
+        });
+      }
       setBudgetApprovedByVendor(
         props.submission.data.budgetApprovedByVendor ?? ""
       );

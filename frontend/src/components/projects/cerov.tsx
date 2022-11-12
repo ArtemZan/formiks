@@ -164,10 +164,14 @@ export default function Cerov(props: Props) {
       });
       setStartDate(new Date(props.submission.data.campaignStartDate) || null);
       setEndDate(new Date(props.submission.data.campaignEndDate) || null);
-      setBudgetSource({
-        label: props.submission.data.budgetSource ?? "",
-        value: props.submission.data.budgetSource ?? "",
-      });
+      if (Budget.length > 0) {
+        setBudgetSource({
+          label: props.submission.data.budgetSource ?? "",
+          value:
+            Budget.find((b) => b.label === props.submission.data.budgetSource)
+              .value ?? "",
+        });
+      }
       setBudgetApprovedByVendor(
         props.submission.data.budgetApprovedByVendor ?? ""
       );
@@ -1711,7 +1715,7 @@ export default function Cerov(props: Props) {
                   toast(
                     <Toast
                       title={"Project Created"}
-                      message={`Local project with number ${pn} has been created.`}
+                      message={`Local project with number has been created.`}
                       type={"success"}
                     />
                   );
