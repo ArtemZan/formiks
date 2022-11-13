@@ -89,7 +89,7 @@ func (r *Submission) FetchByIDWithChildren(c *gin.Context) {
 	}
 	var children []models.Submission
 	cursor.All(c.Request.Context(), &children)
-	c.JSON(http.StatusOK, models.SubmissionWithChildrenRequest{Submission: parent, Children: children})
+	c.JSON(http.StatusOK, models.SubmissionWithChildren{Submission: parent, Children: children})
 }
 
 func (r *Submission) Create(c *gin.Context) {
@@ -113,7 +113,7 @@ func (r *Submission) Create(c *gin.Context) {
 }
 
 func (r *Submission) CreateWithChildren(c *gin.Context) {
-	var submissionWithChildren models.SubmissionWithChildrenRequest
+	var submissionWithChildren models.SubmissionWithChildren
 	projectNumberChanges := make([]models.ProjectNumberChange, 0)
 	err := c.BindJSON(&submissionWithChildren)
 	if err != nil {

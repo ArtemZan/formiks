@@ -2,6 +2,7 @@ package submission
 
 import (
 	"context"
+	"sync/atomic"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -14,12 +15,14 @@ import (
 
 func NewSubmissionRepo(Conn *mongo.Database) repositories.SubmissionRepo {
 	return &submissionRepo{
-		Conn: Conn,
+		Conn:  Conn,
+		Cache: atomic.Value{},
 	}
 }
 
 type submissionRepo struct {
-	Conn *mongo.Database
+	Conn  *mongo.Database
+	Cache atomic.Value
 }
 
 func (r *submissionRepo) FetchVendorTablePresets(ctx context.Context) ([]models.VendorTablePreset, error) {
@@ -49,7 +52,7 @@ func (r *submissionRepo) Fetch(ctx context.Context, filter interface{}) ([]model
 	return submissions, err
 }
 
-func (r *submissionRepo) FetchByID(ctx context.Context, id primitive.ObjectID) (models.Submission, error) {
+func (r *submissionRepo) FetchByID(ctx context.Context, id primitive.ObjectID, withChildren bool) ([]models.Submission, error) {
 	var submission models.Submission
 	result := r.Conn.Collection("submissions").FindOne(ctx, bson.M{"_id": id})
 	err := result.Decode(&submission)

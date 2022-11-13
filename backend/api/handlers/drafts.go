@@ -57,11 +57,11 @@ func (d *Draft) FetchByID(c *gin.Context) {
 	}
 	var children []models.Submission
 	cursor.All(c.Request.Context(), &children)
-	c.JSON(http.StatusOK, models.SubmissionWithChildrenRequest{Submission: parent, Children: children})
+	c.JSON(http.StatusOK, models.SubmissionWithChildren{Submission: parent, Children: children})
 }
 
 func (d *Draft) Create(c *gin.Context) {
-	var submissionWithChildren models.SubmissionWithChildrenRequest
+	var submissionWithChildren models.SubmissionWithChildren
 	err := c.BindJSON(&submissionWithChildren)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to bind request JSON", err)
@@ -74,7 +74,7 @@ func (d *Draft) Create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, create(d, submissionWithChildren))
 }
-func create(d *Draft, submissionWithChildren models.SubmissionWithChildrenRequest) models.Submission {
+func create(d *Draft, submissionWithChildren models.SubmissionWithChildren) models.Submission {
 	submissionWithChildren.Submission.Updated = time.Now()
 	submissionWithChildren.Submission.ParentID = nil
 
@@ -111,7 +111,7 @@ func (d *Draft) Update(c *gin.Context) {
 		return
 	}
 
-	var draft models.SubmissionWithChildrenRequest
+	var draft models.SubmissionWithChildren
 	err = c.BindJSON(&draft)
 	if err != nil {
 		c.Status(http.StatusBadRequest)

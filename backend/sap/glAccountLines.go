@@ -426,7 +426,7 @@ func CreateSubmissionsForAccountLines() {
 			}
 		}
 
-		submissionWithChildren := models.SubmissionWithChildrenRequest{
+		submissionWithChildren := models.SubmissionWithChildren{
 			Submission: models.Submission{
 				ID:       primitive.NewObjectID(),
 				Created:  time.Now(),

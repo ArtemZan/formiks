@@ -25,7 +25,7 @@ type ProjectNumberChange struct {
 	Child     bool   `json:"child"`
 }
 
-type SubmissionWithChildrenRequest struct {
+type SubmissionWithChildren struct {
 	Submission Submission   `json:"submission"`
 	Children   []Submission `json:"children"`
 }
