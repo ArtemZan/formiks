@@ -75,21 +75,14 @@ func (r *Submission) FetchByIDWithChildren(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	parent, err := r.repo.FetchByID(c.Request.Context(), id)
+	response, err := r.repo.FetchByIDWithChildren(context.Background(), id)
 	if err != nil {
-		logger.LogHandlerError(c, "Failed to fetch submission", err)
+		logger.LogHandlerError(c, "Failed to fetch submissions", err)
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-	cursor, err := r.db.Collection("submissions").Find(c.Request.Context(), bson.M{"parentId": id.Hex()})
-	if err != nil {
-		logger.LogHandlerError(c, "Failed to fetch submission children", err)
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-	var children []models.Submission
-	cursor.All(c.Request.Context(), &children)
-	c.JSON(http.StatusOK, models.SubmissionWithChildren{Submission: parent, Children: children})
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (r *Submission) Create(c *gin.Context) {
@@ -141,7 +134,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	submissionWithChildren.Submission.Created = time.Now()
 	submissionWithChildren.Submission.Updated = time.Now()
 	submissionWithChildren.Submission.ParentID = nil
-	submissionWithChildren.Submission.Data["status"] = "New"
+
 	for index := range submissionWithChildren.Children {
 		if _, exists := submissionWithChildren.Children[index].Data["companyCode"].(string); !exists {
 			c.Status(http.StatusBadRequest)
@@ -171,7 +164,6 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
 		if _, ok := submissionWithChildren.Children[index].ParentID.(string); ok {
 			submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
-			submissionWithChildren.Children[index].Data["status"] = "New"
 		}
 		submissionWithChildren.Children[index].Created = time.Now()
 		submissionWithChildren.Children[index].Updated = time.Now()

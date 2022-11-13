@@ -52,11 +52,34 @@ func (r *submissionRepo) Fetch(ctx context.Context, filter interface{}) ([]model
 	return submissions, err
 }
 
-func (r *submissionRepo) FetchByID(ctx context.Context, id primitive.ObjectID, withChildren bool) ([]models.Submission, error) {
+func (r *submissionRepo) FetchByID(ctx context.Context, id primitive.ObjectID) (models.Submission, error) {
 	var submission models.Submission
 	result := r.Conn.Collection("submissions").FindOne(ctx, bson.M{"_id": id})
 	err := result.Decode(&submission)
 	return submission, err
+}
+
+func (r *submissionRepo) FetchByIDWithChildren(ctx context.Context, id primitive.ObjectID) (models.SubmissionWithChildren, error) {
+	var response models.SubmissionWithChildren
+	subs := make([]models.Submission, 0)
+	cursor, err := r.Conn.Collection("submissions").Find(ctx, bson.M{"$or": []bson.M{{"_id": id}, {"parentId": id.Hex()}}})
+	if err != nil {
+		return response, err
+	}
+	err = cursor.All(ctx, &subs)
+	if err != nil {
+		return response, err
+	}
+
+	for _, s := range subs {
+		if s.ParentID == nil {
+			response.Submission = s
+		} else {
+			response.Children = append(response.Children, s)
+		}
+	}
+
+	return response, nil
 }
 
 func (r *submissionRepo) Create(ctx context.Context, submission models.Submission) (models.Submission, error) {

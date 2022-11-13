@@ -20,7 +20,8 @@ type SubmissionRepo interface {
 	FetchVendorTablePresets(ctx context.Context) ([]models.VendorTablePreset, error)
 	UpsertVendorTablePreset(ctx context.Context, preset models.VendorTablePreset) error
 	Fetch(ctx context.Context, filter interface{}) ([]models.Submission, error)
-	FetchByID(ctx context.Context, id primitive.ObjectID, withChildren bool) ([]models.Submission, error)
+	FetchByID(ctx context.Context, id primitive.ObjectID) (models.Submission, error)
+	FetchByIDWithChildren(ctx context.Context, id primitive.ObjectID) (models.SubmissionWithChildren, error)
 	Create(ctx context.Context, submission models.Submission) (models.Submission, error)
 	Update(ctx context.Context, submission models.Submission) error
 	Delete(ctx context.Context, id primitive.ObjectID, children bool) error

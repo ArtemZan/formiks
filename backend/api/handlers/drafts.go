@@ -79,7 +79,7 @@ func create(d *Draft, submissionWithChildren models.SubmissionWithChildren) mode
 	submissionWithChildren.Submission.ParentID = nil
 
 	if _, ok := submissionWithChildren.Submission.Data["status"].(string); !ok {
-		submissionWithChildren.Submission.Data["status"] = "New"
+		submissionWithChildren.Submission.Data["status"] = "Incomplete"
 	}
 
 	for index := range submissionWithChildren.Children {
@@ -88,7 +88,7 @@ func create(d *Draft, submissionWithChildren models.SubmissionWithChildren) mode
 			submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
 		}
 		if _, ok := submissionWithChildren.Children[index].Data["status"].(string); !ok {
-			submissionWithChildren.Children[index].Data["status"] = "New"
+			submissionWithChildren.Children[index].Data["status"] = "Incomplete"
 		}
 		submissionWithChildren.Children[index].Created = time.Now()
 		submissionWithChildren.Children[index].Updated = time.Now()
