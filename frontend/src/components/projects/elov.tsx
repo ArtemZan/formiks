@@ -1541,6 +1541,7 @@ export default function Elov(props: Props) {
                 author: requestorsName,
                 data: {
                   vendorName: vendorName.label,
+                  companyCode: requestorsCompanyName.value.code,
                   projectNumber: projectNumber,
                   productionProjectManager: vendor.projectManager,
                   creditorNumber: vendor.creditor,
