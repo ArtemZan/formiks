@@ -120,15 +120,13 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	}
 	childrenProjectNumbers := []string{}
 	for _, child := range submissionWithChildren.Children {
-		if child.Group != "country" {
-			continue
-		}
-
-		if pn, exists := child.Data["localProjectNumber"].(string); exists {
-			childrenProjectNumbers = append(childrenProjectNumbers, pn)
-		} else {
-			c.Status(http.StatusBadRequest)
-			return
+		if child.Group == "country" {
+			if pn, exists := child.Data["localProjectNumber"].(string); exists {
+				childrenProjectNumbers = append(childrenProjectNumbers, pn)
+			} else {
+				c.Status(http.StatusBadRequest)
+				return
+			}
 		}
 	}
 
@@ -152,10 +150,12 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			hasChanged = true
 		} else {
 			submissionWithChildren.Submission.Data["projectNumber"] = parentProjectNumber
+			var lpi int
 			for i := range submissionWithChildren.Children {
 				submissionWithChildren.Children[i].Data["projectNumber"] = parentProjectNumber
 				if submissionWithChildren.Children[i].Group == "country" {
-					submissionWithChildren.Children[i].Data["localProjectNumber"] = childrenProjectNumbers[i]
+					submissionWithChildren.Children[i].Data["localProjectNumber"] = childrenProjectNumbers[lpi]
+					lpi++
 				}
 			}
 			break
