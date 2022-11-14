@@ -27,6 +27,7 @@ type SubmissionRepo interface {
 	PartialUpdate(ctx context.Context, filter, update interface{}) error
 	Delete(ctx context.Context, id primitive.ObjectID, children bool) error
 	Exists(ctx context.Context, filter bson.M) bool
+	ExistsAny(ctx context.Context, projectNumbers []string) bool
 }
 
 type UserRepo interface {

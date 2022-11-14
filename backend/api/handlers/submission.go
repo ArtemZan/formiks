@@ -107,26 +107,55 @@ func (r *Submission) Create(c *gin.Context) {
 
 func (r *Submission) CreateWithChildren(c *gin.Context) {
 	var submissionWithChildren models.SubmissionWithChildren
-	projectNumberChanges := make([]models.ProjectNumberChange, 0)
 	err := c.BindJSON(&submissionWithChildren)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to bind request JSON", err)
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	if pn, exists := submissionWithChildren.Submission.Data["projectNumber"].(string); exists {
-		var changed bool
-		submissionWithChildren.Submission.Data["projectNumber"], changed, err = r.generateUniqueProjectNumber(pn)
-		if err != nil {
-			c.Status(http.StatusInternalServerError)
+
+	parentProjectNumber, exists := submissionWithChildren.Submission.Data["projectNumber"].(string)
+	if !exists {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	childrenProjectNumbers := []string{}
+	for _, child := range submissionWithChildren.Children {
+		if pn, exists := child.Data["projectNumber"].(string); exists {
+			childrenProjectNumbers = append(childrenProjectNumbers, pn)
+		} else {
+			c.Status(http.StatusBadRequest)
 			return
 		}
-		if changed {
-			projectNumberChanges = append(projectNumberChanges, models.ProjectNumberChange{
-				Original:  pn,
-				Generated: submissionWithChildren.Submission.Data["projectNumber"].(string),
-				Child:     false,
-			})
+	}
+
+	var hasChanged bool
+	for {
+		pns := make([]string, 0, 1+len(childrenProjectNumbers))
+		pns = append(pns, parentProjectNumber)
+		pns = append(pns, childrenProjectNumbers...)
+		if r.repo.ExistsAny(context.Background(), pns) {
+			suffix := parentProjectNumber[len(parentProjectNumber)-2:]
+			iSuffix, err := strconv.Atoi(suffix)
+			if err != nil || iSuffix > 99 {
+				c.Status(http.StatusBadRequest)
+				return
+			}
+			iSuffix++
+			parentProjectNumber = fmt.Sprintf("%s%02d", parentProjectNumber[:len(parentProjectNumber)-2], iSuffix)
+			for i, cpn := range childrenProjectNumbers {
+				childrenProjectNumbers[i] = fmt.Sprintf("%s%02d", cpn[:len(cpn)-2], iSuffix)
+			}
+			hasChanged = true
+		} else {
+			submissionWithChildren.Submission.Data["projectNumber"] = parentProjectNumber
+			for i := range submissionWithChildren.Children {
+				submissionWithChildren.Children[i].Data["projectNumber"] = childrenProjectNumbers[i]
+				if submissionWithChildren.Children[i].Group == "country" {
+					submissionWithChildren.Children[i].Data["localProjectNumber"] = childrenProjectNumbers[i]
+				}
+			}
+			break
 		}
 	}
 
@@ -136,31 +165,6 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	submissionWithChildren.Submission.ParentID = nil
 
 	for index := range submissionWithChildren.Children {
-		if _, exists := submissionWithChildren.Children[index].Data["companyCode"].(string); !exists {
-			c.Status(http.StatusBadRequest)
-			return
-		}
-		if _, exists := submissionWithChildren.Children[index].Data["projectNumber"].(string); !exists {
-			c.Status(http.StatusBadRequest)
-			return
-		}
-
-		pn := fmt.Sprintf("%s%s", submissionWithChildren.Children[index].Data["companyCode"].(string), submissionWithChildren.Children[index].Data["projectNumber"].(string)[4:])
-
-		var changed bool
-		submissionWithChildren.Children[index].Data["projectNumber"], changed, err = r.generateUniqueProjectNumber(pn)
-		if err != nil {
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-		if changed {
-			projectNumberChanges = append(projectNumberChanges, models.ProjectNumberChange{
-				Original:  pn,
-				Generated: submissionWithChildren.Children[index].Data["projectNumber"].(string),
-				Child:     true,
-			})
-		}
-
 		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
 		if _, ok := submissionWithChildren.Children[index].ParentID.(string); ok {
 			submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
@@ -179,7 +183,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	c.JSON(http.StatusOK, models.SubmissionWithChildrenResponse{
 		Submission: submissionWithChildren.Submission,
 		Children:   submissionWithChildren.Children,
-		Changes:    projectNumberChanges,
+		HasChanged: hasChanged,
 	})
 }
 

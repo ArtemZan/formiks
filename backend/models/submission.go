@@ -31,9 +31,9 @@ type SubmissionWithChildren struct {
 }
 
 type SubmissionWithChildrenResponse struct {
-	Submission Submission            `json:"submission"`
-	Children   []Submission          `json:"children"`
-	Changes    []ProjectNumberChange `json:"changes"`
+	Submission Submission   `json:"submission"`
+	Children   []Submission `json:"children"`
+	HasChanged bool         `json:"hasChanged"`
 }
 
 type PartialUpdateRequest struct {

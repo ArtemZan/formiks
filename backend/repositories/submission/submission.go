@@ -148,15 +148,11 @@ func (r *submissionRepo) Delete(ctx context.Context, id primitive.ObjectID, chil
 }
 
 func (r *submissionRepo) Exists(ctx context.Context, filter bson.M) bool {
-	cacheID := fmt.Sprintf("exists.%s", filter["data.projectNumber"].(string))
+	result, _ := r.Conn.Collection("submissions").CountDocuments(ctx, filter, options.Count().SetLimit(1))
+	return result > 0
+}
 
-	if v, hit := r.Cache.Get(cacheID); hit {
-		if exists, ok := v.(bool); ok {
-			return exists
-		}
-	}
-
-	result, err := r.Conn.Collection("submissions").CountDocuments(ctx, filter, options.Count().SetLimit(1))
-	r.Cache.Set(cacheID, err == nil && result > 0, cache.DefaultExpiration)
-	return err == nil && result > 0
+func (r *submissionRepo) ExistsAny(ctx context.Context, projectNumbers []string) bool {
+	result, _ := r.Conn.Collection("submissions").CountDocuments(ctx, bson.M{"data.projectNumber": bson.M{"$in": projectNumbers}}, options.Count().SetLimit(1))
+	return result > 0
 }
