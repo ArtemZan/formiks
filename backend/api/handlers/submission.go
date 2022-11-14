@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -121,7 +120,11 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	}
 	childrenProjectNumbers := []string{}
 	for _, child := range submissionWithChildren.Children {
-		if pn, exists := child.Data["projectNumber"].(string); exists {
+		if child.Group != "country" {
+			continue
+		}
+
+		if pn, exists := child.Data["localProjectNumber"].(string); exists {
 			childrenProjectNumbers = append(childrenProjectNumbers, pn)
 		} else {
 			c.Status(http.StatusBadRequest)
@@ -150,7 +153,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		} else {
 			submissionWithChildren.Submission.Data["projectNumber"] = parentProjectNumber
 			for i := range submissionWithChildren.Children {
-				submissionWithChildren.Children[i].Data["projectNumber"] = childrenProjectNumbers[i]
+				submissionWithChildren.Children[i].Data["projectNumber"] = parentProjectNumber
 				if submissionWithChildren.Children[i].Group == "country" {
 					submissionWithChildren.Children[i].Data["localProjectNumber"] = childrenProjectNumbers[i]
 				}
@@ -185,26 +188,6 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		Children:   submissionWithChildren.Children,
 		HasChanged: hasChanged,
 	})
-}
-
-func (r *Submission) generateUniqueProjectNumber(pn string) (string, bool, error) {
-	var changed bool
-	for {
-		if r.repo.Exists(context.TODO(), bson.M{"data.projectNumber": pn}) {
-			changed = true
-			suffix := pn[len(pn)-2:]
-			iSuffix, err := strconv.Atoi(suffix)
-			if err != nil {
-				return pn, changed, err
-			}
-			if iSuffix > 99 {
-				return pn, changed, errors.New("suffix out of range")
-			}
-			pn = fmt.Sprintf("%s%02d", pn[:len(pn)-2], iSuffix+1)
-		} else {
-			return pn, changed, nil
-		}
-	}
 }
 
 func (r *Submission) Update(c *gin.Context) {
