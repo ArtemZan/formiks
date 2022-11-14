@@ -2,7 +2,8 @@ package submission
 
 import (
 	"context"
-	"sync/atomic"
+	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,18 +12,19 @@ import (
 
 	"github.com/doublegrey/formiks/backend/models"
 	"github.com/doublegrey/formiks/backend/repositories"
+	"github.com/patrickmn/go-cache"
 )
 
 func NewSubmissionRepo(Conn *mongo.Database) repositories.SubmissionRepo {
 	return &submissionRepo{
 		Conn:  Conn,
-		Cache: atomic.Value{},
+		Cache: cache.New(5*time.Minute, 10*time.Minute),
 	}
 }
 
 type submissionRepo struct {
 	Conn  *mongo.Database
-	Cache atomic.Value
+	Cache *cache.Cache
 }
 
 func (r *submissionRepo) FetchVendorTablePresets(ctx context.Context) ([]models.VendorTablePreset, error) {
@@ -43,23 +45,52 @@ func (r *submissionRepo) UpsertVendorTablePreset(ctx context.Context, data model
 }
 
 func (r *submissionRepo) Fetch(ctx context.Context, filter interface{}) ([]models.Submission, error) {
+	cacheID := "fetch"
+	if f, ok := filter.(bson.M)["project"]; ok {
+		cacheID = fmt.Sprintf("%s.%v", cacheID, f)
+	}
+
+	if v, hit := r.Cache.Get(cacheID); hit {
+		if submissions, ok := v.([]models.Submission); ok {
+			return submissions, nil
+		}
+	}
+
 	submissions := make([]models.Submission, 0)
 	cursor, err := r.Conn.Collection("submissions").Find(ctx, filter, options.Find().SetSort(bson.D{{"created", -1}}))
 	if err != nil {
 		return submissions, err
 	}
 	err = cursor.All(ctx, &submissions)
+	r.Cache.Set(cacheID, submissions, cache.DefaultExpiration)
 	return submissions, err
 }
 
 func (r *submissionRepo) FetchByID(ctx context.Context, id primitive.ObjectID) (models.Submission, error) {
+	cacheID := fmt.Sprintf("fetchByID.%s", id.Hex())
+
+	if v, hit := r.Cache.Get(cacheID); hit {
+		if submission, ok := v.(models.Submission); ok {
+			return submission, nil
+		}
+	}
+
 	var submission models.Submission
 	result := r.Conn.Collection("submissions").FindOne(ctx, bson.M{"_id": id})
 	err := result.Decode(&submission)
+	r.Cache.Set(cacheID, submission, cache.DefaultExpiration)
 	return submission, err
 }
 
 func (r *submissionRepo) FetchByIDWithChildren(ctx context.Context, id primitive.ObjectID) (models.SubmissionWithChildren, error) {
+	cacheID := fmt.Sprintf("fetchByIDWithChildren.%s", id.Hex())
+
+	if v, hit := r.Cache.Get(cacheID); hit {
+		if submission, ok := v.(models.SubmissionWithChildren); ok {
+			return submission, nil
+		}
+	}
+
 	var response models.SubmissionWithChildren
 	subs := make([]models.Submission, 0)
 	cursor, err := r.Conn.Collection("submissions").Find(ctx, bson.M{"$or": []bson.M{{"_id": id}, {"parentId": id.Hex()}}})
@@ -78,11 +109,13 @@ func (r *submissionRepo) FetchByIDWithChildren(ctx context.Context, id primitive
 			response.Children = append(response.Children, s)
 		}
 	}
-
+	r.Cache.Set(cacheID, response, cache.DefaultExpiration)
 	return response, nil
 }
 
 func (r *submissionRepo) Create(ctx context.Context, submission models.Submission) (models.Submission, error) {
+	r.Cache.Flush()
+
 	result, err := r.Conn.Collection("submissions").InsertOne(ctx, submission)
 	if err == nil {
 		submission.ID = result.InsertedID.(primitive.ObjectID)
@@ -91,11 +124,22 @@ func (r *submissionRepo) Create(ctx context.Context, submission models.Submissio
 }
 
 func (r *submissionRepo) Update(ctx context.Context, submission models.Submission) error {
+	r.Cache.Flush()
+
 	_, err := r.Conn.Collection("submissions").ReplaceOne(ctx, bson.M{"_id": submission.ID}, submission)
 	return err
 }
 
+func (r *submissionRepo) PartialUpdate(ctx context.Context, filter, update interface{}) error {
+	r.Cache.Flush()
+
+	_, err := r.Conn.Collection("submissions").UpdateOne(ctx, filter, update)
+	return err
+}
+
 func (r *submissionRepo) Delete(ctx context.Context, id primitive.ObjectID, children bool) error {
+	r.Cache.Flush()
+
 	_, err := r.Conn.Collection("submissions").DeleteOne(ctx, bson.M{"_id": id})
 	if children && err == nil {
 		_, err = r.Conn.Collection("submissions").DeleteMany(ctx, bson.M{"parentId": id})
@@ -104,6 +148,15 @@ func (r *submissionRepo) Delete(ctx context.Context, id primitive.ObjectID, chil
 }
 
 func (r *submissionRepo) Exists(ctx context.Context, filter bson.M) bool {
+	cacheID := fmt.Sprintf("exists.%s", filter["data.projectNumber"].(string))
+
+	if v, hit := r.Cache.Get(cacheID); hit {
+		if exists, ok := v.(bool); ok {
+			return exists
+		}
+	}
+
 	result, err := r.Conn.Collection("submissions").CountDocuments(ctx, filter, options.Count().SetLimit(1))
+	r.Cache.Set(cacheID, err == nil && result > 0, cache.DefaultExpiration)
 	return err == nil && result > 0
 }

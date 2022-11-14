@@ -227,7 +227,8 @@ func (r *Submission) PartialUpdate(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	r.db.Collection("submissions").UpdateOne(context.TODO(), bson.M{"_id": request.Submission}, bson.D{{Key: "$set", Value: bson.D{{Key: request.Path, Value: request.Value}, {Key: "updated", Value: time.Now()}}}})
+
+	r.repo.PartialUpdate(context.Background(), bson.M{"_id": request.Submission}, bson.D{{Key: "$set", Value: bson.D{{Key: request.Path, Value: request.Value}, {Key: "updated", Value: time.Now()}}}})
 }
 
 func (r *Submission) CallSap(c *gin.Context) {
