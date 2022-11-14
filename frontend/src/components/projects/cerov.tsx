@@ -151,7 +151,7 @@ export default function Cerov(props: Props) {
       });
       setYear({
         label: props.submission.data.year ?? "",
-        value: props.submission.data.year ?? "",
+        value: (props.submission.data.year ?? "").substring(2, 4),
       });
       setOrganizingCompany(props.submission.data.organizingCompany ?? "");
       setProjectStartQuarter({
@@ -399,11 +399,6 @@ export default function Cerov(props: Props) {
           0.01 *
           parseFloat(estimatedIncome)
         ).toFixed(2);
-        console.log(
-          (parseFloat(row.share) * 0.01 * parseFloat(estimatedIncome)).toFixed(
-            2
-          )
-        );
       }
 
       row.estimatedCosts = (
@@ -1043,7 +1038,6 @@ export default function Cerov(props: Props) {
             }}
             placeholder=""
             onChange={(value: any) => {
-              console.log(value);
               var temp = { ...vendor };
               temp.bu = value.label;
               setVendor(temp);
@@ -1493,6 +1487,22 @@ export default function Cerov(props: Props) {
                 RestAPI.deleteDraft(props.submission.id).then(() => {
                   RestAPI.createSubmissionWithChildren(submission).then(
                     (response) => {
+                      if (response.data.hasChanged) {
+                        toast(
+                          <Toast
+                            title={"Project Number has been adjusted"}
+                            message={
+                              <p>
+                                Project Number changed to:{" "}
+                                <b>
+                                  {response.data.submission.data.projectNumber}
+                                </b>
+                              </p>
+                            }
+                            type={"info"}
+                          />
+                        );
+                      }
                       props.history.push("/submissions");
                     }
                   );
@@ -1500,6 +1510,22 @@ export default function Cerov(props: Props) {
               } else {
                 RestAPI.createSubmissionWithChildren(submission).then(
                   (response) => {
+                    if (response.data.hasChanged) {
+                      toast(
+                        <Toast
+                          title={"Project Number has been adjusted"}
+                          message={
+                            <p>
+                              Project Number changed to:{" "}
+                              <b>
+                                {response.data.submission.data.projectNumber}
+                              </b>
+                            </p>
+                          }
+                          type={"info"}
+                        />
+                      );
+                    }
                     props.history.push("/submissions");
                   }
                 );
@@ -1611,6 +1637,15 @@ export default function Cerov(props: Props) {
 
               RestAPI.createSubmissionWithChildren(submission).then(
                 (response) => {
+                  if (response.data.hasChanged) {
+                    toast(
+                      <Toast
+                        title={"Project Number has been adjusted"}
+                        message={`Project Number was adjusted, to remain unique`}
+                        type={"info"}
+                      />
+                    );
+                  }
                   setLocalSubmitted(true);
                   toast(
                     <Toast
