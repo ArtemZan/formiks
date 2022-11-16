@@ -530,6 +530,13 @@ export default function Cerov(props: Props) {
     requestorsCompanyName,
   ]);
 
+  function onCostBreakdownTableChange(column: string, row: number, value: any) {
+    var table = [...costBreakdown];
+    table[row][column] = value;
+    console.log(table[row][column]);
+    setCostBreakdown(table);
+  }
+
   return (
     <Box>
       <VStack spacing="20px" mb={"40px"} align="start">
@@ -1212,10 +1219,17 @@ export default function Cerov(props: Props) {
                   <Input
                     value={rowData.share}
                     onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index!].share = event.target.value;
-                      setCostBreakdown(temp);
+                      onCostBreakdownTableChange(
+                        "column name",
+                        index!,
+                        event.target.value
+                      );
                     }}
+                    // onChange={(event) => {
+                    //   var temp = [...costBreakdown];
+                    //   temp[index!].share = event.target.value;
+                    //   setCostBreakdown(temp);
+                    // }}
                   />
                 )}
               </Cell>
