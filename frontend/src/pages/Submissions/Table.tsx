@@ -1937,7 +1937,7 @@ export function SubmissionsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           readonly={true}
           backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
@@ -2598,7 +2598,7 @@ export function SubmissionsTable(props: Props) {
       ),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           readonly={true}
           backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
@@ -2642,7 +2642,7 @@ export function SubmissionsTable(props: Props) {
       hidden: visibilityController("purchaseOrder", "data.netValuePOC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           readonly={true}
           backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
@@ -2689,7 +2689,7 @@ export function SubmissionsTable(props: Props) {
       hidden: visibilityController("purchaseOrder", "data.netValueEur"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"number"}
           readonly={true}
           backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}

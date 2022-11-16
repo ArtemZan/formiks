@@ -491,6 +491,8 @@ export default function Cerov(props: Props) {
           .toString()
       );
     } else {
+      setEstimatedIncome("0.00");
+      setEstimatedIncomeBudgetCurrency("0.00");
       setNetProfitTarget(estimatedCosts);
       setNetProfitTargetBudgetCurrency(estimatedCostsBudgetCurrency);
     }
@@ -1606,11 +1608,7 @@ export default function Cerov(props: Props) {
                     budgetSource.value === "noBudget"
                       ? "N/A"
                       : exchangeRates.label,
-                  vendorAmount:
-                    isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
-                    budgetSource.value === "noBudget"
-                      ? 0.0
-                      : parseFloat(estimatedIncomeBudgetCurrency),
+                  vendorAmount: company.estimtedCosts,
                   vendorShare: 100,
                   projectType: "European One Vendor",
                   companyName: company.companyName,
