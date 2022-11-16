@@ -377,55 +377,55 @@ export default function Cerov(props: Props) {
     setCostBreakdown(data);
   }, [companiesParticipating, projectNumber]);
 
-  useEffect(() => {
-    var totalShare = 0.0;
-    var totalContribution = 0.0;
-    var totalCosts = 0.0;
-    var temp = [...costBreakdown];
-    // contributionEur: "",
-    // estimatedCostsEur: "",
-    temp.forEach((row: any) => {
-      if (budgetSource.value === "noBudget") {
-        row.contribution = "0.00";
-        row.contributionEur = "0.00";
-      } else {
-        row.contribution = (
-          parseFloat(row.share) *
-          0.01 *
-          parseFloat(estimatedIncomeBudgetCurrency)
-        ).toFixed(2);
-        row.contributionEur = (
-          parseFloat(row.share) *
-          0.01 *
-          parseFloat(estimatedIncome)
-        ).toFixed(2);
-      }
+  // useEffect(() => {
+  //   var totalShare = 0.0;
+  //   var totalContribution = 0.0;
+  //   var totalCosts = 0.0;
+  //   var temp = [...costBreakdown];
+  //   // contributionEur: "",
+  //   // estimatedCostsEur: "",
+  //   temp.forEach((row: any) => {
+  //     if (budgetSource.value === "noBudget") {
+  //       row.contribution = "0.00";
+  //       row.contributionEur = "0.00";
+  //     } else {
+  //       row.contribution = (
+  //         parseFloat(row.share) *
+  //         0.01 *
+  //         parseFloat(estimatedIncomeBudgetCurrency)
+  //       ).toFixed(2);
+  //       row.contributionEur = (
+  //         parseFloat(row.share) *
+  //         0.01 *
+  //         parseFloat(estimatedIncome)
+  //       ).toFixed(2);
+  //     }
 
-      row.estimatedCosts = (
-        parseFloat(row.share) *
-        0.01 *
-        parseFloat(estimatedCostsBudgetCurrency)
-      ).toFixed(2);
-      row.estimatedCostsEur = (
-        parseFloat(row.share) *
-        0.01 *
-        parseFloat(estimatedCosts)
-      ).toFixed(2);
-      totalShare += parseFloat(row.share) || 0;
-      totalContribution += parseFloat(row.contribution) || 0;
-      totalCosts += parseFloat(row.estimatedCosts) || 0;
-    });
-    if (!isEqual(costBreakdown, temp)) {
-      setCostBreakdown(temp);
-    }
-    setTotalcbShare(totalShare.toFixed(2));
-    setTotalcbContribution(totalContribution.toFixed(2));
-    setTotalcbCosts(totalCosts.toFixed(2));
-  }, [
-    costBreakdown,
-    estimatedIncomeBudgetCurrency,
-    estimatedCostsBudgetCurrency,
-  ]);
+  //     row.estimatedCosts = (
+  //       parseFloat(row.share) *
+  //       0.01 *
+  //       parseFloat(estimatedCostsBudgetCurrency)
+  //     ).toFixed(2);
+  //     row.estimatedCostsEur = (
+  //       parseFloat(row.share) *
+  //       0.01 *
+  //       parseFloat(estimatedCosts)
+  //     ).toFixed(2);
+  //     totalShare += parseFloat(row.share) || 0;
+  //     totalContribution += parseFloat(row.contribution) || 0;
+  //     totalCosts += parseFloat(row.estimatedCosts) || 0;
+  //   });
+  //   if (!isEqual(costBreakdown, temp)) {
+  //     setCostBreakdown(temp);
+  //   }
+  //   setTotalcbShare(totalShare.toFixed(2));
+  //   setTotalcbContribution(totalContribution.toFixed(2));
+  //   setTotalcbCosts(totalCosts.toFixed(2));
+  // }, [
+  //   costBreakdown,
+  //   estimatedIncomeBudgetCurrency,
+  //   estimatedCostsBudgetCurrency,
+  // ]);
 
   useEffect(() => {
     if (props.submission && !injectionReady) {
@@ -532,8 +532,36 @@ export default function Cerov(props: Props) {
 
   function onCostBreakdownTableChange(column: string, row: number, value: any) {
     var table = [...costBreakdown];
+    var sum = 0.0;
+    var arr: string[] = ["contribution", "estimatedCosts"];
+    var total: number[] = [
+      parseFloat(estimatedIncomeBudgetCurrency),
+      parseFloat(estimatedCostsBudgetCurrency),
+    ];
+    var totalShare = 0.0;
+    var totalContribution = 0.0;
+    var totalCosts = 0.0;
     table[row][column] = value;
-    console.log(table[row][column]);
+    table.forEach((c: any) => {
+      sum += parseInt(c[column]);
+    });
+    if (column !== "share") {
+      table[row].share = ((value / sum) * 100).toFixed(2);
+    }
+    table.forEach((row: any) => {
+      arr.forEach((col: any, index: number) => {
+        if (col !== column) {
+          row[col] = ((row.share * total[index!]) / 100).toFixed(2);
+          console.log(total[index]);
+        }
+      });
+      totalShare += parseFloat(row.share) || 0;
+      totalContribution += parseFloat(row.contribution) || 0;
+      totalCosts += parseFloat(row.estimatedCosts) || 0;
+    });
+    setTotalcbShare(totalShare.toFixed(2));
+    setTotalcbContribution(totalContribution.toFixed(2));
+    setTotalcbCosts(totalCosts.toFixed(2));
     setCostBreakdown(table);
   }
 
@@ -1220,7 +1248,7 @@ export default function Cerov(props: Props) {
                     value={rowData.share}
                     onChange={(event) => {
                       onCostBreakdownTableChange(
-                        "column name",
+                        "share",
                         index!,
                         event.target.value
                       );
@@ -1242,9 +1270,14 @@ export default function Cerov(props: Props) {
                     disabled={budgetSource.value === "noBudget"}
                     value={rowData.contribution}
                     onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index!].contribution = event.target.value;
-                      setCostBreakdown(temp);
+                      onCostBreakdownTableChange(
+                        "contribution",
+                        index!,
+                        event.target.value
+                      );
+                      // var temp = [...costBreakdown];
+                      // temp[index!].contribution = event.target.value;
+                      // setCostBreakdown(temp);
                     }}
                   />
                 )}
@@ -1259,9 +1292,14 @@ export default function Cerov(props: Props) {
                   <Input
                     value={rowData.estimatedCosts}
                     onChange={(event) => {
-                      var temp = [...costBreakdown];
-                      temp[index!].estimatedCosts = event.target.value;
-                      setCostBreakdown(temp);
+                      onCostBreakdownTableChange(
+                        "estimatedCosts",
+                        index!,
+                        event.target.value
+                      );
+                      // var temp = [...costBreakdown];
+                      // temp[index!].estimatedCosts = event.target.value;
+                      // setCostBreakdown(temp);
                     }}
                   />
                 )}
