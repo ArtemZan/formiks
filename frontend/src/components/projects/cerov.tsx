@@ -238,8 +238,8 @@ export default function Cerov(props: Props) {
           manufacturer: vs.data.manufacturerNumber ?? "",
           bu: vs.data.businessUnit ?? "",
           ph: {
-            label: vs.data.PH1 || "1",
-            value: vs.data.PH1 || "1",
+            label: vs.data.PH1 || "",
+            value: vs.data.PH1 || "",
           },
           budgetCurrency: {
             label: vs.data.budgetCurrency || "",
@@ -468,6 +468,22 @@ export default function Cerov(props: Props) {
         .toFixed(2)
         .toString()
     );
+    if (budgetSource.value === "noBudget") {
+      costBreakdown.forEach((element: any) => {
+        element["contribution"] = 0;
+        element["contributionEur"] = 0;
+      });
+      setCostBreakdown(costBreakdown);
+      setTotalcbContribution("0.00");
+    } else {
+      if (costBreakdown.length > 0) {
+        if (costBreakdown[0].estimatedCosts !== undefined) {
+          console.log(costBreakdown);
+          onCostBreakdownTableChange("share", 0, costBreakdown[0].share);
+        }
+      }
+    }
+
     if (budgetSource.value !== "noBudget") {
       setEstimatedIncome(
         (
@@ -530,20 +546,38 @@ export default function Cerov(props: Props) {
     requestorsCompanyName,
   ]);
 
+  function totalAlert(value: any) {
+    if (!isNaN(value)) {
+      if (
+        value.substring(value.length - 1) === "%" &&
+        parseFloat(value.substr(0, value.length - 1)) > 100
+      ) {
+        return useColorModeValue("red.400", "#ABB2BF");
+      }
+    }
+  }
+
   function onCostBreakdownTableChange(column: string, row: number, value: any) {
     var table = [...costBreakdown];
     var sum = 0.0;
-    var arr: string[] = ["contribution", "estimatedCosts"];
+    var arr: string[] = [
+      "contribution",
+      "estimatedCosts",
+      "contributionEur",
+      "estimatedCostsEur",
+    ];
     var total: number[] = [
       parseFloat(estimatedIncomeBudgetCurrency),
       parseFloat(estimatedCostsBudgetCurrency),
+      parseFloat(estimatedIncome),
+      parseFloat(estimatedCosts),
     ];
     var totalShare = 0.0;
     var totalContribution = 0.0;
     var totalCosts = 0.0;
     table[row][column] = value;
     table.forEach((c: any) => {
-      sum += parseInt(c[column]);
+      sum += parseFloat(c[column]);
     });
     if (column !== "share") {
       table[row].share = ((value / sum) * 100).toFixed(2);
@@ -551,8 +585,14 @@ export default function Cerov(props: Props) {
     table.forEach((row: any) => {
       arr.forEach((col: any, index: number) => {
         if (col !== column) {
-          row[col] = ((row.share * total[index!]) / 100).toFixed(2);
-          console.log(total[index]);
+          if (
+            budgetSource.value === "noBudget" &&
+            (col === "contribution" || col === "contributionEur")
+          ) {
+            row[col] = 0;
+          } else {
+            row[col] = ((row.share * total[index!]) / 100).toFixed(2);
+          }
         }
       });
       totalShare += parseFloat(row.share) || 0;
@@ -856,9 +896,15 @@ export default function Cerov(props: Props) {
             value={budgetSource}
             onChange={(value) => {
               setBudgetSource(value);
-              if (value.value === "noBudget") {
-                setEstimatedIncomeBudgetCurrency("");
-                setEstimatedIncome("");
+              if (costBreakdown.length > 0) {
+                if (costBreakdown[0]["estimatedCosts"].value !== undefined) {
+                  console.log(costBreakdown);
+                  onCostBreakdownTableChange(
+                    "estimatedCosts",
+                    0,
+                    costBreakdown[0]["estimatedCosts"].value
+                  );
+                }
               }
             }}
             placeholder=""
@@ -1253,6 +1299,7 @@ export default function Cerov(props: Props) {
                         event.target.value
                       );
                     }}
+                    // bg={totalAlert(rowData.share)}
                     // onChange={(event) => {
                     //   var temp = [...costBreakdown];
                     //   temp[index!].share = event.target.value;
@@ -1310,6 +1357,7 @@ export default function Cerov(props: Props) {
               <Cell dataKey="budgetContributionEur">
                 {(rowData, index) => (
                   <Input
+                    disabled={budgetSource.value === "noBudget"}
                     value={rowData.contributionEur}
                     onChange={(event) => {}}
                   />
@@ -1359,11 +1407,12 @@ export default function Cerov(props: Props) {
                 title: campaignName,
                 parentId: null,
                 group: null,
+                status: "New",
                 created: new Date(),
                 updated: new Date(),
-                status: "New",
                 author: requestorsName,
                 data: {
+                  status: "New",
                   requestorsCompanyName: requestorsCompanyName.label,
                   companyCode: requestorsCompanyName.value.code,
                   requestorsCountry: requestorsCompanyName.value.country,
@@ -1421,6 +1470,7 @@ export default function Cerov(props: Props) {
                 status: "New",
                 author: requestorsName,
                 data: {
+                  status: "New",
                   vendorName: vendorName.label,
                   projectNumber: projectNumber,
                   companyCode: requestorsCompanyName.value.code,
@@ -1477,12 +1527,13 @@ export default function Cerov(props: Props) {
                   status: "New",
                   author: requestorsName,
                   data: {
+                    status: "New",
                     projectName: campaignName,
                     additionalInformation: comments,
                     campaignChannel: campaignChannel.label,
                     parentProjectNumber: projectNumber,
                     projectNumber: projectNumber,
-                    companyCode: company.companyCode,
+                    companyCode: company.companyCode === "6110" ? "6110" : "",
                     localProjectNumber: company.projectNumber,
                     campaignStartDate:
                       startDate === null ? null : startDate.toString(),
@@ -1509,18 +1560,16 @@ export default function Cerov(props: Props) {
                         ? 0.0
                         : parseFloat(company.contribution),
                     estimatedResultCC:
-                      (parseFloat(company.contribution) -
-                        parseFloat(company.estimatedCosts)) *
-                      (budgetSource.value === "noBudget" ? -1 : 1),
+                      parseFloat(company.contribution) -
+                      parseFloat(company.estimatedCosts),
                     estimatedIncomeEUR:
                       budgetSource.value === "noBudget"
                         ? 0.0
                         : parseFloat(company.contributionEur),
                     estimatedCostsEUR: parseFloat(company.estimatedCostsEur),
                     estimatedResultEUR:
-                      (parseFloat(company.contributionEur) -
-                        parseFloat(company.estimatedCostsEur)) *
-                      (budgetSource.value === "noBudget" ? -1 : 1),
+                      parseFloat(company.contributionEur) -
+                      parseFloat(company.estimatedCostsEur),
                     countryShare: parseFloat(company.share),
                     countryBudgetContributionEur: company.contribution,
                     countryCostEstimationEur: company.estimatedCosts,
@@ -1700,7 +1749,13 @@ export default function Cerov(props: Props) {
                   toast(
                     <Toast
                       title={"Project Created"}
-                      message={`Local project with number has been created.`}
+                      message={
+                        <p>
+                          Local project (
+                          <b>{response.data.submission.data.projectNumber}</b>)
+                          has been transferred into the tool
+                        </p>
+                      }
                       type={"success"}
                     />
                   );
@@ -1883,6 +1938,7 @@ export default function Cerov(props: Props) {
                 status: "New",
                 author: requestorsName,
                 data: {
+                  status: "New",
                   requestorsCompanyName: requestorsCompanyName.label,
                   companyCode: requestorsCompanyName.value.code,
                   requestorsCountry: requestorsCompanyName.value.country,
@@ -1953,6 +2009,7 @@ export default function Cerov(props: Props) {
                 status: "New",
                 author: requestorsName,
                 data: {
+                  status: "New",
                   vendorName: vendorName.label,
                   projectNumber: projectNumber,
                   productionProjectManager: vendor.projectManager,
@@ -1962,7 +2019,8 @@ export default function Cerov(props: Props) {
                   businessUnit: vendor.bu,
                   PH1: vendor.ph.label,
                   vendorBudgetCurrency:
-                    budgetSource.value === "noBudget"
+                    budgetSource.value === "noBudget" ||
+                    budgetSource.value === ""
                       ? "N/A"
                       : vendor.budgetCurrency.label,
                   vendorAmount:
@@ -2008,6 +2066,7 @@ export default function Cerov(props: Props) {
                   status: "New",
                   author: requestorsName,
                   data: {
+                    status: "New",
                     projectName: campaignName,
                     additionalInformation: comments,
                     campaignChannel: campaignChannel.label,

@@ -273,6 +273,7 @@ export default function Elov(props: Props) {
       status: "New",
       author: requestorsName,
       data: {
+        status: "New",
         requestorsCompanyName: requestorsCompanyName.label,
         companyCode: requestorsCompanyName.value.code,
         requestorsCountry: requestorsCompanyName.value.country,
@@ -330,6 +331,7 @@ export default function Elov(props: Props) {
       status: "New",
       author: requestorsName,
       data: {
+        status: "New",
         vendorName: vendorName.label,
         projectNumber: projectNumber,
         productionProjectManager: vendor.projectManager,
@@ -1447,6 +1449,7 @@ export default function Elov(props: Props) {
             status: "New",
             author: requestorsName,
             data: {
+              status: "New",
               requestorsCompanyName: requestorsCompanyName.label,
               companyCode: requestorsCompanyName.value.code,
               requestorsCountry: requestorsCompanyName.value.country,
@@ -1506,6 +1509,7 @@ export default function Elov(props: Props) {
             status: "New",
             author: requestorsName,
             data: {
+              status: "New",
               vendorName: vendorName.label,
               companyCode: requestorsCompanyName.value.code,
               projectNumber: projectNumber,
