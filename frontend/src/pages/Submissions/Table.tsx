@@ -4314,7 +4314,10 @@ export function SubmissionsTable(props: Props) {
       resizable: true,
       className: "red-border",
       cellRenderer: (props: any) =>
-        props.rowData.parentId === null ? (
+        props.rowData.parentId === null &&
+        props.rowData.data.status !== "Created" &&
+        props.rowData.author !== "formiks" &&
+        props.rowData.id !== "total" ? (
           <EditableTableCell
             type={"button"}
             backgroundColor="#fef9fa"
@@ -4342,24 +4345,39 @@ export function SubmissionsTable(props: Props) {
         ),
     },
     {
-      key: "__actions.delete",
-      dataKey: "__actions.delete",
-      title: "Delete",
-      width: columnWidth("__actions.delete", 100),
+      key: "__actions.reject",
+      dataKey: "__actions.reject",
+      title: "Reject",
+      width: columnWidth("__actions.reject", 100),
       resizable: true,
       className: "red-border",
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"button"}
-          textColor={"red"}
-          backgroundColor="#fef9fa"
-          onUpdate={deleteSubmission}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={"delete"}
-        />
-      ),
+      cellRenderer: (props: any) =>
+        props.rowData.parentId === null &&
+        props.rowData.data.status !== "Created" &&
+        props.rowData.data.status !== "Rejected" &&
+        props.rowData.author !== "formiks" &&
+        props.rowData.id !== "total" ? (
+          <EditableTableCell
+            type={"button"}
+            textColor={"red"}
+            backgroundColor="#fef9fa"
+            onUpdate={(submissionId: string) => {
+              handleCellUpdate(submissionId, "data.status", "Rejected");
+            }}
+            rowIndex={props.rowIndex}
+            columnKey={props.column.dataKey}
+            rowData={props.rowData}
+            initialValue={"reject"}
+          />
+        ) : (
+          <div
+            style={{
+              backgroundColor: "#F7FAFC",
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        ),
     },
   ];
 

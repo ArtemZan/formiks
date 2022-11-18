@@ -1675,7 +1675,7 @@ export default function Cerov(props: Props) {
                     budgetSource.value === "noBudget"
                       ? "N/A"
                       : exchangeRates.label,
-                  vendorAmount: company.estimtedCosts,
+                  vendorAmount: parseFloat(company.estimatedCosts),
                   vendorShare: 100,
                   projectType: "European One Vendor",
                   companyName: company.companyName,
