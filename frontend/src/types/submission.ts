@@ -1,6 +1,7 @@
 export interface Submission {
   id?: string;
   parentId: string | null;
+  viewId: string | null;
   group: string | null;
   project: string;
   created: Date;
@@ -14,4 +15,5 @@ export interface Submission {
 export interface SubmissionWithChildren {
   submission: Submission;
   children: Submission[];
+  local: string | null;
 }

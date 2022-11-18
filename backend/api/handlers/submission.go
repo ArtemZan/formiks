@@ -36,6 +36,7 @@ func (r *Submission) FetchVendorTablePresets(c *gin.Context) {
 	response, _ := r.repo.FetchVendorTablePresets(context.TODO())
 	c.JSON(http.StatusOK, response)
 }
+
 func (r *Submission) UpsertVendorTablePreset(c *gin.Context) {
 	var data models.VendorTablePreset
 	err := c.BindJSON(&data)
@@ -113,24 +114,36 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		return
 	}
 
+	var hasChanged bool
+
 	parentProjectNumber, exists := submissionWithChildren.Submission.Data["projectNumber"].(string)
 	if !exists {
 		c.Status(http.StatusBadRequest)
 		return
 	}
+
 	childrenProjectNumbers := []string{}
+
 	for _, child := range submissionWithChildren.Children {
 		if child.Group == "country" {
-			if pn, exists := child.Data["localProjectNumber"].(string); exists {
-				childrenProjectNumbers = append(childrenProjectNumbers, pn)
+			if submissionWithChildren.Local != nil && child.Data["companyCode"] == *submissionWithChildren.Local {
+				if pn, exists := child.Data["projectNumber"].(string); exists {
+					childrenProjectNumbers = append(childrenProjectNumbers, pn)
+				} else {
+					c.Status(http.StatusBadRequest)
+					return
+				}
 			} else {
-				c.Status(http.StatusBadRequest)
-				return
+				if pn, exists := child.Data["localProjectNumber"].(string); exists {
+					childrenProjectNumbers = append(childrenProjectNumbers, pn)
+				} else {
+					c.Status(http.StatusBadRequest)
+					return
+				}
 			}
 		}
 	}
 
-	var hasChanged bool
 	for {
 		pns := make([]string, 0, 1+len(childrenProjectNumbers))
 		pns = append(pns, parentProjectNumber)
@@ -162,32 +175,59 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		}
 	}
 
-	submissionWithChildren.Submission.ID = primitive.NewObjectID()
-	submissionWithChildren.Submission.Created = time.Now()
-	submissionWithChildren.Submission.Updated = time.Now()
-	submissionWithChildren.Submission.ParentID = nil
+	views, err := r.repo.CreateViews(context.TODO(), submissionWithChildren)
 
-	for index := range submissionWithChildren.Children {
-		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
-		if _, ok := submissionWithChildren.Children[index].ParentID.(string); ok {
-			submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
+	if submissionWithChildren.Local != nil {
+		var targetSubmission models.Submission
+
+		for _, child := range submissionWithChildren.Children {
+			if child.Group == "country" && child.Data["companyCode"] == *submissionWithChildren.Local {
+				targetSubmission = child
+			}
 		}
-		submissionWithChildren.Children[index].Created = time.Now()
-		submissionWithChildren.Children[index].Updated = time.Now()
-		submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
+		targetSubmission.ID = primitive.NewObjectID()
+		targetSubmission.ViewID = views.Submission.ID.Hex()
+		targetSubmission.ParentID = nil
+		targetSubmission.Created = time.Now()
+		targetSubmission.Updated = time.Now()
+		targetSubmission.Project = submissionWithChildren.Submission.Project
+
+		r.repo.Create(context.TODO(), targetSubmission)
+
+		c.JSON(http.StatusOK, models.SubmissionWithChildrenResponse{
+			Submission: targetSubmission,
+			HasChanged: hasChanged,
+		})
+	} else {
+		submissionWithChildren.Submission.ID = primitive.NewObjectID()
+		submissionWithChildren.Submission.Created = time.Now()
+		submissionWithChildren.Submission.Updated = time.Now()
+		submissionWithChildren.Submission.ParentID = nil
+		submissionWithChildren.Submission.ViewID = views.Submission.ID.Hex()
+
+		for index := range submissionWithChildren.Children {
+			submissionWithChildren.Children[index].ID = primitive.NewObjectID()
+			if _, ok := submissionWithChildren.Children[index].ParentID.(string); ok {
+				submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
+			}
+			submissionWithChildren.Children[index].ViewID = views.Children[index].ID.Hex()
+			submissionWithChildren.Children[index].Created = time.Now()
+			submissionWithChildren.Children[index].Updated = time.Now()
+			submissionWithChildren.Children[index].Project = submissionWithChildren.Submission.Project
+		}
+
+		for _, child := range submissionWithChildren.Children {
+			r.repo.Create(context.TODO(), child)
+		}
+
+		r.repo.Create(context.TODO(), submissionWithChildren.Submission)
+
+		c.JSON(http.StatusOK, models.SubmissionWithChildrenResponse{
+			Submission: submissionWithChildren.Submission,
+			Children:   submissionWithChildren.Children,
+			HasChanged: hasChanged,
+		})
 	}
-
-	for _, child := range submissionWithChildren.Children {
-		r.repo.Create(context.TODO(), child)
-	}
-
-	r.repo.Create(context.TODO(), submissionWithChildren.Submission)
-
-	c.JSON(http.StatusOK, models.SubmissionWithChildrenResponse{
-		Submission: submissionWithChildren.Submission,
-		Children:   submissionWithChildren.Children,
-		HasChanged: hasChanged,
-	})
 }
 
 func (r *Submission) Update(c *gin.Context) {

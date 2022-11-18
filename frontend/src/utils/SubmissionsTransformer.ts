@@ -42,6 +42,7 @@ export function SubmissionsTransformer(submissions: Submission[]) {
             gs[i] = {
               parentId: submissions[0].parentId,
               group: null,
+              viewId: submissions[0].viewId,
               project: submissions[0].project,
               created: emptyDate,
               updated: emptyDate,
@@ -71,6 +72,7 @@ export function SubmissionsTransformer(submissions: Submission[]) {
       transformed.push({
         id: uuidv4(),
         parentId: subSubmissions[0].parentId,
+        viewId: subSubmissions[0].viewId,
         group: "transformed",
         project: subSubmissions[0].project,
         created: emptyDate,

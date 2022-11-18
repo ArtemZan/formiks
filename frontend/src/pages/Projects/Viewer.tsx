@@ -25,7 +25,6 @@ import { FiSettings, FiRefreshCw } from "react-icons/all";
 
 import Cerov from "../../components/projects/cerov";
 import Ermv from "../../components/projects/ermv";
-import Erov from "../../components/projects/erov";
 import Elmv from "../../components/projects/elmv";
 import Elov from "../../components/projects/elov";
 import Por from "../../components/projects/por";
@@ -62,11 +61,6 @@ export function Viewer(props: Props) {
         if (props.match.params.id === "619515b754e61c8dd33daa52") {
           setPredefinedProject(
             <Ermv project={project} history={props.history} />
-          );
-        }
-        if (props.match.params.id === "6246bc93fa2a446faadb8d9a") {
-          setPredefinedProject(
-            <Erov project={project} history={props.history} />
           );
         }
         if (props.match.params.id === "6246ec8efa2a446faadb8d9b") {
@@ -169,14 +163,12 @@ export function Viewer(props: Props) {
       </Box>
       {predefinedProject === null ? (
         <Form
-          // onChange={(event: any) => {
-          //   console.log(event);
-          // }}
           onSubmit={(formio: any) => {
             delete formio.data["submit"];
             var submission: Submission = {
               project: project.id ?? "",
               parentId: null,
+              viewId: null,
               group: null,
               created: new Date(),
               updated: new Date(),

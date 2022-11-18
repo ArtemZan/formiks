@@ -78,17 +78,10 @@ func create(d *Draft, submissionWithChildren models.SubmissionWithChildren) mode
 	submissionWithChildren.Submission.Updated = time.Now()
 	submissionWithChildren.Submission.ParentID = nil
 
-	if _, ok := submissionWithChildren.Submission.Data["status"].(string); !ok {
-		submissionWithChildren.Submission.Data["status"] = "Incomplete"
-	}
-
 	for index := range submissionWithChildren.Children {
 		submissionWithChildren.Children[index].ID = primitive.NewObjectID()
 		if _, ok := submissionWithChildren.Children[index].ParentID.(string); ok {
 			submissionWithChildren.Children[index].ParentID = submissionWithChildren.Submission.ID.Hex()
-		}
-		if _, ok := submissionWithChildren.Children[index].Data["status"].(string); !ok {
-			submissionWithChildren.Children[index].Data["status"] = "Incomplete"
 		}
 		submissionWithChildren.Children[index].Created = time.Now()
 		submissionWithChildren.Children[index].Updated = time.Now()

@@ -28,7 +28,6 @@ import { API, RestAPI } from "../../api/rest";
 import { FiSettings, FiRefreshCw } from "react-icons/all";
 
 import Ermv from "../../components/projects/ermv";
-import Erov from "../../components/projects/erov";
 import Elmv from "../../components/projects/elmv";
 import Elov from "../../components/projects/elov";
 import Por from "../../components/projects/por";
@@ -99,65 +98,55 @@ export function Viewer(props: Props) {
           }
         });
       } else {
-        RestAPI.getSubmissionWithChildren(props.match.params.id).then(
-          (response) => {
-            setForm({ display: "form", components: [] });
-            if (
-              response.data.submission.project === "619515b754e61c8dd33daa52"
-            ) {
-              setPredefinedProject(
-                <Ermv
-                  project={project}
-                  submission={response.data.submission}
-                  children={response.data.children}
-                  history={props.history}
-                />
-              );
-            }
-            if (
-              response.data.submission.project === "6246bc93fa2a446faadb8d9a" ||
-              response.data.submission.project === "629dfb3f55d209262194a3e6"
-            ) {
-              setPredefinedProject(
-                <Erov
-                  project={project}
-                  submission={response.data.submission}
-                  children={response.data.children}
-                  history={props.history}
-                />
-              );
-            }
-            if (
-              response.data.submission.project === "6246ec8efa2a446faadb8d9b"
-            ) {
-              setPredefinedProject(
-                <Elmv
-                  project={project}
-                  submission={response.data.submission}
-                  children={response.data.children}
-                  history={props.history}
-                />
-              );
-            }
-            if (
-              response.data.submission.project === "624ac98682eeddf1a9b6a622"
-            ) {
-              setPredefinedProject(
-                <Elov
-                  project={project}
-                  submission={response.data.submission}
-                  children={response.data.children}
-                  history={props.history}
-                />
-              );
-            }
-            if (props.match.params.id === "62610ab73a88d397b05cea12") {
-              setPredefinedProject(
-                <Por project={project} history={props.history} />
-              );
-            }
+        RestAPI.getView(props.match.params.id).then((response) => {
+          setForm({ display: "form", components: [] });
+          if (response.data.submission.project === "629dfb3f55d209262194a3e6") {
+            setPredefinedProject(
+              <Cerov
+                project={project}
+                submission={response.data.submission}
+                children={response.data.children}
+                history={props.history}
+                isDraft={true}
+              />
+            );
           }
-        );
+          if (response.data.submission.project === "619515b754e61c8dd33daa52") {
+            setPredefinedProject(
+              <Ermv
+                project={project}
+                submission={response.data.submission}
+                children={response.data.children}
+                history={props.history}
+              />
+            );
+          }
+          if (response.data.submission.project === "6246ec8efa2a446faadb8d9b") {
+            setPredefinedProject(
+              <Elmv
+                project={project}
+                submission={response.data.submission}
+                children={response.data.children}
+                history={props.history}
+              />
+            );
+          }
+          if (response.data.submission.project === "624ac98682eeddf1a9b6a622") {
+            setPredefinedProject(
+              <Elov
+                project={project}
+                submission={response.data.submission}
+                children={response.data.children}
+                history={props.history}
+              />
+            );
+          }
+          if (props.match.params.id === "62610ab73a88d397b05cea12") {
+            setPredefinedProject(
+              <Por project={project} history={props.history} />
+            );
+          }
+        });
       }
     }
   }, []);
@@ -216,6 +205,7 @@ export function Viewer(props: Props) {
             var submission: Submission = {
               project: project.id ?? "",
               parentId: null,
+              viewId: null,
               group: null,
               created: new Date(),
               updated: new Date(),

@@ -267,6 +267,7 @@ export default function Elov(props: Props) {
       project: projectId,
       title: campaignName,
       parentId: null,
+      viewId: null,
       group: null,
       created: new Date(),
       updated: new Date(),
@@ -325,6 +326,7 @@ export default function Elov(props: Props) {
       project: projectId,
       title: "",
       parentId: "",
+      viewId: null,
       group: "vendor",
       created: new Date(),
       updated: new Date(),
@@ -375,6 +377,7 @@ export default function Elov(props: Props) {
     var submission: SubmissionWithChildren = {
       submission: parent,
       children,
+      local: null,
     };
     if (props.isDraft) {
       submission.submission.id = props.submission.id;
@@ -1443,6 +1446,7 @@ export default function Elov(props: Props) {
             project: projectId,
             title: campaignName,
             parentId: null,
+            viewId: null,
             group: null,
             created: new Date(),
             updated: new Date(),
@@ -1503,6 +1507,7 @@ export default function Elov(props: Props) {
             project: projectId,
             title: "",
             parentId: "",
+            viewId: null,
             group: "vendor",
             created: new Date(),
             updated: new Date(),
@@ -1555,6 +1560,7 @@ export default function Elov(props: Props) {
           var submission: SubmissionWithChildren = {
             submission: parent,
             children,
+            local: null,
           };
           if (props.isDraft) {
             RestAPI.deleteDraft(props.submission.id).then(() => {

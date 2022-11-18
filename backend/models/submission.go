@@ -10,6 +10,7 @@ type Submission struct {
 	ID       primitive.ObjectID     `bson:"_id" json:"id,omitempty"`
 	Project  string                 `bson:"project" json:"project"`
 	ParentID interface{}            `bson:"parentId" json:"parentId"`
+	ViewID   interface{}            `bson:"viewId" json:"viewId"`
 	Created  time.Time              `json:"created" bson:"created"`
 	Updated  time.Time              `json:"updated" bson:"updated"`
 	Title    string                 `json:"title" bson:"title"`
@@ -28,6 +29,7 @@ type ProjectNumberChange struct {
 type SubmissionWithChildren struct {
 	Submission Submission   `json:"submission"`
 	Children   []Submission `json:"children"`
+	Local      *string      `json:"local,omitempty"`
 }
 
 type SubmissionWithChildrenResponse struct {

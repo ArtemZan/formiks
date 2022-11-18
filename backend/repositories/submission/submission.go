@@ -109,6 +109,7 @@ func (r *submissionRepo) FetchByIDWithChildren(ctx context.Context, id primitive
 			response.Children = append(response.Children, s)
 		}
 	}
+
 	r.Cache.Set(cacheID, response, cache.DefaultExpiration)
 	return response, nil
 }
@@ -121,6 +122,30 @@ func (r *submissionRepo) Create(ctx context.Context, submission models.Submissio
 		submission.ID = result.InsertedID.(primitive.ObjectID)
 	}
 	return submission, err
+}
+
+func (r *submissionRepo) CreateViews(ctx context.Context, submission models.SubmissionWithChildren) (models.SubmissionWithChildren, error) {
+	r.Cache.Flush()
+	submission.Submission.ID = primitive.NewObjectID()
+
+	for _, cs := range submission.Children {
+		cs.ID = primitive.NewObjectID()
+		cs.ParentID = submission.Submission.ID.Hex()
+		r.Conn.Collection("views").InsertOne(ctx, cs)
+	}
+
+	r.Conn.Collection("views").InsertOne(ctx, submission.Submission)
+
+	return submission, nil
+}
+
+func (r *submissionRepo) DeleteViews(ctx context.Context, id string) error {
+	pID, _ := primitive.ObjectIDFromHex(id)
+	_, err := r.Conn.Collection("views").DeleteOne(ctx, bson.M{"_id": pID})
+
+	_, err = r.Conn.Collection("views").DeleteMany(ctx, bson.M{"parentId": id})
+
+	return err
 }
 
 func (r *submissionRepo) Update(ctx context.Context, submission models.Submission) error {
@@ -140,10 +165,17 @@ func (r *submissionRepo) PartialUpdate(ctx context.Context, filter, update inter
 func (r *submissionRepo) Delete(ctx context.Context, id primitive.ObjectID, children bool) error {
 	r.Cache.Flush()
 
+	submission, _ := r.FetchByID(ctx, id)
+
 	_, err := r.Conn.Collection("submissions").DeleteOne(ctx, bson.M{"_id": id})
 	if children && err == nil {
 		_, err = r.Conn.Collection("submissions").DeleteMany(ctx, bson.M{"parentId": id})
 	}
+
+	if viewID, ok := submission.ViewID.(string); ok {
+		r.DeleteViews(ctx, viewID)
+	}
+
 	return err
 }
 

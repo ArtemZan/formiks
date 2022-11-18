@@ -710,6 +710,7 @@ export default function Elov(props: Props) {
                   project: "62610ab73a88d397b05cea12",
                   title: "",
                   parentId: targetId,
+                  viewId: null,
                   group: "vendor",
                   created: new Date(),
                   updated: new Date(),

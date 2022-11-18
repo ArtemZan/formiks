@@ -1829,6 +1829,7 @@ export default function Ermv(props: Props) {
                 project: projectId,
                 title: campaignName,
                 parentId: null,
+                viewId: null,
                 group: null,
                 created: new Date(),
                 updated: new Date(),
@@ -1882,6 +1883,7 @@ export default function Ermv(props: Props) {
                   project: projectId,
                   title: "",
                   parentId: "",
+                  viewId: null,
                   group: "vendor",
                   created: new Date(),
                   updated: new Date(),
@@ -1935,6 +1937,7 @@ export default function Ermv(props: Props) {
                   project: projectId,
                   title: "",
                   parentId: null,
+                  viewId: null,
                   group: "country",
                   created: new Date(),
                   updated: new Date(),
@@ -1989,6 +1992,7 @@ export default function Ermv(props: Props) {
               var submission: SubmissionWithChildren = {
                 submission: parent,
                 children,
+                local: null,
               };
               RestAPI.createSubmissionWithChildren(submission).then(
                 (response) => {

@@ -17,6 +17,7 @@ export class API {
   public dropdownsUrl = `${this.baseUrl}/dropdowns/`;
   public templatesUrl = `${this.baseUrl}/templates/`;
   public draftsUrl = `${this.baseUrl}/drafts/`;
+  public viewsUrl = `${this.baseUrl}/views/`;
 
   getRoles(): Promise<AxiosResponse<string[]>> {
     return axios.get(`${this.usersUrl}roles`);
@@ -167,6 +168,10 @@ export class API {
   }
   deleteDraft(id: string): Promise<AxiosResponse> {
     return axios.delete(`${this.draftsUrl}${id}`);
+  }
+
+  getView(id: string): Promise<AxiosResponse<SubmissionWithChildren>> {
+    return axios.get<SubmissionWithChildren>(`${this.viewsUrl}${id}`);
   }
 
   updateVendorTableDefaultConfig(

@@ -4315,16 +4315,16 @@ export function SubmissionsTable(props: Props) {
       className: "red-border",
       cellRenderer: (props: any) =>
         props.rowData.parentId === null &&
-        props.rowData.data.status !== "Created" &&
+        props.rowData.viewId !== null &&
         props.rowData.author !== "formiks" &&
         props.rowData.id !== "total" ? (
           <EditableTableCell
             type={"button"}
             backgroundColor="#fef9fa"
             textColor={"yellow"}
-            onUpdate={(submissionId: string) => {
+            onUpdate={() => {
               window.open(
-                "/submissions/view/" + submissionId,
+                "/submissions/view/" + props.rowData.viewId,
                 "_blank",
                 "noopener,noreferrer"
               );
@@ -6058,6 +6058,7 @@ export function SubmissionsTable(props: Props) {
                                 var submission: Submission = {
                                   project: props.rowData.project,
                                   parentId: submissionId,
+                                  viewId: null,
                                   group: "communication",
                                   created: new Date(),
                                   updated: new Date(),
@@ -6160,6 +6161,7 @@ export function SubmissionsTable(props: Props) {
                               // FIXME
                               project: "619515b754e61c8dd33daa52",
                               parentId: null,
+                              viewId: null,
                               group: "communication",
                               created: new Date(),
                               updated: new Date(),

@@ -23,6 +23,8 @@ type SubmissionRepo interface {
 	FetchByID(ctx context.Context, id primitive.ObjectID) (models.Submission, error)
 	FetchByIDWithChildren(ctx context.Context, id primitive.ObjectID) (models.SubmissionWithChildren, error)
 	Create(ctx context.Context, submission models.Submission) (models.Submission, error)
+	CreateViews(ctx context.Context, submission models.SubmissionWithChildren) (models.SubmissionWithChildren, error)
+	DeleteViews(ctx context.Context, id string) error
 	Update(ctx context.Context, submission models.Submission) error
 	PartialUpdate(ctx context.Context, filter, update interface{}) error
 	Delete(ctx context.Context, id primitive.ObjectID, children bool) error
