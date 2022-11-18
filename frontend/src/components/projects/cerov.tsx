@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useReducer } from "react";
+import React, { Children, useReducer } from "react";
 import { useEffect, useState } from "react";
 import {
   useColorModeValue,
@@ -180,10 +180,18 @@ export default function Cerov(props: Props) {
       setBudgetApprovedByVendor(
         props.submission.data.budgetApprovedByVendor ?? ""
       );
-      setExchangeRates({
-        label: props.submission.data.campaignBudgetsCurrency ?? "",
-        value: props.submission.data.campaignBudgetsCurrency ?? "",
-      });
+      if (
+        ExchangeRates.length > 0 &&
+        props.submission.data.campaignBudgetsCurrency !== ""
+      ) {
+        setExchangeRates({
+          label: props.submission.data.campaignBudgetsCurrency ?? "",
+          value:
+            ExchangeRates.find(
+              (b) => b.label === props.submission.data.campaignBudgetsCurrency
+            ).value ?? "",
+        });
+      }
       setEstimatedIncomeBudgetCurrency(
         (
           props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
@@ -212,7 +220,7 @@ export default function Cerov(props: Props) {
         parseFloat(
           (
             ExchangeRates.find(
-              (rate) => rate.label === props.submission.data.localCurrency
+              (rate) => rate.label === props.submission.data.campaignCurrency
             ) || "0"
           ).value
         )
@@ -271,6 +279,9 @@ export default function Cerov(props: Props) {
             })
         );
         var c: any[] = [];
+        var totalShare = 0.0;
+        var totalCosts = 0.0;
+        var totalContribution = 0.0;
         props.children
           .filter((s) => s.group === "country")
           .forEach((s) => {
@@ -285,8 +296,17 @@ export default function Cerov(props: Props) {
                 2
               ),
               estimatedCosts: (s.data.countryCostEstimationCC || 0).toFixed(2),
+              estimatedCostsEur: (s.data.estimatedCostsEUR || 0).toFixed(2),
+              contributionEur: (s.data.estimatedIncomeEUR || 0).toFixed(2),
             });
+            totalShare += s.data.countryShare || 0;
+            totalContribution += s.data.countryBudgetContributionCC || 0;
+            totalCosts += s.data.countryCostEstimationCC || 0;
           });
+
+        setTotalcbShare(totalShare.toFixed(2).toString());
+        setTotalcbContribution(totalContribution.toFixed(2).toString());
+        setTotalcbCosts(totalCosts.toFixed(2).toString());
         setCostBreakdown([...c]);
       }
 
@@ -377,56 +397,6 @@ export default function Cerov(props: Props) {
     setCostBreakdown(data);
   }, [companiesParticipating, projectNumber]);
 
-  // useEffect(() => {
-  //   var totalShare = 0.0;
-  //   var totalContribution = 0.0;
-  //   var totalCosts = 0.0;
-  //   var temp = [...costBreakdown];
-  //   // contributionEur: "",
-  //   // estimatedCostsEur: "",
-  //   temp.forEach((row: any) => {
-  //     if (budgetSource.value === "noBudget") {
-  //       row.contribution = "0.00";
-  //       row.contributionEur = "0.00";
-  //     } else {
-  //       row.contribution = (
-  //         parseFloat(row.share) *
-  //         0.01 *
-  //         parseFloat(estimatedIncomeBudgetCurrency)
-  //       ).toFixed(2);
-  //       row.contributionEur = (
-  //         parseFloat(row.share) *
-  //         0.01 *
-  //         parseFloat(estimatedIncome)
-  //       ).toFixed(2);
-  //     }
-
-  //     row.estimatedCosts = (
-  //       parseFloat(row.share) *
-  //       0.01 *
-  //       parseFloat(estimatedCostsBudgetCurrency)
-  //     ).toFixed(2);
-  //     row.estimatedCostsEur = (
-  //       parseFloat(row.share) *
-  //       0.01 *
-  //       parseFloat(estimatedCosts)
-  //     ).toFixed(2);
-  //     totalShare += parseFloat(row.share) || 0;
-  //     totalContribution += parseFloat(row.contribution) || 0;
-  //     totalCosts += parseFloat(row.estimatedCosts) || 0;
-  //   });
-  //   if (!isEqual(costBreakdown, temp)) {
-  //     setCostBreakdown(temp);
-  //   }
-  //   setTotalcbShare(totalShare.toFixed(2));
-  //   setTotalcbContribution(totalContribution.toFixed(2));
-  //   setTotalcbCosts(totalCosts.toFixed(2));
-  // }, [
-  //   costBreakdown,
-  //   estimatedIncomeBudgetCurrency,
-  //   estimatedCostsBudgetCurrency,
-  // ]);
-
   useEffect(() => {
     if (props.submission && !injectionReady) {
       return;
@@ -478,7 +448,6 @@ export default function Cerov(props: Props) {
     } else {
       if (costBreakdown.length > 0) {
         if (costBreakdown[0].estimatedCosts !== undefined) {
-          console.log(costBreakdown);
           onCostBreakdownTableChange("share", 0, costBreakdown[0].share);
         }
       }
@@ -547,12 +516,10 @@ export default function Cerov(props: Props) {
   ]);
 
   function totalAlert(value: any) {
-    if (!isNaN(value)) {
-      if (
-        value.substring(value.length - 1) === "%" &&
-        parseFloat(value.substr(0, value.length - 1)) > 100
-      ) {
-        return useColorModeValue("red.400", "#ABB2BF");
+    if (value) {
+      value = value.replace("%", "");
+      if (parseFloat(value) > 100) {
+        return useColorModeValue("red.300", "#ABB2BF");
       }
     }
   }
@@ -898,7 +865,6 @@ export default function Cerov(props: Props) {
               setBudgetSource(value);
               if (costBreakdown.length > 0) {
                 if (costBreakdown[0]["estimatedCosts"].value !== undefined) {
-                  console.log(costBreakdown);
                   onCostBreakdownTableChange(
                     "estimatedCosts",
                     0,
@@ -1299,7 +1265,7 @@ export default function Cerov(props: Props) {
                         event.target.value
                       );
                     }}
-                    // bg={totalAlert(rowData.share)}
+                    bg={totalAlert(rowData.share)}
                     // onChange={(event) => {
                     //   var temp = [...costBreakdown];
                     //   temp[index!].share = event.target.value;
@@ -1779,7 +1745,6 @@ export default function Cerov(props: Props) {
               interface FD {
                 [key: string]: any;
               }
-
               var formattedData = [];
               formattedData.push(["Request", "European One Vendor"]);
               formattedData.push([
@@ -2086,14 +2051,14 @@ export default function Cerov(props: Props) {
                     estimatedIncomeEUR:
                       budgetSource.value === "noBudget"
                         ? 0.0
-                        : parseFloat(estimatedIncome),
-                    estimatedCostsEUR: parseFloat(estimatedCosts),
+                        : parseFloat(company.contributionEur),
+                    estimatedCostsEUR: parseFloat(company.estimatedCostsEur),
                     estimatedResultEUR:
-                      parseFloat(netProfitTarget) *
-                      (budgetSource.value === "noBudget" ? -1 : 1),
+                      parseFloat(company.contributionEur) -
+                      parseFloat(company.estimatedCostsEur),
                     estimatedResultBC:
-                      parseFloat(netProfitTargetBudgetCurrency) *
-                      (budgetSource.value === "noBudget" ? -1 : 1),
+                      parseFloat(company.contribution) -
+                      parseFloat(company.estimatedCosts),
                     projectType: "European One Vendor",
                     companyName: company.companyName,
                     countryCodeEMEA: company.companyCode,
