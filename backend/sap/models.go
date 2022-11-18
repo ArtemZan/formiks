@@ -1,16 +1,13 @@
 package sap
 
 type FRequest struct {
-	Request struct {
-		FUNCTION       string `json:"_FUNCTION"`
-		IM_ORDER       interface{}
-		IM_ORDER_TYPE  interface{}
-		IM_ORDER_NAME  interface{}
-		IM_COMP_CODE   interface{}
-		IM_PERSON_RESP interface{}
-		IM_CURRENCY    interface{}
-		IM_CO_AREA     interface{}
-	}
+	IM_ORDER       interface{}
+	IM_ORDER_TYPE  interface{}
+	IM_ORDER_NAME  interface{}
+	IM_COMP_CODE   interface{}
+	IM_PERSON_RESP interface{}
+	IM_CURRENCY    interface{}
+	IM_CO_AREA     interface{}
 }
 
 type FResponse struct {

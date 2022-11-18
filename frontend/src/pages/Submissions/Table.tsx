@@ -39,7 +39,7 @@ import Select from "react-select";
 import { Submission } from "../../types/submission";
 import styled from "styled-components";
 import DatePicker from "react-datepicker";
-import Toast from "../../components/Toast";
+import Toast, { ToastType } from "../../components/Toast";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
 
 import BaseTable, {
@@ -1314,7 +1314,7 @@ export function SubmissionsTable(props: Props) {
       if (cells.length === 89) {
         const visibleIndices = getVisibleColumnIndices(scrollLeft, columns);
         const startIndex = visibleIndices[0];
-        const visibleCells = visibleIndices.map((x) => cells[x]);
+        const visibleCells: any = visibleIndices.map((x) => cells[x]);
 
         if (startIndex > 0) {
           let width = 0;
@@ -1406,23 +1406,34 @@ export function SubmissionsTable(props: Props) {
   function callSap(submissionId: string) {
     RestAPI.callSapSubmission(submissionId)
       .then((response) => {
+        var message = `Order ${response.data.IntOrderOut.EX_ORDERID} has been successfully created`;
+        var type = "success";
+
+        switch (response.data.IntOrderOut.EX_SUBRC) {
+          case 4:
+            message = `Order ${response.data.IntOrderOut.EX_ORDERID} already exists`;
+            type = "error";
+        }
+
         toast(
           <Toast
             title={"SAP Response"}
-            message={
-              <div dangerouslySetInnerHTML={{ __html: response.data }} />
-            }
-            type={"success"}
+            message={<div dangerouslySetInnerHTML={{ __html: message }} />}
+            type={type as ToastType}
           />
         );
-        handleCellUpdate(submissionId, "data.status", "Created");
+        if (type === "success") {
+          handleCellUpdate(submissionId, "data.status", "Created");
+        }
       })
       .catch((error) => {
         toast(
           <Toast
             title={"SAP Response"}
             message={
-              <div dangerouslySetInnerHTML={{ __html: error.response.data }} />
+              <div
+                dangerouslySetInnerHTML={{ __html: "Failed to create order" }}
+              />
             }
             type={"error"}
           />

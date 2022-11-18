@@ -231,8 +231,7 @@ func (r *Submission) CallSap(c *gin.Context) {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-	c.String(sap.ZsdMdfOrder(submission))
-
+	c.JSON(200, sap.ZsdMdfOrder(submission))
 }
 
 func (r *Submission) Delete(c *gin.Context) {
