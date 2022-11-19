@@ -861,9 +861,15 @@ export default function Cerov(props: Props) {
     table.forEach((c: any) => {
       sum += parseFloat(c[column]);
     });
-    if (column !== "share") {
-      table[row].share = ((value / sum) * 100).toFixed(2);
-    }
+    table.forEach((c: any) => {
+      if (column === "contribution") {
+        c.share = ((c.contribution / sum) * 100).toFixed(2);
+      }
+      if (column === "estimatedCosts") {
+        c.share = ((c.estimatedCosts / sum) * 100).toFixed(2);
+      }
+    });
+
     table.forEach((row: any) => {
       arr.forEach((col: any, index: number) => {
         if (col !== column) {

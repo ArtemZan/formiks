@@ -2020,6 +2020,7 @@ export function SubmissionsTable(props: Props) {
           }
           onUpdate={(id: string, path: string, value: any) => {
             if (typeof value === "object") {
+              handleCellUpdate(id, "data.status", "New");
               handleCellUpdate(id, path, value.hersteller);
               handleCellUpdate(id, "data.debitorNumber", value.debitorischer);
             } else {
