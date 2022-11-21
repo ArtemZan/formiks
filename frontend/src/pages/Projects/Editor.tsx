@@ -506,7 +506,6 @@ export function Editor(props: Props) {
           }}
           form={{ display: "form", components: project.components }}
           onChange={(schema: any) => {
-            console.log(schema);
             setProject((prev) => ({
               ...prev,
               components: schema.components,

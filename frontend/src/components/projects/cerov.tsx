@@ -628,8 +628,6 @@ export default function Cerov(props: Props) {
         // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
       },
     });
-    console.log(vendor);
-    console.log([...children]);
     costBreakdown.forEach((company: any) => {
       if (local !== null && local === company.companyCode) {
         children.push({

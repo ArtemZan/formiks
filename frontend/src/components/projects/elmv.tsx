@@ -479,7 +479,6 @@ export default function Elmv(props: Props) {
     var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
     var totalCostsLC = parseFloat(totalEstimatedCostsLC);
     var totalCostsEur = parseFloat(estimatedCosts);
-    console.log(vendors);
     var temp = [...vendors];
     temp.slice(0, -1).forEach((row: any) => {
       row.eurBudget = (

@@ -50,7 +50,6 @@ export function Explorer(props: Props) {
       setProjects(response.data);
     });
     RestAPI.getDrafts().then((response) => {
-      console.log(response.data);
       setDrafts(response.data);
     });
   }, []);

@@ -1251,7 +1251,6 @@ export default function Elov(props: Props) {
             }}
             placeholder=""
             onChange={(value: any) => {
-              console.log(value);
               var temp = { ...vendor };
               temp.bu = value.label;
               setVendor(temp);

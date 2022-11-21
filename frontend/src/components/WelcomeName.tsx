@@ -8,7 +8,6 @@ const WelcomeName = () => {
 
   useEffect(() => {
     if (account && account.name) {
-      console.log(account);
       setName(account.name.split(" ")[0]);
     } else {
       setName("");
