@@ -1,4 +1,4 @@
-export function numberWithCommas(x: any) {
+export function NumberWithCommas(x: any) {
   return !isNaN(x) && typeof x === "number"
     ? x
         .toFixed(2)

@@ -64,7 +64,7 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
 import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
-import { numberWithCommas } from "../../utils/utils";
+import { NumberWithCommas } from "../../utils/Numbers";
 
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
@@ -2932,7 +2932,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalCostAmountLC)}`
+              ? `TOTAL: ${NumberWithCommas(totalCostAmountLC)}`
               : props.cellData
           }
         />
@@ -3003,7 +3003,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalCostAmount)}`
+              ? `TOTAL: ${NumberWithCommas(totalCostAmount)}`
               : props.cellData
           }
         />
@@ -3230,7 +3230,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalIncomeAmountLC)}`
+              ? `TOTAL: ${NumberWithCommas(totalIncomeAmountLC)}`
               : props.cellData
           }
         />
@@ -3301,7 +3301,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalIncomeAmount)}`
+              ? `TOTAL: ${NumberWithCommas(totalIncomeAmount)}`
               : props.cellData
           }
         />
@@ -3553,7 +3553,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalCostAmountLCCostGL)}`
+              ? `TOTAL: ${NumberWithCommas(totalCostAmountLCCostGL)}`
               : props.cellData
           }
         />
@@ -3626,7 +3626,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalCostAmountCostGL)}`
+              ? `TOTAL: ${NumberWithCommas(totalCostAmountCostGL)}`
               : props.cellData
           }
         />
@@ -3829,7 +3829,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalIncomeAmountLCIncomeGL)}`
+              ? `TOTAL: ${NumberWithCommas(totalIncomeAmountLCIncomeGL)}`
               : props.cellData
           }
         />
@@ -3906,7 +3906,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalIncomeAmountIncomeGL)}`
+              ? `TOTAL: ${NumberWithCommas(totalIncomeAmountIncomeGL)}`
               : props.cellData
           }
         />
@@ -3935,7 +3935,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalIncomeInTool)}`
+              ? `TOTAL: ${NumberWithCommas(totalIncomeInTool)}`
               : props.cellData
           }
         />
@@ -3962,7 +3962,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalCostsInTool)}`
+              ? `TOTAL: ${NumberWithCommas(totalCostsInTool)}`
               : props.cellData
           }
         />
@@ -3990,7 +3990,7 @@ export function SubmissionsTable(props: Props) {
           initialValue={
             totalIncomeInTool + totalCostsInTool >= 0
               ? props.rowData.id === "total"
-                ? `TOTAL: ${numberWithCommas(
+                ? `TOTAL: ${NumberWithCommas(
                     totalIncomeInTool + totalCostsInTool
                   )}`
                 : props.rowData.data.totalIncomeLC +
@@ -4022,7 +4022,7 @@ export function SubmissionsTable(props: Props) {
           initialValue={
             totalIncomeInTool + totalCostsInTool < 0
               ? props.rowData.id === "total"
-                ? `TOTAL: ${numberWithCommas(
+                ? `TOTAL: ${NumberWithCommas(
                     (totalIncomeInTool + totalCostsInTool) * -1
                   )}`
                 : (props.rowData.data.totalIncomeLC +
@@ -4055,7 +4055,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalIncomeInToolEUR)}`
+              ? `TOTAL: ${NumberWithCommas(totalIncomeInToolEUR)}`
               : props.cellData
           }
         />
@@ -4082,7 +4082,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(totalCostsInToolEUR)}`
+              ? `TOTAL: ${NumberWithCommas(totalCostsInToolEUR)}`
               : props.cellData
           }
         />
@@ -4110,7 +4110,7 @@ export function SubmissionsTable(props: Props) {
           initialValue={
             totalIncomeInToolEUR + totalCostsInToolEUR >= 0
               ? props.rowData.id === "total"
-                ? `TOTAL: ${numberWithCommas(
+                ? `TOTAL: ${NumberWithCommas(
                     totalIncomeInToolEUR + totalCostsInToolEUR
                   )}`
                 : props.rowData.data.totalIncomeEUR +
@@ -4142,7 +4142,7 @@ export function SubmissionsTable(props: Props) {
           initialValue={
             totalIncomeInToolEUR + totalCostsInToolEUR < 0
               ? props.rowData.id === "total"
-                ? `TOTAL: ${numberWithCommas(
+                ? `TOTAL: ${NumberWithCommas(
                     (totalIncomeInToolEUR + totalCostsInToolEUR) * -1
                   )}`
                 : (props.rowData.data.totalIncomeEUR +
@@ -4177,7 +4177,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(
+              ? `TOTAL: ${NumberWithCommas(
                   totalCostAmountLC + totalCostAmountLCCostGL
                 )}`
               : props.cellData
@@ -4206,7 +4206,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(
+              ? `TOTAL: ${NumberWithCommas(
                   totalCostAmountLC + totalCostAmountLCCostGL
                 )}`
               : props.rowData.data.totalCostsTool
@@ -4235,7 +4235,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(
+              ? `TOTAL: ${NumberWithCommas(
                   totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
                 )}`
               : props.cellData
@@ -4264,7 +4264,7 @@ export function SubmissionsTable(props: Props) {
           rowData={props.rowData}
           initialValue={
             props.rowData.id === "total"
-              ? `TOTAL: ${numberWithCommas(
+              ? `TOTAL: ${NumberWithCommas(
                   totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
                 )}`
               : props.rowData.data.totalIncomeTool
@@ -4501,7 +4501,7 @@ export function SubmissionsTable(props: Props) {
                 group.children.map((column: any, index: number) => {
                   doc[column.value] = _.get(s, column.value);
                   if (column.type === "number") {
-                    doc[column.value] = numberWithCommas(doc[column.value]);
+                    doc[column.value] = NumberWithCommas(doc[column.value]);
                   }
                   if (!init) {
                     header[0][column.value] = index === 0 ? group.label : "";
@@ -4513,64 +4513,64 @@ export function SubmissionsTable(props: Props) {
               return doc;
             });
             header[2] = {
-              "data.costAmountLC": `TOTAL: ${numberWithCommas(
+              "data.costAmountLC": `TOTAL: ${NumberWithCommas(
                 totalCostAmountLC
               )}`,
-              "data.costAmountEUR": `TOTAL: ${numberWithCommas(
+              "data.costAmountEUR": `TOTAL: ${NumberWithCommas(
                 totalCostAmount
               )}`,
-              "data.incomeAmountLCSI": `TOTAL: ${numberWithCommas(
+              "data.incomeAmountLCSI": `TOTAL: ${NumberWithCommas(
                 totalIncomeAmountLC
               )}`,
-              "data.incomeAmountEURSI": `TOTAL: ${numberWithCommas(
+              "data.incomeAmountEURSI": `TOTAL: ${NumberWithCommas(
                 totalIncomeAmount
               )}`,
-              "data.costAmountLCCostGL": `TOTAL: ${numberWithCommas(
+              "data.costAmountLCCostGL": `TOTAL: ${NumberWithCommas(
                 totalCostAmountLCCostGL
               )}`,
-              "data.costAmountEURCostGL": `TOTAL: ${numberWithCommas(
+              "data.costAmountEURCostGL": `TOTAL: ${NumberWithCommas(
                 totalCostAmountCostGL
               )}`,
-              "data.incomeAmountLCIncomeGL": `TOTAL: ${numberWithCommas(
+              "data.incomeAmountLCIncomeGL": `TOTAL: ${NumberWithCommas(
                 totalIncomeAmountLCIncomeGL
               )}`,
-              "data.incomeAmountEurIncomeGL": `TOTAL: ${numberWithCommas(
+              "data.incomeAmountEurIncomeGL": `TOTAL: ${NumberWithCommas(
                 totalIncomeAmountIncomeGL
               )}`,
-              "data.totalIncomeLC": `TOTAL: ${numberWithCommas(
+              "data.totalIncomeLC": `TOTAL: ${NumberWithCommas(
                 totalIncomeInTool
               )}`,
-              "data.totalCostsLC": `TOTAL: ${numberWithCommas(
+              "data.totalCostsLC": `TOTAL: ${NumberWithCommas(
                 totalCostsInTool
               )}`,
-              "data.totalProfitLC": `TOTAL: ${numberWithCommas(
+              "data.totalProfitLC": `TOTAL: ${NumberWithCommas(
                 totalIncomeInTool + totalCostsInTool
               )}`,
-              "data.totalLossLC": `TOTAL: ${numberWithCommas(
+              "data.totalLossLC": `TOTAL: ${NumberWithCommas(
                 (totalIncomeInTool + totalCostsInTool) * -1
               )}`,
-              "data.totalIncomeEUR": `TOTAL: ${numberWithCommas(
+              "data.totalIncomeEUR": `TOTAL: ${NumberWithCommas(
                 totalIncomeInToolEUR
               )}`,
-              "data.totalCostsEUR": `TOTAL: ${numberWithCommas(
+              "data.totalCostsEUR": `TOTAL: ${NumberWithCommas(
                 totalCostsInToolEUR
               )}`,
-              "data.totalProfitEUR": `TOTAL: ${numberWithCommas(
+              "data.totalProfitEUR": `TOTAL: ${NumberWithCommas(
                 totalIncomeInToolEUR + totalCostsInToolEUR
               )}`,
-              "data.totalLossEUR": `TOTAL: ${numberWithCommas(
+              "data.totalLossEUR": `TOTAL: ${NumberWithCommas(
                 (totalIncomeInToolEUR + totalCostsInToolEUR) * -1
               )}`,
-              "data.totalCostsTool": `TOTAL: ${numberWithCommas(
+              "data.totalCostsTool": `TOTAL: ${NumberWithCommas(
                 totalCostAmountLC + totalCostAmountLCCostGL
               )}`,
-              "data.totalCostsSAP": `TOTAL: ${numberWithCommas(
+              "data.totalCostsSAP": `TOTAL: ${NumberWithCommas(
                 totalCostAmountLC + totalCostAmountLCCostGL
               )}`,
-              "data.totalIncomeTool": `TOTAL: ${numberWithCommas(
+              "data.totalIncomeTool": `TOTAL: ${NumberWithCommas(
                 totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
               )}`,
-              "data.totalIncomeSAP": `TOTAL: ${numberWithCommas(
+              "data.totalIncomeSAP": `TOTAL: ${NumberWithCommas(
                 totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
               )}`,
             };

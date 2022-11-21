@@ -3,7 +3,7 @@ import moment from "moment";
 import React from "react";
 import DatePicker from "react-datepicker";
 import Creatable from "react-select/creatable";
-import { numberWithCommas } from "../utils/utils";
+import { NumberWithCommas } from "../utils/Numbers";
 
 const numRegex = /[0-9.\-/]|\./;
 
@@ -66,7 +66,7 @@ class EditableTableCell extends React.Component<
         case "number":
           value =
             typeof this.props.initialValue === "number"
-              ? numberWithCommas(this.props.initialValue)
+              ? NumberWithCommas(this.props.initialValue)
               : "";
           break;
         case "tags":
@@ -186,7 +186,7 @@ class EditableTableCell extends React.Component<
               ""
             )
           ) : typeof this.state.cellValue === "number" ? (
-            `${numberWithCommas(this.state.cellValue)}`
+            `${NumberWithCommas(this.state.cellValue)}`
           ) : (
             `${this.state.cellValue}`
           )
