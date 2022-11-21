@@ -24,9 +24,7 @@ import {
   HStack,
   VStack,
   useColorMode,
-  Center,
   Tooltip,
-  PopoverArrow,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -47,12 +45,10 @@ import {
 import { FiChevronDown } from "react-icons/all";
 import CookiePreference from "./AllowCookies";
 import { msalInstance } from "../index";
-import { InteractionStatus } from "@azure/msal-browser";
 import { RestAPI } from "../api/rest";
-import { loginRequest } from "../authConfig";
 
 function Layout(props: any) {
-  const { instance, inProgress } = useMsal();
+  const { instance } = useMsal();
 
   const [cookieConsent, setCookieConsent] = useState(false);
   const [roles, setRoles] = useState<string[]>([]);

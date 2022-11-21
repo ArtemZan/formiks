@@ -10,7 +10,6 @@ import {
   HStack,
   Textarea,
   Button,
-  AlertTitle,
   AlertDescription,
   AlertIcon,
   Alert,
@@ -21,12 +20,11 @@ import Project from "../../types/project";
 import Select from "react-select";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
 import DatePicker from "react-datepicker";
-import isEqual from "lodash/isEqual";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import moment from "moment";
 
-import { Table, Uploader } from "rsuite";
+import { Table } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 import { DefaultSelectStyles } from "../../utils/Styles";

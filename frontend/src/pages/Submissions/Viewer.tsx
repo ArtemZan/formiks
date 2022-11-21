@@ -1,31 +1,21 @@
-import { Form } from "@formio/react";
-import { renderToString } from "react-dom/server";
-
 import {
-  Text,
   Box,
-  Button,
   HStack,
-  Input,
-  Stack,
-  Textarea,
-  StackDivider,
-  VStack,
   CloseButton,
-  IconButton,
-  useColorModeValue,
-  Tag,
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  VStack,
+  StackDivider,
+  Stack,
+  Text,
+  Tag,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import CreatableSelect from "react-select/creatable";
 import { useEffect, useState } from "react";
 import Project from "../../types/project";
-import { Submission } from "../../types/submission";
-import { API, RestAPI } from "../../api/rest";
-import { FiSettings, FiRefreshCw } from "react-icons/all";
+import { RestAPI } from "../../api/rest";
 
 import Ermv from "../../components/projects/ermv";
 import Elmv from "../../components/projects/elmv";
@@ -43,7 +33,6 @@ interface Props {
 
 export function Viewer(props: Props) {
   const [predefinedProject, setPredefinedProject] = useState<any>(null);
-  const [form, setForm] = useState<any>(null);
   const [project, setProject] = useState<Project>({
     title: "",
     created: new Date(),
@@ -58,11 +47,18 @@ export function Viewer(props: Props) {
     type: "formio",
     code: "",
   });
+
+  function getProject(id: string) {
+    RestAPI.getProject(id).then((response) => {
+      setProject(response.data);
+    });
+  }
+
   useEffect(() => {
     if (props.match.params.id) {
       if (props.isDraft) {
         RestAPI.getDraft(props.match.params.id).then((response) => {
-          setForm({ display: "form", components: [] });
+          getProject(response.data.submission.project);
           if (response.data.submission.project === "629dfb3f55d209262194a3e6") {
             setPredefinedProject(
               <Cerov
@@ -99,7 +95,7 @@ export function Viewer(props: Props) {
         });
       } else {
         RestAPI.getView(props.match.params.id).then((response) => {
-          setForm({ display: "form", components: [] });
+          getProject(response.data.submission.project);
           if (response.data.submission.project === "629dfb3f55d209262194a3e6") {
             setPredefinedProject(
               <Cerov
@@ -158,25 +154,60 @@ export function Viewer(props: Props) {
         <Box w="30%">
           <CloseButton
             onClick={() => {
-              props.history.push("/projects");
+              props.history.goBack();
             }}
             float="right"
-          />
-          <IconButton
-            display={props.isAdmin ? "grid" : "none"}
-            onClick={() => {
-              props.history.push(`/projects/edit/${project.id}`);
-            }}
-            mr={2}
-            border="none"
-            variant="outline"
-            size="sm"
-            aria-label="settings"
-            float="right"
-            icon={<FiSettings />}
           />
         </Box>
       </HStack>
+      <Box color={useColorModeValue("gray.800", "#ABB2BF")} w="100%" mb={10}>
+        <VStack
+          mb={"40px"}
+          pr={{ base: 0, md: "10px" }}
+          divider={<StackDivider />}
+          spacing={4}
+          fontSize="md"
+          align="stretch"
+        >
+          <Box>
+            <Stack
+              direction={{ base: "column", md: "row" }}
+              w="100%"
+              spacing={{ base: "20px", md: "100px" }}
+            >
+              <Box w="100%">
+                <Text float="left" as="b">
+                  Title
+                </Text>
+                <Text float="right">{project.title}</Text>
+              </Box>
+              <Box w="100%">
+                <Text float="left" as="b">
+                  Tags
+                </Text>
+                <HStack spacing={3} float="right">
+                  {project.tags.map((tag) => {
+                    return (
+                      <Tag
+                        key={tag}
+                        fontWeight={"400"}
+                        colorScheme="cyan"
+                        cursor="pointer"
+                      >
+                        {tag}
+                      </Tag>
+                    );
+                  })}
+                </HStack>
+              </Box>
+            </Stack>
+          </Box>
+          <Box>
+            <Text as="b">Description</Text>
+            <Text mt={3}>{project.description}</Text>
+          </Box>
+        </VStack>
+      </Box>
 
       <Alert
         display={props.isDraft ? "none" : "block"}
@@ -198,31 +229,8 @@ export function Viewer(props: Props) {
         </AlertDescription>
       </Alert>
 
-      {predefinedProject === null ? (
-        <Form
-          onSubmit={(formio: any) => {
-            delete formio.data["submit"];
-            var submission: Submission = {
-              project: project.id ?? "",
-              parentId: null,
-              viewId: null,
-              group: null,
-              created: new Date(),
-              updated: new Date(),
-              title: "",
-              author: "",
-              status: project.defaultStatus,
-              data: formio.data,
-            };
-            RestAPI.createSubmission(submission).then((response) => {
-              props.history.push(`/submissions/view/${response.data.id}`);
-            });
-          }}
-          form={form}
-        />
-      ) : (
-        predefinedProject
-      )}
+      {/* FIXME: replace null with error alert */}
+      {predefinedProject !== null ? predefinedProject : null}
     </Box>
   );
 }

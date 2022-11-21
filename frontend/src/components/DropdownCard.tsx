@@ -1,18 +1,9 @@
 import {
   Box,
-  Button,
-  chakra,
-  Flex,
   Text,
-  Center,
   Stack,
   Heading,
-  Avatar,
-  Badge,
   useColorModeValue,
-  Tag,
-  Wrap,
-  WrapItem,
   Tooltip,
 } from "@chakra-ui/react";
 import moment from "moment";

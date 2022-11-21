@@ -1,18 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Route, useHistory, Redirect } from "react-router-dom";
 
-import {
-  AuthenticatedTemplate,
-  MsalAuthenticationTemplate,
-  MsalProvider,
-  useIsAuthenticated,
-  useMsal,
-} from "@azure/msal-react";
-import {
-  InteractionStatus,
-  InteractionType,
-  IPublicClientApplication,
-} from "@azure/msal-browser";
+import { MsalAuthenticationTemplate, MsalProvider } from "@azure/msal-react";
+import { InteractionType, IPublicClientApplication } from "@azure/msal-browser";
 import { CustomNavigationClient } from "./utils/NavigationClient";
 import Layout from "./components/Layout";
 

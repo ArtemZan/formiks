@@ -4,24 +4,18 @@ import { renderToString } from "react-dom/server";
 import {
   Text,
   Box,
-  Button,
   HStack,
-  Input,
   Stack,
-  Textarea,
   StackDivider,
   VStack,
   CloseButton,
-  IconButton,
   useColorModeValue,
   Tag,
 } from "@chakra-ui/react";
-import CreatableSelect from "react-select/creatable";
 import { useEffect, useState } from "react";
 import Project from "../../types/project";
 import { Submission } from "../../types/submission";
-import { API, RestAPI } from "../../api/rest";
-import { FiSettings, FiRefreshCw } from "react-icons/all";
+import { RestAPI } from "../../api/rest";
 
 import Cerov from "../../components/projects/cerov";
 import Ermv from "../../components/projects/ermv";
@@ -97,19 +91,6 @@ export function Viewer(props: Props) {
               props.history.push("/projects");
             }}
             float="right"
-          />
-          <IconButton
-            display={props.isAdmin ? "grid" : "none"}
-            onClick={() => {
-              props.history.push(`/projects/edit/${project.id}`);
-            }}
-            mr={2}
-            border="none"
-            variant="outline"
-            size="sm"
-            aria-label="settings"
-            float="right"
-            icon={<FiSettings />}
           />
         </Box>
       </HStack>

@@ -1,23 +1,5 @@
 import { AddIcon } from "@chakra-ui/icons";
-import {
-  Badge,
-  Box,
-  Button,
-  Center,
-  SimpleGrid,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
-  Wrap,
-  WrapItem,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-} from "@chakra-ui/react";
+import { Center, Tag, Wrap, WrapItem } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { RestAPI } from "../../api/rest";
 import CreateBookmark from "../../components/CreateBookmark";

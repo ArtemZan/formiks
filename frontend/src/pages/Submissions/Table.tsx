@@ -2,11 +2,9 @@
 import {
   Box,
   Button,
-  HStack,
   Input,
   Text,
   useColorModeValue,
-  Divider,
   IconButton,
   Stack,
   VStack,
@@ -34,11 +32,8 @@ import {
 import EditableTableCell from "../../components/EditableTableCell";
 import Creatable from "react-select/creatable";
 
-import { useFps } from "react-fps";
 import Select from "react-select";
 import { Submission } from "../../types/submission";
-import styled from "styled-components";
-import DatePicker from "react-datepicker";
 import Toast, { ToastType } from "../../components/Toast";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
 
@@ -60,7 +55,6 @@ import {
   RiGroupFill,
   IoSave,
 } from "react-icons/all";
-import moment from "moment";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
 import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
@@ -73,19 +67,6 @@ import { FilterField, Template } from "../../types/template";
 interface Props {
   history: any;
 }
-
-const numRegex = /[0-9]|\./;
-
-const DebugOverlay = styled.div`
-  width: 300px;
-  background: lightgray;
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  padding: 5px 15px;
-  border-radius: 10px;
-  color: white;
-`;
 
 var ProjectType: any[] = [];
 var PH1: any[] = [];

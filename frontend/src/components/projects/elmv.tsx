@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useReducer } from "react";
+import { useReducer } from "react";
 import { useEffect, useState } from "react";
 import {
   useColorModeValue,
@@ -10,7 +10,6 @@ import {
   HStack,
   Textarea,
   Button,
-  AlertTitle,
   AlertDescription,
   AlertIcon,
   Alert,
@@ -26,7 +25,7 @@ import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import moment from "moment";
 
-import { Table, Uploader } from "rsuite";
+import { Table } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 
