@@ -1,7 +1,7 @@
 import { useColorModeValue } from "@chakra-ui/react";
 import { StylesConfig } from "react-select";
 
-export function shadeColor(color: string, amount: number) {
+export function ShadeColor(color: string, amount: number) {
   return (
     "#" +
     color

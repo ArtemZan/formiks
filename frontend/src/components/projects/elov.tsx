@@ -29,7 +29,6 @@ import moment from "moment";
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
-import { SubmissionsTransformer } from "../../utils/SubmissionsTransformer";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
