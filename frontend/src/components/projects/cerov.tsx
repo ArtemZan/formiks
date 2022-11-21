@@ -311,7 +311,7 @@ export default function Cerov(props: Props) {
 
       setTimeout(() => {
         setInjectionReady(true);
-      }, 2000);
+      }, 3000);
     }
   }, [props.submission, props.children, ExchangeRates]);
 
@@ -523,12 +523,12 @@ export default function Cerov(props: Props) {
       parentId: null,
       viewId: null,
       group: null,
-      status: "Incomplete",
+      status: "New",
       created: new Date(),
       updated: new Date(),
       author: requestorsName,
       data: {
-        status: "Incomplete",
+        status: "New",
         requestorsCompanyName: requestorsCompanyName.label,
         companyCode: requestorsCompanyName.value.code,
         requestorsCountry: requestorsCompanyName.value.country,
@@ -587,7 +587,7 @@ export default function Cerov(props: Props) {
       status: "New",
       author: requestorsName,
       data: {
-        status: "New",
+        status: "",
         vendorName: vendorName.label,
         projectNumber: projectNumber,
         companyCode: requestorsCompanyName.value.code,
@@ -629,6 +629,7 @@ export default function Cerov(props: Props) {
       },
     });
     costBreakdown.forEach((company: any) => {
+      console.log(local === company.companyCode);
       if (local !== null && local === company.companyCode) {
         children.push({
           project: projectId,
@@ -703,7 +704,7 @@ export default function Cerov(props: Props) {
           status: "New",
           author: requestorsName,
           data: {
-            status: "New",
+            status: "",
             projectName: campaignName,
             additionalInformation: comments,
             campaignChannel: campaignChannel.label,
@@ -791,6 +792,19 @@ export default function Cerov(props: Props) {
                 />
               );
             }
+            toast(
+              <Toast
+                title={"Project has been transferred"}
+                message={
+                  <p>
+                    Project ({" "}
+                    <b>{response.data.submission.data.projectNumber}</b> ) has
+                    been transferred into the tool
+                  </p>
+                }
+                type={"success"}
+              />
+            );
             props.history.push("/submissions");
           });
         });
@@ -822,16 +836,28 @@ export default function Cerov(props: Props) {
               />
             );
           }
+          toast(
+            <Toast
+              title={"Project has been transferred"}
+              message={
+                <p>
+                  Project ( <b>{response.data.submission.data.projectNumber}</b>{" "}
+                  ) has been transferred into the tool
+                </p>
+              }
+              type={"success"}
+            />
+          );
           props.history.push("/submissions");
         });
       }
     }
   }
 
-  function totalAlert(value: any) {
+  function totalAlert(value: any, row: any, check: number) {
     if (value) {
       value = value.replace("%", "");
-      if (parseFloat(value) > 100) {
+      if (parseFloat(value) !== check && row === "TOTAL") {
         return useColorModeValue("red.300", "#ABB2BF");
       }
     }
@@ -1584,7 +1610,7 @@ export default function Cerov(props: Props) {
                         event.target.value
                       );
                     }}
-                    bg={totalAlert(rowData.share)}
+                    bg={totalAlert(rowData.share, rowData.companyName, 100)}
                     // onChange={(event) => {
                     //   var temp = [...costBreakdown];
                     //   temp[index!].share = event.target.value;
@@ -1611,6 +1637,11 @@ export default function Cerov(props: Props) {
                       // temp[index!].contribution = event.target.value;
                       // setCostBreakdown(temp);
                     }}
+                    bg={totalAlert(
+                      totalcbContribution,
+                      rowData.companyName,
+                      parseFloat(estimatedIncomeBudgetCurrency)
+                    )}
                   />
                 )}
               </Cell>
@@ -1633,6 +1664,11 @@ export default function Cerov(props: Props) {
                       // temp[index!].estimatedCosts = event.target.value;
                       // setCostBreakdown(temp);
                     }}
+                    bg={totalAlert(
+                      totalcbCosts,
+                      rowData.companyName,
+                      parseFloat(estimatedCostsBudgetCurrency)
+                    )}
                   />
                 )}
               </Cell>
@@ -1683,38 +1719,30 @@ export default function Cerov(props: Props) {
             float="right"
             colorScheme={"blue"}
             onClick={() => {
-              createSubmission(false, null);
+              if (requestorsCompanyName.value.code === "6110") {
+                createSubmission(false, null);
+              } else {
+                if (
+                  costBreakdown.some(
+                    (company: any) => company.companyCode === "6110"
+                  )
+                ) {
+                  createSubmission(false, "6110");
+                }
+              }
             }}
             isDisabled={
-              requestorsCompanyName.value.code !== "6110" ||
-              (props.submission && !props.isDraft)
+              requestorsCompanyName.value.code !== "6110" &&
+              !costBreakdown.some(
+                (company: any) => company.companyCode === "6110"
+              )
             }
           >
-            Step 2-Submit
+            Submit
           </Button>
           <Button
             float="right"
             mr="15px"
-            color={"white"}
-            bg={useColorModeValue("teal.400", "#4D97E2")}
-            _hover={{
-              bg: useColorModeValue("teal.300", "#377bbf"),
-            }}
-            isDisabled={
-              !costBreakdown.some(
-                (company: any) => company.companyCode === "6110"
-              ) || requestorsCompanyName.value.code === "6110"
-            }
-            onClick={() => {
-              createSubmission(false, "6110");
-            }}
-          >
-            Step 1-Local
-          </Button>
-        </Box>
-        <Box>
-          <Button
-            float="right"
             color={"white"}
             bg={useColorModeValue("green.400", "#4D97E2")}
             _hover={{
