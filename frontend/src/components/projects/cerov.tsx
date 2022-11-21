@@ -28,6 +28,7 @@ import { Table } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 import { DefaultSelectStyles } from "../../utils/Styles";
+import { RiCoinsLine } from "react-icons/ri";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -244,8 +245,8 @@ export default function Cerov(props: Props) {
           manufacturer: vs.data.manufacturerNumber ?? "",
           bu: vs.data.businessUnit ?? "",
           ph: {
-            label: vs.data.PH1 || "",
-            value: vs.data.PH1 || "",
+            label: vs.data.PH1 ?? "",
+            value: vs.data.PH1 ?? "",
           },
           budgetCurrency: {
             label: vs.data.budgetCurrency || "",
@@ -310,7 +311,7 @@ export default function Cerov(props: Props) {
 
       setTimeout(() => {
         setInjectionReady(true);
-      }, 1000);
+      }, 2000);
     }
   }, [props.submission, props.children, ExchangeRates]);
 
@@ -531,6 +532,7 @@ export default function Cerov(props: Props) {
         requestorsCompanyName: requestorsCompanyName.label,
         companyCode: requestorsCompanyName.value.code,
         requestorsCountry: requestorsCompanyName.value.country,
+        organizingCompany: organizingCompany,
         campaignName: campaignName,
         projectName: campaignName,
         campaignDescription: campaignDescription,
@@ -573,7 +575,6 @@ export default function Cerov(props: Props) {
         projectType: "European One Vendor",
       },
     };
-
     var children: Submission[] = [];
     children.push({
       project: projectId,
@@ -627,7 +628,8 @@ export default function Cerov(props: Props) {
         // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
       },
     });
-
+    console.log(vendor);
+    console.log([...children]);
     costBreakdown.forEach((company: any) => {
       if (local !== null && local === company.companyCode) {
         children.push({
