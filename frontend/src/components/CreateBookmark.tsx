@@ -20,7 +20,7 @@ import CreatableSelect from "react-select/creatable";
 import Project from "../types/project";
 import { RestAPI } from "../api/rest";
 import Bookmark from "../types/bookmark";
-import { DefaultSelectStyles } from "../utils/Color";
+import { DefaultSelectStyles } from "../utils/Styles";
 
 interface Props {
   isOpen: boolean;

@@ -29,7 +29,7 @@ import moment from "moment";
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
-import { DefaultSelectStyles } from "../../utils/Color";
+import { DefaultSelectStyles } from "../../utils/Styles";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
