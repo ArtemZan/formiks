@@ -314,6 +314,7 @@ export default function Cerov(props: Props) {
         setTotalcbShare(totalShare.toFixed(2).toString());
         setTotalcbContribution(totalContribution.toFixed(2).toString());
         setTotalcbCosts(totalCosts.toFixed(2).toString());
+        console.log(c);
         setCostBreakdown([...c]);
       }
 
@@ -687,6 +688,7 @@ export default function Cerov(props: Props) {
             projectType: "European One Vendor",
             companyName: company.companyName,
             companyCode: company.companyCode,
+            countryCodeEMEA: company.companyCode,
             country: company.country,
             countriesEMEA: company.country,
             productionProjectManager: company.contactEmail,

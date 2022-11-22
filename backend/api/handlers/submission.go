@@ -165,30 +165,33 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			submissionWithChildren.Submission.Data["projectNumber"] = parentProjectNumber
 			var lpi int
 			for i := range submissionWithChildren.Children {
-				if submissionWithChildren.Local != nil && submissionWithChildren.Children[i].Data["companyCode"] == *submissionWithChildren.Local && submissionWithChildren.Children[i].Group == "country" {
-					submissionWithChildren.Children[i].Data["projectNumber"] = childrenProjectNumbers[lpi]
-					submissionWithChildren.Children[i].Data["localProjectNumber"] = ""
+
+				submissionWithChildren.Children[i].Data["projectNumber"] = parentProjectNumber
+				if submissionWithChildren.Children[i].Group == "country" {
+					submissionWithChildren.Children[i].Data["localProjectNumber"] = childrenProjectNumbers[lpi]
 					lpi++
-				} else {
-					submissionWithChildren.Children[i].Data["projectNumber"] = parentProjectNumber
-					if submissionWithChildren.Children[i].Group == "country" {
-						submissionWithChildren.Children[i].Data["localProjectNumber"] = childrenProjectNumbers[lpi]
-						lpi++
-					}
 				}
+
 			}
 			break
 		}
 	}
 
 	views, err := r.repo.CreateViews(context.TODO(), submissionWithChildren)
+	fmt.Println(submissionWithChildren)
 
 	if submissionWithChildren.Local != nil {
 		var targetSubmission models.Submission
 
 		for _, child := range submissionWithChildren.Children {
 			if child.Group == "country" && child.Data["companyCode"] == *submissionWithChildren.Local {
+				child.Data["projectNumber"] = child.Data["localProjectNumber"]
+				child.Data["localProjectNumber"] = ""
+
 				targetSubmission = child
+				// targetSubmission.Data["projectNumber"] = child.Data["localProjectNumber"]
+				// targetSubmission.Data["localProjectNumber"] = ""
+
 			}
 		}
 		targetSubmission.ID = primitive.NewObjectID()
