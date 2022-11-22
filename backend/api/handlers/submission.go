@@ -165,10 +165,16 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			submissionWithChildren.Submission.Data["projectNumber"] = parentProjectNumber
 			var lpi int
 			for i := range submissionWithChildren.Children {
-				submissionWithChildren.Children[i].Data["projectNumber"] = parentProjectNumber
-				if submissionWithChildren.Children[i].Group == "country" {
-					submissionWithChildren.Children[i].Data["localProjectNumber"] = childrenProjectNumbers[lpi]
+				if submissionWithChildren.Local != nil && submissionWithChildren.Children[i].Data["companyCode"] == *submissionWithChildren.Local && submissionWithChildren.Children[i].Group == "country" {
+					submissionWithChildren.Children[i].Data["projectNumber"] = childrenProjectNumbers[lpi]
+					submissionWithChildren.Children[i].Data["localProjectNumber"] = ""
 					lpi++
+				} else {
+					submissionWithChildren.Children[i].Data["projectNumber"] = parentProjectNumber
+					if submissionWithChildren.Children[i].Group == "country" {
+						submissionWithChildren.Children[i].Data["localProjectNumber"] = childrenProjectNumbers[lpi]
+						lpi++
+					}
 				}
 			}
 			break

@@ -197,13 +197,19 @@ export default function Cerov(props: Props) {
         ).toString()
       );
       setEstimatedIncome(
-        props.submission.data.campaignEstimatedIncomeEur.toFixed(2) || "0.00"
+        props.submission.data.campaignEstimatedIncomeEur
+          ? props.submission.data.campaignEstimatedIncomeEur.toFixed(2)
+          : "0.00"
       );
       setEstimatedCosts(
-        props.submission.data.campaignEstimatedCostsEur.toFixed(2) || "0.00"
+        props.submission.data.campaignEstimatedCostsEur
+          ? props.submission.data.campaignEstimatedCostsEur.toFixed(2)
+          : "0.00"
       );
       setNetProfitTarget(
-        props.submission.data.campaignNetProfitTargetEur.toFixed(2) || "0.00"
+        props.submission.data.campaignNetProfitTargetEur
+          ? props.submission.data.campaignNetProfitTargetEur.toFixed(2)
+          : "0.00"
       );
       setEstimatedCostsBudgetCurrency(
         (
@@ -226,7 +232,9 @@ export default function Cerov(props: Props) {
       );
       setComments(props.submission.data.comments ?? "");
       setTotalEstimatedCostsLC(
-        props.submission.data.totalEstimatedCostsLC.toFixed(2) || "0.00"
+        props.submission.data.totalEstimatedCostsLC
+          ? props.submission.data.totalEstimatedCostsLC.toFixed(2)
+          : "0.00"
       );
 
       //
@@ -570,11 +578,11 @@ export default function Cerov(props: Props) {
         totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
         comments: comments,
         additionalInformation: comments,
-        localCurrency: requestorsCompanyName.value.currency,
 
         projectType: "European One Vendor",
       },
     };
+    console.log(parent);
     var children: Submission[] = [];
     children.push({
       project: projectId,
@@ -629,7 +637,6 @@ export default function Cerov(props: Props) {
       },
     });
     costBreakdown.forEach((company: any) => {
-      console.log(local === company.companyCode);
       if (local !== null && local === company.companyCode) {
         children.push({
           project: projectId,
@@ -777,6 +784,7 @@ export default function Cerov(props: Props) {
         });
       } else {
         RestAPI.deleteDraft(props.submission.id).then(() => {
+          console.log(submission);
           RestAPI.createSubmissionWithChildren(submission).then((response) => {
             if (response.data.hasChanged) {
               toast(
