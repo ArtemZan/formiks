@@ -668,18 +668,16 @@ export default function Cerov(props: Props) {
                 ? 0.0
                 : parseFloat(company.contribution),
             estimatedResultCC:
-              (parseFloat(company.contribution) -
-                parseFloat(company.estimatedCosts)) *
-              (budgetSource.value === "noBudget" ? -1 : 1),
+              parseFloat(company.contribution) -
+              parseFloat(company.estimatedCosts),
             estimatedIncomeEUR:
               budgetSource.value === "noBudget"
                 ? 0.0
                 : parseFloat(company.contributionEur),
             estimatedCostsEUR: parseFloat(company.estimatedCostsEur),
             estimatedResultEUR:
-              (parseFloat(company.contributionEur) -
-                parseFloat(company.estimatedCostsEur)) *
-              (budgetSource.value === "noBudget" ? -1 : 1),
+              parseFloat(company.contributionEur) -
+              parseFloat(company.estimatedCostsEur),
             PH1: vendor.ph.label,
             vendorBudgetCurrency:
               budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
