@@ -185,13 +185,9 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 
 		for _, child := range submissionWithChildren.Children {
 			if child.Group == "country" && child.Data["companyCode"] == *submissionWithChildren.Local {
-				child.Data["projectNumber"] = child.Data["localProjectNumber"]
-				child.Data["localProjectNumber"] = ""
-
 				targetSubmission = child
-				// targetSubmission.Data["projectNumber"] = child.Data["localProjectNumber"]
-				// targetSubmission.Data["localProjectNumber"] = ""
-
+				targetSubmission.Data["projectNumber"] = child.Data["localProjectNumber"]
+				targetSubmission.Data["localProjectNumber"] = ""
 			}
 		}
 		targetSubmission.ID = primitive.NewObjectID()
