@@ -129,6 +129,7 @@ export default function Cerov(props: Props) {
 
   useEffect(() => {
     if (props.submission) {
+      console.log(props.submission);
       setRequestorsCompanyName({
         label: props.submission.data.requestorsCompanyName ?? "",
         value: {
@@ -314,7 +315,6 @@ export default function Cerov(props: Props) {
         setTotalcbShare(totalShare.toFixed(2).toString());
         setTotalcbContribution(totalContribution.toFixed(2).toString());
         setTotalcbCosts(totalCosts.toFixed(2).toString());
-        console.log(c);
         setCostBreakdown([...c]);
       }
 
@@ -560,6 +560,7 @@ export default function Cerov(props: Props) {
         budgetApprovedByVendor: budgetApprovedByVendor,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
+        localCurrency: requestorsCompanyName.curreny,
         campaignEstimatedIncomeBudgetsCurrency: isNaN(
           parseFloat(estimatedIncomeBudgetCurrency)
         )
@@ -583,7 +584,6 @@ export default function Cerov(props: Props) {
         projectType: "European One Vendor",
       },
     };
-    console.log(parent);
     var children: Submission[] = [];
     children.push({
       project: projectId,
@@ -660,6 +660,7 @@ export default function Cerov(props: Props) {
             campaignEndDate: endDate === null ? null : endDate.toString(),
             budgetSource: budgetSource.label,
             campaignCurrency: exchangeRates.label,
+            localCurrency: requestorsCompanyName.curreny,
             vendorName: vendorName.label,
             businessUnit: vendor.bu,
             estimatedCostsCC: parseFloat(company.estimatedCosts),
@@ -723,6 +724,7 @@ export default function Cerov(props: Props) {
             campaignEndDate: endDate === null ? null : endDate.toString(),
             budgetSource: budgetSource.label,
             campaignCurrency: exchangeRates.label,
+            localCurrency: requestorsCompanyName.curreny,
             vendorName: vendorName.label,
             businessUnit: vendor.bu,
             PH1: vendor.ph.label,
@@ -769,10 +771,11 @@ export default function Cerov(props: Props) {
       children,
       local: local,
     };
-
+    console.log(submission);
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
+
         RestAPI.updateDraft(submission).then((response) => {
           toast(
             <Toast
