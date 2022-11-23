@@ -90,6 +90,7 @@ var CostStatuses: any[] = [
   { label: "Cost Not Invoiced", value: "Cost Not Invoiced" },
   { label: "Not Relevant", value: "Not Relevant" },
 ];
+var submissionData: any;
 
 var defaultColumns = [
   "generalInformation",
@@ -1568,6 +1569,14 @@ export function SubmissionsTable(props: Props) {
 
   function visibilityController(group: string, key: string) {
     return !displayedColumns.includes(group) && !displayedColumns.includes(key);
+  }
+
+  function lmdColumnEdit(value: any) {
+    if (value === "" || value === "INCOMPLETE") {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   const tableCells = [
@@ -4851,6 +4860,8 @@ export function SubmissionsTable(props: Props) {
                             type={"text"}
                             readonly={
                               props.rowData.data.statusLMD !==
+                                "FUTURE INVOICE" &&
+                              props.rowData.data.statusLMD !==
                                 "OK FOR INVOICING" &&
                               props.rowData.data.statusLMD !== "INVOICED"
                             }
@@ -4872,11 +4883,13 @@ export function SubmissionsTable(props: Props) {
                                 "data.dateCMCT",
                                 new Date().toString()
                               );
-                              handleCommunicationCellUpdate(
-                                submission,
-                                "data.statusLMD",
-                                "INVOICED"
-                              );
+                              if (value.length === 12) {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.statusLMD",
+                                  "INVOICED"
+                                );
+                              }
 
                               var mi = submissions.findIndex(
                                 (s) => s.data.documentNumberSI === value
@@ -4989,9 +5002,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"date"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
                                 ? "#F5FAEF"
@@ -5035,9 +5048,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -5059,9 +5072,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             loadOptions={() => {
                               if (
                                 props.rowData.data
@@ -5071,10 +5084,17 @@ export function SubmissionsTable(props: Props) {
                                   props.rowData.data
                                     .alsoMarketingProjectNumberLMD
                                 );
+                                submissionData = vs;
                                 if (vs.length > 0) {
                                   var v: any[] = [];
                                   vs.forEach((s) => {
-                                    if (s.data.vendorName !== undefined) {
+                                    if (
+                                      s.data.vendorName !== undefined &&
+                                      !v.find(
+                                        (c: any) =>
+                                          c.label === s.data.vendorName
+                                      )
+                                    ) {
                                       v.push({
                                         label: s.data.vendorName,
                                         value: s.data.vendorName,
@@ -5128,6 +5148,29 @@ export function SubmissionsTable(props: Props) {
                                   "data.buLMD",
                                   ""
                                 );
+                              } else {
+                                if (submissionData) {
+                                  submissionData.every((s: any) => {
+                                    if (
+                                      s.group === "vendor" &&
+                                      s.data.debitorNumber ===
+                                        props.rowData.data.vodLMD
+                                    ) {
+                                      handleCommunicationCellUpdate(
+                                        submission,
+                                        "data.amountLMD",
+                                        s.data.estimatedIncomeCC
+                                      );
+                                      handleCommunicationCellUpdate(
+                                        submission,
+                                        "data.documentCurrencyLMD",
+                                        s.data.vendorBudgetCurrency
+                                      );
+                                      return false;
+                                    }
+                                    return true;
+                                  });
+                                }
                               }
                             }}
                             rowIndex={props.rowIndex}
@@ -5148,9 +5191,9 @@ export function SubmissionsTable(props: Props) {
                         hidden: visibilityController("LMD", "data.vodLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             type={"text"}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
@@ -5176,9 +5219,9 @@ export function SubmissionsTable(props: Props) {
                             loadOptions={() => {
                               return BUs;
                             }}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -5229,9 +5272,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             readonly={props.rowData.parentId !== null}
                             loadOptions={() => {
                               return [
@@ -5276,7 +5319,7 @@ export function SubmissionsTable(props: Props) {
                               handleCommunicationCellUpdate(
                                 submission,
                                 "data.statusLMD",
-                                ""
+                                "INCOMPLETE"
                               );
                               handleCommunicationCellUpdate(
                                 submission,
@@ -5311,9 +5354,9 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             type={"text"}
                             readonly={
                               props.rowData.data.invoiceTypeLMD !==
@@ -5344,9 +5387,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
                                 ? "#F5FAEF"
@@ -5386,9 +5429,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             maxLength={12}
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
@@ -5507,9 +5550,9 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             type={"text"}
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
@@ -5542,9 +5585,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -5570,9 +5613,9 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             type={"text"}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
@@ -5595,9 +5638,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"number"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             backgroundColor={
                               props.cellData &&
                               props.cellData !== 0 &&
@@ -5654,9 +5697,9 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             type={"dropdown"}
                             loadOptions={() => {
                               return ExchangeRates;
@@ -5689,9 +5732,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             loadOptions={() => {
                               return [
                                 { label: "Payment", value: "Payment" },
@@ -5760,9 +5803,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             loadOptions={() => {
                               return [
                                 { label: "Yes", value: "Yes" },
@@ -5798,9 +5841,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             readonly={
                               typeof props.rowData.data.dunningStopLMD ===
                                 "string" &&
@@ -5841,9 +5884,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -5864,9 +5907,9 @@ export function SubmissionsTable(props: Props) {
                         hidden: visibilityController("LMD", "data.sendToLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             type={"text"}
                             backgroundColor={
                               props.cellData && props.cellData.length > 0
@@ -5897,9 +5940,9 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) =>
                           props.rowData.parentId === null ? (
                             <EditableTableCell
-                              invoiced={
-                                props.rowData.data.statusLMD === "INVOICED"
-                              }
+                              invoiced={lmdColumnEdit(
+                                props.rowData.data.statusLMD
+                              )}
                               type={"button"}
                               backgroundColor="#fef9fa"
                               textColor={"green"}
@@ -6031,9 +6074,9 @@ export function SubmissionsTable(props: Props) {
                           props.rowData.parentId === null ? (
                             <EditableTableCell
                               type={"button"}
-                              invoiced={
-                                props.rowData.data.statusLMD === "INVOICED"
-                              }
+                              invoiced={lmdColumnEdit(
+                                props.rowData.data.statusLMD
+                              )}
                               backgroundColor="#fef9fa"
                               textColor={"blue"}
                               onUpdate={(submissionId: string) => {
@@ -6081,9 +6124,9 @@ export function SubmissionsTable(props: Props) {
                         className: "red-border",
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={
-                              props.rowData.data.statusLMD === "INVOICED"
-                            }
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
                             type={"button"}
                             textColor={"red"}
                             backgroundColor="#fef9fa"
