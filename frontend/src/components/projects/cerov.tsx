@@ -560,7 +560,7 @@ export default function Cerov(props: Props) {
         budgetApprovedByVendor: budgetApprovedByVendor,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
-        localCurrency: requestorsCompanyName.curreny,
+        localCurrency: requestorsCompanyName.value["currency"],
         campaignEstimatedIncomeBudgetsCurrency: isNaN(
           parseFloat(estimatedIncomeBudgetCurrency)
         )
@@ -660,7 +660,7 @@ export default function Cerov(props: Props) {
             campaignEndDate: endDate === null ? null : endDate.toString(),
             budgetSource: budgetSource.label,
             campaignCurrency: exchangeRates.label,
-            localCurrency: requestorsCompanyName.curreny,
+            localCurrency: requestorsCompanyName.value["currency"],
             vendorName: vendorName.label,
             businessUnit: vendor.bu,
             estimatedCostsCC: parseFloat(company.estimatedCosts),
@@ -724,7 +724,7 @@ export default function Cerov(props: Props) {
             campaignEndDate: endDate === null ? null : endDate.toString(),
             budgetSource: budgetSource.label,
             campaignCurrency: exchangeRates.label,
-            localCurrency: requestorsCompanyName.curreny,
+            localCurrency: requestorsCompanyName.value["currency"],
             vendorName: vendorName.label,
             businessUnit: vendor.bu,
             PH1: vendor.ph.label,
@@ -771,7 +771,6 @@ export default function Cerov(props: Props) {
       children,
       local: local,
     };
-    console.log(submission);
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
@@ -787,7 +786,6 @@ export default function Cerov(props: Props) {
         });
       } else {
         RestAPI.deleteDraft(props.submission.id).then(() => {
-          console.log(submission);
           RestAPI.createSubmissionWithChildren(submission).then((response) => {
             if (response.data.hasChanged) {
               toast(
