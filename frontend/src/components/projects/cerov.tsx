@@ -634,7 +634,6 @@ export default function Cerov(props: Props) {
           parseFloat(netProfitTargetBudgetCurrency) *
           (budgetSource.value === "noBudget" ? -1 : 1),
         projectType: "European One Vendor",
-        // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
       },
     });
     costBreakdown.forEach((company: any) => {
