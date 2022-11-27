@@ -178,7 +178,6 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 	}
 
 	views, err := r.repo.CreateViews(context.TODO(), submissionWithChildren)
-	fmt.Println(submissionWithChildren)
 
 	if submissionWithChildren.Local != nil {
 		var targetSubmission models.Submission

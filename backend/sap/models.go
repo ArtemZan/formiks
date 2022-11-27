@@ -8,6 +8,7 @@ type FRequest struct {
 	IM_PERSON_RESP interface{}
 	IM_CURRENCY    interface{}
 	IM_CO_AREA     interface{}
+	IM_TEST_RUN    interface{} `json:"IM_TEST_RUN,omitempty"`
 }
 
 type FResponse struct {
