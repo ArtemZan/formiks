@@ -4,18 +4,14 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
-	"path/filepath"
 	"time"
 
-	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/go-co-op/gocron"
 	"github.com/joho/godotenv"
 
 	"github.com/doublegrey/formiks/backend/api"
 	"github.com/doublegrey/formiks/backend/driver"
-	"github.com/doublegrey/formiks/backend/dropdowns"
 	"github.com/doublegrey/formiks/backend/middlewares"
 	"github.com/doublegrey/formiks/backend/middlewares/msal"
 	"github.com/doublegrey/formiks/backend/sap"
@@ -34,11 +30,8 @@ func main() {
 		log.Fatalf("Failed to initialize database connection: %v\n", err)
 	}
 
-	ticker := time.NewTicker(2 * time.Hour)
-
 	go func() {
-		sap.FetchAccountLines()
-
+		// sap.FetchAccountLines()
 		// driver.Conn.Mongo.Collection("submissions").Drop(context.TODO())
 		// fmt.Println("account lines parsed...")
 		// sap.CreateSubmissionsForAccountLines()
@@ -56,29 +49,10 @@ func main() {
 		}
 	}()
 
-	go dropdowns.SyncAll()
-	go func() {
-		for {
-			<-ticker.C
-			dropdowns.SyncAll()
-		}
-	}()
 	cron.StartAsync()
 	r := gin.Default()
 	middlewares.Setup(r)
 	api.RegisterRoutes(r)
-
-	r.Use(static.Serve("/", static.LocalFile("../frontend/build", true)))
-	r.NoRoute(func(c *gin.Context) {
-		dir, file := path.Split(c.Request.RequestURI)
-		ext := filepath.Ext(file)
-		if file == "" || ext == "" {
-			c.File("../frontend/build")
-		} else {
-			c.File("../frontend/build" + path.Join(dir, file))
-		}
-
-	})
 
 	r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 }
