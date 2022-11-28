@@ -26,6 +26,7 @@ import {
   AccordionIcon,
   VStack,
   Heading,
+  HStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { RestAPI } from "../../api/rest";
@@ -50,7 +51,13 @@ export function Explorer(props: Props) {
       setProjects(response.data);
     });
     RestAPI.getDrafts().then((response) => {
-      setDrafts(response.data);
+      setDrafts(
+        response.data.sort(
+          (a, b) =>
+            Number(b.data._rejected ?? false) -
+            Number(a.data._rejected ?? false)
+        )
+      );
     });
   }, []);
 
@@ -76,15 +83,29 @@ export function Explorer(props: Props) {
                       return (
                         <Box
                           key={draft.id}
-                          bg="white"
+                          bg={draft.data._rejected ? "red.50" : "white"}
                           _dark={{ bg: "#21252A" }}
                           w="100%"
                           p="15px"
                         >
                           <Box w="100%" h="60px">
                             <Heading size="lg" float="left">
-                              {draft.data.requestorsCompanyName} (
-                              {draft.data.campaignName}) #{pd.length - index}
+                              <HStack spacing={"1.5em"}>
+                                <Text>
+                                  {draft.data.requestorsCompanyName} (
+                                  {draft.data.campaignName}) #
+                                  {pd.length - index}
+                                </Text>
+                                <Tag
+                                  size={"lg"}
+                                  colorScheme={"red"}
+                                  display={
+                                    draft.data._rejected ? "grid" : "none"
+                                  }
+                                >
+                                  Rejected
+                                </Tag>
+                              </HStack>
                             </Heading>
                             <Button
                               colorScheme={"blue"}

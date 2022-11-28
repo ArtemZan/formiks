@@ -402,7 +402,6 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 }
 
 func CreateSubmissionsForAccountLines() {
-	fmt.Println("get updates from SAP")
 	existingSubmissions := make([]models.Submission, 0)
 	cursor, err := driver.Conn.Mongo.Collection("submissions").Find(context.TODO(), bson.M{})
 	if err != nil {

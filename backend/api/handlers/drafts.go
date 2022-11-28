@@ -26,7 +26,12 @@ type Draft struct {
 
 func (d *Draft) Fetch(c *gin.Context) {
 	drafts := make([]models.Submission, 0)
-	cursor, err := d.db.Collection("drafts").Find(c.Request.Context(), bson.M{"parentId": nil})
+	name, existName := c.Get("Name")
+	if !existName {
+		c.Status(http.StatusForbidden)
+		return
+	}
+	cursor, err := d.db.Collection("drafts").Find(c.Request.Context(), bson.M{"parentId": nil, "author": name})
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
 		return

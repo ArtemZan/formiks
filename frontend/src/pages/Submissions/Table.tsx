@@ -1385,6 +1385,29 @@ export function SubmissionsTable(props: Props) {
       setSubmissions(temp);
     }
   }
+
+  function reject(submissionId: string, viewId: string) {
+    RestAPI.getView(viewId).then((response) => {
+      response.data.submission.data["_rejected"] = true;
+      RestAPI.createDraft(response.data).then(() => {
+        toast(
+          <Toast
+            title={"Project Rejected"}
+            message={
+              "Project was rejected and can now be found in drafts section"
+            }
+            type={"success"}
+          />
+        );
+      });
+      RestAPI.deleteSubmission(submissionId);
+      var temp = [...submissions];
+      var submissionIndex = submissions.findIndex((s) => s.id === submissionId);
+      temp.splice(submissionIndex, 1);
+      setSubmissions(temp);
+    });
+  }
+
   function callSap(submissionId: string) {
     RestAPI.callSapSubmission(submissionId)
       .then((response) => {
@@ -4352,9 +4375,7 @@ export function SubmissionsTable(props: Props) {
             type={"button"}
             textColor={"red"}
             backgroundColor="#fef9fa"
-            onUpdate={(submissionId: string) => {
-              handleCellUpdate(submissionId, "data.status", "Rejected");
-            }}
+            onUpdate={() => reject(props.rowData.id, props.rowData.viewId)}
             rowIndex={props.rowIndex}
             columnKey={props.column.dataKey}
             rowData={props.rowData}

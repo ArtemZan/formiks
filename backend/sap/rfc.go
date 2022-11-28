@@ -22,7 +22,6 @@ func ZsdMdfOrder(submission models.Submission) interface{} {
 	r.IM_CO_AREA = "A002"
 
 	bs, _ := json.Marshal(r)
-	fmt.Println(string(bs))
 	client := &http.Client{}
 	req, _ := http.NewRequest(http.MethodPost, "https://b2b-test.also.com/rad/ActWebServices.Wrike:api/IntOrder", bytes.NewReader(bs))
 	req.SetBasicAuth("WRIKE", "mMvnfh67#hhz")
@@ -64,7 +63,6 @@ func ValidateProjectNumber(projectNo string) bool {
 	r.IM_TEST_RUN = "X"
 
 	bs, _ := json.Marshal(r)
-	fmt.Println(string(bs))
 	client := &http.Client{}
 	req, _ := http.NewRequest(http.MethodPost, "https://b2b-test.also.com/rad/ActWebServices.Wrike:api/IntOrder", bytes.NewReader(bs))
 	req.SetBasicAuth("WRIKE", "mMvnfh67#hhz")
@@ -89,7 +87,6 @@ func ValidateProjectNumber(projectNo string) bool {
 		} `json:"IntOrderOut"`
 	}
 	json.Unmarshal(b, &response)
-	fmt.Print(response)
 	for _, m := range response.IntOrderOut.IT_MESSAGES {
 		if m.MSGNR == "144" {
 			return false
