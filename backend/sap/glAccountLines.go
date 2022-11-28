@@ -405,7 +405,6 @@ func CreateSubmissionsForAccountLines() {
 	existingSubmissions := make([]models.Submission, 0)
 	cursor, err := driver.Conn.Mongo.Collection("submissions").Find(context.TODO(), bson.M{})
 	if err != nil {
-		fmt.Println(err)
 		return
 	}
 	err = cursor.All(context.TODO(), &existingSubmissions)

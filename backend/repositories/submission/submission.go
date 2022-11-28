@@ -187,7 +187,6 @@ func (r *submissionRepo) Exists(ctx context.Context, filter bson.M) bool {
 
 func (r *submissionRepo) ExistsAny(ctx context.Context, projectNumbers []string) bool {
 	result, _ := r.Conn.Collection("submissions").CountDocuments(ctx, bson.M{"data.projectNumber": bson.M{"$in": projectNumbers}}, options.Count().SetLimit(1))
-	fmt.Println(result)
 	if result == 0 {
 		for _, pn := range projectNumbers {
 			if !sap.ValidateProjectNumber(pn) {
