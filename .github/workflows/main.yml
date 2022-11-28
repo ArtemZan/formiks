@@ -1,4 +1,5 @@
 name: deploy [staging]
+on: [workflow_dispatch]
 jobs:
   build:
     name: Deploy
