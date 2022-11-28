@@ -54,8 +54,8 @@ export function Explorer(props: Props) {
       setDrafts(
         response.data.sort(
           (a, b) =>
-            Number(b.data._rejected ?? false) -
-            Number(a.data._rejected ?? false)
+            Number((b.data ?? {})._rejected ?? false) -
+            Number((a.data ?? {})._rejected ?? false)
         )
       );
     });
