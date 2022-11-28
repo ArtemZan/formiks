@@ -2,6 +2,10 @@
 
 SAP Projects Management Platform for ALSO
 
+[![frontend](https://github.com/Innovatio-lv/formiks/actions/workflows/frontend.yml/badge.svg?branch=master)](https://github.com/Innovatio-lv/formiks/actions/workflows/frontend.yml)
+
+[![backend](https://github.com/Innovatio-lv/formiks/actions/workflows/backend.yml/badge.svg?branch=master)](https://github.com/Innovatio-lv/formiks/actions/workflows/backend.yml)
+
 ## Installation
 
 Install frontend dependencies (`yarn` and `npm` are supported)
