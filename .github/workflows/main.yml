@@ -1,24 +1,23 @@
 name: deploy [staging]
-on: [push]
 jobs:
   build:
     name: Deploy
     runs-on: self-hosted
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@dce9d565de8d876c11d93fa4fe677c0285a66d78
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script_stop: true
-        script: |
-          cd /home/doublegrey/formiks
-          git pull &> /dev/null
-          cd frontend
-          yarn install --production &> /dev/null
-          NODE_OPTIONS=--max_old_space_size=6144 yarn build
-          cd /home/doublegrey/formiks/backend
-          /usr/local/go/bin/go build
-          sudo systemctl restart formiks.service
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@dce9d565de8d876c11d93fa4fe677c0285a66d78
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script_stop: true
+          script: |
+            cd /home/doublegrey/formiks
+            git pull &> /dev/null
+            cd frontend
+            yarn install --production &> /dev/null
+            NODE_OPTIONS=--max_old_space_size=6144 yarn build
+            cd /home/doublegrey/formiks/backend
+            /usr/local/go/bin/go build
+            sudo systemctl restart formiks.service
