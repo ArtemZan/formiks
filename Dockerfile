@@ -3,8 +3,6 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY frontend ./
 RUN yarn install 
-RUN yarn add rsuite
-RUN yarn add @datepicker-react/hooks
 RUN yarn build
 
 FROM nginx:stable-alpine
