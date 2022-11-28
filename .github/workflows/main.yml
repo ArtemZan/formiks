@@ -14,8 +14,11 @@ jobs:
         port: ${{ secrets.PORT }}
         script_stop: true
         script: |
-          cd formiks
+          cd /home/doublegrey/formiks
           git pull &> /dev/null
-          cd backend
+          cd frontend
+          yarn install --production &> /dev/null
+          NODE_OPTIONS=--max_old_space_size=6144 yarn build
+          cd /home/doublegrey/formiks/backend
           /usr/local/go/bin/go build
           sudo systemctl restart formiks.service
