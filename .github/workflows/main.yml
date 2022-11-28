@@ -12,9 +12,10 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
+        script_stop: true
         script: |
           cd formiks
-          git pull
+          git pull &> /dev/null
           cd backend
           /usr/local/go/bin/go build
           sudo systemctl restart formiks.service
