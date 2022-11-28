@@ -16,5 +16,5 @@ jobs:
           cd formiks
           git pull
           cd backend
-          go build
+          /usr/local/go/bin/go build
           sudo systemctl restart formiks.service
