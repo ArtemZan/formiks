@@ -129,7 +129,6 @@ export default function Cerov(props: Props) {
 
   useEffect(() => {
     if (props.submission) {
-      console.log(props.submission);
       setRequestorsCompanyName({
         label: props.submission.data.requestorsCompanyName ?? "",
         value: {
