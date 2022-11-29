@@ -18,6 +18,7 @@ jobs:
           script_stop: true
           script: |
             cd /home/doublegrey/formiks
+            git reset --hard origin/master &> /dev/null
             git pull &> /dev/null
             cd frontend
             yarn install --production &> /dev/null
