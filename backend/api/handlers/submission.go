@@ -165,7 +165,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			submissionWithChildren.Submission.Data["projectNumber"] = parentProjectNumber
 			var lpi int
 			for i := range submissionWithChildren.Children {
-
+				submissionWithChildren.Children[i].Data["parentProjectNumber"] = parentProjectNumber
 				submissionWithChildren.Children[i].Data["projectNumber"] = parentProjectNumber
 				if submissionWithChildren.Children[i].Group == "country" {
 					submissionWithChildren.Children[i].Data["localProjectNumber"] = childrenProjectNumbers[lpi]

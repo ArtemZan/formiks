@@ -54,6 +54,8 @@ interface Props {
 }
 
 export default function Cerov(props: Props) {
+  console.log(props.submission);
+  console.log(props.children);
   const [requestorsCompanyName, setRequestorsCompanyName] = useState<any>({
     label: "",
     value: { name: "", code: "", country: "" },
@@ -579,7 +581,6 @@ export default function Cerov(props: Props) {
         totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
         comments: comments,
         additionalInformation: comments,
-
         projectType: "European One Vendor",
       },
     };
@@ -633,9 +634,9 @@ export default function Cerov(props: Props) {
           parseFloat(netProfitTargetBudgetCurrency) *
           (budgetSource.value === "noBudget" ? -1 : 1),
         projectType: "European One Vendor",
-        countryShare: totalcbShare,
-        countryBudgetContributionEur: totalcbContribution,
-        countryCostEstimationEur: totalcbCosts,
+        countryShare: parseFloat(totalcbShare),
+        countryBudgetContributionCC: parseFloat(totalcbContribution),
+        countryCostEstimationCC: parseFloat(totalcbCosts),
       },
     });
     costBreakdown.forEach((company: any) => {
