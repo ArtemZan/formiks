@@ -1413,7 +1413,7 @@ export function SubmissionsTable(props: Props) {
       .then((response) => {
         var message = `Order ${response.data.IntOrderOut.EX_ORDERID} has been successfully created`;
         var type = "success";
-
+        console.log(response);
         switch (response.data.IntOrderOut.EX_SUBRC) {
           case 4:
             message = `Order ${response.data.IntOrderOut.EX_ORDERID} already exists`;
