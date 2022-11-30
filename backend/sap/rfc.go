@@ -15,10 +15,10 @@ func ZsdMdfOrder(submission models.Submission) interface{} {
 	// r.FUNCTION = "ZSD_MDF_INT_ORDER"
 	r.IM_ORDER = fmt.Sprintf("%v", submission.Data["projectNumber"])
 	r.IM_ORDER_TYPE = "ZMCH"
-	r.IM_ORDER_NAME = fmt.Sprintf("%v", submission.Data["campaignName"])
+	r.IM_ORDER_NAME = fmt.Sprintf("%v", submission.Data["projectName"])
 	r.IM_COMP_CODE = fmt.Sprintf("%v", submission.Data["companyCode"])
-	r.IM_PERSON_RESP = fmt.Sprintf("%v", submission.Data["budgetApprovedByVendor"])
-	r.IM_CURRENCY = fmt.Sprintf("%v", submission.Data["campaignCurrency"])
+	r.IM_PERSON_RESP = fmt.Sprintf("%v", submission.Author)
+	r.IM_CURRENCY = fmt.Sprintf("%v", "CHF") //TODO
 	r.IM_CO_AREA = "A002"
 
 	bs, _ := json.Marshal(r)
@@ -46,7 +46,7 @@ func ZsdMdfOrder(submission models.Submission) interface{} {
 		} `json:"IntOrderOut"`
 	}
 	json.Unmarshal(b, &response)
-	fmt.Println(submission)
+	fmt.Println(submission.Data)
 	return response
 }
 
