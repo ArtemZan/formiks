@@ -636,7 +636,7 @@ export default function Cerov(props: Props) {
         projectType: "European One Vendor",
         countryShare: parseFloat(totalcbShare),
         countryBudgetContributionCC: parseFloat(totalcbContribution),
-        countryCostEstimationCC: parseFloat(totalcbCosts),
+        countryCostEstimationEur: parseFloat(totalcbCosts),
       },
     });
     costBreakdown.forEach((company: any) => {
@@ -1004,7 +1004,7 @@ export default function Cerov(props: Props) {
             follow.
           </AlertDescription>
         </Alert>
-        <Box w="100%">
+        <Box w="100%" hidden={true}>
           <Text mb="8px">Organizing Company</Text>
           <Select
             menuPortalTarget={document.body}
