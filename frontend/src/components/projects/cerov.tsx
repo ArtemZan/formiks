@@ -582,6 +582,27 @@ export default function Cerov(props: Props) {
         comments: comments,
         additionalInformation: comments,
         projectType: "European One Vendor",
+        countryShare: parseFloat(totalcbShare),
+        countryBudgetContributionCC: parseFloat(totalcbContribution),
+        countryCostEstimationCC: parseFloat(totalcbCosts),
+        estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
+        estimatedIncomeCC:
+          budgetSource.value === "noBudget"
+            ? 0.0
+            : parseFloat(estimatedIncomeBudgetCurrency),
+        estimatedResultCC:
+          parseFloat(netProfitTargetBudgetCurrency) *
+          (budgetSource.value === "noBudget" ? -1 : 1),
+        // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+        estimatedIncomeEUR:
+          budgetSource.value === "noBudget" ? 0.0 : parseFloat(estimatedIncome),
+        estimatedCostsEUR: parseFloat(estimatedCosts),
+        estimatedResultEUR:
+          parseFloat(netProfitTarget) *
+          (budgetSource.value === "noBudget" ? -1 : 1),
+        estimatedResultBC:
+          parseFloat(netProfitTargetBudgetCurrency) *
+          (budgetSource.value === "noBudget" ? -1 : 1),
       },
     };
     var children: Submission[] = [];
@@ -615,28 +636,7 @@ export default function Cerov(props: Props) {
             : parseFloat(estimatedIncomeBudgetCurrency),
         // cbbudgetEur: parseFloat(vendor.eurBudget),
         vendorShare: 100,
-        estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
-        estimatedIncomeCC:
-          budgetSource.value === "noBudget"
-            ? 0.0
-            : parseFloat(estimatedIncomeBudgetCurrency),
-        estimatedResultCC:
-          parseFloat(netProfitTargetBudgetCurrency) *
-          (budgetSource.value === "noBudget" ? -1 : 1),
-        // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-        estimatedIncomeEUR:
-          budgetSource.value === "noBudget" ? 0.0 : parseFloat(estimatedIncome),
-        estimatedCostsEUR: parseFloat(estimatedCosts),
-        estimatedResultEUR:
-          parseFloat(netProfitTarget) *
-          (budgetSource.value === "noBudget" ? -1 : 1),
-        estimatedResultBC:
-          parseFloat(netProfitTargetBudgetCurrency) *
-          (budgetSource.value === "noBudget" ? -1 : 1),
         projectType: "European One Vendor",
-        countryShare: parseFloat(totalcbShare),
-        countryBudgetContributionCC: parseFloat(totalcbContribution),
-        countryCostEstimationEur: parseFloat(totalcbCosts),
       },
     });
     costBreakdown.forEach((company: any) => {

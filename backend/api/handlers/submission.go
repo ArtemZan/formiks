@@ -285,6 +285,11 @@ func (r *Submission) Delete(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
+	response, err := r.repo.FetchByIDWithChildren(context.Background(), id)
+	for _, row := range response.Children {
+		fmt.Println(row.ID)
+		err = r.repo.Delete(c.Request.Context(), row.ID, true)
+	}
 	err = r.repo.Delete(c.Request.Context(), id, true)
 	status := http.StatusOK
 	if err != nil {
