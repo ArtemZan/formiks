@@ -36,6 +36,7 @@ import Bookmark from "../../types/bookmark";
 import Project from "../../types/project";
 import moment from "moment";
 import { Submission } from "../../types/submission";
+import { rest } from "lodash";
 
 interface Props {
   history: any;
@@ -107,18 +108,41 @@ export function Explorer(props: Props) {
                                 </Tag>
                               </HStack>
                             </Heading>
-                            <Button
-                              colorScheme={"blue"}
-                              float="right"
-                              onClick={() => {
-                                window.open(
-                                  "/drafts/view/" + draft.id,
-                                  "_self"
-                                );
-                              }}
-                            >
-                              Edit
-                            </Button>
+                            <VStack float="right">
+                              <Button
+                                width={"100px"}
+                                colorScheme={"blue"}
+                                float="right"
+                                onClick={() => {
+                                  window.open(
+                                    "/drafts/view/" + draft.id,
+                                    "_self"
+                                  );
+                                }}
+                              >
+                                Edit
+                              </Button>
+
+                              <Button
+                                colorScheme={"red"}
+                                width={"100px"}
+                                float="right"
+                                onClick={() => {
+                                  var d = [...drafts];
+                                  RestAPI.deleteDraft(draft.id || "");
+                                  var no = d.findIndex(
+                                    (c) =>
+                                      c.data.projectNumber ===
+                                      draft.data.projectNumber
+                                  );
+                                  d.splice(no, 1);
+
+                                  setDrafts(d);
+                                }}
+                              >
+                                Delete
+                              </Button>
+                            </VStack>
                           </Box>
                           <Box w="100%">
                             <VStack align={"start"} w="100%">

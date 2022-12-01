@@ -1602,6 +1602,24 @@ export function SubmissionsTable(props: Props) {
     }
   }
 
+  function projectColumnEdit(value: any) {
+    if (value.data.projectNumber === "6110IS234578") {
+      console.log(value);
+    }
+
+    if (
+      value.data.status === "" ||
+      value.data.status === "INCOMPLETE" ||
+      value.data.status === "NEW" ||
+      value.data.status === "Incomplete" ||
+      value.data.status === "New"
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   const tableCells = [
     {
       key: "__expand",
@@ -2018,7 +2036,7 @@ export function SubmissionsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"value-dropdown"}
-          readonly={props.rowData.data.status !== "Incomplete"}
+          readonly={projectColumnEdit(props.rowData)}
           loadOptions={() => {
             return props.rowData.data.companyCode === "1550"
               ? InternationalVendorsNames
@@ -2474,7 +2492,7 @@ export function SubmissionsTable(props: Props) {
 
       width: columnWidth("data.targetAudience", 200),
       resizable: true,
-      hidden: visibilityController("projectInformation", "data.targetAudience"),
+      hidden: true,
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -2495,10 +2513,7 @@ export function SubmissionsTable(props: Props) {
       title: "Marketing Responsible",
       width: columnWidth("data.marketingResponsible", 200),
       resizable: true,
-      hidden: visibilityController(
-        "projectInformation",
-        "data.marketingResponsible"
-      ),
+      hidden: true,
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
@@ -2519,10 +2534,7 @@ export function SubmissionsTable(props: Props) {
       title: "Project Approver",
       width: columnWidth("data.projectApprover", 200),
       resizable: true,
-      hidden: visibilityController(
-        "projectInformation",
-        "data.projectApprover"
-      ),
+      hidden: true,
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
