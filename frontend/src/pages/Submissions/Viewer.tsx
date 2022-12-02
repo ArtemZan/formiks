@@ -22,6 +22,7 @@ import Elmv from "../../components/projects/elmv";
 import Elov from "../../components/projects/elov";
 import Por from "../../components/projects/por";
 import Cerov from "../../components/projects/cerov";
+import { Submission } from "../../types/submission";
 
 interface Props {
   history: any;
@@ -47,6 +48,7 @@ export function Viewer(props: Props) {
     type: "formio",
     code: "",
   });
+  const [draft, setDraft] = useState<Submission | undefined>(undefined);
 
   function getProject(id: string) {
     RestAPI.getProject(id).then((response) => {
@@ -58,6 +60,7 @@ export function Viewer(props: Props) {
     if (props.match.params.id) {
       if (props.isDraft) {
         RestAPI.getDraft(props.match.params.id).then((response) => {
+          setDraft(response.data.submission);
           getProject(response.data.submission.project);
           if (response.data.submission.project === "629dfb3f55d209262194a3e6") {
             setPredefinedProject(
@@ -229,7 +232,30 @@ export function Viewer(props: Props) {
         </AlertDescription>
       </Alert>
 
-      {/* FIXME: replace null with error alert */}
+      <Alert
+        display={
+          draft !== undefined && draft.data["_rejected"] === true
+            ? "block"
+            : "none"
+        }
+        status="error"
+        variant="subtle"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="center"
+        mb="2em"
+        paddingBottom={"1em"}
+        paddingTop={"2em"}
+      >
+        <AlertTitle fontSize="lg">Project was rejected</AlertTitle>
+        <AlertDescription>
+          <div style={{ whiteSpace: "pre-line", marginTop: "1em" }}>
+            {draft ? draft.data["_rejectedComment"] : ""}
+          </div>
+        </AlertDescription>
+      </Alert>
+
       {predefinedProject !== null ? predefinedProject : null}
     </Box>
   );

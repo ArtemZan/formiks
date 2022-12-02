@@ -14,36 +14,40 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Textarea,
 } from "@chakra-ui/react";
 import CreatableSelect from "react-select/creatable";
 import { RestAPI } from "../api/rest";
 import { DefaultSelectStyles } from "../utils/Styles";
+import { Submission } from "../types/submission";
 
 interface Props {
-  isOpen: boolean;
+  submission: Submission | undefined;
   onClose: any;
-  addComment: any;
+  onReject: any;
 }
 
-export default function CreateModal(props: Props) {
+export default function RejectModal(props: Props) {
   const [comment, setComment] = useState("");
 
   return (
     <Modal
-      isOpen={props.isOpen}
+      isOpen={props.submission !== undefined}
       onClose={() => {
         props.onClose();
       }}
+      isCentered
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Add reason for rejection</ModalHeader>
+        <ModalHeader>Specify rejection reason</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4}>
             <Box w="100%">
-              <Text mb="8px">Title</Text>
-              <Input
+              <Text mb="8px">Comment</Text>
+              <Textarea
+                rows={4}
                 value={comment}
                 onChange={(event) => {
                   setComment(event.target.value);
@@ -55,7 +59,15 @@ export default function CreateModal(props: Props) {
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={() => {}}>Create</Button>
+          <Button
+            colorScheme={"red"}
+            onClick={() => {
+              props.onReject(comment);
+              setComment("");
+            }}
+          >
+            Reject
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

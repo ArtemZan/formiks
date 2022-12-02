@@ -1,4 +1,4 @@
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
   Badge,
   Box,
@@ -27,6 +27,7 @@ import {
   VStack,
   Heading,
   HStack,
+  IconButton,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { RestAPI } from "../../api/rest";
@@ -108,41 +109,34 @@ export function Explorer(props: Props) {
                                 </Tag>
                               </HStack>
                             </Heading>
-                            <VStack float="right">
-                              <Button
-                                width={"100px"}
-                                colorScheme={"blue"}
-                                float="right"
+                            <HStack float="right">
+                              <IconButton
+                                colorScheme="blue"
+                                aria-label="edit"
+                                icon={<EditIcon />}
                                 onClick={() => {
-                                  window.open(
-                                    "/drafts/view/" + draft.id,
-                                    "_self"
+                                  props.history.push(
+                                    "/drafts/view/" + draft.id
                                   );
                                 }}
-                              >
-                                Edit
-                              </Button>
+                              />
 
-                              <Button
-                                colorScheme={"red"}
-                                width={"100px"}
-                                float="right"
+                              <IconButton
+                                colorScheme="red"
+                                aria-label="delete"
+                                icon={<DeleteIcon />}
                                 onClick={() => {
-                                  var d = [...drafts];
+                                  var temp = [...drafts];
                                   RestAPI.deleteDraft(draft.id || "");
-                                  var no = d.findIndex(
-                                    (c) =>
-                                      c.data.projectNumber ===
-                                      draft.data.projectNumber
+                                  var i = temp.findIndex(
+                                    (dr) => dr.id === draft.id
                                   );
-                                  d.splice(no, 1);
+                                  temp.splice(i, 1);
 
-                                  setDrafts(d);
+                                  setDrafts(temp);
                                 }}
-                              >
-                                Delete
-                              </Button>
-                            </VStack>
+                              />
+                            </HStack>
                           </Box>
                           <Box w="100%">
                             <VStack align={"start"} w="100%">

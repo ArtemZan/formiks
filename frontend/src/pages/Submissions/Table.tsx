@@ -31,7 +31,7 @@ import {
 } from "react";
 import EditableTableCell from "../../components/EditableTableCell";
 import Creatable from "react-select/creatable";
-import CreateModal from "../../components/Modal";
+import CreateModal from "../../components/RejectModal";
 import Select from "react-select";
 import { Submission } from "../../types/submission";
 import Toast, { ToastType } from "../../components/Toast";
@@ -63,6 +63,7 @@ import { NumberWithCommas } from "../../utils/Numbers";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import { FilterField, Template } from "../../types/template";
+import RejectModal from "../../components/RejectModal";
 
 interface Props {
   history: any;
@@ -826,6 +827,9 @@ const DisplayedColumnsListOptions = DisplayedColumnsList.map((group: any) => {
 }).flat(1);
 
 export function SubmissionsTable(props: Props) {
+  const [rejectedSubmission, setRejectedSubmission] = useState<
+    Submission | undefined
+  >(undefined);
   const [selectedTemplate, setSelectedTemplate] = useState("local");
   const [templates, setTemplates] = useState<Template[]>([]);
   const [sourceSubmissions, setSourceSubmissions] = useState(new Map());
@@ -878,7 +882,6 @@ export function SubmissionsTable(props: Props) {
   //   domSize: 0,
   // });
   const [totalRequests, setTotalRequests] = useState(1);
-  const [createModal, setCreateModal] = useState(false);
 
   useEffect(() => {
     fetchDropdowns().then(() => forceUpdate());
@@ -1387,9 +1390,10 @@ export function SubmissionsTable(props: Props) {
     }
   }
 
-  function reject(submissionId: string, viewId: string) {
+  function reject(submissionId: string, viewId: string, comment: string) {
     RestAPI.getView(viewId).then((response) => {
       response.data.submission.data["_rejected"] = true;
+      response.data.submission.data["_rejectedComment"] = comment;
       RestAPI.createDraft(response.data).then(() => {
         toast(
           <Toast
@@ -4389,7 +4393,9 @@ export function SubmissionsTable(props: Props) {
             type={"button"}
             textColor={"red"}
             backgroundColor="#fef9fa"
-            onUpdate={() => setCreateModal(true)}
+            onUpdate={() => {
+              setRejectedSubmission(props.rowData);
+            }}
             rowIndex={props.rowIndex}
             columnKey={props.column.dataKey}
             rowData={props.rowData}
@@ -4434,11 +4440,20 @@ export function SubmissionsTable(props: Props) {
   );
   return (
     <div>
-      <CreateModal
-        isOpen={createModal}
-        addComment={"sdfsdfsd"}
+      <RejectModal
+        submission={rejectedSubmission}
         onClose={() => {
-          setCreateModal(false);
+          setRejectedSubmission(undefined);
+        }}
+        onReject={(comment: string) => {
+          if (rejectedSubmission !== undefined) {
+            reject(
+              rejectedSubmission!.id!,
+              rejectedSubmission!.viewId!,
+              comment
+            );
+            setRejectedSubmission(undefined);
+          }
         }}
       />
       <Box h="70px" textAlign={"end"}>
