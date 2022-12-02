@@ -31,7 +31,7 @@ import {
 } from "react";
 import EditableTableCell from "../../components/EditableTableCell";
 import Creatable from "react-select/creatable";
-
+import CreateModal from "../../components/Modal";
 import Select from "react-select";
 import { Submission } from "../../types/submission";
 import Toast, { ToastType } from "../../components/Toast";
@@ -878,6 +878,7 @@ export function SubmissionsTable(props: Props) {
   //   domSize: 0,
   // });
   const [totalRequests, setTotalRequests] = useState(1);
+  const [createModal, setCreateModal] = useState(false);
 
   useEffect(() => {
     fetchDropdowns().then(() => forceUpdate());
@@ -1413,7 +1414,6 @@ export function SubmissionsTable(props: Props) {
       .then((response) => {
         var message = `Order ${response.data.IntOrderOut.EX_ORDERID} has been successfully created`;
         var type = "success";
-        console.log(response);
         switch (response.data.IntOrderOut.EX_SUBRC) {
           case 4:
             message = `Order ${response.data.IntOrderOut.EX_ORDERID} already exists`;
@@ -1595,7 +1595,13 @@ export function SubmissionsTable(props: Props) {
   }
 
   function lmdColumnEdit(value: any) {
-    if (value === "" || value === "INCOMPLETE") {
+    console.log(value);
+    if (
+      value === undefined ||
+      value === null ||
+      value === "" ||
+      value === "INCOMPLETE"
+    ) {
       return false;
     } else {
       return true;
@@ -1603,10 +1609,6 @@ export function SubmissionsTable(props: Props) {
   }
 
   function projectColumnEdit(value: any) {
-    if (value.data.projectNumber === "6110IS234578") {
-      console.log(value);
-    }
-
     if (
       value.data.status === "" ||
       value.data.status === "INCOMPLETE" ||
@@ -4387,7 +4389,7 @@ export function SubmissionsTable(props: Props) {
             type={"button"}
             textColor={"red"}
             backgroundColor="#fef9fa"
-            onUpdate={() => reject(props.rowData.id, props.rowData.viewId)}
+            onUpdate={() => setCreateModal(true)}
             rowIndex={props.rowIndex}
             columnKey={props.column.dataKey}
             rowData={props.rowData}
@@ -4432,6 +4434,13 @@ export function SubmissionsTable(props: Props) {
   );
   return (
     <div>
+      <CreateModal
+        isOpen={createModal}
+        addComment={"sdfsdfsd"}
+        onClose={() => {
+          setCreateModal(false);
+        }}
+      />
       <Box h="70px" textAlign={"end"}>
         <IconButton
           icon={<IoSave />}
