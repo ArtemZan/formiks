@@ -553,6 +553,7 @@ export default function Cerov(props: Props) {
         projectNumber: projectNumber,
         requestorsName: requestorsName,
         projectApprover: projectApproval,
+        businessUnit: vendor.bu,
         projectApproval: projectApproval,
         manufacturersFiscalQuarter: fiscalQuarter.label,
         campaignStartDate: startDate === null ? null : startDate.toString(),

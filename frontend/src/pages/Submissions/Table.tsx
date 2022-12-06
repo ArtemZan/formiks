@@ -1599,7 +1599,6 @@ export function SubmissionsTable(props: Props) {
   }
 
   function lmdColumnEdit(value: any) {
-    console.log(value);
     if (
       value === undefined ||
       value === null ||
@@ -5223,6 +5222,12 @@ export function SubmissionsTable(props: Props) {
                                         "data.documentCurrencyLMD",
                                         s.data.vendorBudgetCurrency
                                       );
+                                      handleCommunicationCellUpdate(
+                                        submission,
+                                        "data.buLMD",
+                                        s.data.businessUnit
+                                      );
+
                                       return false;
                                     }
                                     return true;
