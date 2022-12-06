@@ -5215,7 +5215,7 @@ export function SubmissionsTable(props: Props) {
                                       handleCommunicationCellUpdate(
                                         submission,
                                         "data.amountLMD",
-                                        s.data.estimatedIncomeCC
+                                        s.data.vendorAmount
                                       );
                                       handleCommunicationCellUpdate(
                                         submission,
