@@ -29,6 +29,7 @@ import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 import { DefaultSelectStyles } from "../../utils/Styles";
 import { RiCoinsLine } from "react-icons/ri";
+import { stringToObject } from "rsuite/esm/utils";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -54,8 +55,6 @@ interface Props {
 }
 
 export default function Cerov(props: Props) {
-  console.log(props.submission);
-  console.log(props.children);
   const [requestorsCompanyName, setRequestorsCompanyName] = useState<any>({
     label: "",
     value: { name: "", code: "", country: "" },
@@ -92,7 +91,6 @@ export default function Cerov(props: Props) {
     label: "",
     value: "",
   });
-  const [budgetApprovedByVendor, setBudgetApprovedByVendor] = useState("");
   const [exchangeRates, setExchangeRates] = useState<any>({
     label: "",
     value: "",
@@ -124,6 +122,8 @@ export default function Cerov(props: Props) {
   const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
 
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
+
+  const [inputErrors, setInputErrors] = useState<string[]>(["", ""]);
 
   const [injectionReady, setInjectionReady] = useState(false);
 
@@ -178,9 +178,6 @@ export default function Cerov(props: Props) {
               .value ?? "",
         });
       }
-      setBudgetApprovedByVendor(
-        props.submission.data.budgetApprovedByVendor ?? ""
-      );
       if (
         ExchangeRates.length > 0 &&
         props.submission.data.campaignBudgetsCurrency !== ""
@@ -329,7 +326,7 @@ export default function Cerov(props: Props) {
     var dropdownsIds: string[] = [
       "619b630a9a5a2bb37a93b23b",
       "619b61419a5a2bb37a93b237",
-      "619b63429a5a2bb37a93b23d",
+      "6391eea09a3d043b9a89d767",
       "619b62d79a5a2bb37a93b239",
       "619b632c9a5a2bb37a93b23c",
       "619b62959a5a2bb37a93b238",
@@ -559,7 +556,6 @@ export default function Cerov(props: Props) {
         campaignStartDate: startDate === null ? null : startDate.toString(),
         campaignEndDate: endDate === null ? null : endDate.toString(),
         budgetSource: budgetSource.label,
-        budgetApprovedByVendor: budgetApprovedByVendor,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
         localCurrency: requestorsCompanyName.value["currency"],
@@ -607,6 +603,7 @@ export default function Cerov(props: Props) {
       },
     };
     var children: Submission[] = [];
+
     children.push({
       project: projectId,
       title: "",
@@ -774,6 +771,7 @@ export default function Cerov(props: Props) {
       children,
       local: local,
     };
+
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
@@ -788,6 +786,17 @@ export default function Cerov(props: Props) {
           );
         });
       } else {
+        submissionValidation(submission);
+        if (inputErrors.length !== 0) {
+          toast(
+            <Toast
+              title={"Mandatory fields are not filled"}
+              message={"not all fields that are required were provided"}
+              type={"error"}
+            />
+          );
+          return;
+        }
         RestAPI.deleteDraft(props.submission.id).then(() => {
           RestAPI.createSubmissionWithChildren(submission).then((response) => {
             if (response.data.hasChanged) {
@@ -833,6 +842,17 @@ export default function Cerov(props: Props) {
           );
         });
       } else {
+        submissionValidation(submission);
+        if (inputErrors.length !== 0) {
+          toast(
+            <Toast
+              title={"Mandatory fields are not filled"}
+              message={"not all fields that are required were provided"}
+              type={"error"}
+            />
+          );
+          return;
+        }
         RestAPI.createSubmissionWithChildren(submission).then((response) => {
           if (response.data.hasChanged) {
             toast(
@@ -929,6 +949,89 @@ export default function Cerov(props: Props) {
     setCostBreakdown(table);
   }
 
+  function submissionValidation(submission: SubmissionWithChildren) {
+    var fieldKeys: string[] = [];
+    var nonMandatoryFields: string[] = [
+      "targetAudience",
+      "projectApprover",
+      "projectApproval",
+      "manufacturersFiscalQuarter",
+      "comments",
+      "additionalInformation",
+      "status",
+    ];
+    var sub = submission.submission;
+    var vendor = submission.children.filter((el) => el.group === "vendor")[0];
+    Object.keys(sub.data).forEach((key: any) => {
+      if (!nonMandatoryFields.includes(key)) {
+        switch (typeof sub.data[key]) {
+          case "number":
+            if (isNaN(sub.data[key])) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "object":
+            if (sub.data[key] === null) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "string":
+            if (sub.data[key] === "") {
+              fieldKeys.push(key);
+            }
+            break;
+          case "undefined":
+            fieldKeys.push(key);
+            break;
+        }
+        // console.log(key + " " + sub.data[key]);
+        // if (
+        //   sub.data[key] === "" ||
+        //   String(sub.data[key]) === "" ||
+        //   String(sub.data[key]) === "NaN" ||
+        //   sub.data[key] === undefined ||
+        //   sub.data[key] === null
+        // ) {
+        //   fieldKeys.push(key);
+        // }
+      }
+    });
+    Object.keys(vendor.data).forEach((key: any) => {
+      if (!nonMandatoryFields.includes(key)) {
+        switch (typeof vendor.data[key]) {
+          case "number":
+            if (isNaN(vendor.data[key])) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "object":
+            if (vendor.data[key] === null) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "string":
+            if (vendor.data[key] === "") {
+              fieldKeys.push(key);
+            }
+            break;
+          case "undefined":
+            fieldKeys.push(key);
+            break;
+        }
+        // if (
+        //   vendor.data[key] === "" ||
+        //   String(vendor.data[key]) === "" ||
+        //   String(vendor.data[key]) === "NaN" ||
+        //   vendor.data[key] === undefined ||
+        //   vendor.data[key] === null
+        // ) {
+        //   fieldKeys.push(key);
+        // }
+      }
+    });
+    setInputErrors(fieldKeys);
+  }
+
   return (
     <Box>
       <VStack spacing="20px" mb={"40px"} align="start">
@@ -1009,7 +1112,10 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Organizing Company</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("organizingCompany")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1044,10 +1150,12 @@ export default function Cerov(props: Props) {
             1' 'Vendor Name 2'... 'Campaign Name')
           </Text>
           <Input
+            isInvalid={inputErrors.includes("campaignName")}
             maxLength={40}
             value={campaignName}
             onChange={(event) => {
               setCampaignName(event.target.value);
+              // setInputErrors(inputErrors.filter((e) => e !== "campaignName"));
             }}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -1058,6 +1166,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Description</Text>
           <Textarea
             value={campaignDescription}
+            isInvalid={inputErrors.includes("campaignDescription")}
             onChange={(event) => {
               setCampaignDescription(event.target.value);
             }}
@@ -1072,7 +1181,10 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Channel</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("campaignChannel")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1097,7 +1209,10 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Year</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("year")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1121,7 +1236,10 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign/Project Start Quarter (ALSO Quarter)</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("projectStartQuarter")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1148,6 +1266,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Project Number</Text>
           <Input
             placeholder="____________"
+            isInvalid={inputErrors.includes("projectNumber")}
             value={projectNumber}
             onChange={(event) => {
               if (event.target.value.length < 13) {
@@ -1163,6 +1282,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Requestor`s Name</Text>
           <Input
             value={requestorsName}
+            isInvalid={inputErrors.includes("requestorsName")}
             onChange={(event) => setRequestorsName(event.target.value)}
             // disabled
             bg={useColorModeValue("white", "#2C313C")}
@@ -1175,6 +1295,7 @@ export default function Cerov(props: Props) {
             <DatePicker
               customInput={
                 <Input
+                  isInvalid={inputErrors.includes("campaignStartDate")}
                   bg={useColorModeValue("white", "#2C313C")}
                   color={useColorModeValue("gray.800", "#ABB2BF")}
                 />
@@ -1189,8 +1310,10 @@ export default function Cerov(props: Props) {
           <Box w="100%">
             <Text mb="8px">Campaign End Date</Text>
             <DatePicker
+              required={true}
               customInput={
                 <Input
+                  isInvalid={inputErrors.includes("campaignEndDate")}
                   bg={useColorModeValue("white", "#2C313C")}
                   color={useColorModeValue("gray.800", "#ABB2BF")}
                 />
@@ -1208,7 +1331,10 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Budget Source</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("budgetSource")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1240,6 +1366,7 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Local Currency</Text>
           <Input
+            isInvalid={inputErrors.includes("requestorsCompanyName")}
             defaultValue={requestorsCompanyName.value.currency}
             disabled
             bg={useColorModeValue("white", "#2C313C")}
@@ -1250,7 +1377,10 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Currency</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("campaignCurrency")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1273,6 +1403,11 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Campaign Estimated Income in Campaign Currency</Text>
           <Input
+            isInvalid={
+              budgetSource.value === "noBudget"
+                ? false
+                : inputErrors.includes("estimatedIncomeCC")
+            }
             disabled={budgetSource.value === "noBudget"}
             value={estimatedIncomeBudgetCurrency}
             onChange={(event) => {
@@ -1286,6 +1421,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in Campaign Currency</Text>
           <Input
             value={estimatedCostsBudgetCurrency}
+            isInvalid={inputErrors.includes("estimatedCostsCC")}
             onChange={(event) => {
               setEstimatedCostsBudgetCurrency(event.target.value);
             }}
@@ -1301,6 +1437,7 @@ export default function Cerov(props: Props) {
           </Text>
           <Input
             value={netProfitTargetBudgetCurrency}
+            isInvalid={inputErrors.includes("estimatedResultCC")}
             onChange={(event) => {
               setNetProfitTargetBudgetCurrency(event.target.value);
             }}
@@ -1312,6 +1449,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Estimated Income in EUR</Text>
           <Input
             disabled={budgetSource.value === "noBudget"}
+            isInvalid={inputErrors.includes("estimatedIncomeEUR")}
             value={estimatedIncome}
             onChange={(event) => {
               setEstimatedIncome(event.target.value);
@@ -1324,6 +1462,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in EUR</Text>
           <Input
             value={estimatedCosts}
+            isInvalid={inputErrors.includes("estimatedCostsEUR")}
             onChange={(event) => {
               setEstimatedCosts(event.target.value);
             }}
@@ -1340,6 +1479,7 @@ export default function Cerov(props: Props) {
           <Input
             // value={netProfitTarget}
             value={netProfitTarget}
+            isInvalid={inputErrors.includes("estimatedResultEUR")}
             onChange={(event) => {
               setNetProfitTarget(event.target.value);
             }}
@@ -1351,6 +1491,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Total Estimated Costs in Local Currency</Text>
           <Input
             value={totalEstimatedCostsLC}
+            isInvalid={inputErrors.includes("totalEstimatedCostsLC")}
             onChange={(event) => {
               setTotalEstimatedCostsLC(event.target.value);
             }}
@@ -1362,7 +1503,10 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Vendor Name</Text>
           <Select
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("vendorName")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1390,6 +1534,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">VOD</Text>
           <Input
             value={vendor.debitor}
+            isInvalid={inputErrors.includes("debitorNumber")}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
             onChange={(event) => {
@@ -1402,6 +1547,7 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Creditor</Text>
           <Input
+            isInvalid={inputErrors.includes("creditorNumber")}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
             value={vendor.creditor}
@@ -1416,6 +1562,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Manufacturer</Text>
           <Input
             bg={useColorModeValue("white", "#2C313C")}
+            isInvalid={inputErrors.includes("manufacturerNumber")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
             value={vendor.manufacturer}
             onChange={(event) => {
@@ -1428,7 +1575,10 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Business Unit</Text>
           <Select
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("businessUnit")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1457,7 +1607,10 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">PH1</Text>
           <Select
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("PH1")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1486,7 +1639,10 @@ export default function Cerov(props: Props) {
           <Select
             menuPortalTarget={document.body}
             isMulti
-            styles={DefaultSelectStyles(useColorModeValue)}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("businessUnit")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1807,35 +1963,35 @@ export default function Cerov(props: Props) {
                 "Campaign Estimated Income in Campaign Currency",
                 budgetSource.value === "noBudget"
                   ? "N/A"
-                  : estimatedIncomeBudgetCurrency,
+                  : parseFloat(estimatedIncomeBudgetCurrency),
               ]);
               formattedData.push([
                 "Campaign Estimated Costs in Campaign Currency",
-                estimatedCostsBudgetCurrency,
+                parseFloat(estimatedCostsBudgetCurrency),
               ]);
               formattedData.push([
                 budgetSource.value === "noBudget"
                   ? "Campaign Loss in Campaign currency"
                   : "Campaign Net Profit Target in Campaign Currency",
-                netProfitTargetBudgetCurrency,
+                parseFloat(netProfitTargetBudgetCurrency),
               ]);
               formattedData.push([
                 "Campaign Estimated Income in EUR",
-                estimatedIncome === "" ? "N/A" : estimatedIncome,
+                estimatedIncome === "" ? "N/A" : parseFloat(estimatedIncome),
               ]);
               formattedData.push([
                 "Campaign Estimated Costs in EUR",
-                estimatedCosts,
+                parseFloat(estimatedCosts),
               ]);
               formattedData.push([
                 budgetSource.value === "noBudget"
                   ? "Campaign Loss in EUR"
                   : "Campaign Net Profit Target in EUR",
-                netProfitTarget,
+                parseFloat(netProfitTarget),
               ]);
               formattedData.push([
                 "Total Estimated Costs in Local Currency",
-                totalEstimatedCostsLC,
+                parseFloat(totalEstimatedCostsLC),
               ]);
               formattedData.push(["Vendor Name", vendorName.label]);
               formattedData.push(["VOD", vendor.debitor]);
@@ -1868,11 +2024,11 @@ export default function Cerov(props: Props) {
                   company.country,
                   company.contactEmail,
                   company.projectNumber,
-                  company.share,
-                  company.contribution,
-                  company.estimatedCosts,
-                  company.contributionEur,
-                  company.estimatedCostsEur,
+                  parseFloat(company.share),
+                  parseFloat(company.contribution),
+                  parseFloat(company.estimatedCosts),
+                  parseFloat(company.contributionEur),
+                  parseFloat(company.estimatedCostsEur),
                 ]);
               });
               formattedData.push([
