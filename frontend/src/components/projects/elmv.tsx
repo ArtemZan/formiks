@@ -246,7 +246,6 @@ export default function Elmv(props: Props) {
         );
 
         var v: any[] = [];
-
         props.children
           .filter((s) => s.group === "vendor")
           .forEach((s) => {
@@ -313,22 +312,25 @@ export default function Elmv(props: Props) {
       return;
     }
     var data: any = [];
+    console.log(vendors);
     vendorsNames.forEach((vendor: any) => {
+      var ex = vendors.find((v: any) => v.vendor === vendor.label);
+      console.log(ex);
       data.push({
         vendor: vendor.label,
-        projectManager: vendor.value.alsoMarketingConsultant,
-        creditor: vendor.value.kreditor,
-        debitor: vendor.value.debitorischer,
-        manufacturer: vendor.value.hersteller,
-        bu: "",
-        ph: { label: "", value: "" },
-        budgetCurrency: { label: "", value: "" },
-        budgetAmount: "",
-        localBudget: "",
-        eurBudget: "",
-        share: "",
-        estimatedCostsCC: "",
-        estimatedIncomeCC: "",
+        projectManager: ex ? ex.alsoMarketingConsultant : "",
+        creditor: ex ? ex.kreditor : "",
+        debitor: ex ? ex.debitorischer : "",
+        manufacturer: ex ? ex.hersteller : "",
+        bu: ex ? ex.businessUnit : "",
+        ph: ex ? ex.PH1 : "",
+        budgetCurrency: ex ? ex.vendorBudgetCurrency : "",
+        budgetAmount: ex ? ex.vendorBudgetAmount : "",
+        localBudget: ex ? ex.vendorAmountLC : "",
+        eurBudget: ex ? ex.vendorAmount : "",
+        share: ex ? ex.vendorShare : "",
+        estimatedCostsCC: ex ? ex.estimatedCostsCC : "",
+        estimatedIncomeCC: ex ? ex.estimatedIncomeCC : "",
         estimatedCostsLC: "",
         estimatedCostsEUR: "",
         netProfitTargetVC: "",
@@ -440,72 +442,74 @@ export default function Elmv(props: Props) {
     };
     var children: Submission[] = [];
 
-    vendors.slice(0, -1).forEach((vendor: any) => {
-      children.push({
-        project: projectId,
-        title: "",
-        parentId: "",
-        viewId: null,
-        group: "vendor",
-        created: new Date(),
-        updated: new Date(),
-        status: "New",
-        author: requestorsName,
-        data: {
-          vendorName: vendor.vendor,
-          marketingResponsible: vendor.projectManager,
-          companyCode: requestorsCompanyName.value.code,
-          projectNumber: projectNumber,
-          creditorNumber: vendor.creditor,
-          debitorNumber: vendor.debitor,
-          manufacturerNumber: vendor.manufacturer,
-          businessUnit: vendor.bu,
-          PH1: vendor.ph.label,
-          vendorBudgetCurrency:
-            budgetSource.value === "noBudget"
-              ? "N/A"
-              : vendor.budgetCurrency.label,
-          vendorAmountLC:
-            isNaN(parseFloat(vendor.localBudget)) ||
-            budgetSource.value === "noBudget"
-              ? 0.0
-              : parseFloat(vendor.localBudget),
-          vendorAmount:
-            isNaN(parseFloat(vendor.budgetAmount)) ||
-            budgetSource.value === "noBudget"
-              ? 0.0
-              : parseFloat(vendor.budgetAmount),
-          vendorBudgetAmount:
-            isNaN(parseFloat(vendor.budgetAmount)) ||
-            budgetSource.value === "noBudget"
-              ? 0.0
-              : parseFloat(vendor.budgetAmount),
-          // cbbudgetEur: parseFloat(vendor.eurBudget),
-          vendorShare: parseFloat(vendor.share),
-          estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
-          estimatedIncomeCC:
-            budgetSource.value === "noBudget"
-              ? 0.0
-              : parseFloat(vendor.estimatedIncomeCC),
-          estimatedResultCC: parseFloat(vendor.netProfitTargetVC),
-          // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-          estimatedIncomeEUR:
-            budgetSource.value === "noBudget"
-              ? 0.0
-              : parseFloat(vendor.eurBudget),
-          estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
-          estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
-          estimatedResultBC: parseFloat(vendor.netProfitTargetLC),
-          projectType: "Local Multi Vendor",
-        },
+    vendors
+      .slice(0, -1)
+      // .filter((vendor: any) => vendor.vendor !== "TOTAL")
+      .forEach((vendor: any) => {
+        children.push({
+          project: projectId,
+          title: "",
+          parentId: "",
+          viewId: null,
+          group: "vendor",
+          created: new Date(),
+          updated: new Date(),
+          status: "New",
+          author: requestorsName,
+          data: {
+            vendorName: vendor.vendor,
+            marketingResponsible: vendor.projectManager,
+            companyCode: requestorsCompanyName.value.code,
+            projectNumber: projectNumber,
+            creditorNumber: vendor.creditor,
+            debitorNumber: vendor.debitor,
+            manufacturerNumber: vendor.manufacturer,
+            businessUnit: vendor.bu,
+            PH1: vendor.ph1,
+            vendorBudgetCurrency:
+              budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
+            vendorAmountLC:
+              isNaN(parseFloat(vendor.localBudget)) ||
+              budgetSource.value === "noBudget"
+                ? 0.0
+                : parseFloat(vendor.localBudget),
+            vendorAmount:
+              isNaN(parseFloat(vendor.budgetAmount)) ||
+              budgetSource.value === "noBudget"
+                ? 0.0
+                : parseFloat(vendor.budgetAmount),
+            vendorBudgetAmount:
+              isNaN(parseFloat(vendor.budgetAmount)) ||
+              budgetSource.value === "noBudget"
+                ? 0.0
+                : parseFloat(vendor.budgetAmount),
+            // cbbudgetEur: parseFloat(vendor.eurBudget),
+            vendorShare: parseFloat(vendor.share),
+            estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
+            estimatedIncomeCC:
+              budgetSource.value === "noBudget"
+                ? 0.0
+                : parseFloat(vendor.estimatedIncomeCC),
+            estimatedResultCC: parseFloat(vendor.netProfitTargetVC),
+            // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+            estimatedIncomeEUR:
+              budgetSource.value === "noBudget"
+                ? 0.0
+                : parseFloat(vendor.eurBudget),
+            estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
+            estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
+            estimatedResultBC: parseFloat(vendor.netProfitTargetLC),
+            projectType: "Local Multi Vendor",
+          },
+        });
       });
-    });
 
     var submission: SubmissionWithChildren = {
       submission: parent,
       children,
       local: null,
     };
+    console.log(submission.children);
 
     if (props.isDraft) {
       if (draft) {
