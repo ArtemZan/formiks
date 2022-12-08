@@ -32,6 +32,7 @@ import { RestAPI } from "../../api/rest";
 var PH1: any[] = [];
 var Companies: any[] = [];
 var VendorsNames: any[] = [];
+var AlsoInternationalVendorsNames: any[] = [];
 var BUs: any[] = [];
 var CampaignChannel: any[] = [];
 var TargetAudience: any[] = [];
@@ -117,7 +118,7 @@ export default function Elmv(props: Props) {
     var dropdownsIds: string[] = [
       "619b630a9a5a2bb37a93b23b",
       "619b61419a5a2bb37a93b237",
-      "619b63429a5a2bb37a93b23d",
+      "6391eea09a3d043b9a89d767",
       "619b62d79a5a2bb37a93b239",
       "619b632c9a5a2bb37a93b23c",
       "619b62959a5a2bb37a93b238",
@@ -126,6 +127,7 @@ export default function Elmv(props: Props) {
       "619b6754fe27d06ad17d75ad",
       "619b6799fe27d06ad17d75ae",
       "633e93ed5a7691ac30c977fc",
+      "636abbd43927f9c7703b19c4",
     ];
     var responses = await Promise.all(
       dropdownsIds.map((di) => {
@@ -143,6 +145,7 @@ export default function Elmv(props: Props) {
     Year = responses[8].data;
     ProjectStartQuarter = responses[9].data;
     BUs = responses[10].data;
+    AlsoInternationalVendorsNames = responses[11].data;
   }
 
   useEffect(() => {

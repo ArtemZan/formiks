@@ -29,6 +29,7 @@ import moment from "moment";
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
+import { DefaultSelectStyles } from "../../utils/Styles";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -40,6 +41,7 @@ var Budget: any[] = [];
 var ExchangeRates: any[] = [];
 var FiscalQuarter: any[] = [];
 var Year: any[] = [];
+var AlsoInternationalVendorsNames: any[] = [];
 var ProjectStartQuarter: any[] = [];
 
 const { Column, HeaderCell, Cell } = Table;
@@ -118,6 +120,8 @@ export default function Elov(props: Props) {
 
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
 
+  const [inputErrors, setInputErrors] = useState<string[]>([]);
+
   const [injectionReady, setInjectionReady] = useState(false);
 
   const [render, rerender] = useState(0);
@@ -138,7 +142,10 @@ export default function Elov(props: Props) {
       setTargetAudience(props.submission.data.targetAudience ?? "");
       setCampaignChannel({
         label: props.submission.data.campaignChannel ?? "",
-        value: props.submission.data.campaignChannel ?? "",
+        value:
+          props.submission.data.campaignChannel.length > 0
+            ? props.submission.data.campaignChannel.substr(0, 1)
+            : "",
       });
       setYear({
         label: props.submission.data.year ?? "",
@@ -147,7 +154,10 @@ export default function Elov(props: Props) {
       setOrganizingCompany(props.submission.data.organizingCompany ?? "");
       setProjectStartQuarter({
         label: props.submission.data.projectStartQuarter ?? "",
-        value: props.submission.data.projectStartQuarter ?? "",
+        value:
+          props.submission.data.projectStartQuarter.length > 0
+            ? props.submission.data.projectStartQuarter.substr(0, 2)
+            : "",
       });
       setProjectNumber(props.submission.data.projectNumber ?? "");
       setRequestorsName(props.submission.data.requestorsName ?? "");
@@ -165,39 +175,35 @@ export default function Elov(props: Props) {
               .value ?? "",
         });
       }
-      setBudgetApprovedByVendor(
-        props.submission.data.budgetApprovedByVendor ?? ""
-      );
-      setExchangeRates({
-        label: props.submission.data.campaignBudgetsCurrency ?? "",
-        value: props.submission.data.campaignBudgetsCurrency ?? "",
-      });
-      setLocalExchangeRate(
-        parseFloat(
-          (
+      if (
+        ExchangeRates.length > 0 &&
+        props.submission.data.campaignBudgetsCurrency !== ""
+      ) {
+        setExchangeRates({
+          label: props.submission.data.campaignBudgetsCurrency ?? "",
+          value:
             ExchangeRates.find(
-              (rate) => rate.label === props.submission.data.localCurrency
-            ) || "0"
-          ).value
-        )
-      );
+              (b) => b.label === props.submission.data.campaignBudgetsCurrency
+            ).value ?? "",
+        });
+      }
       setEstimatedIncomeBudgetCurrency(
-        props.submission.data.campaignEstimatedIncomeBudgetsCurrency.toFixed(
-          2
-        ) || "0.00"
+        (
+          props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
+        ).toString()
       );
       setEstimatedIncome(
-        typeof props.submission.data.campaignEstimatedIncomeEur === "number"
+        props.submission.data.campaignEstimatedIncomeEur
           ? props.submission.data.campaignEstimatedIncomeEur.toFixed(2)
           : "0.00"
       );
       setEstimatedCosts(
-        typeof props.submission.data.campaignEstimatedCostsEur === "number"
+        props.submission.data.campaignEstimatedCostsEur
           ? props.submission.data.campaignEstimatedCostsEur.toFixed(2)
           : "0.00"
       );
       setNetProfitTarget(
-        typeof props.submission.data.campaignNetProfitTargetEur === "number"
+        props.submission.data.campaignNetProfitTargetEur
           ? props.submission.data.campaignNetProfitTargetEur.toFixed(2)
           : "0.00"
       );
@@ -211,33 +217,44 @@ export default function Elov(props: Props) {
           props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
         ).toString()
       );
+      setLocalExchangeRate(
+        parseFloat(
+          (
+            ExchangeRates.find(
+              (rate) => rate.label === props.submission.data.campaignCurrency
+            ) || "0"
+          ).value
+        )
+      );
       setComments(props.submission.data.comments ?? "");
       setTotalEstimatedCostsLC(
-        typeof props.submission.data.totalEstimatedCostsLC === "number"
+        props.submission.data.totalEstimatedCostsLC
           ? props.submission.data.totalEstimatedCostsLC.toFixed(2)
           : "0.00"
       );
 
       //
+
       if (props.children && props.children.length > 0) {
+        var vs = props.children.find((s) => s.group === "vendor");
         setVendorName({
-          label: props.children[0].data.vendorName ?? "",
-          value: props.children[0].data.vendorName ?? "",
+          label: vs.data.vendorName ?? "",
+          value: vs.data.vendorName ?? "",
         });
         setVendor({
-          vendor: props.children[0].data.vendorName ?? "",
-          creditor: props.children[0].data.creditorNumber ?? "",
-          debitor: props.children[0].data.debitorNumber ?? "",
-          manufacturer: props.children[0].data.manufacturerNumber ?? "",
-          bu: props.children[0].data.businessUnit ?? "",
+          vendor: vs.data.vendorName ?? "",
+          projectManager: vs.data.productionProjectManager ?? "",
+          creditor: vs.data.creditorNumber ?? "",
+          debitor: vs.data.debitorNumber ?? "",
+          manufacturer: vs.data.manufacturerNumber ?? "",
+          bu: vs.data.businessUnit ?? "",
           ph: {
-            label: props.children[0].data.PH1 || "1",
-            value: props.children[0].data.PH1 || "1",
+            label: vs.data.PH1 ?? "",
+            value: vs.data.PH1 ?? "",
           },
-          projectManager: props.children[0].productionProjectManager || "",
           budgetCurrency: {
-            label: props.children[0].data.budgetCurrency || "",
-            value: props.children[0].data.budgetCurrency || "",
+            label: vs.data.budgetCurrency || "",
+            value: vs.data.budgetCurrency || "",
           },
           budgetAmount: "",
           localBudget: "",
@@ -251,15 +268,15 @@ export default function Elov(props: Props) {
           netProfitTargetLC: "",
           netProfitTargetEUR: "",
         });
-      }
 
-      setTimeout(() => {
-        setInjectionReady(true);
-      }, 1000);
+        setTimeout(() => {
+          setInjectionReady(true);
+        }, 3000);
+      }
     }
   }, [props.submission, props.children, ExchangeRates]);
 
-  async function updateDraft() {
+  function createSubmission(draft: boolean) {
     var projectId = "624ac98682eeddf1a9b6a622";
 
     var parent: Submission = {
@@ -268,34 +285,35 @@ export default function Elov(props: Props) {
       parentId: null,
       viewId: null,
       group: null,
+      status: "New",
       created: new Date(),
       updated: new Date(),
-      status: "New",
       author: requestorsName,
       data: {
         status: "New",
         requestorsCompanyName: requestorsCompanyName.label,
         companyCode: requestorsCompanyName.value.code,
         requestorsCountry: requestorsCompanyName.value.country,
+        organizingCompany: organizingCompany,
         campaignName: campaignName,
         projectName: campaignName,
         campaignDescription: campaignDescription,
         targetAudience: targetAudience,
         campaignChannel: campaignChannel.label,
         year: year.label,
-        organizingCompany: organizingCompany,
         projectStartQuarter: projectStartQuarter.label,
         projectNumber: projectNumber,
         requestorsName: requestorsName,
         projectApprover: projectApproval,
+        businessUnit: vendor.bu,
         projectApproval: projectApproval,
         manufacturersFiscalQuarter: fiscalQuarter.label,
         campaignStartDate: startDate === null ? null : startDate.toString(),
         campaignEndDate: endDate === null ? null : endDate.toString(),
         budgetSource: budgetSource.label,
-        budgetApprovedByVendor: budgetApprovedByVendor,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
+        localCurrency: requestorsCompanyName.value["currency"],
         campaignEstimatedIncomeBudgetsCurrency: isNaN(
           parseFloat(estimatedIncomeBudgetCurrency)
         )
@@ -315,41 +333,7 @@ export default function Elov(props: Props) {
         totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
         comments: comments,
         additionalInformation: comments,
-        localCurrency: requestorsCompanyName.value.currency,
-
-        projectType: "Local One Vendor",
-      },
-    };
-    var children: Submission[] = [];
-    children.push({
-      project: projectId,
-      title: "",
-      parentId: "",
-      viewId: null,
-      group: "vendor",
-      created: new Date(),
-      updated: new Date(),
-      status: "New",
-      author: requestorsName,
-      data: {
-        status: "New",
-        vendorName: vendorName.label,
-        projectNumber: projectNumber,
-        productionProjectManager: vendor.projectManager,
-        creditorNumber: vendor.creditor,
-        debitorNumber: vendor.debitor,
-        manufacturerNumber: vendor.manufacturer,
-        businessUnit: vendor.bu,
-        PH1: vendor.ph.label,
-        vendorBudgetCurrency:
-          budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
-        vendorAmount:
-          isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
-          budgetSource.value === "noBudget"
-            ? 0.0
-            : parseFloat(estimatedIncomeBudgetCurrency),
-        // cbbudgetEur: parseFloat(vendor.eurBudget),
-        vendorShare: 100,
+        projectType: "European One Vendor",
         estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
         estimatedIncomeCC:
           budgetSource.value === "noBudget"
@@ -368,8 +352,41 @@ export default function Elov(props: Props) {
         estimatedResultBC:
           parseFloat(netProfitTargetBudgetCurrency) *
           (budgetSource.value === "noBudget" ? -1 : 1),
-        projectType: "Local One Vendor",
-        // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
+      },
+    };
+    var children: Submission[] = [];
+
+    children.push({
+      project: projectId,
+      title: "",
+      parentId: "",
+      viewId: null,
+      group: "vendor",
+      created: new Date(),
+      updated: new Date(),
+      status: "New",
+      author: requestorsName,
+      data: {
+        status: "",
+        vendorName: vendorName.label,
+        projectNumber: projectNumber,
+        companyCode: requestorsCompanyName.value.code,
+        productionProjectManager: vendor.projectManager,
+        creditorNumber: vendor.creditor,
+        debitorNumber: vendor.debitor,
+        manufacturerNumber: vendor.manufacturer,
+        businessUnit: vendor.bu,
+        PH1: vendor.ph.label,
+        vendorBudgetCurrency:
+          budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
+        vendorAmount:
+          isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
+          budgetSource.value === "noBudget"
+            ? 0.0
+            : parseFloat(estimatedIncomeBudgetCurrency),
+        // cbbudgetEur: parseFloat(vendor.eurBudget),
+        vendorShare: 100,
+        projectType: "European One Vendor",
       },
     });
 
@@ -378,19 +395,208 @@ export default function Elov(props: Props) {
       children,
       local: null,
     };
+
     if (props.isDraft) {
-      submission.submission.id = props.submission.id;
-      return RestAPI.updateDraft(submission);
+      if (draft) {
+        submission.submission.id = props.submission.id;
+
+        RestAPI.updateDraft(submission).then((response) => {
+          toast(
+            <Toast
+              title={"Draft save"}
+              message={`Draft has been successfully saved.`}
+              type={"info"}
+            />
+          );
+        });
+      } else {
+        if (submissionValidation(submission).length !== 0) {
+          toast(
+            <Toast
+              title={"Mandatory fields are not filled"}
+              message={"not all fields that are required were provided"}
+              type={"error"}
+            />
+          );
+          return;
+        }
+        RestAPI.deleteDraft(props.submission.id).then(() => {
+          RestAPI.createSubmissionWithChildren(submission).then((response) => {
+            if (response.data.hasChanged) {
+              toast(
+                <Toast
+                  title={"Project Number has been adjusted"}
+                  message={
+                    <p>
+                      Project Number changed to:{" "}
+                      <b>{response.data.submission.data.projectNumber}</b>
+                    </p>
+                  }
+                  type={"info"}
+                />
+              );
+            }
+            toast(
+              <Toast
+                title={"Project has been transferred"}
+                message={
+                  <p>
+                    Project ({" "}
+                    <b>{response.data.submission.data.projectNumber}</b> ) has
+                    been transferred into the tool
+                  </p>
+                }
+                type={"success"}
+              />
+            );
+            props.history.push("/submissions");
+          });
+        });
+      }
     } else {
-      return RestAPI.createDraft(submission);
+      if (draft) {
+        RestAPI.createDraft(submission).then((response) => {
+          toast(
+            <Toast
+              title={"Draft save"}
+              message={`Draft has been successfully saved.`}
+              type={"info"}
+            />
+          );
+        });
+      } else {
+        if (submissionValidation(submission).length !== 0) {
+          toast(
+            <Toast
+              title={"Mandatory fields are not filled"}
+              message={"not all fields that are required were provided"}
+              type={"error"}
+            />
+          );
+          return;
+        }
+        RestAPI.createSubmissionWithChildren(submission).then((response) => {
+          if (response.data.hasChanged) {
+            toast(
+              <Toast
+                title={"Project Number has been adjusted"}
+                message={
+                  <p>
+                    Project Number changed to:{" "}
+                    <b>{response.data.submission.data.projectNumber}</b>
+                  </p>
+                }
+                type={"info"}
+              />
+            );
+          }
+          toast(
+            <Toast
+              title={"Project has been transferred"}
+              message={
+                <p>
+                  Project ( <b>{response.data.submission.data.projectNumber}</b>{" "}
+                  ) has been transferred into the tool
+                </p>
+              }
+              type={"success"}
+            />
+          );
+          props.history.push("/submissions");
+        });
+      }
     }
+  }
+
+  function submissionValidation(submission: SubmissionWithChildren) {
+    var fieldKeys: string[] = [];
+    var nonMandatoryFields: string[] = [
+      "targetAudience",
+      "projectApprover",
+      "projectApproval",
+      "manufacturersFiscalQuarter",
+      "comments",
+      "additionalInformation",
+      "status",
+    ];
+    var sub = submission.submission;
+    var vendor = submission.children.filter((el) => el.group === "vendor")[0];
+    Object.keys(sub.data).forEach((key: any) => {
+      if (!nonMandatoryFields.includes(key)) {
+        switch (typeof sub.data[key]) {
+          case "number":
+            if (isNaN(sub.data[key])) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "object":
+            if (sub.data[key] === null) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "string":
+            if (sub.data[key] === "") {
+              fieldKeys.push(key);
+            }
+            break;
+          case "undefined":
+            fieldKeys.push(key);
+            break;
+        }
+        // console.log(key + " " + sub.data[key]);
+        // if (
+        //   sub.data[key] === "" ||
+        //   String(sub.data[key]) === "" ||
+        //   String(sub.data[key]) === "NaN" ||
+        //   sub.data[key] === undefined ||
+        //   sub.data[key] === null
+        // ) {
+        //   fieldKeys.push(key);
+        // }
+      }
+    });
+    Object.keys(vendor.data).forEach((key: any) => {
+      if (!nonMandatoryFields.includes(key)) {
+        switch (typeof vendor.data[key]) {
+          case "number":
+            if (isNaN(vendor.data[key])) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "object":
+            if (vendor.data[key] === null) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "string":
+            if (vendor.data[key] === "") {
+              fieldKeys.push(key);
+            }
+            break;
+          case "undefined":
+            fieldKeys.push(key);
+            break;
+        }
+        // if (
+        //   vendor.data[key] === "" ||
+        //   String(vendor.data[key]) === "" ||
+        //   String(vendor.data[key]) === "NaN" ||
+        //   vendor.data[key] === undefined ||
+        //   vendor.data[key] === null
+        // ) {
+        //   fieldKeys.push(key);
+        // }
+      }
+    });
+    setInputErrors(fieldKeys);
+    return fieldKeys;
   }
 
   async function fetchDropdowns() {
     var dropdownsIds: string[] = [
       "619b630a9a5a2bb37a93b23b",
       "619b61419a5a2bb37a93b237",
-      "619b63429a5a2bb37a93b23d",
+      "6391eea09a3d043b9a89d767",
       "619b62d79a5a2bb37a93b239",
       "619b632c9a5a2bb37a93b23c",
       "619b62959a5a2bb37a93b238",
@@ -399,12 +605,14 @@ export default function Elov(props: Props) {
       "619b6754fe27d06ad17d75ad",
       "619b6799fe27d06ad17d75ae",
       "633e93ed5a7691ac30c977fc",
+      "636abbd43927f9c7703b19c4",
     ];
     var responses = await Promise.all(
       dropdownsIds.map((di) => {
         return RestAPI.getDropdownValues(di);
       })
     );
+
     PH1 = responses[0].data;
     Companies = responses[1].data;
     VendorsNames = responses[2].data;
@@ -416,6 +624,7 @@ export default function Elov(props: Props) {
     Year = responses[8].data;
     ProjectStartQuarter = responses[9].data;
     BUs = responses[10].data;
+    AlsoInternationalVendorsNames = responses[11].data;
   }
 
   useEffect(() => {
@@ -441,54 +650,7 @@ export default function Elov(props: Props) {
     if (props.submission && !injectionReady) {
       return;
     }
-    var data: any = [];
-    companiesParticipating.forEach((company: any) => {
-      data.push({
-        companyName: company.label,
-        companyCode: company.value.code,
-        country: company.value.country,
-        contactEmail: "",
-        projectNumber: "",
-        contribution: "",
-        estimatedCosts: "",
-        share: "",
-      });
-    });
-    setCostBreakdown(data);
-  }, [companiesParticipating]);
-
-  useEffect(() => {
-    var temp = [...costBreakdown];
-    temp.forEach((row: any) => {
-      if (budgetSource.value === "noBudget") {
-        row.contribution = "0.00";
-      } else {
-        row.contribution = (
-          parseFloat(row.share) *
-          0.01 *
-          parseFloat(estimatedIncomeBudgetCurrency)
-        ).toFixed(2);
-      }
-
-      row.estimatedCosts = (
-        parseFloat(row.share) *
-        0.01 *
-        parseFloat(estimatedCostsBudgetCurrency)
-      ).toFixed(2);
-    });
-    if (!isEqual(costBreakdown, temp)) {
-      setCostBreakdown(temp);
-    }
-  }, [
-    costBreakdown,
-    estimatedIncomeBudgetCurrency,
-    estimatedCostsBudgetCurrency,
-  ]);
-
-  useEffect(() => {
-    if (props.submission && !injectionReady) {
-      return;
-    }
+    console.log(vendorName);
     if (vendorName.value) {
       setVendor({
         vendor: vendorName.label,
@@ -549,6 +711,11 @@ export default function Elov(props: Props) {
           .toString()
       );
     } else {
+      setVendorName(VendorsNames[VendorsNames.length - 1]);
+      var temp = { ...vendor };
+      temp.bu = "A12 (old) Bridge";
+      temp.ph = { label: "CON01-Bridge", value: "CON01" };
+      setVendor(temp);
       setNetProfitTarget(estimatedCosts);
       setNetProfitTargetBudgetCurrency(estimatedCostsBudgetCurrency);
     }
@@ -684,25 +851,10 @@ export default function Elov(props: Props) {
           <Text mb="8px">Organizing Company</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("organizingCompany")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -738,6 +890,7 @@ export default function Elov(props: Props) {
           </Text>
           <Input
             maxLength={40}
+            isInvalid={inputErrors.includes("campaignName")}
             value={campaignName}
             onChange={(event) => {
               setCampaignName(event.target.value);
@@ -751,6 +904,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Campaign Description</Text>
           <Textarea
             value={campaignDescription}
+            isInvalid={inputErrors.includes("campaignDescription")}
             onChange={(event) => {
               setCampaignDescription(event.target.value);
             }}
@@ -765,25 +919,10 @@ export default function Elov(props: Props) {
           <Text mb="8px">Campaign Channel</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("campaignChannel")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -808,25 +947,10 @@ export default function Elov(props: Props) {
           <Text mb="8px">Year</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("year")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -850,25 +974,10 @@ export default function Elov(props: Props) {
           <Text mb="8px">Campaign/Project Start Quarter (ALSO Quarter)</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("projectStartQuarter")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -895,6 +1004,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Project Number</Text>
           <Input
             placeholder="____________"
+            isInvalid={inputErrors.includes("projectNumber")}
             value={projectNumber}
             onChange={(event) => {
               if (event.target.value.length < 13) {
@@ -910,6 +1020,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Requestor`s Name</Text>
           <Input
             value={requestorsName}
+            isInvalid={inputErrors.includes("requestorsName")}
             onChange={(event) => setRequestorsName(event.target.value)}
             // disabled
             bg={useColorModeValue("white", "#2C313C")}
@@ -922,6 +1033,7 @@ export default function Elov(props: Props) {
             <DatePicker
               customInput={
                 <Input
+                  isInvalid={inputErrors.includes("campaignStartDate")}
                   bg={useColorModeValue("white", "#2C313C")}
                   color={useColorModeValue("gray.800", "#ABB2BF")}
                 />
@@ -938,6 +1050,7 @@ export default function Elov(props: Props) {
             <DatePicker
               customInput={
                 <Input
+                  isInvalid={inputErrors.includes("campaignEndDate")}
                   bg={useColorModeValue("white", "#2C313C")}
                   color={useColorModeValue("gray.800", "#ABB2BF")}
                 />
@@ -955,25 +1068,10 @@ export default function Elov(props: Props) {
           <Text mb="8px">Budget Source</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("budgetSource")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1000,6 +1098,7 @@ export default function Elov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Local Currency</Text>
           <Input
+            isInvalid={inputErrors.includes("requestorsCompanyName")}
             defaultValue={requestorsCompanyName.value.currency}
             disabled
             bg={useColorModeValue("white", "#2C313C")}
@@ -1010,25 +1109,10 @@ export default function Elov(props: Props) {
           <Text mb="8px">Campaign Currency</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("campaignCurrency")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1052,6 +1136,11 @@ export default function Elov(props: Props) {
           <Text mb="8px">Campaign Estimated Income in Campaign Currency</Text>
           <Input
             disabled={budgetSource.value === "noBudget"}
+            isInvalid={
+              budgetSource.value === "noBudget"
+                ? false
+                : inputErrors.includes("estimatedIncomeCC")
+            }
             value={estimatedIncomeBudgetCurrency}
             onChange={(event) => {
               setEstimatedIncomeBudgetCurrency(event.target.value);
@@ -1064,6 +1153,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in Campaign Currency</Text>
           <Input
             value={estimatedCostsBudgetCurrency}
+            isInvalid={inputErrors.includes("estimatedCostsCC")}
             onChange={(event) => {
               setEstimatedCostsBudgetCurrency(event.target.value);
             }}
@@ -1079,6 +1169,7 @@ export default function Elov(props: Props) {
           </Text>
           <Input
             value={netProfitTargetBudgetCurrency}
+            isInvalid={inputErrors.includes("estimatedResultCC")}
             onChange={(event) => {
               setNetProfitTargetBudgetCurrency(event.target.value);
             }}
@@ -1090,6 +1181,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Campaign Estimated Income in EUR</Text>
           <Input
             disabled={budgetSource.value === "noBudget"}
+            isInvalid={inputErrors.includes("estimatedIncomeEUR")}
             value={estimatedIncome}
             onChange={(event) => {
               setEstimatedIncome(event.target.value);
@@ -1102,6 +1194,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in EUR</Text>
           <Input
             value={estimatedCosts}
+            isInvalid={inputErrors.includes("estimatedCostsEUR")}
             onChange={(event) => {
               setEstimatedCosts(event.target.value);
             }}
@@ -1118,6 +1211,7 @@ export default function Elov(props: Props) {
           <Input
             // value={netProfitTarget}
             value={netProfitTarget}
+            isInvalid={inputErrors.includes("estimatedResultEUR")}
             onChange={(event) => {
               setNetProfitTarget(event.target.value);
             }}
@@ -1129,6 +1223,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Total Estimated Costs in Local Currency</Text>
           <Input
             value={totalEstimatedCostsLC}
+            isInvalid={inputErrors.includes("totalEstimatedCostsLC")}
             onChange={(event) => {
               setTotalEstimatedCostsLC(event.target.value);
             }}
@@ -1140,25 +1235,10 @@ export default function Elov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Vendor Name</Text>
           <Select
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("vendorName")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1183,6 +1263,7 @@ export default function Elov(props: Props) {
           <Input
             bgColor={"white"}
             value={vendor.debitor}
+            isInvalid={inputErrors.includes("debitorNumber")}
             onChange={(event) => {
               var temp = { ...vendor };
               temp.debitor = event.target.value;
@@ -1194,6 +1275,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Creditor</Text>
           <Input
             bgColor={"white"}
+            isInvalid={inputErrors.includes("creditorNumber")}
             value={vendor.creditor}
             onChange={(event) => {
               var temp = { ...vendor };
@@ -1206,6 +1288,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Manufacturer</Text>
           <Input
             bgColor={"white"}
+            isInvalid={inputErrors.includes("manufacturerNumber")}
             value={vendor.manufacturer}
             onChange={(event) => {
               var temp = { ...vendor };
@@ -1217,25 +1300,10 @@ export default function Elov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Business Unit</Text>
           <Select
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("businessUnit")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1264,25 +1332,10 @@ export default function Elov(props: Props) {
         <Box w="100%">
           <Text mb="8px">PH1</Text>
           <Select
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("PH1")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1320,320 +1373,144 @@ export default function Elov(props: Props) {
           />
         </Box>
       </VStack>
-      <Button
-        float="right"
-        mb={"80px"}
-        color={"white"}
-        bg={useColorModeValue("green.400", "#4D97E2")}
-        _hover={{
-          bg: useColorModeValue("green.300", "#377bbf"),
-        }}
-        onClick={() => {
-          interface FD {
-            [key: string]: any;
-          }
+      <Box h="3em">
+        <Button
+          float="right"
+          colorScheme={"blue"}
+          onClick={() => {
+            createSubmission(false);
+          }}
+          isDisabled={requestorsCompanyName.value.code !== "6110"}
+        >
+          Submit
+        </Button>
+        <Button
+          float="right"
+          mr="15px"
+          color={"white"}
+          bg={useColorModeValue("green.400", "#4D97E2")}
+          _hover={{
+            bg: useColorModeValue("green.300", "#377bbf"),
+          }}
+          onClick={() => {
+            interface FD {
+              [key: string]: any;
+            }
+            var formattedData = [];
+            formattedData.push(["Request", "European One Vendor"]);
+            formattedData.push([
+              "Requestor`s Company Name",
+              requestorsCompanyName.label,
+            ]);
+            formattedData.push([
+              "Requestor`s Company Code",
+              requestorsCompanyName.value.code,
+            ]);
+            formattedData.push([
+              "Requestor`s Country",
+              requestorsCompanyName.value.country,
+            ]);
+            formattedData.push(["Organizing Company", organizingCompany]);
+            formattedData.push(["Campaign Name", campaignName]);
+            formattedData.push(["Campaign Description", campaignDescription]);
+            formattedData.push(["Campaign Channel", campaignChannel.label]);
+            formattedData.push(["Year", year.label]);
+            formattedData.push([
+              "Campaign/Project Start Quarter (ALSO Quarter)",
+              projectStartQuarter.label,
+            ]);
+            formattedData.push(["Project Number", projectNumber]);
+            formattedData.push(["Requestor`s Name", requestorsName]);
+            formattedData.push([
+              "Campaign Start Date",
+              moment(startDate).format("DD.MM.yyyy"),
+            ]);
+            formattedData.push([
+              "Campaign End Date",
+              moment(endDate).format("DD.MM.yyyy"),
+            ]);
+            formattedData.push(["Budget Source", budgetSource.label]);
+            formattedData.push([
+              "Local Currency",
+              requestorsCompanyName.value.currency,
+            ]);
+            formattedData.push(["Campaign Currency", exchangeRates.label]);
+            formattedData.push([
+              "Campaign Estimated Income in Campaign Currency",
+              budgetSource.value === "noBudget"
+                ? "N/A"
+                : parseFloat(estimatedIncomeBudgetCurrency),
+            ]);
+            formattedData.push([
+              "Campaign Estimated Costs in Campaign Currency",
+              parseFloat(estimatedCostsBudgetCurrency),
+            ]);
+            formattedData.push([
+              budgetSource.value === "noBudget"
+                ? "Campaign Loss in Campaign currency"
+                : "Campaign Net Profit Target in Campaign Currency",
+              parseFloat(netProfitTargetBudgetCurrency),
+            ]);
+            formattedData.push([
+              "Campaign Estimated Income in EUR",
+              estimatedIncome === "" ? "N/A" : parseFloat(estimatedIncome),
+            ]);
+            formattedData.push([
+              "Campaign Estimated Costs in EUR",
+              parseFloat(estimatedCosts),
+            ]);
+            formattedData.push([
+              budgetSource.value === "noBudget"
+                ? "Campaign Loss in EUR"
+                : "Campaign Net Profit Target in EUR",
+              parseFloat(netProfitTarget),
+            ]);
+            formattedData.push([
+              "Total Estimated Costs in Local Currency",
+              parseFloat(totalEstimatedCostsLC),
+            ]);
+            formattedData.push(["Vendor Name", vendorName.label]);
+            formattedData.push(["VOD", vendor.debitor]);
+            formattedData.push(["Creditor", vendor.creditor]);
+            formattedData.push(["Manufacturer", vendor.manufacturer]);
+            formattedData.push(["Business Unit", vendor.bu]);
+            formattedData.push(["PH1", vendor.ph.label]);
+            formattedData.push(["Comments", comments]);
+            formattedData.push([
+              "Companies Participating",
+              companiesParticipating.map((v: any) => v.label).join(", "),
+            ]);
+            formattedData.push([]);
 
-          var formattedData = [];
-          formattedData.push(["Request", "Local One Vendor"]);
-          formattedData.push([
-            "Requestor`s Company Name",
-            requestorsCompanyName.label,
-          ]);
-          formattedData.push([
-            "Requestor`s Company Code",
-            requestorsCompanyName.value.code,
-          ]);
-          formattedData.push([
-            "Requestor`s Country",
-            requestorsCompanyName.value.country,
-          ]);
-          formattedData.push(["Organizing Company", organizingCompany]);
-          formattedData.push(["Campaign Name", campaignName]);
-          formattedData.push(["Campaign Description", campaignDescription]);
-          formattedData.push(["Campaign Channel", campaignChannel.label]);
-          formattedData.push(["Year", year.label]);
-          formattedData.push([
-            "Campaign/Project Start Quarter (ALSO Quarter)",
-            projectStartQuarter.label,
-          ]);
-          formattedData.push(["Project Number", projectNumber]);
-          formattedData.push(["Requestor`s Name", requestorsName]);
-          formattedData.push([
-            "Campaign Start Date",
-            moment(startDate).format("DD.MM.yyyy"),
-          ]);
-          formattedData.push([
-            "Campaign End Date",
-            moment(endDate).format("DD.MM.yyyy"),
-          ]);
-          formattedData.push(["Budget Source", budgetSource.label]);
-          formattedData.push([
-            "Local Currency",
-            requestorsCompanyName.value.currency,
-          ]);
-          formattedData.push(["Campaign Currency", exchangeRates.label]);
-          formattedData.push([
-            "Campaign Estimated Income in Campaign Currency",
-            budgetSource.value === "noBudget"
-              ? "N/A"
-              : estimatedIncomeBudgetCurrency,
-          ]);
-          formattedData.push([
-            "Campaign Estimated Costs in Campaign Currency",
-            estimatedCostsBudgetCurrency,
-          ]);
-          formattedData.push([
-            budgetSource.value === "noBudget"
-              ? "Campaign Loss in Campaign currency"
-              : "Campaign Net Profit Target in Campaign Currency",
-            netProfitTargetBudgetCurrency,
-          ]);
-          formattedData.push([
-            "Campaign Estimated Income in EUR",
-            estimatedIncome === "" ? "N/A" : estimatedIncome,
-          ]);
-          formattedData.push([
-            "Campaign Estimated Costs in EUR",
-            estimatedCosts,
-          ]);
-          formattedData.push([
-            budgetSource.value === "noBudget"
-              ? "Campaign Loss in EUR"
-              : "Campaign Net Profit Target in EUR",
-            netProfitTarget,
-          ]);
-          formattedData.push([
-            "Total Estimated Costs in Local Currency",
-            totalEstimatedCostsLC,
-          ]);
-          formattedData.push(["Vendor Name", vendorName.label]);
-          formattedData.push(["VOD", vendor.debitor]);
-          formattedData.push(["Creditor", vendor.creditor]);
-          formattedData.push(["Manufacturer", vendor.manufacturer]);
-          formattedData.push(["Business Unit", vendor.bu]);
-          formattedData.push(["PH1", vendor.ph.label]);
-          formattedData.push(["Comments", comments]);
-
-          var ws = XLSX.utils.aoa_to_sheet(formattedData);
-          const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-          const excelBuffer = XLSX.write(wb, {
-            bookType: "xlsx",
-            type: "array",
-          });
-          const data = new Blob([excelBuffer], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-          });
-          FileSaver.saveAs(data, campaignName + ".xlsx");
-        }}
-      >
-        Export
-      </Button>
-      <Button
-        float="right"
-        mb={"80px"}
-        mr="15px"
-        color={"white"}
-        bg={useColorModeValue("blue.400", "#4D97E2")}
-        _hover={{
-          bg: useColorModeValue("blue.300", "#377bbf"),
-        }}
-        onClick={() => {
-          var projectId = "624ac98682eeddf1a9b6a622";
-
-          var parent: Submission = {
-            project: projectId,
-            title: campaignName,
-            parentId: null,
-            viewId: null,
-            group: null,
-            created: new Date(),
-            updated: new Date(),
-            status: "New",
-            author: requestorsName,
-            data: {
-              status: "New",
-              requestorsCompanyName: requestorsCompanyName.label,
-              companyCode: requestorsCompanyName.value.code,
-              requestorsCountry: requestorsCompanyName.value.country,
-              campaignName: campaignName,
-              projectName: campaignName,
-              campaignDescription: campaignDescription,
-              targetAudience: targetAudience,
-              campaignChannel: campaignChannel.label,
-              year: year.label,
-              organizingCompany: organizingCompany,
-              projectStartQuarter: projectStartQuarter.label,
-              projectNumber: projectNumber,
-              requestorsName: requestorsName,
-              projectApprover: projectApproval,
-
-              projectApproval: projectApproval,
-              manufacturersFiscalQuarter: fiscalQuarter.label,
-              campaignStartDate:
-                startDate === null ? null : startDate.toString(),
-              campaignEndDate: endDate === null ? null : endDate.toString(),
-              budgetSource: budgetSource.label,
-              budgetApprovedByVendor: budgetApprovedByVendor,
-              campaignBudgetsCurrency: exchangeRates.label,
-              campaignCurrency: exchangeRates.label,
-              campaignEstimatedIncomeBudgetsCurrency:
-                parseFloat(estimatedIncomeBudgetCurrency) === null
-                  ? 0.0
-                  : parseFloat(estimatedIncomeBudgetCurrency),
-              campaignEstimatedCostsBudgetsCurrency: parseFloat(
-                estimatedCostsBudgetCurrency
-              ),
-              campaignNetProfitTargetBudgetsCurrency: parseFloat(
-                netProfitTargetBudgetCurrency
-              ),
-              campaignEstimatedIncomeEur:
-                parseFloat(estimatedIncome) === null
-                  ? 0.0
-                  : parseFloat(estimatedIncome),
-              campaignEstimatedCostsEur: parseFloat(estimatedCosts),
-              campaignNetProfitTargetEur: parseFloat(netProfitTarget),
-              totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
-              comments: comments,
-              additionalInformation: comments,
-              localCurrency: requestorsCompanyName.value.currency,
-              projectType: "Local One Vendor",
-            },
-          };
-          var children: Submission[] = [];
-
-          children.push({
-            project: projectId,
-            title: "",
-            parentId: "",
-            viewId: null,
-            group: "vendor",
-            created: new Date(),
-            updated: new Date(),
-            status: "New",
-            author: requestorsName,
-            data: {
-              status: "New",
-              vendorName: vendorName.label,
-              companyCode: requestorsCompanyName.value.code,
-              projectNumber: projectNumber,
-              productionProjectManager: vendor.projectManager,
-              creditorNumber: vendor.creditor,
-              debitorNumber: vendor.debitor,
-              manufacturerNumber: vendor.manufacturer,
-              businessUnit: vendor.bu,
-              PH1: vendor.ph.label,
-              vendorBudgetCurrency:
-                budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
-              vendorAmount:
-                isNaN(parseFloat(estimatedIncomeBudgetCurrency)) ||
-                budgetSource.value === "noBudget"
-                  ? 0.0
-                  : parseFloat(estimatedIncomeBudgetCurrency),
-              // cbbudgetEur: parseFloat(vendor.eurBudget),
-              vendorShare: 100,
-              estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
-              estimatedIncomeCC:
-                budgetSource.value === "noBudget"
-                  ? 0.0
-                  : parseFloat(estimatedIncomeBudgetCurrency),
-              estimatedResultCC:
-                parseFloat(netProfitTargetBudgetCurrency) *
-                (budgetSource.value === "noBudget" ? -1 : 1),
-              // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-              estimatedIncomeEUR:
-                budgetSource.value === "noBudget"
-                  ? 0.0
-                  : parseFloat(estimatedIncome),
-              estimatedCostsEUR: parseFloat(estimatedCosts),
-              estimatedResultEUR:
-                parseFloat(netProfitTarget) *
-                (budgetSource.value === "noBudget" ? -1 : 1),
-              estimatedResultBC:
-                parseFloat(netProfitTargetBudgetCurrency) *
-                (budgetSource.value === "noBudget" ? -1 : 1),
-              // cbnetProfitTargetLC: parseFloat(vendor.netProfitTargetLC),
-            },
-          });
-
-          var submission: SubmissionWithChildren = {
-            submission: parent,
-            children,
-            local: null,
-          };
-          if (props.isDraft) {
-            RestAPI.deleteDraft(props.submission.id).then(() => {
-              RestAPI.createSubmissionWithChildren(submission).then(
-                (response) => {
-                  if (response.data.hasChanged) {
-                    toast(
-                      <Toast
-                        title={"Project Number has been adjusted"}
-                        message={
-                          <p>
-                            Project Number changed to:{" "}
-                            <b>{response.data.submission.data.projectNumber}</b>
-                          </p>
-                        }
-                        type={"info"}
-                      />
-                    );
-                  }
-                  props.history.push("/submissions");
-                }
-              );
+            var ws = XLSX.utils.aoa_to_sheet(formattedData);
+            const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+            const excelBuffer = XLSX.write(wb, {
+              bookType: "xlsx",
+              type: "array",
             });
-          } else {
-            RestAPI.createSubmissionWithChildren(submission).then(
-              (response) => {
-                if (response.data.hasChanged) {
-                  toast(
-                    <Toast
-                      title={"Project Number has been adjusted"}
-                      message={
-                        <p>
-                          Project Number changed to:{" "}
-                          <b>{response.data.submission.data.projectNumber}</b>
-                        </p>
-                      }
-                      type={"info"}
-                    />
-                  );
-                }
-                props.history.push("/submissions");
-              }
-            );
-          }
-        }}
-        isDisabled={
-          requestorsCompanyName.value.code !== "6110" ||
-          (props.submission && !props.isDraft)
-        }
-      >
-        Submit
-      </Button>
-      <Button
-        float="right"
-        mb={"80px"}
-        mr="15px"
-        color={"white"}
-        bg={useColorModeValue("blue.400", "#4D97E2")}
-        _hover={{
-          bg: useColorModeValue("blue.300", "#377bbf"),
-        }}
-        onClick={() => {
-          updateDraft().then(() => {
-            toast(
-              <Toast
-                title={"Draft save"}
-                message={`Draft has been successfully saved.`}
-                type={"info"}
-              />
-            );
-          });
-        }}
-      >
-        {props.isDraft ? "Update" : "Draft"}
-      </Button>
+            const data = new Blob([excelBuffer], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+            });
+            FileSaver.saveAs(data, campaignName + ".xlsx");
+          }}
+        >
+          Export
+        </Button>
+        <Button
+          float="right"
+          mr="15px"
+          color={"white"}
+          bg={useColorModeValue("blue.400", "#4D97E2")}
+          _hover={{
+            bg: useColorModeValue("blue.300", "#377bbf"),
+          }}
+          onClick={() => {
+            createSubmission(true);
+          }}
+        >
+          {props.isDraft ? "Update" : "Draft"}
+        </Button>
+      </Box>
     </Box>
   );
 }

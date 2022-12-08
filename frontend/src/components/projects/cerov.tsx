@@ -123,7 +123,7 @@ export default function Cerov(props: Props) {
 
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
 
-  const [inputErrors, setInputErrors] = useState<string[]>(["", ""]);
+  const [inputErrors, setInputErrors] = useState<string[]>([]);
 
   const [injectionReady, setInjectionReady] = useState(false);
 
@@ -791,8 +791,7 @@ export default function Cerov(props: Props) {
           );
         });
       } else {
-        submissionValidation(submission);
-        if (inputErrors.length !== 0) {
+        if (submissionValidation(submission).length !== 0) {
           toast(
             <Toast
               title={"Mandatory fields are not filled"}
@@ -847,8 +846,7 @@ export default function Cerov(props: Props) {
           );
         });
       } else {
-        submissionValidation(submission);
-        if (inputErrors.length !== 0) {
+        if (submissionValidation(submission).length !== 0) {
           toast(
             <Toast
               title={"Mandatory fields are not filled"}
@@ -989,16 +987,6 @@ export default function Cerov(props: Props) {
             fieldKeys.push(key);
             break;
         }
-        // console.log(key + " " + sub.data[key]);
-        // if (
-        //   sub.data[key] === "" ||
-        //   String(sub.data[key]) === "" ||
-        //   String(sub.data[key]) === "NaN" ||
-        //   sub.data[key] === undefined ||
-        //   sub.data[key] === null
-        // ) {
-        //   fieldKeys.push(key);
-        // }
       }
     });
     Object.keys(vendor.data).forEach((key: any) => {
@@ -1023,18 +1011,10 @@ export default function Cerov(props: Props) {
             fieldKeys.push(key);
             break;
         }
-        // if (
-        //   vendor.data[key] === "" ||
-        //   String(vendor.data[key]) === "" ||
-        //   String(vendor.data[key]) === "NaN" ||
-        //   vendor.data[key] === undefined ||
-        //   vendor.data[key] === null
-        // ) {
-        //   fieldKeys.push(key);
-        // }
       }
     });
     setInputErrors(fieldKeys);
+    return fieldKeys;
   }
 
   return (
@@ -1886,198 +1866,196 @@ export default function Cerov(props: Props) {
           />
         </Box>
       </VStack>
-      <VStack alignItems={"end"} spacing="15px">
-        <Box>
-          <Button
-            float="right"
-            colorScheme={"blue"}
-            onClick={() => {
-              if (requestorsCompanyName.value.code === "6110") {
-                createSubmission(false, null);
-              } else {
-                if (
-                  costBreakdown.some(
-                    (company: any) => company.companyCode === "6110"
-                  )
-                ) {
-                  createSubmission(false, "6110");
-                }
+      <Box h="3em">
+        <Button
+          float="right"
+          colorScheme={"blue"}
+          onClick={() => {
+            if (requestorsCompanyName.value.code === "6110") {
+              createSubmission(false, null);
+            } else {
+              if (
+                costBreakdown.some(
+                  (company: any) => company.companyCode === "6110"
+                )
+              ) {
+                createSubmission(false, "6110");
               }
-            }}
-            isDisabled={
-              requestorsCompanyName.value.code !== "6110" &&
-              !costBreakdown.some(
-                (company: any) => company.companyCode === "6110"
-              )
             }
-          >
-            Submit
-          </Button>
-          <Button
-            float="right"
-            mr="15px"
-            color={"white"}
-            bg={useColorModeValue("green.400", "#4D97E2")}
-            _hover={{
-              bg: useColorModeValue("green.300", "#377bbf"),
-            }}
-            onClick={() => {
-              interface FD {
-                [key: string]: any;
-              }
-              var formattedData = [];
-              formattedData.push(["Request", "European One Vendor"]);
+          }}
+          isDisabled={
+            requestorsCompanyName.value.code !== "6110" &&
+            !costBreakdown.some(
+              (company: any) => company.companyCode === "6110"
+            )
+          }
+        >
+          Submit
+        </Button>
+        <Button
+          float="right"
+          mr="15px"
+          color={"white"}
+          bg={useColorModeValue("green.400", "#4D97E2")}
+          _hover={{
+            bg: useColorModeValue("green.300", "#377bbf"),
+          }}
+          onClick={() => {
+            interface FD {
+              [key: string]: any;
+            }
+            var formattedData = [];
+            formattedData.push(["Request", "European One Vendor"]);
+            formattedData.push([
+              "Requestor`s Company Name",
+              requestorsCompanyName.label,
+            ]);
+            formattedData.push([
+              "Requestor`s Company Code",
+              requestorsCompanyName.value.code,
+            ]);
+            formattedData.push([
+              "Requestor`s Country",
+              requestorsCompanyName.value.country,
+            ]);
+            formattedData.push(["Organizing Company", organizingCompany]);
+            formattedData.push(["Campaign Name", campaignName]);
+            formattedData.push(["Campaign Description", campaignDescription]);
+            formattedData.push(["Campaign Channel", campaignChannel.label]);
+            formattedData.push(["Year", year.label]);
+            formattedData.push([
+              "Campaign/Project Start Quarter (ALSO Quarter)",
+              projectStartQuarter.label,
+            ]);
+            formattedData.push(["Project Number", projectNumber]);
+            formattedData.push(["Requestor`s Name", requestorsName]);
+            formattedData.push([
+              "Campaign Start Date",
+              moment(startDate).format("DD.MM.yyyy"),
+            ]);
+            formattedData.push([
+              "Campaign End Date",
+              moment(endDate).format("DD.MM.yyyy"),
+            ]);
+            formattedData.push(["Budget Source", budgetSource.label]);
+            formattedData.push([
+              "Local Currency",
+              requestorsCompanyName.value.currency,
+            ]);
+            formattedData.push(["Campaign Currency", exchangeRates.label]);
+            formattedData.push([
+              "Campaign Estimated Income in Campaign Currency",
+              budgetSource.value === "noBudget"
+                ? "N/A"
+                : parseFloat(estimatedIncomeBudgetCurrency),
+            ]);
+            formattedData.push([
+              "Campaign Estimated Costs in Campaign Currency",
+              parseFloat(estimatedCostsBudgetCurrency),
+            ]);
+            formattedData.push([
+              budgetSource.value === "noBudget"
+                ? "Campaign Loss in Campaign currency"
+                : "Campaign Net Profit Target in Campaign Currency",
+              parseFloat(netProfitTargetBudgetCurrency),
+            ]);
+            formattedData.push([
+              "Campaign Estimated Income in EUR",
+              estimatedIncome === "" ? "N/A" : parseFloat(estimatedIncome),
+            ]);
+            formattedData.push([
+              "Campaign Estimated Costs in EUR",
+              parseFloat(estimatedCosts),
+            ]);
+            formattedData.push([
+              budgetSource.value === "noBudget"
+                ? "Campaign Loss in EUR"
+                : "Campaign Net Profit Target in EUR",
+              parseFloat(netProfitTarget),
+            ]);
+            formattedData.push([
+              "Total Estimated Costs in Local Currency",
+              parseFloat(totalEstimatedCostsLC),
+            ]);
+            formattedData.push(["Vendor Name", vendorName.label]);
+            formattedData.push(["VOD", vendor.debitor]);
+            formattedData.push(["Creditor", vendor.creditor]);
+            formattedData.push(["Manufacturer", vendor.manufacturer]);
+            formattedData.push(["Business Unit", vendor.bu]);
+            formattedData.push(["PH1", vendor.ph.label]);
+            formattedData.push(["Comments", comments]);
+            formattedData.push([
+              "Companies Participating",
+              companiesParticipating.map((v: any) => v.label).join(", "),
+            ]);
+            formattedData.push([]);
+            formattedData.push([
+              "Company Name",
+              "Company Code",
+              "Country",
+              "Contact Person's Email",
+              "Local Project Number",
+              "Share %",
+              "Budget Contribution in Campaign Currency",
+              "Total Estimated Costs in Campaign Currency",
+              "Budget Contribution in EUR",
+              "Total Estimated Costs in EUR",
+            ]);
+            costBreakdown.forEach((company: any) => {
               formattedData.push([
-                "Requestor`s Company Name",
-                requestorsCompanyName.label,
+                company.companyName,
+                company.companyCode,
+                company.country,
+                company.contactEmail,
+                company.projectNumber,
+                parseFloat(company.share),
+                parseFloat(company.contribution),
+                parseFloat(company.estimatedCosts),
+                parseFloat(company.contributionEur),
+                parseFloat(company.estimatedCostsEur),
               ]);
-              formattedData.push([
-                "Requestor`s Company Code",
-                requestorsCompanyName.value.code,
-              ]);
-              formattedData.push([
-                "Requestor`s Country",
-                requestorsCompanyName.value.country,
-              ]);
-              formattedData.push(["Organizing Company", organizingCompany]);
-              formattedData.push(["Campaign Name", campaignName]);
-              formattedData.push(["Campaign Description", campaignDescription]);
-              formattedData.push(["Campaign Channel", campaignChannel.label]);
-              formattedData.push(["Year", year.label]);
-              formattedData.push([
-                "Campaign/Project Start Quarter (ALSO Quarter)",
-                projectStartQuarter.label,
-              ]);
-              formattedData.push(["Project Number", projectNumber]);
-              formattedData.push(["Requestor`s Name", requestorsName]);
-              formattedData.push([
-                "Campaign Start Date",
-                moment(startDate).format("DD.MM.yyyy"),
-              ]);
-              formattedData.push([
-                "Campaign End Date",
-                moment(endDate).format("DD.MM.yyyy"),
-              ]);
-              formattedData.push(["Budget Source", budgetSource.label]);
-              formattedData.push([
-                "Local Currency",
-                requestorsCompanyName.value.currency,
-              ]);
-              formattedData.push(["Campaign Currency", exchangeRates.label]);
-              formattedData.push([
-                "Campaign Estimated Income in Campaign Currency",
-                budgetSource.value === "noBudget"
-                  ? "N/A"
-                  : parseFloat(estimatedIncomeBudgetCurrency),
-              ]);
-              formattedData.push([
-                "Campaign Estimated Costs in Campaign Currency",
-                parseFloat(estimatedCostsBudgetCurrency),
-              ]);
-              formattedData.push([
-                budgetSource.value === "noBudget"
-                  ? "Campaign Loss in Campaign currency"
-                  : "Campaign Net Profit Target in Campaign Currency",
-                parseFloat(netProfitTargetBudgetCurrency),
-              ]);
-              formattedData.push([
-                "Campaign Estimated Income in EUR",
-                estimatedIncome === "" ? "N/A" : parseFloat(estimatedIncome),
-              ]);
-              formattedData.push([
-                "Campaign Estimated Costs in EUR",
-                parseFloat(estimatedCosts),
-              ]);
-              formattedData.push([
-                budgetSource.value === "noBudget"
-                  ? "Campaign Loss in EUR"
-                  : "Campaign Net Profit Target in EUR",
-                parseFloat(netProfitTarget),
-              ]);
-              formattedData.push([
-                "Total Estimated Costs in Local Currency",
-                parseFloat(totalEstimatedCostsLC),
-              ]);
-              formattedData.push(["Vendor Name", vendorName.label]);
-              formattedData.push(["VOD", vendor.debitor]);
-              formattedData.push(["Creditor", vendor.creditor]);
-              formattedData.push(["Manufacturer", vendor.manufacturer]);
-              formattedData.push(["Business Unit", vendor.bu]);
-              formattedData.push(["PH1", vendor.ph.label]);
-              formattedData.push(["Comments", comments]);
-              formattedData.push([
-                "Companies Participating",
-                companiesParticipating.map((v: any) => v.label).join(", "),
-              ]);
-              formattedData.push([]);
-              formattedData.push([
-                "Company Name",
-                "Company Code",
-                "Country",
-                "Contact Person's Email",
-                "Local Project Number",
-                "Share %",
-                "Budget Contribution in Campaign Currency",
-                "Total Estimated Costs in Campaign Currency",
-                "Budget Contribution in EUR",
-                "Total Estimated Costs in EUR",
-              ]);
-              costBreakdown.forEach((company: any) => {
-                formattedData.push([
-                  company.companyName,
-                  company.companyCode,
-                  company.country,
-                  company.contactEmail,
-                  company.projectNumber,
-                  parseFloat(company.share),
-                  parseFloat(company.contribution),
-                  parseFloat(company.estimatedCosts),
-                  parseFloat(company.contributionEur),
-                  parseFloat(company.estimatedCostsEur),
-                ]);
-              });
-              formattedData.push([
-                "TOTAL",
-                "",
-                "",
-                "",
-                "",
-                totalcbShare + "%",
-                totalcbContribution + " " + exchangeRates.label,
-                totalcbCosts + " " + exchangeRates.label,
-                estimatedIncome + " EUR",
-                estimatedCosts + " EUR",
-              ]);
-              var ws = XLSX.utils.aoa_to_sheet(formattedData);
-              const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-              const excelBuffer = XLSX.write(wb, {
-                bookType: "xlsx",
-                type: "array",
-              });
-              const data = new Blob([excelBuffer], {
-                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-              });
-              FileSaver.saveAs(data, campaignName + ".xlsx");
-            }}
-          >
-            Export
-          </Button>
-          <Button
-            float="right"
-            mr="15px"
-            color={"white"}
-            bg={useColorModeValue("blue.400", "#4D97E2")}
-            _hover={{
-              bg: useColorModeValue("blue.300", "#377bbf"),
-            }}
-            onClick={() => {
-              createSubmission(true, null);
-            }}
-          >
-            {props.isDraft ? "Update" : "Draft"}
-          </Button>
-        </Box>
-      </VStack>
+            });
+            formattedData.push([
+              "TOTAL",
+              "",
+              "",
+              "",
+              "",
+              totalcbShare + "%",
+              totalcbContribution + " " + exchangeRates.label,
+              totalcbCosts + " " + exchangeRates.label,
+              estimatedIncome + " EUR",
+              estimatedCosts + " EUR",
+            ]);
+            var ws = XLSX.utils.aoa_to_sheet(formattedData);
+            const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+            const excelBuffer = XLSX.write(wb, {
+              bookType: "xlsx",
+              type: "array",
+            });
+            const data = new Blob([excelBuffer], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+            });
+            FileSaver.saveAs(data, campaignName + ".xlsx");
+          }}
+        >
+          Export
+        </Button>
+        <Button
+          float="right"
+          mr="15px"
+          color={"white"}
+          bg={useColorModeValue("blue.400", "#4D97E2")}
+          _hover={{
+            bg: useColorModeValue("blue.300", "#377bbf"),
+          }}
+          onClick={() => {
+            createSubmission(true, null);
+          }}
+        >
+          {props.isDraft ? "Update" : "Draft"}
+        </Button>
+      </Box>
     </Box>
   );
 }
