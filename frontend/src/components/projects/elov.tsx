@@ -333,7 +333,7 @@ export default function Elov(props: Props) {
         totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
         comments: comments,
         additionalInformation: comments,
-        projectType: "European One Vendor",
+        projectType: "Local One Vendor",
         estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
         estimatedIncomeCC:
           budgetSource.value === "noBudget"
@@ -386,7 +386,7 @@ export default function Elov(props: Props) {
             : parseFloat(estimatedIncomeBudgetCurrency),
         // cbbudgetEur: parseFloat(vendor.eurBudget),
         vendorShare: 100,
-        projectType: "European One Vendor",
+        projectType: "Local One Vendor",
       },
     });
 
@@ -1397,7 +1397,7 @@ export default function Elov(props: Props) {
               [key: string]: any;
             }
             var formattedData = [];
-            formattedData.push(["Request", "European One Vendor"]);
+            formattedData.push(["Request", "Local One Vendor"]);
             formattedData.push([
               "Requestor`s Company Name",
               requestorsCompanyName.label,

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useReducer } from "react";
+import React, { useReducer } from "react";
 import { useEffect, useState } from "react";
 import {
   useColorModeValue,
@@ -10,6 +10,7 @@ import {
   HStack,
   Textarea,
   Button,
+  AlertTitle,
   AlertDescription,
   AlertIcon,
   Alert,
@@ -25,14 +26,14 @@ import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import moment from "moment";
 
-import { Table } from "rsuite";
+import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
+import { DefaultSelectStyles } from "../../utils/Styles";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
 var VendorsNames: any[] = [];
-var AlsoInternationalVendorsNames: any[] = [];
 var BUs: any[] = [];
 var CampaignChannel: any[] = [];
 var TargetAudience: any[] = [];
@@ -40,6 +41,7 @@ var Budget: any[] = [];
 var ExchangeRates: any[] = [];
 var FiscalQuarter: any[] = [];
 var Year: any[] = [];
+var AlsoInternationalVendorsNames: any[] = [];
 var ProjectStartQuarter: any[] = [];
 
 const { Column, HeaderCell, Cell } = Table;
@@ -81,7 +83,6 @@ export default function Elmv(props: Props) {
     label: "",
     value: "",
   });
-  const [organizingCompany, setOrganizingCompany] = useState("");
   const [startDate, setStartDate] = useState<any>(null);
   const [endDate, setEndDate] = useState<any>(null);
   const [budgetSource, setBudgetSource] = useState<any>({
@@ -102,70 +103,29 @@ export default function Elmv(props: Props) {
   const [estimatedIncome, setEstimatedIncome] = useState("");
   const [estimatedCosts, setEstimatedCosts] = useState("");
   const [netProfitTarget, setNetProfitTarget] = useState("");
+  const [companiesParticipating, setCompaniesParticipating] = useState<any>([]);
   const [comments, setComments] = useState("");
   const [vendors, setVendors] = useState<any>([]);
+  const [vendor, setVendor] = useState<any>({
+    ph: {
+      label: "",
+      value: "",
+    },
+  });
+
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
+  const [organizingCompany, setOrganizingCompany] = useState("");
 
   const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
   const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
 
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
+
+  const [inputErrors, setInputErrors] = useState<string[]>([]);
+
   const [injectionReady, setInjectionReady] = useState(false);
 
   const [render, rerender] = useState(0);
-
-  async function fetchDropdowns() {
-    var dropdownsIds: string[] = [
-      "619b630a9a5a2bb37a93b23b",
-      "619b61419a5a2bb37a93b237",
-      "6391eea09a3d043b9a89d767",
-      "619b62d79a5a2bb37a93b239",
-      "619b632c9a5a2bb37a93b23c",
-      "619b62959a5a2bb37a93b238",
-      "619b62f29a5a2bb37a93b23a",
-      "619b66defe27d06ad17d75ac",
-      "619b6754fe27d06ad17d75ad",
-      "619b6799fe27d06ad17d75ae",
-      "633e93ed5a7691ac30c977fc",
-      "636abbd43927f9c7703b19c4",
-    ];
-    var responses = await Promise.all(
-      dropdownsIds.map((di) => {
-        return RestAPI.getDropdownValues(di);
-      })
-    );
-    PH1 = responses[0].data;
-    Companies = responses[1].data;
-    VendorsNames = responses[2].data;
-    CampaignChannel = responses[3].data;
-    TargetAudience = responses[4].data;
-    Budget = responses[5].data;
-    ExchangeRates = responses[6].data;
-    FiscalQuarter = responses[7].data;
-    Year = responses[8].data;
-    ProjectStartQuarter = responses[9].data;
-    BUs = responses[10].data;
-    AlsoInternationalVendorsNames = responses[11].data;
-  }
-
-  useEffect(() => {
-    if (props.submission && !injectionReady) {
-      return;
-    }
-    setTotalEstimatedCostsLC(
-      (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
-    );
-  }, [estimatedCosts, localExchangeRate]);
-
-  useEffect(() => {
-    getAccountInfo().then((response) => {
-      if (response) {
-        setRequestorsName(response.displayName);
-      }
-    });
-    fetchDropdowns().then(() => forceUpdate());
-  }, []);
-  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
     if (props.submission) {
@@ -183,17 +143,23 @@ export default function Elmv(props: Props) {
       setTargetAudience(props.submission.data.targetAudience ?? "");
       setCampaignChannel({
         label: props.submission.data.campaignChannel ?? "",
-        value: props.submission.data.campaignChannel ?? "",
+        value:
+          props.submission.data.campaignChannel.length > 0
+            ? props.submission.data.campaignChannel.substr(0, 1)
+            : "",
       });
       setYear({
         label: props.submission.data.year ?? "",
         value: (props.submission.data.year ?? "").substring(2, 4),
       });
+      setOrganizingCompany(props.submission.data.organizingCompany ?? "");
       setProjectStartQuarter({
         label: props.submission.data.projectStartQuarter ?? "",
-        value: props.submission.data.projectStartQuarter ?? "",
+        value:
+          props.submission.data.projectStartQuarter.length > 0
+            ? props.submission.data.projectStartQuarter.substr(0, 2)
+            : "",
       });
-      setOrganizingCompany(props.submission.data.organizingCompany ?? "");
       setProjectNumber(props.submission.data.projectNumber ?? "");
       setRequestorsName(props.submission.data.requestorsName ?? "");
       setFiscalQuarter({
@@ -210,52 +176,66 @@ export default function Elmv(props: Props) {
               .value ?? "",
         });
       }
-      setBudgetApprovedByVendor(
-        props.submission.data.budgetApprovedByVendor ?? ""
-      );
-      setExchangeRates({
-        label: props.submission.data.campaignBudgetsCurrency ?? "",
-        value: props.submission.data.campaignBudgetsCurrency ?? "",
-      });
+      if (
+        ExchangeRates.length > 0 &&
+        props.submission.data.campaignBudgetsCurrency !== ""
+      ) {
+        setExchangeRates({
+          label: props.submission.data.campaignBudgetsCurrency ?? "",
+          value:
+            ExchangeRates.find(
+              (b) => b.label === props.submission.data.campaignBudgetsCurrency
+            ).value ?? "",
+        });
+      }
       setEstimatedIncomeBudgetCurrency(
         (
           props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
-        ).toFixed(2)
+        ).toString()
       );
       setEstimatedIncome(
-        (props.submission.data.campaignEstimatedIncomeEur || 0).toFixed(2)
+        props.submission.data.campaignEstimatedIncomeEur
+          ? props.submission.data.campaignEstimatedIncomeEur.toFixed(2)
+          : "0.00"
       );
       setEstimatedCosts(
-        (props.submission.data.campaignEstimatedCostsEur || 0).toFixed(2)
+        props.submission.data.campaignEstimatedCostsEur
+          ? props.submission.data.campaignEstimatedCostsEur.toFixed(2)
+          : "0.00"
       );
       setNetProfitTarget(
-        (props.submission.data.campaignNetProfitTargetEur || 0).toFixed(2)
+        props.submission.data.campaignNetProfitTargetEur
+          ? props.submission.data.campaignNetProfitTargetEur.toFixed(2)
+          : "0.00"
       );
       setEstimatedCostsBudgetCurrency(
         (
           props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
-        ).toFixed(2)
+        ).toString()
       );
       setNetProfitTargetBudgetCurrency(
         (
           props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
-        ).toFixed(2)
-      );
-      setComments(props.submission.data.comments ?? "");
-      setTotalEstimatedCostsLC(
-        (props.submission.data.totalEstimatedCostsLC || 0).toFixed(2)
+        ).toString()
       );
       setLocalExchangeRate(
         parseFloat(
           (
             ExchangeRates.find(
-              (rate) => rate.label === props.submission.data.localCurrency
+              (rate) => rate.label === props.submission.data.campaignCurrency
             ) || "0"
           ).value
         )
       );
+      setComments(props.submission.data.comments ?? "");
+      setTotalEstimatedCostsLC(
+        props.submission.data.totalEstimatedCostsLC
+          ? props.submission.data.totalEstimatedCostsLC.toFixed(2)
+          : "0.00"
+      );
 
       //
+
       if (props.children && props.children.length > 0) {
         setVendorsNames(
           props.children
@@ -289,7 +269,7 @@ export default function Elmv(props: Props) {
               budgetAmount: (s.data.vendorBudgetAmount || 0).toFixed(2),
               localBudget: (s.data.vendorAmountLC || 0).toFixed(2),
               eurBudget: (s.data.estimatedIncomeEUR || 0).toFixed(2),
-              share: s.data.vendorShare.toFixed(0) || "0",
+              share: (s.data.vendorShare || 0).toFixed(2),
               estimatedCostsCC: (s.data.estimatedCostsCC || 0).toFixed(2),
               estimatedIncomeCC: (s.data.estimatedIncomeCC || 0).toFixed(2),
               estimatedCostsLC: "0.00",
@@ -325,7 +305,7 @@ export default function Elmv(props: Props) {
     }
     setTimeout(() => {
       setInjectionReady(true);
-    }, 1000);
+    }, 3000);
   }, [props.submission, props.children, ExchangeRates]);
 
   useEffect(() => {
@@ -380,238 +360,6 @@ export default function Elmv(props: Props) {
     setVendors(data);
   }, [vendorsNames]);
 
-  useEffect(() => {
-    var temp = [...costBreakdown];
-    temp.forEach((row: any) => {
-      if (budgetSource.value === "noBudget") {
-        row.contribution = "0.00";
-      } else {
-        row.contribution = (
-          parseFloat(row.share) *
-          0.01 *
-          parseFloat(estimatedIncomeBudgetCurrency)
-        ).toFixed(2);
-      }
-
-      row.estimatedCosts = (
-        parseFloat(row.share) *
-        0.01 *
-        parseFloat(estimatedCostsBudgetCurrency)
-      ).toFixed(2);
-    });
-    if (!isEqual(costBreakdown, temp)) {
-      setCostBreakdown(temp);
-    }
-  }, [
-    costBreakdown,
-    estimatedIncomeBudgetCurrency,
-    estimatedCostsBudgetCurrency,
-  ]);
-
-  useEffect(() => {
-    if (props.submission && !injectionReady) {
-      return;
-    }
-    setEstimatedCosts(
-      (
-        parseFloat(estimatedCostsBudgetCurrency) /
-        parseFloat(exchangeRates.value)
-      )
-        .toFixed(2)
-        .toString()
-    );
-    if (budgetSource.value !== "noBudget") {
-      setEstimatedIncome(
-        (
-          parseFloat(estimatedIncomeBudgetCurrency) /
-          parseFloat(exchangeRates.value)
-        )
-          .toFixed(2)
-          .toString()
-      );
-      setNetProfitTarget(
-        (parseFloat(estimatedIncome) - parseFloat(estimatedCosts))
-          .toFixed(2)
-          .toString()
-      );
-      setNetProfitTargetBudgetCurrency(
-        (
-          parseFloat(estimatedIncomeBudgetCurrency) -
-          parseFloat(estimatedCostsBudgetCurrency)
-        )
-          .toFixed(2)
-          .toString()
-      );
-    } else {
-      setNetProfitTarget(estimatedCosts);
-      setNetProfitTargetBudgetCurrency(estimatedCostsBudgetCurrency);
-    }
-  }, [
-    budgetSource,
-    estimatedIncome,
-    estimatedCosts,
-    exchangeRates,
-    estimatedIncomeBudgetCurrency,
-    estimatedCostsBudgetCurrency,
-  ]);
-
-  useEffect(() => {
-    if (props.submission && !injectionReady) {
-      return;
-    }
-    setProjectNumber(
-      (requestorsCompanyName.value.code === ""
-        ? "????"
-        : requestorsCompanyName.value.code) +
-        (requestorsCompanyName.value.country === ""
-          ? "??"
-          : requestorsCompanyName.value.country) +
-        (year.value === "" ? "??" : year.value) +
-        (campaignChannel.value === "" ? "?" : campaignChannel.value) +
-        (projectStartQuarter.value === ""
-          ? "?"
-          : projectStartQuarter.value.slice(1)) +
-        "01"
-    );
-  }, [year, campaignChannel, projectStartQuarter, requestorsCompanyName]);
-
-  useEffect(() => {
-    var totalBudgetEur = 0;
-    var totalBudgetLC = 0;
-    var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
-    var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
-    var totalCostsLC = parseFloat(totalEstimatedCostsLC);
-    var totalCostsEur = parseFloat(estimatedCosts);
-    var temp = [...vendors];
-    temp.slice(0, -1).forEach((row: any) => {
-      row.eurBudget = (
-        parseFloat(row.budgetAmount) / parseFloat(row.budgetCurrency.value)
-      ).toFixed(2);
-      row.localBudget = (parseFloat(row.eurBudget) * localExchangeRate).toFixed(
-        2
-      );
-
-      var eb = parseFloat(row.eurBudget);
-      var lb = parseFloat(row.localBudget);
-
-      if (!isNaN(eb)) {
-        totalBudgetEur += eb;
-      }
-      if (!isNaN(lb)) {
-        totalBudgetLC += lb;
-      }
-    });
-    var totalVendorBudgetInLC = 0;
-    var totalVendorBudgetInEUR = 0;
-    var totalVendorShare = 0;
-    var totalEstimatedIncomeInCC = 0;
-    var totalEstimatedCostsInCC = 0;
-    var totalEstimatedCostsInLC = 0;
-    var totalEstimatedCostsInEUR = 0;
-    var totalNetProfitTargetInCC = 0;
-    var totalNetProfitTargetInLC = 0;
-    var totalNetProfitTargetInEUR = 0;
-    temp.slice(0, -1).forEach((row: any, index: number) => {
-      var vbEur = parseFloat(row.eurBudget);
-      var share = 0;
-      if (budgetSource.value === "noBudget") {
-        row.budgetAmount = "0.00";
-        row.localBudget = "0.00";
-        row.eurBudget = "0.00";
-        row.estimatedIncomeCC = "0.00";
-        share = parseFloat(row.share) * 0.01;
-
-        row.estimatedCostsCC = (
-          share * parseFloat(estimatedCostsBudgetCurrency)
-        ).toFixed(2);
-
-        row.estimatedCostsEUR = (share * parseFloat(estimatedCosts)).toFixed(2);
-        row.estimatedCostsLC = (
-          parseFloat(row.estimatedCostsEUR) * localExchangeRate
-        ).toFixed(2);
-      } else {
-        share = vbEur / totalBudgetEur;
-        row.share = (share * 100).toFixed(2);
-        if (index === temp.length - 1) {
-          var totalShare = 0.0;
-          temp
-            .slice(0, temp.length - 2)
-            .forEach((t) => (totalShare += parseFloat(t.share)));
-          row.share = (100 - totalShare).toFixed(2);
-          share = (100 - totalShare) * 0.01;
-        }
-        if (!isNaN(vbEur) && totalBudgetEur !== 0) {
-          if (!isNaN(totalCostsCC)) {
-            row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
-          }
-          if (!isNaN(totalIncomeCC)) {
-            row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
-          }
-          if (!isNaN(totalCostsLC)) {
-            row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
-          }
-          if (!isNaN(totalCostsEur)) {
-            row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
-          }
-        }
-      }
-      row.netProfitTargetEUR = (
-        parseFloat(row.eurBudget) - parseFloat(row.estimatedCostsEUR)
-      ).toFixed(2);
-
-      row.netProfitTargetLC = (
-        parseFloat(row.localBudget) - parseFloat(row.estimatedCostsLC)
-      ).toFixed(2);
-      row.netProfitTargetVC =
-        `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
-
-      totalVendorBudgetInLC += parseFloat(row.localBudget);
-      totalVendorBudgetInEUR += parseFloat(row.eurBudget);
-      totalVendorShare += parseFloat(row.share);
-      totalEstimatedIncomeInCC += parseFloat(row.estimatedIncomeCC);
-      totalEstimatedCostsInCC += parseFloat(row.estimatedCostsCC);
-      totalEstimatedCostsInLC += parseFloat(row.estimatedCostsLC);
-      totalEstimatedCostsInEUR += parseFloat(row.estimatedCostsEUR);
-      totalNetProfitTargetInCC += parseFloat(row.netProfitTargetVC);
-      totalNetProfitTargetInLC += parseFloat(row.netProfitTargetLC);
-      totalNetProfitTargetInEUR += parseFloat(row.netProfitTargetEUR);
-    });
-
-    temp[temp.length - 1] = {
-      vendor: "TOTAL",
-      projectManager: "",
-      creditor: "",
-      debitor: "",
-      manufacturer: "",
-      bu: "",
-      ph: { label: "", value: "" },
-      budgetCurrency: { label: "", value: "" },
-      budgetAmount: "",
-      localBudget: totalVendorBudgetInLC.toFixed(2),
-      eurBudget: totalVendorBudgetInEUR.toFixed(2),
-      share: totalVendorShare.toFixed(2),
-      estimatedCostsCC: totalEstimatedCostsInCC.toFixed(2),
-      estimatedIncomeCC: totalEstimatedIncomeInCC.toFixed(2),
-      estimatedCostsLC: totalEstimatedCostsInLC.toFixed(2),
-      estimatedCostsEUR: totalEstimatedCostsInEUR.toFixed(2),
-      netProfitTargetVC: totalNetProfitTargetInCC.toFixed(2),
-      netProfitTargetLC: totalNetProfitTargetInLC.toFixed(2),
-      netProfitTargetEUR: totalNetProfitTargetInEUR.toFixed(2),
-    };
-
-    setTotalVendorBudgetInEUR(totalBudgetEur);
-    setTotalVendorBudgetInLC(totalBudgetLC);
-    if (!isEqual(vendors, temp)) {
-      setVendors(temp);
-    }
-  }, [
-    vendors,
-    estimatedCostsBudgetCurrency,
-    totalEstimatedCostsLC,
-    budgetSource,
-  ]);
-
   function createSubmission(draft: boolean) {
     var projectId = "6246ec8efa2a446faadb8d9b";
 
@@ -621,15 +369,16 @@ export default function Elmv(props: Props) {
       parentId: null,
       viewId: null,
       group: null,
+      status: "New",
       created: new Date(),
       updated: new Date(),
-      status: "Incomplete",
       author: requestorsName,
       data: {
-        status: "Incomplete",
+        status: "New",
         requestorsCompanyName: requestorsCompanyName.label,
         companyCode: requestorsCompanyName.value.code,
         requestorsCountry: requestorsCompanyName.value.country,
+        organizingCompany: organizingCompany,
         campaignName: campaignName,
         projectName: campaignName,
         campaignDescription: campaignDescription,
@@ -640,34 +389,57 @@ export default function Elmv(props: Props) {
         projectNumber: projectNumber,
         requestorsName: requestorsName,
         projectApprover: projectApproval,
+        businessUnit: vendor.bu,
         projectApproval: projectApproval,
         manufacturersFiscalQuarter: fiscalQuarter.label,
         campaignStartDate: startDate === null ? null : startDate.toString(),
         campaignEndDate: endDate === null ? null : endDate.toString(),
         budgetSource: budgetSource.label,
-        budgetApprovedByVendor: budgetApprovedByVendor,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
-        campaignEstimatedIncomeBudgetsCurrency: parseFloat(
-          estimatedIncomeBudgetCurrency
-        ),
+        localCurrency: requestorsCompanyName.value["currency"],
+        campaignEstimatedIncomeBudgetsCurrency: isNaN(
+          parseFloat(estimatedIncomeBudgetCurrency)
+        )
+          ? 0.0
+          : parseFloat(estimatedIncomeBudgetCurrency),
         campaignEstimatedCostsBudgetsCurrency: parseFloat(
           estimatedCostsBudgetCurrency
         ),
         campaignNetProfitTargetBudgetsCurrency: parseFloat(
           netProfitTargetBudgetCurrency
         ),
-        campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
+        campaignEstimatedIncomeEur: isNaN(parseFloat(estimatedIncome))
+          ? 0.0
+          : parseFloat(estimatedIncome),
         campaignEstimatedCostsEur: parseFloat(estimatedCosts),
         campaignNetProfitTargetEur: parseFloat(netProfitTarget),
         totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
         comments: comments,
         additionalInformation: comments,
-        localCurrency: requestorsCompanyName.value.currency,
         projectType: "Local Multi Vendor",
+        estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
+        estimatedIncomeCC:
+          budgetSource.value === "noBudget"
+            ? 0.0
+            : parseFloat(estimatedIncomeBudgetCurrency),
+        estimatedResultCC:
+          parseFloat(netProfitTargetBudgetCurrency) *
+          (budgetSource.value === "noBudget" ? -1 : 1),
+        // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+        estimatedIncomeEUR:
+          budgetSource.value === "noBudget" ? 0.0 : parseFloat(estimatedIncome),
+        estimatedCostsEUR: parseFloat(estimatedCosts),
+        estimatedResultEUR:
+          parseFloat(netProfitTarget) *
+          (budgetSource.value === "noBudget" ? -1 : 1),
+        estimatedResultBC:
+          parseFloat(netProfitTargetBudgetCurrency) *
+          (budgetSource.value === "noBudget" ? -1 : 1),
       },
     };
     var children: Submission[] = [];
+
     vendors.slice(0, -1).forEach((vendor: any) => {
       children.push({
         project: projectId,
@@ -724,6 +496,7 @@ export default function Elmv(props: Props) {
           estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
           estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
           estimatedResultBC: parseFloat(vendor.netProfitTargetLC),
+          projectType: "Local Multi Vendor",
         },
       });
     });
@@ -737,6 +510,7 @@ export default function Elmv(props: Props) {
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
+
         RestAPI.updateDraft(submission).then((response) => {
           toast(
             <Toast
@@ -747,6 +521,16 @@ export default function Elmv(props: Props) {
           );
         });
       } else {
+        if (submissionValidation(submission).length !== 0) {
+          toast(
+            <Toast
+              title={"Mandatory fields are not filled"}
+              message={"not all fields that are required were provided"}
+              type={"error"}
+            />
+          );
+          return;
+        }
         RestAPI.deleteDraft(props.submission.id).then(() => {
           RestAPI.createSubmissionWithChildren(submission).then((response) => {
             if (response.data.hasChanged) {
@@ -763,6 +547,19 @@ export default function Elmv(props: Props) {
                 />
               );
             }
+            toast(
+              <Toast
+                title={"Project has been transferred"}
+                message={
+                  <p>
+                    Project ({" "}
+                    <b>{response.data.submission.data.projectNumber}</b> ) has
+                    been transferred into the tool
+                  </p>
+                }
+                type={"success"}
+              />
+            );
             props.history.push("/submissions");
           });
         });
@@ -779,6 +576,16 @@ export default function Elmv(props: Props) {
           );
         });
       } else {
+        if (submissionValidation(submission).length !== 0) {
+          toast(
+            <Toast
+              title={"Mandatory fields are not filled"}
+              message={"not all fields that are required were provided"}
+              type={"error"}
+            />
+          );
+          return;
+        }
         RestAPI.createSubmissionWithChildren(submission).then((response) => {
           if (response.data.hasChanged) {
             toast(
@@ -794,11 +601,233 @@ export default function Elmv(props: Props) {
               />
             );
           }
+          toast(
+            <Toast
+              title={"Project has been transferred"}
+              message={
+                <p>
+                  Project ( <b>{response.data.submission.data.projectNumber}</b>{" "}
+                  ) has been transferred into the tool
+                </p>
+              }
+              type={"success"}
+            />
+          );
           props.history.push("/submissions");
         });
       }
     }
   }
+
+  function submissionValidation(submission: SubmissionWithChildren) {
+    var fieldKeys: string[] = [];
+    var nonMandatoryFields: string[] = [
+      "targetAudience",
+      "projectApprover",
+      "projectApproval",
+      "manufacturersFiscalQuarter",
+      "comments",
+      "additionalInformation",
+      "status",
+    ];
+    var sub = submission.submission;
+    var vendor = submission.children.filter((el) => el.group === "vendor")[0];
+    Object.keys(sub.data).forEach((key: any) => {
+      if (!nonMandatoryFields.includes(key)) {
+        switch (typeof sub.data[key]) {
+          case "number":
+            if (isNaN(sub.data[key])) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "object":
+            if (sub.data[key] === null) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "string":
+            if (sub.data[key] === "") {
+              fieldKeys.push(key);
+            }
+            break;
+          case "undefined":
+            fieldKeys.push(key);
+            break;
+        }
+        // console.log(key + " " + sub.data[key]);
+        // if (
+        //   sub.data[key] === "" ||
+        //   String(sub.data[key]) === "" ||
+        //   String(sub.data[key]) === "NaN" ||
+        //   sub.data[key] === undefined ||
+        //   sub.data[key] === null
+        // ) {
+        //   fieldKeys.push(key);
+        // }
+      }
+    });
+    Object.keys(vendor.data).forEach((key: any) => {
+      if (!nonMandatoryFields.includes(key)) {
+        switch (typeof vendor.data[key]) {
+          case "number":
+            if (isNaN(vendor.data[key])) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "object":
+            if (vendor.data[key] === null) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "string":
+            if (vendor.data[key] === "") {
+              fieldKeys.push(key);
+            }
+            break;
+          case "undefined":
+            fieldKeys.push(key);
+            break;
+        }
+        // if (
+        //   vendor.data[key] === "" ||
+        //   String(vendor.data[key]) === "" ||
+        //   String(vendor.data[key]) === "NaN" ||
+        //   vendor.data[key] === undefined ||
+        //   vendor.data[key] === null
+        // ) {
+        //   fieldKeys.push(key);
+        // }
+      }
+    });
+    setInputErrors(fieldKeys);
+    return fieldKeys;
+  }
+
+  async function fetchDropdowns() {
+    var dropdownsIds: string[] = [
+      "619b630a9a5a2bb37a93b23b",
+      "619b61419a5a2bb37a93b237",
+      "6391eea09a3d043b9a89d767",
+      "619b62d79a5a2bb37a93b239",
+      "619b632c9a5a2bb37a93b23c",
+      "619b62959a5a2bb37a93b238",
+      "619b62f29a5a2bb37a93b23a",
+      "619b66defe27d06ad17d75ac",
+      "619b6754fe27d06ad17d75ad",
+      "619b6799fe27d06ad17d75ae",
+      "633e93ed5a7691ac30c977fc",
+      "636abbd43927f9c7703b19c4",
+    ];
+    var responses = await Promise.all(
+      dropdownsIds.map((di) => {
+        return RestAPI.getDropdownValues(di);
+      })
+    );
+
+    PH1 = responses[0].data;
+    Companies = responses[1].data;
+    VendorsNames = responses[2].data;
+    CampaignChannel = responses[3].data;
+    TargetAudience = responses[4].data;
+    Budget = responses[5].data;
+    ExchangeRates = responses[6].data;
+    FiscalQuarter = responses[7].data;
+    Year = responses[8].data;
+    ProjectStartQuarter = responses[9].data;
+    BUs = responses[10].data;
+    AlsoInternationalVendorsNames = responses[11].data;
+  }
+
+  useEffect(() => {
+    if (props.submission && !injectionReady) {
+      return;
+    }
+    setTotalEstimatedCostsLC(
+      (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
+    );
+  }, [estimatedCosts, localExchangeRate]);
+
+  useEffect(() => {
+    getAccountInfo().then((response) => {
+      if (response) {
+        setRequestorsName(response.displayName);
+      }
+    });
+    fetchDropdowns().then(() => forceUpdate());
+  }, []);
+  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  useEffect(() => {
+    if (props.submission && !injectionReady) {
+      return;
+    }
+    setEstimatedCosts(
+      (
+        parseFloat(estimatedCostsBudgetCurrency) /
+        parseFloat(exchangeRates.value)
+      )
+        .toFixed(2)
+        .toString()
+    );
+    if (budgetSource.value !== "noBudget") {
+      setEstimatedIncome(
+        (
+          parseFloat(estimatedIncomeBudgetCurrency) /
+          parseFloat(exchangeRates.value)
+        )
+          .toFixed(2)
+          .toString()
+      );
+      setNetProfitTarget(
+        (parseFloat(estimatedIncome) - parseFloat(estimatedCosts))
+          .toFixed(2)
+          .toString()
+      );
+      setNetProfitTargetBudgetCurrency(
+        (
+          parseFloat(estimatedIncomeBudgetCurrency) -
+          parseFloat(estimatedCostsBudgetCurrency)
+        )
+          .toFixed(2)
+          .toString()
+      );
+    } else {
+      setNetProfitTarget(estimatedCosts);
+      setNetProfitTargetBudgetCurrency(estimatedCostsBudgetCurrency);
+    }
+  }, [
+    budgetSource,
+    estimatedIncome,
+    estimatedCosts,
+    exchangeRates,
+    estimatedIncomeBudgetCurrency,
+    estimatedCostsBudgetCurrency,
+  ]);
+
+  useEffect(() => {
+    if (props.submission && !injectionReady) {
+      return;
+    }
+
+    setProjectNumber(
+      (requestorsCompanyName.value.code === ""
+        ? "????"
+        : requestorsCompanyName.value.code) +
+        (organizingCompany === "" ? "??" : organizingCompany) +
+        (year.value === "" ? "??" : year.value) +
+        (campaignChannel.value === "" ? "?" : campaignChannel.value) +
+        (projectStartQuarter.value === ""
+          ? "?"
+          : projectStartQuarter.value.slice(1)) +
+        "01"
+    );
+  }, [
+    year,
+    organizingCompany,
+    campaignChannel,
+    projectStartQuarter,
+    requestorsCompanyName,
+  ]);
 
   return (
     <Box>
@@ -848,6 +877,7 @@ export default function Elmv(props: Props) {
               });
               setLocalExchangeRate(ler);
               setRequestorsCompanyName(value);
+              setOrganizingCompany(value.value.country);
             }}
             classNamePrefix="select"
             isClearable={false}
@@ -893,7 +923,40 @@ export default function Elmv(props: Props) {
             follow.
           </AlertDescription>
         </Alert>
-
+        <Box w="100%">
+          <Text mb="8px">Organizing Company</Text>
+          <Select
+            menuPortalTarget={document.body}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("organizingCompany")
+            )}
+            theme={(theme) => ({
+              ...theme,
+              borderRadius: 6,
+              colors: {
+                ...theme.colors,
+                primary: "#3082CE",
+              },
+            })}
+            value={{
+              label: organizingCompany,
+              value: organizingCompany,
+            }}
+            onChange={(selected: any) => {
+              setOrganizingCompany(selected.value);
+            }}
+            classNamePrefix="select"
+            isClearable={false}
+            name="organizingCompany"
+            options={Companies.map((company) => {
+              return {
+                label: company.value.country,
+                value: company.value.country,
+              };
+            })}
+          />
+        </Box>
         <Text as="b">Campaign`s Details</Text>
 
         <Box w="100%">
@@ -903,6 +966,7 @@ export default function Elmv(props: Props) {
           </Text>
           <Input
             maxLength={40}
+            isInvalid={inputErrors.includes("campaignName")}
             value={campaignName}
             onChange={(event) => {
               setCampaignName(event.target.value);
@@ -916,6 +980,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Description</Text>
           <Textarea
             value={campaignDescription}
+            isInvalid={inputErrors.includes("campaignDescription")}
             onChange={(event) => {
               setCampaignDescription(event.target.value);
             }}
@@ -930,25 +995,10 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Channel</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("campaignChannel")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -973,25 +1023,10 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Year</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("year")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1015,25 +1050,10 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign/Project Start Quarter (ALSO Quarter)</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("projectStartQuarter")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1060,6 +1080,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Project Number</Text>
           <Input
             placeholder="____________"
+            isInvalid={inputErrors.includes("projectNumber")}
             value={projectNumber}
             onChange={(event) => {
               if (event.target.value.length < 13) {
@@ -1075,6 +1096,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Requestor`s Name</Text>
           <Input
             value={requestorsName}
+            isInvalid={inputErrors.includes("requestorsName")}
             onChange={(event) => setRequestorsName(event.target.value)}
             // disabled
             bg={useColorModeValue("white", "#2C313C")}
@@ -1087,6 +1109,7 @@ export default function Elmv(props: Props) {
             <DatePicker
               customInput={
                 <Input
+                  isInvalid={inputErrors.includes("campaignStartDate")}
                   bg={useColorModeValue("white", "#2C313C")}
                   color={useColorModeValue("gray.800", "#ABB2BF")}
                 />
@@ -1103,6 +1126,7 @@ export default function Elmv(props: Props) {
             <DatePicker
               customInput={
                 <Input
+                  isInvalid={inputErrors.includes("campaignEndDate")}
                   bg={useColorModeValue("white", "#2C313C")}
                   color={useColorModeValue("gray.800", "#ABB2BF")}
                 />
@@ -1120,25 +1144,10 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Budget Source</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("budgetSource")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1165,6 +1174,7 @@ export default function Elmv(props: Props) {
         <Box w="100%">
           <Text mb="8px">Local Currency</Text>
           <Input
+            isInvalid={inputErrors.includes("requestorsCompanyName")}
             defaultValue={requestorsCompanyName.value.currency}
             disabled
             bg={useColorModeValue("white", "#2C313C")}
@@ -1175,25 +1185,10 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Currency</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("campaignCurrency")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1217,6 +1212,11 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Income in Campaign Currency</Text>
           <Input
             disabled={budgetSource.value === "noBudget"}
+            isInvalid={
+              budgetSource.value === "noBudget"
+                ? false
+                : inputErrors.includes("estimatedIncomeCC")
+            }
             value={estimatedIncomeBudgetCurrency}
             onChange={(event) => {
               setEstimatedIncomeBudgetCurrency(event.target.value);
@@ -1229,6 +1229,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in Campaign Currency</Text>
           <Input
             value={estimatedCostsBudgetCurrency}
+            isInvalid={inputErrors.includes("estimatedCostsCC")}
             onChange={(event) => {
               setEstimatedCostsBudgetCurrency(event.target.value);
             }}
@@ -1244,6 +1245,7 @@ export default function Elmv(props: Props) {
           </Text>
           <Input
             value={netProfitTargetBudgetCurrency}
+            isInvalid={inputErrors.includes("estimatedResultCC")}
             onChange={(event) => {
               setNetProfitTargetBudgetCurrency(event.target.value);
             }}
@@ -1255,6 +1257,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Income in EUR</Text>
           <Input
             disabled={budgetSource.value === "noBudget"}
+            isInvalid={inputErrors.includes("estimatedIncomeEUR")}
             value={estimatedIncome}
             onChange={(event) => {
               setEstimatedIncome(event.target.value);
@@ -1267,6 +1270,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in EUR</Text>
           <Input
             value={estimatedCosts}
+            isInvalid={inputErrors.includes("estimatedCostsEUR")}
             onChange={(event) => {
               setEstimatedCosts(event.target.value);
             }}
@@ -1283,6 +1287,7 @@ export default function Elmv(props: Props) {
           <Input
             // value={netProfitTarget}
             value={netProfitTarget}
+            isInvalid={inputErrors.includes("estimatedResultEUR")}
             onChange={(event) => {
               setNetProfitTarget(event.target.value);
             }}
@@ -1294,6 +1299,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Total Estimated Costs in Local Currency</Text>
           <Input
             value={totalEstimatedCostsLC}
+            isInvalid={inputErrors.includes("totalEstimatedCostsLC")}
             onChange={(event) => {
               setTotalEstimatedCostsLC(event.target.value);
             }}
@@ -1345,7 +1351,6 @@ export default function Elmv(props: Props) {
             options={VendorsNames}
           />
         </Box>
-
         <Box w="100%">
           <Text mb="8px">Vendors</Text>
           <Table
@@ -1741,188 +1746,185 @@ export default function Elmv(props: Props) {
           />
         </Box>
       </VStack>
-      <Button
-        float="right"
-        mb={"80px"}
-        color={"white"}
-        bg={useColorModeValue("green.400", "#4D97E2")}
-        _hover={{
-          bg: useColorModeValue("green.300", "#377bbf"),
-        }}
-        onClick={() => {
-          interface FD {
-            [key: string]: any;
-          }
-
-          var formattedData = [];
-          formattedData.push(["Request", "Local Multi Vendor"]);
-          formattedData.push([
-            "Requestor`s Company Name",
-            requestorsCompanyName.label,
-          ]);
-          formattedData.push([
-            "Requestor`s Company Code",
-            requestorsCompanyName.value.code,
-          ]);
-          formattedData.push([
-            "Requestor`s Country",
-            requestorsCompanyName.value.country,
-          ]);
-          formattedData.push(["Organizing Company", organizingCompany]);
-          formattedData.push(["Campaign Name", campaignName]);
-          formattedData.push(["Campaign Description", campaignDescription]);
-          formattedData.push(["Campaign Channel", campaignChannel.label]);
-          formattedData.push(["Year", year.label]);
-          formattedData.push([
-            "Campaign/Project Start Quarter (ALSO Quarter)",
-            projectStartQuarter.label,
-          ]);
-          formattedData.push(["Project Number", projectNumber]);
-          formattedData.push(["Requestor`s Name", requestorsName]);
-          formattedData.push([
-            "Campaign Start Date",
-            moment(startDate).format("DD.MM.yyyy"),
-          ]);
-          formattedData.push([
-            "Campaign End Date",
-            moment(endDate).format("DD.MM.yyyy"),
-          ]);
-          formattedData.push(["Budget Source", budgetSource.label]);
-          formattedData.push([
-            "Local Currency",
-            requestorsCompanyName.value.currency,
-          ]);
-          formattedData.push(["Campaign Currency", exchangeRates.label]);
-          formattedData.push([
-            "Campaign Estimated Income in Campaign Currency",
-            budgetSource.value === "noBudget"
-              ? "N/A"
-              : estimatedIncomeBudgetCurrency,
-          ]);
-          formattedData.push([
-            "Campaign Estimated Costs in Campaign Currency",
-            estimatedCostsBudgetCurrency,
-          ]);
-          formattedData.push([
-            budgetSource.value === "noBudget"
-              ? "Campaign Loss in Campaign currency"
-              : "Campaign Net Profit Target in Campaign Currency",
-            netProfitTargetBudgetCurrency,
-          ]);
-          formattedData.push([
-            "Campaign Estimated Income in EUR",
-            estimatedIncome === "" ? "N/A" : estimatedIncome,
-          ]);
-          formattedData.push([
-            "Campaign Estimated Costs in EUR",
-            estimatedCosts,
-          ]);
-          formattedData.push([
-            budgetSource.value === "noBudget"
-              ? "Campaign Loss in EUR"
-              : "Campaign Net Profit Target in EUR",
-            netProfitTarget,
-          ]);
-          formattedData.push([
-            "Total Estimated Costs in Local Currency",
-            totalEstimatedCostsLC,
-          ]);
-          formattedData.push(["Comments", comments]);
-          formattedData.push([
-            "Vendors",
-            vendorsNames.map((v: any) => v.label).join(", "),
-          ]);
-          formattedData.push([]);
-          formattedData.push([
-            "Vendor Name",
-            "VOD",
-            "Creditor",
-            "Manufacturer",
-            "Business Unit",
-            "PH1",
-            "Vendor Budget Currency",
-            "Vendor Budget Amount",
-            "Vendor Budget in LC",
-            "Vendor Budget in EUR",
-            "Share %",
-            "Vendor Estimated Income in Campaign Currency",
-            "Vendor Estimated Costs in Campaign Currency",
-            "Vendor Estimated Costs in LC",
-            "Vendor Estimated Costs in EUR",
-            "Net Profit Target in Campaign Currency",
-            "Net Profit Target in LC",
-            "Net Profit Target in EUR",
-          ]);
-          vendors.forEach((v: any) => {
+      <Box h="3em">
+        <Button
+          float="right"
+          colorScheme={"blue"}
+          onClick={() => {
+            createSubmission(false);
+          }}
+          isDisabled={requestorsCompanyName.value.code !== "6110"}
+        >
+          Submit
+        </Button>
+        <Button
+          float="right"
+          mr="15px"
+          color={"white"}
+          bg={useColorModeValue("green.400", "#4D97E2")}
+          _hover={{
+            bg: useColorModeValue("green.300", "#377bbf"),
+          }}
+          onClick={() => {
+            interface FD {
+              [key: string]: any;
+            }
+            var formattedData = [];
+            formattedData.push(["Request", "Local Multi Vendor"]);
             formattedData.push([
-              v.vendor,
-              v.debitor,
-              v.creditor,
-              v.manufacturer,
-              v.bu,
-              v.ph.label,
-              v.budgetCurrency.label,
-              v.budgetAmount,
-              v.localBudget,
-              v.eurBudget,
-              v.share,
-              v.estimatedIncomeCC,
-              v.estimatedCostsCC,
-              v.estimatedCostsLC,
-              v.estimatedCostsEUR,
-              v.netProfitTargetVC,
-              v.netProfitTargetLC,
-              v.netProfitTargetEUR,
+              "Requestor`s Company Name",
+              requestorsCompanyName.label,
             ]);
-          });
-          var ws = XLSX.utils.aoa_to_sheet(formattedData);
-          const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-          const excelBuffer = XLSX.write(wb, {
-            bookType: "xlsx",
-            type: "array",
-          });
-          const data = new Blob([excelBuffer], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-          });
-          FileSaver.saveAs(data, campaignName + ".xlsx");
-        }}
-      >
-        Export
-      </Button>
-      <Button
-        float="right"
-        mb={"80px"}
-        mr="15px"
-        color={"white"}
-        bg={useColorModeValue("blue.400", "#4D97E2")}
-        _hover={{
-          bg: useColorModeValue("blue.300", "#377bbf"),
-        }}
-        onClick={() => {
-          createSubmission(false);
-        }}
-        isDisabled={
-          requestorsCompanyName.value.code !== "6110" ||
-          (props.submission && !props.isDraft)
-        }
-      >
-        Submit
-      </Button>
-      <Button
-        float="right"
-        mb={"80px"}
-        mr="15px"
-        color={"white"}
-        bg={useColorModeValue("blue.400", "#4D97E2")}
-        _hover={{
-          bg: useColorModeValue("blue.300", "#377bbf"),
-        }}
-        onClick={() => {
-          createSubmission(true);
-        }}
-      >
-        {props.isDraft ? "Update" : "Draft"}
-      </Button>
+            formattedData.push([
+              "Requestor`s Company Code",
+              requestorsCompanyName.value.code,
+            ]);
+            formattedData.push([
+              "Requestor`s Country",
+              requestorsCompanyName.value.country,
+            ]);
+            formattedData.push(["Organizing Company", organizingCompany]);
+            formattedData.push(["Campaign Name", campaignName]);
+            formattedData.push(["Campaign Description", campaignDescription]);
+            formattedData.push(["Campaign Channel", campaignChannel.label]);
+            formattedData.push(["Year", year.label]);
+            formattedData.push([
+              "Campaign/Project Start Quarter (ALSO Quarter)",
+              projectStartQuarter.label,
+            ]);
+            formattedData.push(["Project Number", projectNumber]);
+            formattedData.push(["Requestor`s Name", requestorsName]);
+            formattedData.push([
+              "Campaign Start Date",
+              moment(startDate).format("DD.MM.yyyy"),
+            ]);
+            formattedData.push([
+              "Campaign End Date",
+              moment(endDate).format("DD.MM.yyyy"),
+            ]);
+            formattedData.push(["Budget Source", budgetSource.label]);
+            formattedData.push([
+              "Local Currency",
+              requestorsCompanyName.value.currency,
+            ]);
+            formattedData.push(["Campaign Currency", exchangeRates.label]);
+            formattedData.push([
+              "Campaign Estimated Income in Campaign Currency",
+              budgetSource.value === "noBudget"
+                ? "N/A"
+                : parseFloat(estimatedIncomeBudgetCurrency),
+            ]);
+            formattedData.push([
+              "Campaign Estimated Costs in Campaign Currency",
+              parseFloat(estimatedCostsBudgetCurrency),
+            ]);
+            formattedData.push([
+              budgetSource.value === "noBudget"
+                ? "Campaign Loss in Campaign currency"
+                : "Campaign Net Profit Target in Campaign Currency",
+              parseFloat(netProfitTargetBudgetCurrency),
+            ]);
+            formattedData.push([
+              "Campaign Estimated Income in EUR",
+              estimatedIncome === "" ? "N/A" : parseFloat(estimatedIncome),
+            ]);
+            formattedData.push([
+              "Campaign Estimated Costs in EUR",
+              parseFloat(estimatedCosts),
+            ]);
+            formattedData.push([
+              budgetSource.value === "noBudget"
+                ? "Campaign Loss in EUR"
+                : "Campaign Net Profit Target in EUR",
+              parseFloat(netProfitTarget),
+            ]);
+            formattedData.push([
+              "Total Estimated Costs in Local Currency",
+              parseFloat(totalEstimatedCostsLC),
+            ]);
+            formattedData.push([
+              "Vendors",
+              vendorsNames.map((v: any) => v.label).join(", "),
+            ]);
+            formattedData.push([]);
+            formattedData.push([
+              "Vendor Name",
+              "VOD",
+              "Creditor",
+              "Manufacturer",
+              "Business Unit",
+              "PH1",
+              "Vendor Budget Currency",
+              "Vendor Budget Amount",
+              "Vendor Budget in LC",
+              "Vendor Budget in EUR",
+              "Share %",
+              "Vendor Estimated Income in Campaign Currency",
+              "Vendor Estimated Costs in Campaign Currency",
+              "Vendor Estimated Costs in LC",
+              "Vendor Estimated Costs in EUR",
+              "Net Profit Target in Campaign Currency",
+              "Net Profit Target in LC",
+              "Net Profit Target in EUR",
+            ]);
+            vendors.forEach((v: any) => {
+              formattedData.push([
+                v.vendor,
+                v.debitor,
+                v.creditor,
+                v.manufacturer,
+                v.bu,
+                v.ph.label,
+                v.budgetCurrency.label,
+                v.budgetAmount,
+                v.localBudget,
+                v.eurBudget,
+                v.share,
+                v.estimatedIncomeCC,
+                v.estimatedCostsCC,
+                v.estimatedCostsLC,
+                v.estimatedCostsEUR,
+                v.netProfitTargetVC,
+                v.netProfitTargetLC,
+                v.netProfitTargetEUR,
+              ]);
+            });
+            formattedData.push(["Comments", comments]);
+            formattedData.push([
+              "Companies Participating",
+              companiesParticipating.map((v: any) => v.label).join(", "),
+            ]);
+            formattedData.push([]);
+
+            var ws = XLSX.utils.aoa_to_sheet(formattedData);
+            const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+            const excelBuffer = XLSX.write(wb, {
+              bookType: "xlsx",
+              type: "array",
+            });
+            const data = new Blob([excelBuffer], {
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+            });
+            FileSaver.saveAs(data, campaignName + ".xlsx");
+          }}
+        >
+          Export
+        </Button>
+        <Button
+          float="right"
+          mr="15px"
+          color={"white"}
+          bg={useColorModeValue("blue.400", "#4D97E2")}
+          _hover={{
+            bg: useColorModeValue("blue.300", "#377bbf"),
+          }}
+          onClick={() => {
+            createSubmission(true);
+          }}
+        >
+          {props.isDraft ? "Update" : "Draft"}
+        </Button>
+      </Box>
     </Box>
   );
 }
