@@ -12,7 +12,7 @@ export function ShadeColor(color: string, amount: number) {
   );
 }
 
-export function DefaultSelectStyles(color: any) {
+export function DefaultSelectStyles(color: any, invalid?: boolean) {
   return {
     menu: (provided: any) => ({
       ...provided,
@@ -34,7 +34,7 @@ export function DefaultSelectStyles(color: any) {
     control: (base: any, state: any) => ({
       ...base,
       minHeight: 40,
-      border: `1px solid ${color("#E2E8F0", "#3E4249")}`,
+      border: `1px solid ${invalid===true ? "red" : color("#E2E8F0", "#3E4249")}}`,
       transition: "0.3s",
       "&:hover": {
         border: `1px solid ${color("#CBD5E0", "#565e71")}`,
