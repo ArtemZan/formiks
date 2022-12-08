@@ -256,11 +256,10 @@ export default function Elmv(props: Props) {
       if (props.children && props.children.length > 0) {
         setVendorsNames(
           props.children
-          // .filter((s) => s.group === "vendor")
-          // .map((s) => {
-          //   return { label: s.data.vendorName, value: s.data.vendorName };
-          // }
-          // )
+            .filter((s) => s.group === "vendor")
+            .map((s) => {
+              return { label: s.data.vendorName, value: s.data.vendorName };
+            })
         );
 
         var v: any[] = [];

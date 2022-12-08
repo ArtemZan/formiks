@@ -451,6 +451,11 @@ export default function Cerov(props: Props) {
       });
       setCostBreakdown(costBreakdown);
       setTotalcbContribution("0.00");
+      setVendorName(VendorsNames[VendorsNames.length - 1]);
+      var temp = { ...vendor };
+      temp.bu = "A12 (old) Bridge";
+      temp.ph = { label: "CON01-Bridge", value: "CON01" };
+      setVendor(temp);
     } else {
       if (costBreakdown.length > 0) {
         if (costBreakdown[0].estimatedCosts !== undefined) {
