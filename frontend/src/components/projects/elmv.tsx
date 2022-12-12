@@ -272,7 +272,6 @@ export default function Elmv(props: Props) {
               };
             })
         );
-        console.log(vendors);
         var v: any[] = [];
         props.children
           .filter((s) => s.group === "vendor")
@@ -356,18 +355,18 @@ export default function Elmv(props: Props) {
         telephone: vendor.value.telephone,
         vendorAddress: vendor.value.vendorAddress,
         //section to fill from dropdown data
-        budgetCurrency: ex ? ex.vendorBudgetCurrency : "",
-        budgetAmount: ex ? ex.vendorBudgetAmount : "",
-        localBudget: ex ? ex.vendorAmountLC : "",
-        eurBudget: ex ? ex.vendorAmount : "",
-        share: ex ? ex.vendorShare : "",
-        estimatedCostsCC: ex ? ex.estimatedCostsCC : "",
-        estimatedIncomeCC: ex ? ex.estimatedIncomeCC : "",
-        estimatedCostsLC: "",
-        estimatedCostsEUR: "",
-        netProfitTargetVC: "",
-        netProfitTargetLC: "",
-        netProfitTargetEUR: "",
+        budgetCurrency: ex ? ex.budgetCurrency : "",
+        budgetAmount: ex ? parseFloat(ex.budgetAmount) : "",
+        localBudget: ex ? parseFloat(ex.vendorAmountLC) : "",
+        eurBudget: ex ? parseFloat(ex.vendorAmount) : "",
+        share: ex ? parseFloat(ex.vendorShare) : "",
+        estimatedCostsCC: ex ? parseFloat(ex.estimatedCostsCC) : "",
+        estimatedIncomeCC: ex ? parseFloat(ex.estimatedIncomeCC) : "",
+        estimatedCostsLC: ex ? parseFloat(ex.estimatedCostsLC) : "",
+        estimatedCostsEUR: ex ? parseFloat(ex.estimatedCostsEUR) : "",
+        netProfitTargetVC: ex ? parseFloat(ex.netProfitTargetVC) : "",
+        netProfitTargetLC: ex ? parseFloat(ex.netProfitTargetLC) : "",
+        netProfitTargetEUR: ex ? parseFloat(ex.netProfitTargetEUR) : "",
       });
     });
     data.push({
@@ -477,7 +476,6 @@ export default function Elmv(props: Props) {
       //.slice(0, -1)
       .filter((vendor: any) => vendor.vendor !== "TOTAL")
       .forEach((vendor: any) => {
-        console.log(vendor);
         children.push({
           project: projectId,
           title: "",
