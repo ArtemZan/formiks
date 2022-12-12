@@ -244,7 +244,35 @@ export default function Elmv(props: Props) {
               return { label: s.data.vendorName, value: s.data.vendorName };
             })
         );
-
+        setVendorsNames(
+          props.children
+            .filter((s) => s.group === "vendor")
+            .map((s) => {
+              return {
+                label: s.data.vendorName,
+                value: {
+                  alsoMarketingConsultant: s.data.marketingResponsible
+                    ? s.data.marketingConsultant
+                    : "",
+                  bu: s.data.businessUnit ? s.data.businessUnit : "",
+                  city: s.data.city ? s.data.city : "",
+                  cityCode: s.data.cityCode ? s.data.cityCode : "",
+                  debitorischer: s.data.debitorNumber
+                    ? s.data.debitorNumber
+                    : "",
+                  email: s.data.email ? s.data.email : "",
+                  hersteller: s.data.debitorNumber ? s.data.debitorNumber : "",
+                  kreditor: s.data.creditorNumber ? s.data.creditorNumber : "",
+                  manufacturerName: s.data.manufacturerNumber
+                    ? s.data.manufacturer
+                    : "",
+                  telephone: s.data.telephone ? s.data.telephone : "",
+                  vendorAddress: s.data.adress ? s.data.adress : "",
+                },
+              };
+            })
+        );
+        console.log(vendors);
         var v: any[] = [];
         props.children
           .filter((s) => s.group === "vendor")
@@ -254,9 +282,9 @@ export default function Elmv(props: Props) {
               projectManager: s.data.marketingResponsible,
               creditor: s.data.creditorNumber,
               debitor: s.data.debitorNumber,
-              manufacturer: s.data.manufacturerNumber,
+              manufacturerNumber: s.data.manufacturerNumber,
               bu: s.data.businessUnit,
-              ph: { label: s.data.PH1, value: s.data.PH1 },
+              ph: s.data.PH1,
               budgetCurrency: {
                 label: s.data.vendorBudgetCurrency,
                 value: (
@@ -312,18 +340,22 @@ export default function Elmv(props: Props) {
       return;
     }
     var data: any = [];
-    console.log(vendors);
     vendorsNames.forEach((vendor: any) => {
       var ex = vendors.find((v: any) => v.vendor === vendor.label);
-      console.log(ex);
+      console.log(vendor);
       data.push({
+        //section to fill from dropdown data
         vendor: vendor.label,
-        projectManager: ex ? ex.alsoMarketingConsultant : "",
-        creditor: ex ? ex.kreditor : "",
-        debitor: ex ? ex.debitorischer : "",
-        manufacturer: ex ? ex.hersteller : "",
-        bu: ex ? ex.businessUnit : "",
-        ph: ex ? ex.PH1 : "",
+        marketingResponsible: vendor.value.alsoMarketingConsultant,
+        creditor: vendor.value.hersteller,
+        debitor: vendor.value.debitorischer,
+        manufacturerNumber: vendor.value.manufacturerName,
+        city: vendor.value.city,
+        cityCode: vendor.value.cityCode,
+        email: vendor.value.email,
+        telephone: vendor.value.telephone,
+        vendorAddress: vendor.value.vendorAddress,
+        //section to fill from dropdown data
         budgetCurrency: ex ? ex.vendorBudgetCurrency : "",
         budgetAmount: ex ? ex.vendorBudgetAmount : "",
         localBudget: ex ? ex.vendorAmountLC : "",
@@ -441,11 +473,11 @@ export default function Elmv(props: Props) {
       },
     };
     var children: Submission[] = [];
-
     vendors
-      .slice(0, -1)
-      // .filter((vendor: any) => vendor.vendor !== "TOTAL")
+      //.slice(0, -1)
+      .filter((vendor: any) => vendor.vendor !== "TOTAL")
       .forEach((vendor: any) => {
+        console.log(vendor);
         children.push({
           project: projectId,
           title: "",
@@ -503,18 +535,15 @@ export default function Elmv(props: Props) {
           },
         });
       });
-
     var submission: SubmissionWithChildren = {
       submission: parent,
       children,
       local: null,
     };
-    console.log(submission.children);
 
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
-
         RestAPI.updateDraft(submission).then((response) => {
           toast(
             <Toast
@@ -841,25 +870,10 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Requestor`s Company Name</Text>
           <Select
             menuPortalTarget={document.body}
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("requestorsCompanyName")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -1413,10 +1427,10 @@ export default function Elmv(props: Props) {
 
             <Column width={200} resizable>
               <HeaderCell>Manufacturer</HeaderCell>
-              <Cell dataKey="manufacturer">
+              <Cell dataKey="manufacturerNumber">
                 {(rowData, index) => (
                   <Input
-                    value={rowData.manufacturer}
+                    value={rowData.manufacturerNumber}
                     onChange={(event) => {
                       var temp = [...vendors];
                       temp[index!].manufacturer = event.target.value;
