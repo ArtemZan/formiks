@@ -1214,14 +1214,7 @@ export default function Ermv(props: Props) {
             value={vendorsNames}
             placeholder=""
             onChange={(value: any) => {
-              var val: any = value;
-              if (value !== null && value.length > 0) {
-                val = val.map((v: any) => {
-                  v.label = value.label.split("(")[0];
-                  return v;
-                });
-              }
-              setVendorsNames(val);
+              setVendorsNames(value);
             }}
             classNamePrefix="select"
             isClearable={false}
