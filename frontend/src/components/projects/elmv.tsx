@@ -341,43 +341,49 @@ export default function Elmv(props: Props) {
     var data: any = [];
     vendorsNames.forEach((vendor: any) => {
       var ex = vendors.find((v: any) => v.vendor === vendor.label);
-      console.log(vendor);
-      data.push({
-        //section to fill from dropdown data
-        vendor: vendor.label,
-        marketingResponsible: vendor.value.alsoMarketingConsultant,
-        creditor: vendor.value.hersteller,
-        debitor: vendor.value.debitorischer,
-        manufacturerNumber: vendor.value.manufacturerName,
-        city: vendor.value.city,
-        cityCode: vendor.value.cityCode,
-        email: vendor.value.email,
-        telephone: vendor.value.telephone,
-        vendorAddress: vendor.value.vendorAddress,
-        //section to fill from dropdown data
-        budgetCurrency: ex ? ex.budgetCurrency : "",
-        budgetAmount: ex ? parseFloat(ex.budgetAmount) : "",
-        localBudget: ex ? parseFloat(ex.vendorAmountLC) : "",
-        eurBudget: ex ? parseFloat(ex.vendorAmount) : "",
-        share: ex ? parseFloat(ex.vendorShare) : "",
-        estimatedCostsCC: ex ? parseFloat(ex.estimatedCostsCC) : "",
-        estimatedIncomeCC: ex ? parseFloat(ex.estimatedIncomeCC) : "",
-        estimatedCostsLC: ex ? parseFloat(ex.estimatedCostsLC) : "",
-        estimatedCostsEUR: ex ? parseFloat(ex.estimatedCostsEUR) : "",
-        netProfitTargetVC: ex ? parseFloat(ex.netProfitTargetVC) : "",
-        netProfitTargetLC: ex ? parseFloat(ex.netProfitTargetLC) : "",
-        netProfitTargetEUR: ex ? parseFloat(ex.netProfitTargetEUR) : "",
-      });
+      if (ex) {
+        data.push(ex);
+      } else {
+        data.push({
+          vendor: vendor.label,
+          marketingResponsible: vendor.value.alsoMarketingConsultant,
+          creditor: vendor.value.hersteller,
+          debitor: vendor.value.debitorischer,
+          manufacturerNumber: vendor.value.manufacturerName,
+          city: vendor.value.city,
+          cityCode: vendor.value.cityCode,
+          email: vendor.value.email,
+          telephone: vendor.value.telephone,
+          vendorAddress: vendor.value.vendorAddress,
+          budgetCurrency: "",
+          budgetAmount: "",
+          localBudget: "",
+          eurBudget: "",
+          share: "",
+          estimatedCostsCC: "",
+          estimatedIncomeCC: "",
+          estimatedCostsLC: "",
+          estimatedCostsEUR: "",
+          netProfitTargetVC: "",
+          netProfitTargetLC: "",
+          netProfitTargetEUR: "",
+          ph1: { label: "", value: "" },
+          bu: "",
+        });
+      }
     });
     data.push({
       vendor: "TOTAL",
-      projectManager: "",
+      marketingResponsible: "",
       creditor: "",
       debitor: "",
-      manufacturer: "",
-      bu: "",
-      ph: { label: "", value: "" },
-      budgetCurrency: { label: "", value: "" },
+      manufacturerNumber: "",
+      city: "",
+      cityCode: "",
+      email: "",
+      telephone: "",
+      vendorAddress: "",
+      budgetCurrency: "",
       budgetAmount: "",
       localBudget: "",
       eurBudget: "",
@@ -389,6 +395,8 @@ export default function Elmv(props: Props) {
       netProfitTargetVC: "",
       netProfitTargetLC: "",
       netProfitTargetEUR: "",
+      ph1: { label: "", value: "" },
+      bu: "",
     });
     setVendors(data);
   }, [vendorsNames]);
