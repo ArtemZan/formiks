@@ -118,6 +118,9 @@ export default function Cerov(props: Props) {
   const [totalcbContribution, setTotalcbContribution] = useState("0.00");
   const [totalcbCosts, setTotalcbCosts] = useState("0.00");
 
+  const [totalcbContributionEur, setTotalcbContributionEur] = useState("0.00");
+  const [totalcbCostsEur, setTotalcbCostsEur] = useState("0.00");
+
   const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
   const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
 
@@ -287,6 +290,8 @@ export default function Cerov(props: Props) {
         var c: any[] = [];
         var totalShare = 0.0;
         var totalCosts = 0.0;
+        var totalCostsEur = 0.0;
+        var totalContributionEur = 0.0;
         var totalContribution = 0.0;
         props.children
           .filter((s) => s.group === "country")
@@ -308,11 +313,16 @@ export default function Cerov(props: Props) {
             totalShare += s.data.countryShare || 0;
             totalContribution += s.data.countryBudgetContributionCC || 0;
             totalCosts += s.data.countryCostEstimationCC || 0;
+            totalContributionEur += s.data.countryBudgetContributionEur || 0;
+            totalCostsEur += s.data.countryCostEstimationEur || 0;
           });
 
         setTotalcbShare(totalShare.toFixed(2).toString());
         setTotalcbContribution(totalContribution.toFixed(2).toString());
         setTotalcbCosts(totalCosts.toFixed(2).toString());
+        setTotalcbCostsEur(totalCostsEur.toFixed(2).toString());
+        setTotalcbContributionEur(totalContributionEur.toFixed(2).toString());
+
         setCostBreakdown([...c]);
       }
 
@@ -451,8 +461,10 @@ export default function Cerov(props: Props) {
       });
       setCostBreakdown(costBreakdown);
       setTotalcbContribution("0.00");
+      setTotalcbContributionEur("0.00");
       setVendorName(VendorsNames[VendorsNames.length - 1]);
       var temp = { ...vendor };
+      temp.manufacturer = "80056681";
       temp.bu = "A12 (old) Bridge";
       temp.ph = { label: "CON01-Bridge", value: "CON01" };
       setVendor(temp);
@@ -587,6 +599,8 @@ export default function Cerov(props: Props) {
         countryShare: parseFloat(totalcbShare),
         countryBudgetContributionCC: parseFloat(totalcbContribution),
         countryCostEstimationCC: parseFloat(totalcbCosts),
+        countryBudgetContributionEur: parseFloat(totalcbContributionEur),
+        countryCostEstimationEur: parseFloat(totalcbCostsEur),
         estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
         estimatedIncomeCC:
           budgetSource.value === "noBudget"
@@ -760,8 +774,8 @@ export default function Cerov(props: Props) {
               parseFloat(company.contributionEur) -
               parseFloat(company.estimatedCostsEur),
             countryShare: parseFloat(company.share),
-            countryBudgetContributionEur: company.contribution,
-            countryCostEstimationEur: company.estimatedCosts,
+            countryBudgetContributionEur: parseFloat(company.contribution),
+            countryCostEstimationEur: parseFloat(company.estimatedCosts),
             countryBudgetContributionCC: isNaN(parseFloat(company.contribution))
               ? 0.0
               : parseFloat(company.contribution),
@@ -916,6 +930,8 @@ export default function Cerov(props: Props) {
     var totalShare = 0.0;
     var totalContribution = 0.0;
     var totalCosts = 0.0;
+    var totalContributionEur = 0.0;
+    var totalCostsEur = 0.0;
     table[row][column] = value;
     table.forEach((c: any) => {
       sum += parseFloat(c[column]);
@@ -945,10 +961,14 @@ export default function Cerov(props: Props) {
       totalShare += parseFloat(row.share) || 0;
       totalContribution += parseFloat(row.contribution) || 0;
       totalCosts += parseFloat(row.estimatedCosts) || 0;
+      totalContributionEur += parseFloat(row.contributionEur) || 0;
+      totalCostsEur += parseFloat(row.estimatedCostsEur) || 0;
     });
     setTotalcbShare(totalShare.toFixed(2));
     setTotalcbContribution(totalContribution.toFixed(2));
     setTotalcbCosts(totalCosts.toFixed(2));
+    setTotalcbContributionEur(totalContributionEur.toFixed(2));
+    setTotalcbCostsEur(totalCostsEur.toFixed(2));
     setCostBreakdown(table);
   }
 
@@ -1519,6 +1539,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">VOD</Text>
           <Input
             value={vendor.debitor}
+            disabled={budgetSource.value === "noBudget"}
             isInvalid={inputErrors.includes("debitorNumber")}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -1532,7 +1553,7 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Creditor</Text>
           <Input
-            isInvalid={inputErrors.includes("creditorNumber")}
+            disabled={budgetSource.value === "noBudget"}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
             value={vendor.creditor}
@@ -1666,8 +1687,8 @@ export default function Cerov(props: Props) {
                 share: totalcbShare + "%",
                 contribution: totalcbContribution + " " + exchangeRates.label,
                 estimatedCosts: totalcbCosts + " " + exchangeRates.label,
-                contributionEur: estimatedIncome + " EUR",
-                estimatedCostsEur: estimatedCosts + " EUR",
+                contributionEur: totalcbContributionEur + " EUR",
+                estimatedCostsEur: totalcbCostsEur + " EUR",
               },
             ]}
           >
@@ -1834,6 +1855,11 @@ export default function Cerov(props: Props) {
                     disabled={budgetSource.value === "noBudget"}
                     value={rowData.contributionEur}
                     onChange={(event) => {}}
+                    bg={totalAlert(
+                      totalcbContributionEur,
+                      rowData.companyName,
+                      parseFloat(estimatedIncome)
+                    )}
                   />
                 )}
               </Cell>
@@ -1845,6 +1871,11 @@ export default function Cerov(props: Props) {
                   <Input
                     value={rowData.estimatedCostsEur}
                     onChange={(event) => {}}
+                    bg={totalAlert(
+                      totalcbCostsEur,
+                      rowData.companyName,
+                      parseFloat(estimatedCosts)
+                    )}
                   />
                 )}
               </Cell>
@@ -2024,8 +2055,8 @@ export default function Cerov(props: Props) {
               totalcbShare + "%",
               totalcbContribution + " " + exchangeRates.label,
               totalcbCosts + " " + exchangeRates.label,
-              estimatedIncome + " EUR",
-              estimatedCosts + " EUR",
+              totalcbContributionEur + " EUR",
+              totalcbCostsEur + " EUR",
             ]);
             var ws = XLSX.utils.aoa_to_sheet(formattedData);
             const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
