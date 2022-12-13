@@ -514,12 +514,20 @@ export default function Elov(props: Props) {
       "targetAudience",
       "projectApprover",
       "projectApproval",
+      "creditorNumber",
       "manufacturersFiscalQuarter",
       "comments",
+      "productionProjectManager",
       "additionalInformation",
       "status",
     ];
     var sub = submission.submission;
+    if (
+      sub.data.budgetSource === "No budget" ||
+      sub.data.budgetSource === "noBudget"
+    ) {
+      nonMandatoryFields.push("debitorNumber");
+    }
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
@@ -543,16 +551,6 @@ export default function Elov(props: Props) {
             fieldKeys.push(key);
             break;
         }
-        // console.log(key + " " + sub.data[key]);
-        // if (
-        //   sub.data[key] === "" ||
-        //   String(sub.data[key]) === "" ||
-        //   String(sub.data[key]) === "NaN" ||
-        //   sub.data[key] === undefined ||
-        //   sub.data[key] === null
-        // ) {
-        //   fieldKeys.push(key);
-        // }
       }
     });
     Object.keys(vendor.data).forEach((key: any) => {
@@ -577,15 +575,6 @@ export default function Elov(props: Props) {
             fieldKeys.push(key);
             break;
         }
-        // if (
-        //   vendor.data[key] === "" ||
-        //   String(vendor.data[key]) === "" ||
-        //   String(vendor.data[key]) === "NaN" ||
-        //   vendor.data[key] === undefined ||
-        //   vendor.data[key] === null
-        // ) {
-        //   fieldKeys.push(key);
-        // }
       }
     });
     setInputErrors(fieldKeys);
@@ -628,15 +617,6 @@ export default function Elov(props: Props) {
   }
 
   useEffect(() => {
-    if (props.submission && !injectionReady) {
-      return;
-    }
-    setTotalEstimatedCostsLC(
-      (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
-    );
-  }, [estimatedCosts, localExchangeRate]);
-
-  useEffect(() => {
     getAccountInfo().then((response) => {
       if (response) {
         setRequestorsName(response.displayName);
@@ -657,8 +637,11 @@ export default function Elov(props: Props) {
         creditor: vendorName.value.kreditor,
         debitor: vendorName.value.debitorischer,
         manufacturer: vendorName.value.hersteller,
-        bu: vendor.bu,
-        ph: { label: "", value: "" },
+        bu: vendorName.value.hersteller === "80056681" ? vendor.bu : "",
+        ph:
+          vendorName.value.hersteller === "80056681"
+            ? vendor.ph
+            : { label: "", value: "" },
         budgetCurrency: { label: "", value: "" },
         budgetAmount: "",
         localBudget: "",
@@ -714,7 +697,6 @@ export default function Elov(props: Props) {
       var temp = { ...vendor };
       temp.bu = "A12 (old) Bridge";
       temp.ph = { label: "CON01 - Bridge", value: "CON01" };
-      console.log(temp.ph);
       setVendor(temp);
       setNetProfitTarget(estimatedCosts);
       setNetProfitTargetBudgetCurrency(estimatedCostsBudgetCurrency);
@@ -1263,6 +1245,7 @@ export default function Elov(props: Props) {
           <Input
             bgColor={"white"}
             value={vendor.debitor}
+            disabled={budgetSource.value === "noBudget"}
             isInvalid={
               budgetSource.value === "noBudget"
                 ? false
@@ -1278,6 +1261,7 @@ export default function Elov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Creditor</Text>
           <Input
+            disabled={budgetSource.value === "noBudget"}
             bgColor={"white"}
             yar
             value={vendor.creditor}
@@ -1351,7 +1335,6 @@ export default function Elov(props: Props) {
             menuPortalTarget={document.body}
             value={vendor.ph}
             onChange={(value) => {
-              console.log(value);
               var temp = { ...vendor };
               temp.ph = value;
               setVendor(temp);
