@@ -805,6 +805,7 @@ export default function Cerov(props: Props) {
           );
         });
       } else {
+        console.log(submissionValidation);
         if (submissionValidation(submission).length !== 0) {
           toast(
             <Toast
@@ -982,11 +983,13 @@ export default function Cerov(props: Props) {
       "comments",
       "additionalInformation",
       "status",
+      "creditorNumber",
     ];
     var sub = submission.submission;
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
+        console.log(key);
         switch (typeof sub.data[key]) {
           case "number":
             if (isNaN(sub.data[key])) {
@@ -1033,6 +1036,7 @@ export default function Cerov(props: Props) {
         }
       }
     });
+    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }

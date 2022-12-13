@@ -376,7 +376,7 @@ export default function Elov(props: Props) {
         debitorNumber: vendor.debitor,
         manufacturerNumber: vendor.manufacturer,
         businessUnit: vendor.bu,
-        PH1: vendor.ph.label,
+        PH1: { label: vendor.ph.label, value: vendor.ph.value },
         vendorBudgetCurrency:
           budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
         vendorAmount:
@@ -650,7 +650,6 @@ export default function Elov(props: Props) {
     if (props.submission && !injectionReady) {
       return;
     }
-    console.log(vendorName);
     if (vendorName.value) {
       setVendor({
         vendor: vendorName.label,
@@ -714,7 +713,8 @@ export default function Elov(props: Props) {
       setVendorName(VendorsNames[VendorsNames.length - 1]);
       var temp = { ...vendor };
       temp.bu = "A12 (old) Bridge";
-      temp.ph = { label: "CON01-Bridge", value: "CON01" };
+      temp.ph = { label: "CON01 - Bridge", value: "CON01" };
+      console.log(temp.ph);
       setVendor(temp);
       setNetProfitTarget(estimatedCosts);
       setNetProfitTargetBudgetCurrency(estimatedCostsBudgetCurrency);
@@ -1263,7 +1263,11 @@ export default function Elov(props: Props) {
           <Input
             bgColor={"white"}
             value={vendor.debitor}
-            isInvalid={inputErrors.includes("debitorNumber")}
+            isInvalid={
+              budgetSource.value === "noBudget"
+                ? false
+                : inputErrors.includes("debitorNumber")
+            }
             onChange={(event) => {
               var temp = { ...vendor };
               temp.debitor = event.target.value;
@@ -1275,7 +1279,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Creditor</Text>
           <Input
             bgColor={"white"}
-            isInvalid={inputErrors.includes("creditorNumber")}
+            yar
             value={vendor.creditor}
             onChange={(event) => {
               var temp = { ...vendor };
@@ -1347,6 +1351,7 @@ export default function Elov(props: Props) {
             menuPortalTarget={document.body}
             value={vendor.ph}
             onChange={(value) => {
+              console.log(value);
               var temp = { ...vendor };
               temp.ph = value;
               setVendor(temp);
@@ -1476,11 +1481,6 @@ export default function Elov(props: Props) {
             formattedData.push(["Business Unit", vendor.bu]);
             formattedData.push(["PH1", vendor.ph.label]);
             formattedData.push(["Comments", comments]);
-            formattedData.push([
-              "Companies Participating",
-              companiesParticipating.map((v: any) => v.label).join(", "),
-            ]);
-            formattedData.push([]);
 
             var ws = XLSX.utils.aoa_to_sheet(formattedData);
             const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
