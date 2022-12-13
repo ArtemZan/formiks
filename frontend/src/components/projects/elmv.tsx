@@ -281,7 +281,7 @@ export default function Elmv(props: Props) {
               projectManager: s.data.marketingResponsible,
               creditor: s.data.creditorNumber,
               debitor: s.data.debitorNumber,
-              manufacturerNumber: s.data.manufacturerNumber,
+              manufacturer: s.data.manufacturerNumber,
               bu: s.data.businessUnit,
               ph: s.data.PH1,
               budgetCurrency: {
@@ -484,6 +484,7 @@ export default function Elmv(props: Props) {
       //.slice(0, -1)
       .filter((vendor: any) => vendor.vendor !== "TOTAL")
       .forEach((vendor: any) => {
+        console.log(vendor);
         children.push({
           project: projectId,
           title: "",
@@ -503,7 +504,7 @@ export default function Elmv(props: Props) {
             debitorNumber: vendor.debitor,
             manufacturerNumber: vendor.manufacturer,
             businessUnit: vendor.bu,
-            PH1: vendor.ph1,
+            PH1: vendor.ph ? vendor.ph : "",
             vendorBudgetCurrency:
               budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
             vendorAmountLC:
@@ -658,6 +659,15 @@ export default function Elmv(props: Props) {
     }
   }
 
+  function totalAlert(value: any, row: any, check: number) {
+    if (value) {
+      value = value.replace("%", "");
+      if (parseFloat(value) !== check && row === "TOTAL") {
+        return useColorModeValue("red.300", "#ABB2BF");
+      }
+    }
+  }
+
   function submissionValidation(submission: SubmissionWithChildren) {
     var fieldKeys: string[] = [];
     var nonMandatoryFields: string[] = [
@@ -668,8 +678,19 @@ export default function Elmv(props: Props) {
       "comments",
       "additionalInformation",
       "status",
+      "businessUnit",
+      "marketingResponsible",
+      "manufacturerNumber",
+      "PH1",
     ];
+
     var sub = submission.submission;
+    if (
+      sub.data.budgetSource === "No budget" ||
+      sub.data.budgetSource === "noBudget"
+    ) {
+      nonMandatoryFields.push("debitorNumber");
+    }
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
@@ -693,16 +714,6 @@ export default function Elmv(props: Props) {
             fieldKeys.push(key);
             break;
         }
-        // console.log(key + " " + sub.data[key]);
-        // if (
-        //   sub.data[key] === "" ||
-        //   String(sub.data[key]) === "" ||
-        //   String(sub.data[key]) === "NaN" ||
-        //   sub.data[key] === undefined ||
-        //   sub.data[key] === null
-        // ) {
-        //   fieldKeys.push(key);
-        // }
       }
     });
     Object.keys(vendor.data).forEach((key: any) => {
@@ -727,17 +738,9 @@ export default function Elmv(props: Props) {
             fieldKeys.push(key);
             break;
         }
-        // if (
-        //   vendor.data[key] === "" ||
-        //   String(vendor.data[key]) === "" ||
-        //   String(vendor.data[key]) === "NaN" ||
-        //   vendor.data[key] === undefined ||
-        //   vendor.data[key] === null
-        // ) {
-        //   fieldKeys.push(key);
-        // }
       }
     });
+    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -841,6 +844,143 @@ export default function Elmv(props: Props) {
     exchangeRates,
     estimatedIncomeBudgetCurrency,
     estimatedCostsBudgetCurrency,
+  ]);
+
+  useEffect(() => {
+    var totalBudgetEur = 0;
+    var totalBudgetLC = 0;
+    var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
+    var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
+    var totalCostsLC = parseFloat(totalEstimatedCostsLC);
+    var totalCostsEur = parseFloat(estimatedCosts);
+    var temp = [...vendors];
+    temp.slice(0, -1).forEach((row: any) => {
+      row.eurBudget = (
+        parseFloat(row.budgetAmount) / parseFloat(row.budgetCurrency.value)
+      ).toFixed(2);
+      row.localBudget = (parseFloat(row.eurBudget) * localExchangeRate).toFixed(
+        2
+      );
+
+      var eb = parseFloat(row.eurBudget);
+      var lb = parseFloat(row.localBudget);
+
+      if (!isNaN(eb)) {
+        totalBudgetEur += eb;
+      }
+      if (!isNaN(lb)) {
+        totalBudgetLC += lb;
+      }
+    });
+    var totalVendorBudgetInLC = 0;
+    var totalVendorBudgetInEUR = 0;
+    var totalVendorShare = 0;
+    var totalEstimatedIncomeInCC = 0;
+    var totalEstimatedCostsInCC = 0;
+    var totalEstimatedCostsInLC = 0;
+    var totalEstimatedCostsInEUR = 0;
+    var totalNetProfitTargetInCC = 0;
+    var totalNetProfitTargetInLC = 0;
+    var totalNetProfitTargetInEUR = 0;
+    temp.slice(0, -1).forEach((row: any, index: number) => {
+      var vbEur = parseFloat(row.eurBudget);
+      var share = 0;
+      if (budgetSource.value === "noBudget") {
+        row.budgetAmount = "0.00";
+        row.localBudget = "0.00";
+        row.eurBudget = "0.00";
+        row.estimatedIncomeCC = "0.00";
+        share = parseFloat(row.share) * 0.01;
+
+        row.estimatedCostsCC = (
+          share * parseFloat(estimatedCostsBudgetCurrency)
+        ).toFixed(2);
+
+        row.estimatedCostsEUR = (share * parseFloat(estimatedCosts)).toFixed(2);
+        row.estimatedCostsLC = (
+          parseFloat(row.estimatedCostsEUR) * localExchangeRate
+        ).toFixed(2);
+      } else {
+        share = vbEur / totalBudgetEur;
+        row.share = (share * 100).toFixed(2);
+        if (index === temp.length - 1) {
+          var totalShare = 0.0;
+          temp
+            .slice(0, temp.length - 2)
+            .forEach((t) => (totalShare += parseFloat(t.share)));
+          row.share = (100 - totalShare).toFixed(2);
+          share = (100 - totalShare) * 0.01;
+        }
+        if (!isNaN(vbEur) && totalBudgetEur !== 0) {
+          if (!isNaN(totalCostsCC)) {
+            row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
+          }
+          if (!isNaN(totalIncomeCC)) {
+            row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
+          }
+          if (!isNaN(totalCostsLC)) {
+            row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
+          }
+          if (!isNaN(totalCostsEur)) {
+            row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
+          }
+        }
+      }
+      row.netProfitTargetEUR = (
+        parseFloat(row.eurBudget) - parseFloat(row.estimatedCostsEUR)
+      ).toFixed(2);
+
+      row.netProfitTargetLC = (
+        parseFloat(row.localBudget) - parseFloat(row.estimatedCostsLC)
+      ).toFixed(2);
+      row.netProfitTargetVC =
+        `${budgetSource.value === "noBudget" ? "-" : ""}` +
+        (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
+
+      totalVendorBudgetInLC += parseFloat(row.localBudget);
+      totalVendorBudgetInEUR += parseFloat(row.eurBudget);
+      totalVendorShare += parseFloat(row.share);
+      totalEstimatedIncomeInCC += parseFloat(row.estimatedIncomeCC);
+      totalEstimatedCostsInCC += parseFloat(row.estimatedCostsCC);
+      totalEstimatedCostsInLC += parseFloat(row.estimatedCostsLC);
+      totalEstimatedCostsInEUR += parseFloat(row.estimatedCostsEUR);
+      totalNetProfitTargetInCC += parseFloat(row.netProfitTargetVC);
+      totalNetProfitTargetInLC += parseFloat(row.netProfitTargetLC);
+      totalNetProfitTargetInEUR += parseFloat(row.netProfitTargetEUR);
+    });
+
+    temp[temp.length - 1] = {
+      vendor: "TOTAL",
+      projectManager: "",
+      creditor: "",
+      debitor: "",
+      manufacturer: "",
+      bu: "",
+      ph: { label: "", value: "" },
+      budgetCurrency: { label: "", value: "" },
+      budgetAmount: "",
+      localBudget: totalVendorBudgetInLC.toFixed(2),
+      eurBudget: totalVendorBudgetInEUR.toFixed(2),
+      share: totalVendorShare.toFixed(2),
+      estimatedCostsCC: totalEstimatedCostsInCC.toFixed(2),
+      estimatedIncomeCC: totalEstimatedIncomeInCC.toFixed(2),
+      estimatedCostsLC: totalEstimatedCostsInLC.toFixed(2),
+      estimatedCostsEUR: totalEstimatedCostsInEUR.toFixed(2),
+      netProfitTargetVC: totalNetProfitTargetInCC.toFixed(2),
+      netProfitTargetLC: totalNetProfitTargetInLC.toFixed(2),
+      netProfitTargetEUR: totalNetProfitTargetInEUR.toFixed(2),
+    };
+
+    setTotalVendorBudgetInEUR(totalBudgetEur);
+    setTotalVendorBudgetInLC(totalBudgetLC);
+    if (!isEqual(vendors, temp)) {
+      setVendors(temp);
+    }
+  }, [
+    vendors,
+    estimatedCostsBudgetCurrency,
+    totalEstimatedCostsLC,
+    budgetSource,
   ]);
 
   useEffect(() => {
@@ -1436,7 +1576,7 @@ export default function Elmv(props: Props) {
               <Cell dataKey="manufacturerNumber">
                 {(rowData, index) => (
                   <Input
-                    value={rowData.manufacturerNumber}
+                    value={rowData.manufacturer}
                     onChange={(event) => {
                       var temp = [...vendors];
                       temp[index!].manufacturer = event.target.value;
