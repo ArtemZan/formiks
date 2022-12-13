@@ -671,6 +671,19 @@ export default function Elov(props: Props) {
         .toString()
     );
     if (budgetSource.value !== "noBudget") {
+      if (
+        VendorsNames[VendorsNames.length - 1].label ===
+        "ALSO International Services GmbH"
+      ) {
+        setVendorName("");
+        var temp = { ...vendor };
+        temp.bu = "";
+        temp.manufacturer = "";
+        temp.ph = { label: "", value: "" };
+        setVendor(temp);
+        VendorsNames = VendorsNames.slice(0, VendorsNames.length - 2);
+      }
+
       setEstimatedIncome(
         (
           parseFloat(estimatedIncomeBudgetCurrency) /
@@ -693,6 +706,20 @@ export default function Elov(props: Props) {
           .toString()
       );
     } else {
+      VendorsNames.push({
+        label: "ALSO International Services GmbH",
+        value: {
+          bu: "",
+          city: "",
+          debitorischer: "",
+          email: "",
+          hersteller: "80056681",
+          kreditor: "",
+          manufacturerName: "ALSO International Services GmbH",
+        },
+      });
+
+      console.log(VendorsNames);
       setVendorName(VendorsNames[VendorsNames.length - 1]);
       var temp = { ...vendor };
       temp.bu = "A12 (old) Bridge";
