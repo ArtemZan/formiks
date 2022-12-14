@@ -30,6 +30,7 @@ import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 import { DefaultSelectStyles } from "../../utils/Styles";
+import { GiConsoleController } from "react-icons/gi";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -340,7 +341,6 @@ export default function Elmv(props: Props) {
     }
     var data: any = [];
     vendorsNames.forEach((vendor: any) => {
-      console.log(vendor.value.manufacturerName);
       var ex = vendors.find((v: any) => v.vendor === vendor.label);
       if (ex) {
         data.push(ex);
@@ -1631,6 +1631,36 @@ export default function Elmv(props: Props) {
                     onChange={(value) => {
                       if (value !== null) {
                         var temp = [...vendors];
+                        if (
+                          temp[index!].vendor.substring(
+                            temp[index!].vendor.toString().length - 6,
+                            temp[index!].vendor.toString().length - 4
+                          ) === "BU"
+                        ) {
+                          temp[index!].vendor =
+                            temp[index!].vendor.substring(
+                              0,
+                              temp[index!].vendor.length - 6
+                            ) +
+                            "BU " +
+                            value.label.substring(0, 3);
+                        } else {
+                          var idx = vendorsNames.findIndex(
+                            (s: any) =>
+                              s.label.substring(0, s.label.length) ===
+                              temp[index!].vendor
+                          );
+                          var vend = vendorsNames[idx];
+                          temp[index!].vendor =
+                            temp[index!].vendor +
+                            " BU " +
+                            value.label.substring(0, 3);
+                          vend.label = temp[index!].vendor;
+                          var v = [...vendorsNames];
+                          v[idx] = vend;
+                          console.log(VendorsNames);
+                          setVendorsNames(v);
+                        }
                         temp[index!].bu = value.label;
                         setVendors(temp);
                       }
