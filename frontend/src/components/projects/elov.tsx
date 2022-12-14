@@ -671,17 +671,19 @@ export default function Elov(props: Props) {
         .toString()
     );
     if (budgetSource.value !== "noBudget") {
-      if (
-        VendorsNames[VendorsNames.length - 1].label ===
-        "ALSO International Services GmbH"
-      ) {
-        setVendorName("");
-        var temp = { ...vendor };
-        temp.bu = "";
-        temp.manufacturer = "";
-        temp.ph = { label: "", value: "" };
-        setVendor(temp);
-        VendorsNames = VendorsNames.slice(0, VendorsNames.length - 2);
+      if (VendorsNames.length > 0) {
+        if (
+          VendorsNames[VendorsNames.length - 1].label ===
+          "ALSO International Services GmbH"
+        ) {
+          setVendorName("");
+          var temp = { ...vendor };
+          temp.bu = "";
+          temp.manufacturer = "";
+          temp.ph = { label: "", value: "" };
+          setVendor(temp);
+          VendorsNames = VendorsNames.slice(0, VendorsNames.length - 2);
+        }
       }
 
       setEstimatedIncome(
