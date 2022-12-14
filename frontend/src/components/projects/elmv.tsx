@@ -263,8 +263,8 @@ export default function Elmv(props: Props) {
                   email: s.data.email ? s.data.email : "",
                   hersteller: s.data.debitorNumber ? s.data.debitorNumber : "",
                   kreditor: s.data.creditorNumber ? s.data.creditorNumber : "",
-                  manufacturerName: s.data.manufacturerNumber
-                    ? s.data.manufacturer
+                  manufacturer: s.data.manufacturerNumber
+                    ? s.data.manufacturerNumber
                     : "",
                   telephone: s.data.telephone ? s.data.telephone : "",
                   vendorAddress: s.data.adress ? s.data.adress : "",
@@ -340,6 +340,7 @@ export default function Elmv(props: Props) {
     }
     var data: any = [];
     vendorsNames.forEach((vendor: any) => {
+      console.log(vendor.value.manufacturerName);
       var ex = vendors.find((v: any) => v.vendor === vendor.label);
       if (ex) {
         data.push(ex);
@@ -349,7 +350,7 @@ export default function Elmv(props: Props) {
           marketingResponsible: vendor.value.alsoMarketingConsultant,
           creditor: vendor.value.hersteller,
           debitor: vendor.value.debitorischer,
-          manufacturerNumber: vendor.value.manufacturerName,
+          manufacturer: vendor.value.manufacturerName,
           city: vendor.value.city,
           cityCode: vendor.value.cityCode,
           email: vendor.value.email,
@@ -1573,7 +1574,7 @@ export default function Elmv(props: Props) {
 
             <Column width={200} resizable>
               <HeaderCell>Manufacturer</HeaderCell>
-              <Cell dataKey="manufacturerNumber">
+              <Cell dataKey="manufacturer">
                 {(rowData, index) => (
                   <Input
                     value={rowData.manufacturer}
