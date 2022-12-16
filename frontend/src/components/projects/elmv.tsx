@@ -345,12 +345,13 @@ export default function Elmv(props: Props) {
       if (ex) {
         data.push(ex);
       } else {
+        console.log(vendor);
         data.push({
           vendor: vendor.label,
           marketingResponsible: vendor.value.alsoMarketingConsultant,
-          creditor: vendor.value.hersteller,
+          creditor: vendor.value.kreditor,
           debitor: vendor.value.debitorischer,
-          manufacturer: vendor.value.manufacturerName,
+          manufacturer: vendor.value.hersteller,
           city: vendor.value.city,
           cityCode: vendor.value.cityCode,
           email: vendor.value.email,
@@ -500,9 +501,9 @@ export default function Elmv(props: Props) {
             marketingResponsible: vendor.projectManager,
             companyCode: requestorsCompanyName.value.code,
             projectNumber: projectNumber,
-            creditorNumber: vendor.creditor,
+            creditorNumber: "",
             debitorNumber: vendor.debitor,
-            manufacturerNumber: vendor.manufacturer,
+            manufacturerNumber: vendor.creditor,
             businessUnit: vendor.bu,
             PH1: vendor.ph ? vendor.ph : "",
             vendorBudgetCurrency:
