@@ -513,6 +513,7 @@ export default function Elov(props: Props) {
     var nonMandatoryFields: string[] = [
       "targetAudience",
       "projectApprover",
+      "totalEstimatedCostsLC",
       "projectApproval",
       "creditorNumber",
       "manufacturersFiscalQuarter",
@@ -1225,18 +1226,6 @@ export default function Elov(props: Props) {
             isInvalid={inputErrors.includes("estimatedResultEUR")}
             onChange={(event) => {
               setNetProfitTarget(event.target.value);
-            }}
-            bg={useColorModeValue("white", "#2C313C")}
-            color={useColorModeValue("gray.800", "#ABB2BF")}
-          />
-        </Box>
-        <Box w="100%">
-          <Text mb="8px">Total Estimated Costs in Local Currency</Text>
-          <Input
-            value={totalEstimatedCostsLC}
-            isInvalid={inputErrors.includes("totalEstimatedCostsLC")}
-            onChange={(event) => {
-              setTotalEstimatedCostsLC(event.target.value);
             }}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}

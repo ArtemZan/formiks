@@ -1478,7 +1478,6 @@ export default function Elmv(props: Props) {
           <Select
             // menuPortalTarget={document.body}
             isMulti
-            hideSelectedOptions={false}
             styles={{
               menu: (provided) => ({
                 ...provided,
