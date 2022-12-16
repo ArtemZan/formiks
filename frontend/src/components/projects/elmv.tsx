@@ -485,7 +485,6 @@ export default function Elmv(props: Props) {
       //.slice(0, -1)
       .filter((vendor: any) => vendor.vendor !== "TOTAL")
       .forEach((vendor: any) => {
-        console.log(vendor);
         children.push({
           project: projectId,
           title: "",
@@ -741,7 +740,6 @@ export default function Elmv(props: Props) {
         }
       }
     });
-    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -1508,6 +1506,17 @@ export default function Elmv(props: Props) {
             value={vendorsNames}
             placeholder=""
             onChange={(value: any) => {
+              if (value.length < vendors.length) {
+                var deletedElem = vendorsNames.filter(
+                  (n: any) => !value.includes(n)
+                );
+                deletedElem.forEach((e: any) => {
+                  VendorsNames.splice(
+                    VendorsNames.findIndex((s: any) => s.label === e.label),
+                    1
+                  );
+                });
+              }
               setVendorsNames(value);
             }}
             classNamePrefix="select"
@@ -1645,20 +1654,60 @@ export default function Elmv(props: Props) {
                             "BU " +
                             value.label.substring(0, 3);
                         } else {
-                          var idx = vendorsNames.findIndex(
+                          var idxSelected = vendorsNames.findIndex(
                             (s: any) =>
                               s.label.substring(0, s.label.length) ===
                               temp[index!].vendor
                           );
-                          var vend = vendorsNames[idx];
+                          var vend = vendorsNames[idxSelected];
+                          var lab = "";
+                          if (
+                            vend.label.substring(
+                              vend.label.length - 5,
+                              vend.label.length - 3
+                            ) === "BU"
+                          ) {
+                            lab =
+                              vend.label.substring(0, vend.label.length - 5) +
+                              " (" +
+                              vend.value.debitorischer +
+                              ")";
+                          } else {
+                            lab = vend.label;
+                          }
+
+                          var data = {
+                            label: lab,
+                            value: {
+                              alsoMarketingConsultant:
+                                vend.value.alsoMarketingConsultant,
+                              bu: vend.value.bu,
+                              city: vend.value.city,
+                              cityCode: vend.value.cityCode,
+                              debitorischer: vend.value.debitorischer,
+                              email: vend.value.email,
+                              hersteller: vend.value.hersteller,
+                              kreditor: vend.value.kreditor,
+                              manufacturerName: vend.value.manufacturerName,
+                              vendorAddress: vend.value.vendorAddress,
+                            },
+                          };
+                          VendorsNames.splice(
+                            VendorsNames.findIndex(
+                              (s: any) =>
+                                s.label.substring(0, s.label.length) ===
+                                temp[index!].vendor
+                            ),
+                            0,
+                            data
+                          );
                           temp[index!].vendor =
                             temp[index!].vendor +
                             " BU " +
                             value.label.substring(0, 3);
                           vend.label = temp[index!].vendor;
                           var v = [...vendorsNames];
-                          v[idx] = vend;
-                          console.log(VendorsNames);
+                          v[idxSelected] = vend;
                           setVendorsNames(v);
                         }
                         temp[index!].bu = value.label;
@@ -1669,7 +1718,21 @@ export default function Elmv(props: Props) {
                     classNamePrefix="select"
                     isClearable={false}
                     name="BUs"
-                    options={BUs}
+                    options={(() => {
+                      var tBUs = [...BUs];
+                      if (vendorsNames.length < 1) {
+                        return BUs;
+                      }
+                      vendors.forEach((element: any) => {
+                        if (element.debitor === rowData.debitor) {
+                          var idx = tBUs.findIndex(
+                            (s: any) => s.label === element.bu
+                          );
+                          tBUs.splice(idx, 1);
+                        }
+                      });
+                      return tBUs;
+                    })()}
                   />
                 )}
               </Cell>
