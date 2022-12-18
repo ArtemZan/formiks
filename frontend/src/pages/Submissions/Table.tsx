@@ -1362,6 +1362,18 @@ export function SubmissionsTable(props: Props) {
       }
     }
   }
+
+  function fieldBackColor(props: any) {
+    console.log(props.rowData.data);
+    if (
+      props.rowData.data.invoiceTypeLMD === "Cancellation" ||
+      (props.cellData && props.cellData.length > 0)
+    ) {
+      return "#F5FAEF";
+    } else {
+      return "#f7cdd6";
+    }
+  }
   function deleteSubmission(submissionId: string) {
     var tbd: string[] = [submissionId];
     var submissionIndex = submissions.findIndex((s) => s.id === submissionId);
@@ -1424,13 +1436,6 @@ export function SubmissionsTable(props: Props) {
             type = "error";
         }
 
-        toast(
-          <Toast
-            title={"SAP Response"}
-            message={<div dangerouslySetInnerHTML={{ __html: message }} />}
-            type={type as ToastType}
-          />
-        );
         if (type === "success") {
           handleCellUpdate(submissionId, "data.status", "Created");
         }
@@ -5366,6 +5371,23 @@ export function SubmissionsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
+                              if (value === "Invoice") {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.materialNumberLMD",
+                                  "7000100"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonLMD",
+                                  "25"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonCodeLMD",
+                                  "ZWKZ"
+                                );
+                              }
                               if (value === "Pre-Invoice") {
                                 handleCommunicationCellUpdate(
                                   submission,
@@ -5376,6 +5398,56 @@ export function SubmissionsTable(props: Props) {
                                   submission,
                                   "data.alsoMarketingProjectNumberLMD",
                                   "6110VZ01"
+                                );
+
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonLMD",
+                                  "40"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonCodeLMD",
+                                  "ZWKZ"
+                                );
+                              }
+                              if (value === "Internal Invoice") {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.materialNumberLMD",
+                                  "7000100"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonCodeLMD",
+                                  "ZWKZ"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonLMD",
+                                  ""
+                                );
+                              }
+                              if (value === "Cancellation") {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.materialNumberLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonCodeLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.alsoMarketingProjectNumberLMD",
+                                  ""
                                 );
                               }
                               handleCommunicationCellUpdate(
@@ -5452,11 +5524,7 @@ export function SubmissionsTable(props: Props) {
                             invoiced={lmdColumnEdit(
                               props.rowData.data.statusLMD
                             )}
-                            backgroundColor={
-                              props.cellData && props.cellData.length > 0
-                                ? "#F5FAEF"
-                                : "#f7cdd6"
-                            }
+                            backgroundColor={fieldBackColor(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             // loadOptions={() => {
                             //   return VendorsNames.map((vendor) => {
@@ -5466,6 +5534,67 @@ export function SubmissionsTable(props: Props) {
                             //     };
                             //   });
                             // }}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.reasonLMD",
+                        dataKey: "data.reasonLMD",
+                        title: "Reason",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.reasonLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController("LMD", "data.reasonLMD"),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"dropdown"}
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
+                            readonly={props.rowData.parentId !== null}
+                            loadOptions={() => {
+                              return [
+                                {
+                                  label: "25",
+                                  value: "25",
+                                },
+                                { label: "40", value: "40" },
+                              ];
+                            }}
+                            backgroundColor={fieldBackColor(props)}
+                            onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.reasonCodeLMD",
+                        dataKey: "data.reasonCodeLMD",
+                        group: "Input of Local Marketing Department",
+
+                        title: "Reason Code",
+                        width: columnWidth("data.reasonCodeLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.reasonCodeLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
+                            type={"text"}
+                            backgroundColor={fieldBackColor(props)}
+                            onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -5495,11 +5624,7 @@ export function SubmissionsTable(props: Props) {
                               props.rowData.data.statusLMD
                             )}
                             maxLength={12}
-                            backgroundColor={
-                              props.cellData && props.cellData.length > 0
-                                ? "#F5FAEF"
-                                : "#f7cdd6"
-                            }
+                            backgroundColor={fieldBackColor(props)}
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -5990,7 +6115,63 @@ export function SubmissionsTable(props: Props) {
                           />
                         ),
                       },
+                      {
+                        key: "data.dateOfServiceRenderedLMD",
+                        dataKey: "data.dateOfServiceRenderedLMD",
+                        group: "Input of Local Marketing Department",
 
+                        title: "Date of service rendered",
+                        width: columnWidth(
+                          "data.dateOfServiceRenderedLMD",
+                          200
+                        ),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.dateOfServiceRenderedLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
+                            type={"text"}
+                            backgroundColor={"#F5FAEF"}
+                            onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.linkToProofsLMD",
+                        dataKey: "data.linkToProofsLMD",
+                        group: "Input of Local Marketing Department",
+
+                        title: "Link to proof",
+                        width: columnWidth("data.linkToProofsLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.linkToProofsLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            invoiced={lmdColumnEdit(
+                              props.rowData.data.statusLMD
+                            )}
+                            type={"text"}
+                            backgroundColor={"#F5FAEF"}
+                            onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
                       {
                         key: "__actions.validate",
                         dataKey: "__actions.validate",
