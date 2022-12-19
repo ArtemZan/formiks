@@ -46,7 +46,6 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 			rdata.InvoiceRecipientName, _ = element.Data["name1SI"].(string)
 			rdata.InvoiceRecipientNumber, _ = element.Data["numberSI"].(string)
 			reports = append(reports, rdata)
-			fmt.Println(element.Data["projectNumber"].(string))
 		}
 	}
 	return reports, err

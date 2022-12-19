@@ -16,10 +16,10 @@ type PAreport struct {
 	InvoiceRecipientNumber       string             `json:"invoiceRecipientNumber" bson:"invoiceRecipientNumber"`
 	RequestFromVendorNumber      string             `bson:"requestFromVendorNumber" json:"requestFromVendorNumber"`
 	Validation                   string             `bson:"validation" json:"validation"`
-	RequestFormVendorNAme        string             `bson:"requestFormVendorNAme" json:"requestFormVendorNAme"`
+	RequestFormVendorName        string             `bson:"requestFormVendorName" json:"requestFormVendorName"`
 	BU                           string             `bson:"bu" json:"bu"`
 	RequestFormVendorShare       string             `bson:"requestFormVendorShare" json:"requestFormVendorShare"`
 	RequestFormVendorAmount      string             `bson:"requestFormVendorAmount" json:"requestFormVendorAmount"`
 	NotOkRequestFromVendorNumber string             `bson:"notOkRequestFromVendorNumber" json:"notOkRequestFromVendorNumber"`
-	NotOkRequestFormVendorNAme   string             `bson:"notOkRequestFormVendorNAme" json:"notOkRequestFormVendorNAme"`
+	NotOkRequestFormVendorName   string             `bson:"notOkRequestFormVendorName" json:"notOkRequestFormVendorName"`
 }
