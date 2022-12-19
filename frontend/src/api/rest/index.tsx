@@ -2,7 +2,11 @@ import axios, { AxiosResponse } from "axios";
 import Bookmark from "../../types/bookmark";
 import Dropdown from "../../types/dropdown";
 import Project from "../../types/project";
-import { Submission, SubmissionWithChildren } from "../../types/submission";
+import {
+  PAreport,
+  Submission,
+  SubmissionWithChildren,
+} from "../../types/submission";
 import { Template } from "../../types/template";
 
 export class API {
@@ -14,6 +18,7 @@ export class API {
   public projectsUrl = `${this.baseUrl}/projects/`;
   public bookmarksUrl = `${this.baseUrl}/bookmarks/`;
   public submissionsUrl = `${this.baseUrl}/submissions/`;
+  public paReport = `${this.baseUrl}/reports/`;
   public dropdownsUrl = `${this.baseUrl}/dropdowns/`;
   public templatesUrl = `${this.baseUrl}/templates/`;
   public draftsUrl = `${this.baseUrl}/drafts/`;
@@ -62,6 +67,10 @@ export class API {
     id: string
   ): Promise<AxiosResponse<SubmissionWithChildren>> {
     return axios.get<SubmissionWithChildren>(`${this.submissionsUrl}${id}`);
+  }
+
+  getPAreport(): Promise<AxiosResponse<PAreport[]>> {
+    return axios.get<PAreport[]>(this.paReport);
   }
   createSubmission(submission: Submission): Promise<AxiosResponse<Submission>> {
     return axios.post<Submission>(

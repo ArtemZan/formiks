@@ -6,12 +6,21 @@ import BaseTable, {
   unflatten,
 } from "react-base-table";
 import "react-base-table/styles.css";
+import React, { useEffect, useState } from "react";
+import { RestAPI } from "../api/rest";
+import { PAreport } from "../types/submission";
 
 interface Props {
   history: any;
 }
 
 export default function ReportsTable(props: Props) {
+  const [reports, setReports] = useState<PAreport[]>([]);
+
+  useEffect(() => {
+    RestAPI.getPAreport().then((Response) => setReports(Response.data));
+  }, []);
+
   return (
     <Box
       w={"100%"}

@@ -32,6 +32,10 @@ type SubmissionRepo interface {
 	ExistsAny(ctx context.Context, projectNumbers []string) bool
 }
 
+type ReprotRepo interface {
+	FetchPAreport(ctx context.Context) ([]models.PAreport, error)
+}
+
 type UserRepo interface {
 	Fetch(ctx context.Context, filter interface{}) ([]models.User, error)
 	FetchByEmail(ctx context.Context, email string) (models.User, error)

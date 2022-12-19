@@ -12,6 +12,7 @@ func RegisterRoutes(r *gin.Engine) {
 	bookmarkHandler := handlers.NewBookmarkHandler(driver.Conn)
 	dropdownHandler := handlers.NewDropdownHandler(driver.Conn)
 	submissionHandler := handlers.NewSubmissionHandler(driver.Conn)
+	reportHandler := handlers.NewReportsHandler(driver.Conn)
 	userHandler := handlers.NewUserHandler(driver.Conn)
 	templateHandler := handlers.NewTemplateHandler(driver.Conn)
 	draftHandler := handlers.NewDraftHandler(driver.Conn)
@@ -22,6 +23,7 @@ func RegisterRoutes(r *gin.Engine) {
 	dropdownsGroup := apiGroup.Group("dropdowns")
 	submissionsGroup := apiGroup.Group("submissions")
 	usersGroup := apiGroup.Group("users")
+	reportsGroup := apiGroup.Group("reports")
 	pipelinesGroup := apiGroup.Group("pipelines")
 	templatesGroup := apiGroup.Group("templates")
 	draftsGroup := apiGroup.Group("drafts")
@@ -69,6 +71,8 @@ func RegisterRoutes(r *gin.Engine) {
 	dropdownsGroup.POST("/", msal.Admin(), dropdownHandler.Create)      // create custom dropdown
 	dropdownsGroup.PUT("/:id", msal.Admin(), dropdownHandler.Update)    // update custom dropdown
 	dropdownsGroup.DELETE("/:id", msal.Admin(), dropdownHandler.Delete) // delete custom dropdown
+
+	reportsGroup.GET("/", reportHandler.FetchPAreport) // get report data
 
 	templatesGroup.GET("/", templateHandler.Fetch)
 	templatesGroup.PUT("/:name", templateHandler.Update)

@@ -17,3 +17,23 @@ export interface SubmissionWithChildren {
   children: Submission[];
   local: string | null;
 }
+
+export interface PAreport {
+  id?:                          string;
+	companyCode:                  string | null;
+yearMonth                :    string  | null;           
+	projectNumber            :    string | null;       
+	projectName                :  string | null;            
+	invoiceNumber              :  string   | null;          
+	incomeAccount             :   string     | null;       
+	invoiceRecipientName      :   string         | null;    
+	invoiceRecipientNumber      : string  | null;            
+	requestFromVendorNumber     : string | null;             
+	validation                  : string              | null;
+	requestFormVendorNAme       : string              | null;
+	bu                          : string              | null;
+	requestFormVendorShare      : string              | null;
+	requestFormVendorAmount     : string              | null;
+	notOkRequestFromVendorNumber: string        | null;      
+	notOkRequestFormVendorNAme  : string | null;             
+}

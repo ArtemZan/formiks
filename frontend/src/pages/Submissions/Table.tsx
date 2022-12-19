@@ -2455,7 +2455,7 @@ export function SubmissionsTable(props: Props) {
       group: "Project Information",
 
       resizable: true,
-      hidden: visibilityController("projectInformation", "data.PH1"),
+      hidden: true, //visibilityController("projectInformation", "data.PH1"),
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}

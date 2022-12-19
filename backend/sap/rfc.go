@@ -46,7 +46,6 @@ func ZsdMdfOrder(submission models.Submission) interface{} {
 		} `json:"IntOrderOut"`
 	}
 	json.Unmarshal(b, &response)
-	fmt.Println(submission.Data)
 	return response
 }
 
