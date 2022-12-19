@@ -501,6 +501,11 @@ const NAV_ITEMS: Array<NavItem> = [
         href: "/submissions",
       },
       {
+        label: "Reports Table",
+        subLabel: "Explore all reports",
+        href: "/reports",
+      },
+      {
         label: "Drafts",
         subLabel: "Explore unpublished submissions",
         href: "/drafts",

@@ -21,6 +21,7 @@ import DropdownEditor from "./pages/Dropdowns/Editor";
 import { RestAPI } from "./api/rest";
 import { ToastContainer, Slide } from "react-toastify";
 import { loginRequest } from "./authConfig";
+import ReportsTable from "./pages/ReportsTable";
 
 type AppProps = {
   pca: IPublicClientApplication;
@@ -122,6 +123,11 @@ function App({ pca }: AppProps) {
               exact
               path="/submissions"
               render={(props) => <SubmissionsTable {...props} />}
+            />
+            <Route
+              exact
+              path="/reports"
+              render={(props) => <ReportsTable {...props} />}
             />
             <Route
               exact
