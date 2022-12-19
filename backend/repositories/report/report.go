@@ -2,7 +2,6 @@ package report
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/doublegrey/formiks/backend/models"
