@@ -130,8 +130,8 @@ export default function ReportsTable(props: Props) {
                 align: "center",
               },
               {
-                key: "requestFormVendorNAme",
-                dataKey: "requestFormVendorNAme",
+                key: "requestFormVendorName",
+                dataKey: "requestFormVendorName",
                 title: "Request For mVendor Name",
                 width: 150,
                 resizable: true,
