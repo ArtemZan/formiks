@@ -9,6 +9,7 @@ import "react-base-table/styles.css";
 import React, { useEffect, useState } from "react";
 import { RestAPI } from "../api/rest";
 import { PAreport } from "../types/submission";
+import { reduce } from "lodash";
 
 interface Props {
   history: any;
@@ -16,6 +17,20 @@ interface Props {
 
 export default function ReportsTable(props: Props) {
   const [reports, setReports] = useState<PAreport[]>([]);
+
+  const RenderCell = (p: any) => {
+    return (
+      <div
+        style={{
+          backgroundColor:
+            p.rowData["validation"] === "NOT OK" ? "#F00000" : "#FFFF",
+        }}
+        className={"content-preview"}
+      >
+        {p.cellData}
+      </div>
+    );
+  };
 
   useEffect(() => {
     RestAPI.getPAreport().then((Response) => setReports(Response.data));
@@ -116,7 +131,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "requestFromVendorNumber",
                 dataKey: "requestFromVendorNumber",
-                title: "Request From Vendor Number",
+                title: "Project Vendor Number",
                 width: 150,
                 resizable: true,
                 align: "center",
@@ -132,10 +147,11 @@ export default function ReportsTable(props: Props) {
               {
                 key: "requestFormVendorName",
                 dataKey: "requestFormVendorName",
-                title: "Request For mVendor Name",
+                title: "Request Form Vendor Name",
                 width: 150,
                 resizable: true,
                 align: "center",
+                cellRenderer: RenderCell,
               },
               {
                 key: "bu",
@@ -144,6 +160,7 @@ export default function ReportsTable(props: Props) {
                 width: 150,
                 resizable: true,
                 align: "center",
+                cellRenderer: RenderCell,
               },
               {
                 key: "requestFormVendorShare",
@@ -152,6 +169,7 @@ export default function ReportsTable(props: Props) {
                 width: 150,
                 resizable: true,
                 align: "center",
+                cellRenderer: RenderCell,
               },
               {
                 key: "requestFormVendorAmount",
@@ -160,6 +178,7 @@ export default function ReportsTable(props: Props) {
                 width: 150,
                 resizable: true,
                 align: "center",
+                cellRenderer: RenderCell,
               },
               {
                 key: "notOkRequestFromVendorNumber",
@@ -168,6 +187,7 @@ export default function ReportsTable(props: Props) {
                 width: 150,
                 resizable: true,
                 align: "center",
+                cellRenderer: RenderCell,
               },
               {
                 key: "notOkRequestFormVendorName",
@@ -176,6 +196,7 @@ export default function ReportsTable(props: Props) {
                 width: 150,
                 resizable: true,
                 align: "center",
+                cellRenderer: RenderCell,
               },
             ]}
             data={reports}

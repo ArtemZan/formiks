@@ -36,6 +36,7 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 	for _, element := range submissions {
 		if element.Data["incomeAccountSI"] != nil {
 			var rdata models.PAreport
+			var valid = false
 			rdata.CompanyCode, _ = element.Data["companyCode"].(string)
 			rdata.YearMonth, _ = element.Data["yearMonthSI"].(string)
 			rdata.ProjectNumber, _ = element.Data["projectNumber"].(string)
@@ -44,6 +45,25 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 			rdata.IncomeAccount, _ = element.Data["incomeAccountSI"].(string)
 			rdata.InvoiceRecipientName, _ = element.Data["name1SI"].(string)
 			rdata.InvoiceRecipientNumber, _ = element.Data["numberSI"].(string)
+			for _, vendorData := range submissions {
+				if vendorData.ParentID == element.ParentID && vendorData.Group == "vendor" {
+					if rdata.InvoiceRecipientNumber == vendorData.Data["vendorNumber"] {
+
+					}
+				}
+			}
+			if !valid {
+				for _, vendorData := range submissions {
+					if vendorData.ParentID == element.ParentID && vendorData.Group == "country" {
+						if rdata.InvoiceRecipientNumber == vendorData.Data["countrySAPnumber"] {
+
+						}
+					}
+				}
+			}
+			if !valid {
+				rdata.Validation = "NOT OK"
+			}
 			reports = append(reports, rdata)
 		}
 	}
