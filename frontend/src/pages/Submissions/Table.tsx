@@ -3243,6 +3243,28 @@ export function SubmissionsTable(props: Props) {
         />
       ),
     },
+    {
+      key: "data.sapNumberSI",
+      dataKey: "data.sapNumberSI",
+      title: "Invoice Recipient Number",
+      group: "Sales Invoices",
+
+      width: columnWidth("data.sapNumberSI", 200),
+      resizable: true,
+      hidden: visibilityController("salesInvoices", "data.sapNumberSI"),
+      cellRenderer: (props: any) => (
+        <EditableTableCell
+          type={"text"}
+          readonly={true}
+          backgroundColor="#fff7f8"
+          onUpdate={handleCellUpdate}
+          rowIndex={props.rowIndex}
+          columnKey={props.column.dataKey}
+          rowData={props.rowData}
+          initialValue={props.cellData}
+        />
+      ),
+    },
 
     {
       key: "data.incomeAmountLCSI",

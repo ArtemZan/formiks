@@ -89,7 +89,6 @@ export default function Elov(props: Props) {
     label: "",
     value: "",
   });
-  const [budgetApprovedByVendor, setBudgetApprovedByVendor] = useState("");
   const [exchangeRates, setExchangeRates] = useState<any>({
     label: "",
     value: "",
@@ -103,7 +102,6 @@ export default function Elov(props: Props) {
   const [estimatedIncome, setEstimatedIncome] = useState("");
   const [estimatedCosts, setEstimatedCosts] = useState("");
   const [netProfitTarget, setNetProfitTarget] = useState("");
-  const [companiesParticipating, setCompaniesParticipating] = useState<any>([]);
   const [comments, setComments] = useState("");
   const [vendor, setVendor] = useState<any>({
     ph: {
@@ -112,19 +110,13 @@ export default function Elov(props: Props) {
     },
   });
 
-  const [costBreakdown, setCostBreakdown] = useState<any>([]);
   const [organizingCompany, setOrganizingCompany] = useState("");
-
-  const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
-  const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
 
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
 
   const [inputErrors, setInputErrors] = useState<string[]>([]);
 
   const [injectionReady, setInjectionReady] = useState(false);
-
-  const [render, rerender] = useState(0);
 
   useEffect(() => {
     if (props.submission) {
@@ -376,7 +368,7 @@ export default function Elov(props: Props) {
         debitorNumber: vendor.debitor,
         manufacturerNumber: vendor.manufacturer,
         businessUnit: vendor.bu,
-        PH1: { label: vendor.ph.label, value: vendor.ph.value },
+        PH1: vendor.ph.label,
         vendorBudgetCurrency:
           budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
         vendorAmount:
@@ -523,12 +515,6 @@ export default function Elov(props: Props) {
       "status",
     ];
     var sub = submission.submission;
-    if (
-      sub.data.budgetSource === "No budget" ||
-      sub.data.budgetSource === "noBudget"
-    ) {
-      nonMandatoryFields.push("debitorNumber");
-    }
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
@@ -637,12 +623,8 @@ export default function Elov(props: Props) {
         projectManager: vendorName.value.alsoMarketingConsultant,
         creditor: vendorName.value.kreditor,
         debitor: vendorName.value.debitorischer,
-        manufacturer: vendorName.value.hersteller,
-        bu: vendorName.value.hersteller === "80056681" ? vendor.bu : "",
-        ph:
-          vendorName.value.hersteller === "80056681"
-            ? vendor.ph
-            : { label: "", value: "" },
+        bu: vendor.bu,
+        ph: { label: "", value: "" },
         budgetCurrency: { label: "", value: "" },
         budgetAmount: "",
         localBudget: "",
@@ -658,6 +640,15 @@ export default function Elov(props: Props) {
       });
     }
   }, [vendorName]);
+
+  useEffect(() => {
+    if (props.submission && !injectionReady) {
+      return;
+    }
+    setTotalEstimatedCostsLC(
+      (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
+    );
+  }, [estimatedCosts, localExchangeRate]);
 
   useEffect(() => {
     if (props.submission && !injectionReady) {
@@ -708,29 +699,31 @@ export default function Elov(props: Props) {
           .toFixed(2)
           .toString()
       );
-    } else {
-      VendorsNames.push({
-        label: "ALSO International Services GmbH",
-        value: {
-          bu: "",
-          city: "",
-          debitorischer: "",
-          email: "",
-          hersteller: "80056681",
-          kreditor: "",
-          manufacturerName: "ALSO International Services GmbH",
-        },
-      });
-
-      console.log(VendorsNames);
-      setVendorName(VendorsNames[VendorsNames.length - 1]);
-      var temp = { ...vendor };
-      temp.bu = "A12 (old) Bridge";
-      temp.ph = { label: "CON01 - Bridge", value: "CON01" };
-      setVendor(temp);
-      setNetProfitTarget(estimatedCosts);
-      setNetProfitTargetBudgetCurrency(estimatedCostsBudgetCurrency);
     }
+    // uncomment for No Budget optionx
+    //  else {
+    //   VendorsNames.push({
+    //     label: "ALSO International Services GmbH",
+    //     value: {
+    //       bu: "",
+    //       city: "",
+    //       debitorischer: "",
+    //       email: "",
+    //       hersteller: "80056681",
+    //       kreditor: "",
+    //       manufacturerName: "ALSO International Services GmbH",
+    //     },
+    //   });
+
+    //   console.log(VendorsNames);
+    //   setVendorName(VendorsNames[VendorsNames.length - 1]);
+    //   var temp = { ...vendor };
+    //   temp.bu = "A12 (old) Bridge";
+    //   temp.ph = { label: "CON01 - Bridge", value: "CON01" };
+    //   setVendor(temp);
+    //   setNetProfitTarget(estimatedCosts);
+    //   setNetProfitTargetBudgetCurrency(estimatedCostsBudgetCurrency);
+    // }
   }, [
     budgetSource,
     estimatedIncome,
@@ -1281,7 +1274,6 @@ export default function Elov(props: Props) {
           <Input
             disabled={budgetSource.value === "noBudget"}
             bgColor={"white"}
-            yar
             value={vendor.creditor}
             onChange={(event) => {
               var temp = { ...vendor };
