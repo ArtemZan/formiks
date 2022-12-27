@@ -247,17 +247,19 @@ export default function Cerov(props: Props) {
           label: vs.data.vendorName ?? "",
           value: vs.data.vendorName ?? "",
         });
+        console.log(vs);
         setVendor({
           vendor: vs.data.vendorName ?? "",
           projectManager: vs.data.productionProjectManager ?? "",
           creditor: vs.data.creditorNumber ?? "",
+
           debitor: vs.data.debitorNumber ?? "",
           manufacturer: vs.data.manufacturerNumber ?? "",
           bu: vs.data.businessUnit ?? "",
-          ph: {
-            label: vs.data.PH1 ?? "",
-            value: vs.data.PH1 ?? "",
-          },
+          // ph: {
+          //   label: vs.data.PH1 ?? "",
+          //   value: vs.data.PH1 ?? "",
+          // },
           budgetCurrency: {
             label: vs.data.budgetCurrency || "",
             value: vs.data.budgetCurrency || "",
@@ -313,8 +315,8 @@ export default function Cerov(props: Props) {
             totalShare += s.data.countryShare || 0;
             totalContribution += s.data.countryBudgetContributionCC || 0;
             totalCosts += s.data.countryCostEstimationCC || 0;
-            totalContributionEur += s.data.countryBudgetContributionEur || 0;
-            totalCostsEur += s.data.countryCostEstimationEur || 0;
+            totalContributionEur += s.data.estimatedIncomeEUR || 0;
+            totalCostsEur += s.data.estimatedCostsEUR || 0;
           });
 
         setTotalcbShare(totalShare.toFixed(2).toString());
@@ -352,7 +354,7 @@ export default function Cerov(props: Props) {
         return RestAPI.getDropdownValues(di);
       })
     );
-    PH1 = responses[0].data;
+    // PH1 = responses[0].data;
     Companies = responses[1].data;
     VendorsNames = responses[2].data;
     CampaignChannel = responses[3].data;
@@ -622,7 +624,7 @@ export default function Cerov(props: Props) {
       },
     };
     var children: Submission[] = [];
-
+    console.log(vendor);
     children.push({
       project: projectId,
       title: "",
@@ -643,7 +645,7 @@ export default function Cerov(props: Props) {
         debitorNumber: vendor.debitor,
         manufacturerNumber: vendor.manufacturer,
         businessUnit: vendor.bu,
-        PH1: vendor.ph.label,
+        // PH1: vendor.ph.label,
         vendorBudgetCurrency:
           budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
         vendorAmount:
@@ -698,7 +700,7 @@ export default function Cerov(props: Props) {
             estimatedResultEUR:
               parseFloat(company.contributionEur) -
               parseFloat(company.estimatedCostsEur),
-            PH1: vendor.ph.label,
+            // PH1: vendor.ph.label,
             vendorBudgetCurrency:
               budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
             vendorAmount: parseFloat(company.contribution),
@@ -746,7 +748,7 @@ export default function Cerov(props: Props) {
             localCurrency: requestorsCompanyName.value["currency"],
             vendorName: vendorName.label,
             businessUnit: vendor.bu,
-            PH1: vendor.ph.label,
+            // PH1: vendor.ph.label,
             vendorShare: 100,
             estimatedResultBC:
               parseFloat(netProfitTargetBudgetCurrency) *
@@ -1614,7 +1616,7 @@ export default function Cerov(props: Props) {
             options={BUs}
           />
         </Box>
-        <Box w="100%">
+        {/* <Box w="100%">
           <Text mb="8px">PH1</Text>
           <Select
             styles={DefaultSelectStyles(
@@ -1642,7 +1644,7 @@ export default function Cerov(props: Props) {
             name="PH1"
             options={PH1}
           />
-        </Box>
+        </Box> */}
 
         <Box w="100%">
           <Text mb="8px">Companies Participating</Text>
@@ -2017,7 +2019,7 @@ export default function Cerov(props: Props) {
             formattedData.push(["Creditor", vendor.creditor]);
             formattedData.push(["Manufacturer", vendor.manufacturer]);
             formattedData.push(["Business Unit", vendor.bu]);
-            formattedData.push(["PH1", vendor.ph.label]);
+            // formattedData.push(["PH1", vendor.ph.label]);
             formattedData.push(["Comments", comments]);
             formattedData.push([
               "Companies Participating",

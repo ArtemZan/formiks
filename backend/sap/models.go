@@ -38,6 +38,7 @@ type AccountLineRecord struct {
 	Account              string      `json:"Account"`
 	ProjectNumber        string      `json:"ProjectNumber"`
 	Name1                interface{} `json:"Name1"`
+	SapNumber            string      `json:"SapNumber"`
 	CostAmountInLC       string      `json:"CostAmountInLC"`
 	LocalCurrency        string      `json:"LocalCurrency"`
 	CostAmountInDC       string      `json:"CostAmountInDC"`

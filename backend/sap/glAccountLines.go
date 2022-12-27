@@ -186,6 +186,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["invoiceNumberSI"] = glChild.DocumentNumber
 				data["incomeAccountSI"] = glChild.Account
 				data["name1SI"] = glChild.Name1
+				data["sapNumberSI"] = glChild.SapNumber
 				data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dcSI"] = glChild.DocumentCurrency
@@ -212,6 +213,8 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dcIncomeGL"] = glChild.DocumentCurrency
 				data["textIncomeGL"] = glChild.Text
+				data["name1IncomeGL"] = glChild.Name1
+				data["sapNumberIncomeGL"] = glChild.SapNumber
 				data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 
 				group = "Income GL Postings"
@@ -233,6 +236,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["invoiceNumber"] = glChild.InvoiceNumber
 				data["costAccount"] = glChild.Account
 				data["name1"] = glChild.Name1
+				data["sapNumber"] = glChild.SapNumber
 				data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dc"] = glChild.DocumentCurrency
@@ -257,6 +261,8 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["costAccountCostGL"] = glChild.Account
 				data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
+				data["name1CostGL"] = glChild.Name1
+				data["sapNumberCostGL"] = glChild.SapNumber
 				data["dcCostGL"] = glChild.DocumentCurrency
 				data["textCostGL"] = glChild.Text
 				data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
@@ -280,6 +286,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["invoiceNumberSI"] = glChild.DocumentNumber
 				data["incomeAccountSI"] = glChild.Account
 				data["name1SI"] = glChild.Name1
+				data["sapNumberSI"] = glChild.SapNumber
 				data["incomeAmountLCSI"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["incomeAmountDCSI"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dcSI"] = glChild.DocumentCurrency
@@ -302,6 +309,7 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["invoiceNumber"] = glChild.InvoiceNumber
 				data["costAccount"] = glChild.Account
 				data["name1"] = glChild.Name1
+				data["sapNumber"] = glChild.SapNumber
 				data["costAmountLC"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["costAmountDC"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dc"] = glChild.DocumentCurrency
@@ -328,6 +336,8 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["incomeAmountLCIncomeGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["incomeAmountDCIncomeGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dcIncomeGL"] = glChild.DocumentCurrency
+				data["name1IncomeGL"] = glChild.Name1
+				data["sapNumberIncomeGL"] = glChild.SapNumber
 				data["textIncomeGL"] = glChild.Text
 				data["incomeAmountEurIncomeGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 
@@ -349,6 +359,8 @@ func GetAccountLinesChildren(parentID, parentProject, projectNumber string, exis
 				data["costAmountLCCostGL"] = utils.String2float(glChild.CostAmountInLC) * dcIndicator
 				data["costAmountDCCostGL"] = utils.String2float(glChild.CostAmountInDC) * dcIndicator
 				data["dcCostGL"] = glChild.DocumentCurrency
+				data["name1CostGL"] = glChild.Name1
+				data["sapNumberCostGL"] = glChild.SapNumber
 				data["textCostGL"] = glChild.Text
 				data["costAmountEURCostGL"] = (utils.String2float(glChild.CostAmountInLC) / exchangeRates[glChild.LocalCurrency]) * dcIndicator
 
