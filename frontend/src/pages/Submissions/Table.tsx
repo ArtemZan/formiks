@@ -1430,19 +1430,19 @@ export function SubmissionsTable(props: Props) {
       .then((response) => {
         console.log(response);
         var message = `Order ${response.data.IntOrderOut.EX_ORDERID} has been successfully created`;
-        var t: ToastType = "success";
+        var type: ToastType = "success";
         switch (response.data.IntOrderOut.EX_SUBRC) {
           case 4:
             message = `Order ${response.data.IntOrderOut.EX_ORDERID} already exists`;
-            t = "error";
+            type = "error";
             break;
           case 0:
             message = `Order ${response.data.IntOrderOut.EX_ORDERID} created in SAP`;
             break;
         }
-        toast(<Toast title={"SAP Response"} message={message} type={t} />);
+        toast(<Toast title={"SAP Response"} message={message} type={type} />);
 
-        if (t === "success") {
+        if (type === "success") {
           handleCellUpdate(submissionId, "data.status", "Created");
         }
       })
