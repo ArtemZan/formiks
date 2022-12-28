@@ -1428,15 +1428,21 @@ export function SubmissionsTable(props: Props) {
   function callSap(submissionId: string) {
     RestAPI.callSapSubmission(submissionId)
       .then((response) => {
+        console.log(response);
         var message = `Order ${response.data.IntOrderOut.EX_ORDERID} has been successfully created`;
-        var type = "success";
+        var t: ToastType = "success";
         switch (response.data.IntOrderOut.EX_SUBRC) {
           case 4:
             message = `Order ${response.data.IntOrderOut.EX_ORDERID} already exists`;
-            type = "error";
+            t = "error";
+            break;
+          case 0:
+            message = `Order ${response.data.IntOrderOut.EX_ORDERID} created in SAP`;
+            break;
         }
+        toast(<Toast title={"SAP Response"} message={message} type={t} />);
 
-        if (type === "success") {
+        if (t === "success") {
           handleCellUpdate(submissionId, "data.status", "Created");
         }
       })

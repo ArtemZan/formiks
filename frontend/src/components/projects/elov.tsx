@@ -513,6 +513,10 @@ export default function Elov(props: Props) {
       "productionProjectManager",
       "additionalInformation",
       "status",
+      "campaignDescription",
+      "debitorNumber",
+      "manufacturerNumber",
+      "PH1",
     ];
     var sub = submission.submission;
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
@@ -564,6 +568,7 @@ export default function Elov(props: Props) {
         }
       }
     });
+    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -1327,7 +1332,7 @@ export default function Elov(props: Props) {
             options={BUs}
           />
         </Box>
-        <Box w="100%">
+        {/* <Box w="100%">
           <Text mb="8px">PH1</Text>
           <Select
             styles={DefaultSelectStyles(
@@ -1355,7 +1360,7 @@ export default function Elov(props: Props) {
             name="PH1"
             options={PH1}
           />
-        </Box>
+        </Box> */}
         <Box w="100%">
           <Text mb="8px">Comments</Text>
           <Textarea
@@ -1435,44 +1440,46 @@ export default function Elov(props: Props) {
             formattedData.push(["Campaign Currency", exchangeRates.label]);
             formattedData.push([
               "Campaign Estimated Income in Campaign Currency",
-              budgetSource.value === "noBudget"
+              estimatedIncomeBudgetCurrency === "" || NaN || "NaN"
                 ? "N/A"
                 : parseFloat(estimatedIncomeBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in Campaign Currency",
-              parseFloat(estimatedCostsBudgetCurrency),
+              estimatedCostsBudgetCurrency === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(estimatedCostsBudgetCurrency),
             ]);
             formattedData.push([
-              budgetSource.value === "noBudget"
-                ? "Campaign Loss in Campaign currency"
-                : "Campaign Net Profit Target in Campaign Currency",
-              parseFloat(netProfitTargetBudgetCurrency),
+              "Campaign Net Profit Target in Campaign Currency",
+              netProfitTargetBudgetCurrency === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(netProfitTargetBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Income in EUR",
-              estimatedIncome === "" ? "N/A" : parseFloat(estimatedIncome),
+              estimatedIncome === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(estimatedIncome),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in EUR",
-              parseFloat(estimatedCosts),
+              estimatedCosts === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(estimatedCosts),
             ]);
             formattedData.push([
-              budgetSource.value === "noBudget"
-                ? "Campaign Loss in EUR"
-                : "Campaign Net Profit Target in EUR",
-              parseFloat(netProfitTarget),
+              "Campaign Net Profit Target in EUR",
+              netProfitTarget === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(netProfitTarget),
             ]);
-            formattedData.push([
-              "Total Estimated Costs in Local Currency",
-              parseFloat(totalEstimatedCostsLC),
-            ]);
+
             formattedData.push(["Vendor Name", vendorName.label]);
             formattedData.push(["VOD", vendor.debitor]);
             formattedData.push(["Creditor", vendor.creditor]);
             formattedData.push(["Manufacturer", vendor.manufacturer]);
             formattedData.push(["Business Unit", vendor.bu]);
-            formattedData.push(["PH1", vendor.ph.label]);
             formattedData.push(["Comments", comments]);
 
             var ws = XLSX.utils.aoa_to_sheet(formattedData);

@@ -482,10 +482,12 @@ export default function Elmv(props: Props) {
       },
     };
     var children: Submission[] = [];
+
     vendors
       //.slice(0, -1)
       .filter((vendor: any) => vendor.vendor !== "TOTAL")
       .forEach((vendor: any) => {
+        console.log(vendor);
         children.push({
           project: projectId,
           title: "",
@@ -505,9 +507,9 @@ export default function Elmv(props: Props) {
             debitorNumber: vendor.debitor,
             manufacturerNumber: vendor.creditor,
             businessUnit: vendor.bu,
-            PH1: vendor.ph ? vendor.ph : "",
+            // PH1: vendor.ph ? vendor.ph : "",
             vendorBudgetCurrency:
-              budgetSource.value === "noBudget" ? "N/A" : exchangeRates.label,
+              vendor.budgetCurrency === "" ? "" : vendor.budgetCurrency.label,
             vendorAmountLC:
               isNaN(parseFloat(vendor.localBudget)) ||
               budgetSource.value === "noBudget"
@@ -677,12 +679,22 @@ export default function Elmv(props: Props) {
       "projectApproval",
       "manufacturersFiscalQuarter",
       "comments",
+      "totalEstimatedCostsLC",
       "additionalInformation",
       "status",
       "businessUnit",
       "marketingResponsible",
       "manufacturerNumber",
       "PH1",
+      "creditorNumber",
+      "vendorShare",
+      "estimatedCostsCC",
+      "estimatedIncomeCC",
+      "estimatedResultCC",
+      "estimatedIncomeEUR",
+      "estimatedCostsEUR",
+      "estimatedResultEUR",
+      "estimatedResultBC",
     ];
 
     var sub = submission.submission;
@@ -741,6 +753,7 @@ export default function Elmv(props: Props) {
         }
       }
     });
+    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -1351,7 +1364,7 @@ export default function Elmv(props: Props) {
             menuPortalTarget={document.body}
             styles={DefaultSelectStyles(
               useColorModeValue,
-              inputErrors.includes("campaignCurrency")
+              inputErrors.includes("exchangeRates")
             )}
             theme={(theme) => ({
               ...theme,
@@ -1379,7 +1392,7 @@ export default function Elmv(props: Props) {
             isInvalid={
               budgetSource.value === "noBudget"
                 ? false
-                : inputErrors.includes("estimatedIncomeCC")
+                : inputErrors.includes("estimatedIncomeBudgetCurrency")
             }
             value={estimatedIncomeBudgetCurrency}
             onChange={(event) => {
@@ -1393,7 +1406,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in Campaign Currency</Text>
           <Input
             value={estimatedCostsBudgetCurrency}
-            isInvalid={inputErrors.includes("estimatedCostsCC")}
+            isInvalid={inputErrors.includes("estimatedCostsBudgetCurrency")}
             onChange={(event) => {
               setEstimatedCostsBudgetCurrency(event.target.value);
             }}
@@ -1409,7 +1422,7 @@ export default function Elmv(props: Props) {
           </Text>
           <Input
             value={netProfitTargetBudgetCurrency}
-            isInvalid={inputErrors.includes("estimatedResultCC")}
+            isInvalid={inputErrors.includes("netProfitTargetBudgetCurrency")}
             onChange={(event) => {
               setNetProfitTargetBudgetCurrency(event.target.value);
             }}
@@ -1421,7 +1434,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Income in EUR</Text>
           <Input
             disabled={budgetSource.value === "noBudget"}
-            isInvalid={inputErrors.includes("estimatedIncomeEUR")}
+            isInvalid={inputErrors.includes("estimatedIncome")}
             value={estimatedIncome}
             onChange={(event) => {
               setEstimatedIncome(event.target.value);
@@ -1434,7 +1447,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in EUR</Text>
           <Input
             value={estimatedCosts}
-            isInvalid={inputErrors.includes("estimatedCostsEUR")}
+            isInvalid={inputErrors.includes("estimatedCosts")}
             onChange={(event) => {
               setEstimatedCosts(event.target.value);
             }}
@@ -1451,7 +1464,7 @@ export default function Elmv(props: Props) {
           <Input
             // value={netProfitTarget}
             value={netProfitTarget}
-            isInvalid={inputErrors.includes("estimatedResultEUR")}
+            isInvalid={inputErrors.includes("netProfitTarget")}
             onChange={(event) => {
               setNetProfitTarget(event.target.value);
             }}
@@ -1459,7 +1472,7 @@ export default function Elmv(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
-        <Box w="100%">
+        {/* <Box w="100%">
           <Text mb="8px">Total Estimated Costs in Local Currency</Text>
           <Input
             value={totalEstimatedCostsLC}
@@ -1470,7 +1483,7 @@ export default function Elmv(props: Props) {
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
-        </Box>
+        </Box> */}
 
         <Box w="100%">
           <Text mb="8px">Vendor`s Names</Text>
@@ -1738,7 +1751,7 @@ export default function Elmv(props: Props) {
                 )}
               </Cell>
             </Column>
-            <Column width={200} resizable>
+            {/* <Column width={200} resizable>
               <HeaderCell>PH1</HeaderCell>
               <Cell dataKey="ph">
                 {(rowData, index) => (
@@ -1785,7 +1798,7 @@ export default function Elmv(props: Props) {
                   />
                 )}
               </Cell>
-            </Column>
+            </Column> */}
             <Column width={200} resizable>
               <HeaderCell>Vendor Budget Currency</HeaderCell>
               <Cell dataKey="budgetCurrency">
