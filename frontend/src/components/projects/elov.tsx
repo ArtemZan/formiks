@@ -1229,6 +1229,17 @@ export default function Elov(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
+        <Box w="100%">
+          <Text mb="8px">Total Estimated Costs in Local Currency</Text>
+          <Input
+            value={totalEstimatedCostsLC}
+            onChange={(event) => {
+              setTotalEstimatedCostsLC(event.target.value);
+            }}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
+          />
+        </Box>
 
         <Box w="100%">
           <Text mb="8px">Vendor Name</Text>
