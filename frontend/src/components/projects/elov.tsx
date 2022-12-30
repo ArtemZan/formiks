@@ -691,6 +691,11 @@ export default function Elov(props: Props) {
           VendorsNames = VendorsNames.slice(0, VendorsNames.length - 2);
         }
       }
+      setTotalEstimatedCostsLC(
+        (parseFloat(estimatedCostsBudgetCurrency) * localExchangeRate).toFixed(
+          2
+        )
+      );
 
       setEstimatedIncome(
         (
