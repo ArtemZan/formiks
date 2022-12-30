@@ -2145,7 +2145,7 @@ export default function Elmv(props: Props) {
                 v.creditor,
                 v.manufacturer,
                 v.bu,
-                v.ph.label,
+                v.ph,
                 v.budgetCurrency.label,
                 v.budgetAmount,
                 v.localBudget,
