@@ -2161,10 +2161,6 @@ export default function Elmv(props: Props) {
               ]);
             });
             formattedData.push(["Comments", comments]);
-            formattedData.push([
-              "Companies Participating",
-              companiesParticipating.map((v: any) => v.label).join(", "),
-            ]);
             formattedData.push([]);
 
             var ws = XLSX.utils.aoa_to_sheet(formattedData);
