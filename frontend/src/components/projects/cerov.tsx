@@ -456,6 +456,18 @@ export default function Cerov(props: Props) {
         .toFixed(2)
         .toString()
     );
+    var localCur = ExchangeRates.find(
+      (s: any) => s.label === requestorsCompanyName.value.currency
+    );
+    setTotalEstimatedCostsLC(
+      (
+        parseFloat(estimatedCostsBudgetCurrency) /
+        exchangeRates.value /
+        (localCur !== undefined ? localCur.value : 1)
+      )
+        .toFixed(2)
+        .toString()
+    );
     if (budgetSource.value === "noBudget") {
       costBreakdown.forEach((element: any) => {
         element["contribution"] = 0;

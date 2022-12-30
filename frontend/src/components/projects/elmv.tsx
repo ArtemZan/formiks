@@ -1471,7 +1471,7 @@ export default function Elmv(props: Props) {
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
         </Box>
-        {/* <Box w="100%">
+        <Box w="100%">
           <Text mb="8px">Total Estimated Costs in Local Currency</Text>
           <Input
             value={totalEstimatedCostsLC}
@@ -1482,7 +1482,7 @@ export default function Elmv(props: Props) {
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
           />
-        </Box> */}
+        </Box>
 
         <Box w="100%">
           <Text mb="8px">Vendor`s Names</Text>
@@ -2081,37 +2081,45 @@ export default function Elmv(props: Props) {
             formattedData.push(["Campaign Currency", exchangeRates.label]);
             formattedData.push([
               "Campaign Estimated Income in Campaign Currency",
-              budgetSource.value === "noBudget"
+              estimatedIncomeBudgetCurrency === "" || NaN || "NaN"
                 ? "N/A"
                 : parseFloat(estimatedIncomeBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in Campaign Currency",
-              parseFloat(estimatedCostsBudgetCurrency),
+              estimatedCostsBudgetCurrency === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(estimatedCostsBudgetCurrency),
             ]);
             formattedData.push([
-              budgetSource.value === "noBudget"
-                ? "Campaign Loss in Campaign currency"
-                : "Campaign Net Profit Target in Campaign Currency",
-              parseFloat(netProfitTargetBudgetCurrency),
+              "Campaign Net Profit Target in Campaign Currency",
+              netProfitTargetBudgetCurrency === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(netProfitTargetBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Income in EUR",
-              estimatedIncome === "" ? "N/A" : parseFloat(estimatedIncome),
+              estimatedIncome === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(estimatedIncome),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in EUR",
-              parseFloat(estimatedCosts),
+              estimatedCosts === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(estimatedCosts),
             ]);
             formattedData.push([
-              budgetSource.value === "noBudget"
-                ? "Campaign Loss in EUR"
-                : "Campaign Net Profit Target in EUR",
-              parseFloat(netProfitTarget),
+              "Campaign Net Profit Target in EUR",
+              netProfitTarget === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(netProfitTarget),
             ]);
             formattedData.push([
               "Total Estimated Costs in Local Currency",
-              parseFloat(totalEstimatedCostsLC),
+              totalEstimatedCostsLC === "" || NaN || "NaN"
+                ? "N/A"
+                : parseFloat(totalEstimatedCostsLC),
             ]);
             formattedData.push([
               "Vendors",
@@ -2147,17 +2155,17 @@ export default function Elmv(props: Props) {
                 v.bu,
                 v.ph,
                 v.budgetCurrency.label,
-                v.budgetAmount,
-                v.localBudget,
-                v.eurBudget,
-                v.share,
-                v.estimatedIncomeCC,
-                v.estimatedCostsCC,
-                v.estimatedCostsLC,
-                v.estimatedCostsEUR,
-                v.netProfitTargetVC,
-                v.netProfitTargetLC,
-                v.netProfitTargetEUR,
+                isNaN(v.budgetAmount) ? 0.0 : v.budgetAmount,
+                isNaN(v.localBudget) ? 0.0 : v.localBudget,
+                isNaN(v.eurBudget) ? 0.0 : v.eurBudget,
+                isNaN(v.share) ? 0.0 : v.share,
+                isNaN(v.estimatedIncomeCC) ? 0.0 : v.estimatedIncomeCC,
+                isNaN(v.estimatedCostsCC) ? 0.0 : v.estimatedCostsCC,
+                isNaN(v.estimatedCostsLC) ? 0.0 : v.estimatedCostsLC,
+                isNaN(v.estimatedCostsEUR) ? 0.0 : v.estimatedCostsEUR,
+                isNaN(v.netProfitTargetVC) ? 0.0 : v.netProfitTargetVC,
+                isNaN(v.netProfitTargetLC) ? 0.0 : v.netProfitTargetLC,
+                isNaN(v.netProfitTargetEUR) ? 0.0 : v.netProfitTargetEUR,
               ]);
             });
             formattedData.push(["Comments", comments]);
