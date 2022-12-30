@@ -320,13 +320,21 @@ export default function Elov(props: Props) {
         campaignEstimatedIncomeEur: isNaN(parseFloat(estimatedIncome))
           ? 0.0
           : parseFloat(estimatedIncome),
-        campaignEstimatedCostsEur: parseFloat(estimatedCosts),
-        campaignNetProfitTargetEur: parseFloat(netProfitTarget),
-        totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
+        campaignEstimatedCostsEur: isNaN(parseFloat(estimatedCosts))
+          ? 0.0
+          : parseFloat(estimatedCosts),
+        campaignNetProfitTargetEur: isNaN(parseFloat(netProfitTarget))
+          ? 0.0
+          : parseFloat(netProfitTarget),
+        totalEstimatedCostsLC: isNaN(parseFloat(totalEstimatedCostsLC))
+          ? 0.0
+          : parseFloat(totalEstimatedCostsLC),
         comments: comments,
         additionalInformation: comments,
         projectType: "Local One Vendor",
-        estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
+        estimatedCostsCC: isNaN(parseFloat(estimatedCostsBudgetCurrency))
+          ? 0.0
+          : parseFloat(estimatedCostsBudgetCurrency),
         estimatedIncomeCC:
           budgetSource.value === "noBudget"
             ? 0.0
