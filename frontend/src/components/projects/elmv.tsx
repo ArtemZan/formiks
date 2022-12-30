@@ -505,7 +505,7 @@ export default function Elmv(props: Props) {
             projectNumber: projectNumber,
             creditorNumber: "",
             debitorNumber: vendor.debitor,
-            manufacturerNumber: vendor.creditor,
+            manufacturerNumber: vendor.manufacturer,
             businessUnit: vendor.bu,
             // PH1: vendor.ph ? vendor.ph : "",
             vendorBudgetCurrency:
@@ -753,7 +753,6 @@ export default function Elmv(props: Props) {
         }
       }
     });
-    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
