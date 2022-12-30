@@ -30,6 +30,7 @@ import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 import { DefaultSelectStyles } from "../../utils/Styles";
+import { isObject } from "lodash";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -691,10 +692,18 @@ export default function Elov(props: Props) {
           VendorsNames = VendorsNames.slice(0, VendorsNames.length - 2);
         }
       }
+      var localCur = ExchangeRates.find(
+        (s: any) => s.label === requestorsCompanyName.value.currency
+      );
+      console.log(localCur !== undefined ? localCur.value : 1);
       setTotalEstimatedCostsLC(
-        (parseFloat(estimatedCostsBudgetCurrency) * localExchangeRate).toFixed(
-          2
+        (
+          parseFloat(estimatedCostsBudgetCurrency) /
+          exchangeRates.value /
+          (localCur !== undefined ? localCur.value : 1)
         )
+          .toFixed(2)
+          .toString()
       );
 
       setEstimatedIncome(
