@@ -1230,7 +1230,7 @@ export default function Elov(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Total Estimated Costs in Local Currency</Text>
+          <Text mb="8px">Total Estimated Costs in Local Currency </Text>
           <Input
             value={totalEstimatedCostsLC}
             onChange={(event) => {
