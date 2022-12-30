@@ -627,6 +627,7 @@ export default function Elov(props: Props) {
         vendor: vendorName.label,
         projectManager: vendorName.value.alsoMarketingConsultant,
         creditor: vendorName.value.kreditor,
+        manufacturer: vendorName.value.hersteller,
         debitor: vendorName.value.debitorischer,
         bu: vendor.bu,
         ph: { label: "", value: "" },
