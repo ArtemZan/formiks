@@ -446,9 +446,11 @@ export default function Elmv(props: Props) {
         )
           ? 0.0
           : parseFloat(estimatedIncomeBudgetCurrency),
-        campaignEstimatedCostsBudgetsCurrency: parseFloat(
-          estimatedCostsBudgetCurrency
-        ),
+        campaignEstimatedCostsBudgetsCurrency: isNaN(
+          parseFloat(estimatedCostsBudgetCurrency)
+        )
+          ? 0.0
+          : parseFloat(estimatedCostsBudgetCurrency),
         campaignNetProfitTargetBudgetsCurrency: parseFloat(
           netProfitTargetBudgetCurrency
         ),
@@ -679,17 +681,16 @@ export default function Elmv(props: Props) {
       "projectApproval",
       "manufacturersFiscalQuarter",
       "comments",
-      "totalEstimatedCostsLC",
       "additionalInformation",
       "status",
       "businessUnit",
       "marketingResponsible",
       "manufacturerNumber",
       "PH1",
+      "vendor",
       "creditorNumber",
       "vendorShare",
       "estimatedCostsCC",
-      "estimatedIncomeCC",
       "estimatedResultCC",
       "estimatedIncomeEUR",
       "estimatedCostsEUR",
@@ -705,11 +706,12 @@ export default function Elmv(props: Props) {
       nonMandatoryFields.push("debitorNumber");
     }
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
+    console.log(sub);
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
         switch (typeof sub.data[key]) {
           case "number":
-            if (isNaN(sub.data[key])) {
+            if (isNaN(sub.data[key]) || sub.data[key] === 0) {
               fieldKeys.push(key);
             }
             break;
@@ -729,30 +731,35 @@ export default function Elmv(props: Props) {
         }
       }
     });
-    Object.keys(vendor.data).forEach((key: any) => {
-      if (!nonMandatoryFields.includes(key)) {
-        switch (typeof vendor.data[key]) {
-          case "number":
-            if (isNaN(vendor.data[key])) {
+    if (vendor !== undefined) {
+      Object.keys(vendor.data).forEach((key: any) => {
+        if (!nonMandatoryFields.includes(key)) {
+          switch (typeof vendor.data[key]) {
+            case "number":
+              if (isNaN(vendor.data[key])) {
+                fieldKeys.push(key);
+              }
+              break;
+            case "object":
+              if (vendor.data[key] === null) {
+                fieldKeys.push(key);
+              }
+              break;
+            case "string":
+              if (vendor.data[key] === "") {
+                fieldKeys.push(key);
+              }
+              break;
+            case "undefined":
               fieldKeys.push(key);
-            }
-            break;
-          case "object":
-            if (vendor.data[key] === null) {
-              fieldKeys.push(key);
-            }
-            break;
-          case "string":
-            if (vendor.data[key] === "") {
-              fieldKeys.push(key);
-            }
-            break;
-          case "undefined":
-            fieldKeys.push(key);
-            break;
+              break;
+          }
         }
-      }
-    });
+      });
+    } else {
+      fieldKeys.push("vendorName");
+    }
+    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -1363,7 +1370,7 @@ export default function Elmv(props: Props) {
             menuPortalTarget={document.body}
             styles={DefaultSelectStyles(
               useColorModeValue,
-              inputErrors.includes("exchangeRates")
+              inputErrors.includes("campaignCurrency")
             )}
             theme={(theme) => ({
               ...theme,
@@ -1387,12 +1394,9 @@ export default function Elmv(props: Props) {
         <Box w="100%">
           <Text mb="8px">Campaign Estimated Income in Campaign Currency</Text>
           <Input
-            disabled={budgetSource.value === "noBudget"}
-            isInvalid={
-              budgetSource.value === "noBudget"
-                ? false
-                : inputErrors.includes("estimatedIncomeBudgetCurrency")
-            }
+            isInvalid={inputErrors.includes(
+              "campaignEstimatedIncomeBudgetsCurrency"
+            )}
             value={estimatedIncomeBudgetCurrency}
             onChange={(event) => {
               setEstimatedIncomeBudgetCurrency(event.target.value);
@@ -1405,7 +1409,9 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in Campaign Currency</Text>
           <Input
             value={estimatedCostsBudgetCurrency}
-            isInvalid={inputErrors.includes("estimatedCostsBudgetCurrency")}
+            isInvalid={inputErrors.includes(
+              "campaignEstimatedCostsBudgetsCurrency"
+            )}
             onChange={(event) => {
               setEstimatedCostsBudgetCurrency(event.target.value);
             }}
@@ -1421,7 +1427,9 @@ export default function Elmv(props: Props) {
           </Text>
           <Input
             value={netProfitTargetBudgetCurrency}
-            isInvalid={inputErrors.includes("netProfitTargetBudgetCurrency")}
+            isInvalid={inputErrors.includes(
+              "campaignNetProfitTargetBudgetsCurrency"
+            )}
             onChange={(event) => {
               setNetProfitTargetBudgetCurrency(event.target.value);
             }}
@@ -1433,7 +1441,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Income in EUR</Text>
           <Input
             disabled={budgetSource.value === "noBudget"}
-            isInvalid={inputErrors.includes("estimatedIncome")}
+            isInvalid={inputErrors.includes("estimatedIncomeCC")}
             value={estimatedIncome}
             onChange={(event) => {
               setEstimatedIncome(event.target.value);
@@ -1446,7 +1454,7 @@ export default function Elmv(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in EUR</Text>
           <Input
             value={estimatedCosts}
-            isInvalid={inputErrors.includes("estimatedCosts")}
+            isInvalid={inputErrors.includes("campaignEstimatedCostsEur")}
             onChange={(event) => {
               setEstimatedCosts(event.target.value);
             }}
@@ -1463,7 +1471,7 @@ export default function Elmv(props: Props) {
           <Input
             // value={netProfitTarget}
             value={netProfitTarget}
-            isInvalid={inputErrors.includes("netProfitTarget")}
+            isInvalid={inputErrors.includes("campaignNetProfitTargetEur")}
             onChange={(event) => {
               setNetProfitTarget(event.target.value);
             }}
