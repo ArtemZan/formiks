@@ -45,6 +45,8 @@ var Year: any[] = [];
 var AlsoInternationalVendorsNames: any[] = [];
 var ProjectStartQuarter: any[] = [];
 
+var vendorsAfterCompanySelect: string[] = [];
+
 const { Column, HeaderCell, Cell } = Table;
 
 interface Props {
@@ -833,6 +835,24 @@ export default function Elov(props: Props) {
                   ler = parseFloat(rate.value);
                 }
               });
+              switch (value.value.code) {
+                case "1550":
+                  vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
+                  break;
+                case "6110":
+                  vendorsAfterCompanySelect = VendorsNames;
+                  break;
+                default:
+                  var temp = { ...vendor };
+                  temp.manufacturer = "";
+                  temp.creditor = "";
+                  temp.debitor = "";
+                  temp.bu = "";
+                  temp.ph = { label: "", value: "" };
+                  setVendor(temp);
+                  setVendorName("");
+                  vendorsAfterCompanySelect = [];
+              }
               setLocalExchangeRate(ler);
               setRequestorsCompanyName(value);
               setOrganizingCompany(value.value.country);
@@ -1288,7 +1308,7 @@ export default function Elov(props: Props) {
             classNamePrefix="select"
             isClearable={false}
             name="vendorsName"
-            options={VendorsNames}
+            options={vendorsAfterCompanySelect}
           />
         </Box>
         <Box w="100%">
@@ -1553,7 +1573,7 @@ export default function Elov(props: Props) {
             createSubmission(true);
           }}
         >
-          {props.isDraft ? "Save to Draft" : "Draft"}
+          {props.isDraft ? "Save to draft" : "Save to draft"}
         </Button>
       </Box>
     </Box>

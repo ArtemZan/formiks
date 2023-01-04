@@ -41,6 +41,8 @@ var TargetAudience: any[] = [];
 var Budget: any[] = [];
 var ExchangeRates: any[] = [];
 var FiscalQuarter: any[] = [];
+
+var vendorsAfterCompanySelect: string[] = [];
 var Year: any[] = [];
 var AlsoInternationalVendorsNames: any[] = [];
 var ProjectStartQuarter: any[] = [];
@@ -223,7 +225,7 @@ export default function Elmv(props: Props) {
         parseFloat(
           (
             ExchangeRates.find(
-              (rate) => rate.label === props.submission.data.campaignCurrency
+              (rate) => rate.label === props.submission.data.localCurrency
             ) || "0"
           ).value
         )
@@ -668,7 +670,11 @@ export default function Elmv(props: Props) {
 
   function totalAlert(value: any, row: any, check: number) {
     if (value) {
-      if (parseFloat(value) - check > 0.02 && row === "TOTAL") {
+      if (
+        (parseFloat(value) - check >= 0.02 ||
+          parseFloat(value) - check < -0.02) &&
+        row === "TOTAL"
+      ) {
         return useColorModeValue("red.300", "#ABB2BF");
       }
     }
@@ -874,10 +880,12 @@ export default function Elmv(props: Props) {
     var totalCostsLC = parseFloat(totalEstimatedCostsLC);
     var totalCostsEur = parseFloat(estimatedCosts);
     var temp = [...vendors];
+    console.log(localExchangeRate);
     temp.slice(0, -1).forEach((row: any) => {
       row.eurBudget = (
         parseFloat(row.budgetAmount) / parseFloat(row.budgetCurrency.value)
       ).toFixed(2);
+      console.log(localExchangeRate);
       row.localBudget = (parseFloat(row.eurBudget) * localExchangeRate).toFixed(
         2
       );
@@ -1059,6 +1067,24 @@ export default function Elmv(props: Props) {
                   ler = parseFloat(rate.value);
                 }
               });
+              switch (value.value.code) {
+                case "1550":
+                  vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
+                  break;
+                case "6110":
+                  vendorsAfterCompanySelect = VendorsNames;
+                  break;
+                default:
+                  var temp = { ...vendor };
+                  temp.manufacturer = "";
+                  temp.creditor = "";
+                  temp.debitor = "";
+                  temp.bu = "";
+                  temp.ph = { label: "", value: "" };
+                  setVendor(temp);
+                  setVendorsNames([]);
+                  vendorsAfterCompanySelect = [];
+              }
               setLocalExchangeRate(ler);
               setRequestorsCompanyName(value);
               setOrganizingCompany(value.value.country);
@@ -1544,7 +1570,7 @@ export default function Elmv(props: Props) {
             classNamePrefix="select"
             isClearable={false}
             name="vendorsName"
-            options={VendorsNames}
+            options={vendorsAfterCompanySelect}
           />
         </Box>
         <Box w="100%">
@@ -1936,11 +1962,6 @@ export default function Elmv(props: Props) {
                     disabled={budgetSource.value === "noBudget"}
                     onChange={() => {}}
                     value={rowData.estimatedIncomeCC}
-                    bg={totalAlert(
-                      totalVendorBudgetInLC,
-                      rowData.vendor,
-                      parseFloat(rowData.estimatedIncomeCC)
-                    )}
                   />
                 )}
               </Cell>
@@ -2225,7 +2246,7 @@ export default function Elmv(props: Props) {
             createSubmission(true);
           }}
         >
-          {props.isDraft ? "Save to Draft" : "Draft"}
+          {props.isDraft ? "Save to draft" : "Save to draft"}
         </Button>
       </Box>
     </Box>

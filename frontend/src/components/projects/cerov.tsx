@@ -1105,6 +1105,7 @@ export default function Cerov(props: Props) {
                   temp.bu = "";
                   temp.ph = { label: "", value: "" };
                   setVendor(temp);
+                  setVendorName("");
                   vendorsAfterCompanySelect = [];
               }
               setRequestorsCompanyName(value);
@@ -2138,7 +2139,7 @@ export default function Cerov(props: Props) {
             createSubmission(true, null);
           }}
         >
-          {props.isDraft ? "Save to draft" : "Draft"}
+          {props.isDraft ? "Save to draft" : "Save to draft"}
         </Button>
       </Box>
     </Box>
