@@ -668,8 +668,7 @@ export default function Elmv(props: Props) {
 
   function totalAlert(value: any, row: any, check: number) {
     if (value) {
-      value = value.replace("%", "");
-      if (parseFloat(value) !== check && row === "TOTAL") {
+      if (parseFloat(value) - check > 0.02 && row === "TOTAL") {
         return useColorModeValue("red.300", "#ABB2BF");
       }
     }
@@ -1901,6 +1900,11 @@ export default function Elmv(props: Props) {
                       temp[index!].eurBudget = event.target.value;
                       setVendors(temp);
                     }}
+                    bg={totalAlert(
+                      totalVendorBudgetInEUR,
+                      rowData.vendor,
+                      parseFloat(estimatedIncome)
+                    )}
                   />
                 )}
               </Cell>
@@ -1932,6 +1936,11 @@ export default function Elmv(props: Props) {
                     disabled={budgetSource.value === "noBudget"}
                     onChange={() => {}}
                     value={rowData.estimatedIncomeCC}
+                    bg={totalAlert(
+                      totalVendorBudgetInLC,
+                      rowData.vendor,
+                      parseFloat(rowData.estimatedIncomeCC)
+                    )}
                   />
                 )}
               </Cell>
@@ -1946,6 +1955,11 @@ export default function Elmv(props: Props) {
                     disabled
                     onChange={() => {}}
                     value={rowData.estimatedCostsCC}
+                    bg={totalAlert(
+                      totalEstimatedCostsLC,
+                      rowData.vendor,
+                      parseFloat(rowData.estimatedCostsCC)
+                    )}
                   />
                 )}
               </Cell>
@@ -2091,43 +2105,47 @@ export default function Elmv(props: Props) {
             formattedData.push(["Campaign Currency", exchangeRates.label]);
             formattedData.push([
               "Campaign Estimated Income in Campaign Currency",
-              estimatedIncomeBudgetCurrency === "" || NaN || "NaN"
+              estimatedIncomeBudgetCurrency === "" ||
+              isNaN(parseFloat(estimatedIncomeBudgetCurrency))
                 ? "N/A"
                 : parseFloat(estimatedIncomeBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in Campaign Currency",
-              estimatedCostsBudgetCurrency === "" || NaN || "NaN"
+              estimatedCostsBudgetCurrency === "" ||
+              isNaN(parseFloat(estimatedCostsBudgetCurrency))
                 ? "N/A"
                 : parseFloat(estimatedCostsBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Net Profit Target in Campaign Currency",
-              netProfitTargetBudgetCurrency === "" || NaN || "NaN"
+              netProfitTargetBudgetCurrency === "" ||
+              isNaN(parseFloat(netProfitTargetBudgetCurrency))
                 ? "N/A"
                 : parseFloat(netProfitTargetBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Income in EUR",
-              estimatedIncome === "" || NaN || "NaN"
+              estimatedIncome === "" || isNaN(parseFloat(estimatedIncome))
                 ? "N/A"
                 : parseFloat(estimatedIncome),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in EUR",
-              estimatedCosts === "" || NaN || "NaN"
+              estimatedCosts === "" || isNaN(parseFloat(estimatedCosts))
                 ? "N/A"
                 : parseFloat(estimatedCosts),
             ]);
             formattedData.push([
               "Campaign Net Profit Target in EUR",
-              netProfitTarget === "" || NaN || "NaN"
+              netProfitTarget === "" || isNaN(parseFloat(netProfitTarget))
                 ? "N/A"
                 : parseFloat(netProfitTarget),
             ]);
             formattedData.push([
               "Total Estimated Costs in Local Currency",
-              totalEstimatedCostsLC === "" || NaN || "NaN"
+              totalEstimatedCostsLC === "" ||
+              isNaN(parseFloat(totalEstimatedCostsLC))
                 ? "N/A"
                 : parseFloat(totalEstimatedCostsLC),
             ]);
@@ -2207,7 +2225,7 @@ export default function Elmv(props: Props) {
             createSubmission(true);
           }}
         >
-          {props.isDraft ? "Update" : "Draft"}
+          {props.isDraft ? "Save to Draft" : "Draft"}
         </Button>
       </Box>
     </Box>

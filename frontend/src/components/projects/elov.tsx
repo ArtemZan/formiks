@@ -1475,39 +1475,49 @@ export default function Elov(props: Props) {
             formattedData.push(["Campaign Currency", exchangeRates.label]);
             formattedData.push([
               "Campaign Estimated Income in Campaign Currency",
-              estimatedIncomeBudgetCurrency === "" || NaN || "NaN"
+              estimatedIncomeBudgetCurrency === "" ||
+              isNaN(parseFloat(estimatedIncomeBudgetCurrency))
                 ? "N/A"
                 : parseFloat(estimatedIncomeBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in Campaign Currency",
-              estimatedCostsBudgetCurrency === "" || NaN || "NaN"
+              estimatedCostsBudgetCurrency === "" ||
+              isNaN(parseFloat(estimatedCostsBudgetCurrency))
                 ? "N/A"
                 : parseFloat(estimatedCostsBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Net Profit Target in Campaign Currency",
-              netProfitTargetBudgetCurrency === "" || NaN || "NaN"
+              netProfitTargetBudgetCurrency === "" ||
+              isNaN(parseFloat(netProfitTargetBudgetCurrency))
                 ? "N/A"
                 : parseFloat(netProfitTargetBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Income in EUR",
-              estimatedIncome === "" || !isNaN(parseFloat(estimatedIncome))
+              estimatedIncome === "" || isNaN(parseFloat(estimatedIncome))
                 ? "N/A"
                 : parseFloat(estimatedIncome),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in EUR",
-              estimatedCosts === "" || NaN || "NaN"
+              estimatedCosts === "" || isNaN(parseFloat(estimatedCosts))
                 ? "N/A"
                 : parseFloat(estimatedCosts),
             ]);
             formattedData.push([
               "Campaign Net Profit Target in EUR",
-              netProfitTarget === "" || NaN || "NaN"
+              netProfitTarget === "" || isNaN(parseFloat(netProfitTarget))
                 ? "N/A"
                 : parseFloat(netProfitTarget),
+            ]);
+            formattedData.push([
+              "Total Estimated Costs in Local Currency",
+              totalEstimatedCostsLC === "" ||
+              isNaN(parseFloat(totalEstimatedCostsLC))
+                ? "N/A"
+                : parseFloat(totalEstimatedCostsLC),
             ]);
 
             formattedData.push(["Vendor Name", vendorName.label]);
@@ -1543,7 +1553,7 @@ export default function Elov(props: Props) {
             createSubmission(true);
           }}
         >
-          {props.isDraft ? "Update" : "Draft"}
+          {props.isDraft ? "Save to Draft" : "Draft"}
         </Button>
       </Box>
     </Box>

@@ -925,7 +925,7 @@ export default function Cerov(props: Props) {
   function totalAlert(value: any, row: any, check: number) {
     if (value) {
       value = value.replace("%", "");
-      if (parseFloat(value) !== check && row === "TOTAL") {
+      if (parseFloat(value) - check > 0.02 && row === "TOTAL") {
         return useColorModeValue("red.300", "#ABB2BF");
       }
     }
@@ -2018,37 +2018,49 @@ export default function Cerov(props: Props) {
             formattedData.push(["Campaign Currency", exchangeRates.label]);
             formattedData.push([
               "Campaign Estimated Income in Campaign Currency",
-              budgetSource.value === "noBudget"
+              estimatedIncomeBudgetCurrency === "" ||
+              isNaN(parseFloat(estimatedIncomeBudgetCurrency))
                 ? "N/A"
                 : parseFloat(estimatedIncomeBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in Campaign Currency",
-              parseFloat(estimatedCostsBudgetCurrency),
+              estimatedCostsBudgetCurrency === "" ||
+              isNaN(parseFloat(estimatedCostsBudgetCurrency))
+                ? "N/A"
+                : parseFloat(estimatedCostsBudgetCurrency),
             ]);
             formattedData.push([
-              budgetSource.value === "noBudget"
-                ? "Campaign Loss in Campaign currency"
-                : "Campaign Net Profit Target in Campaign Currency",
-              parseFloat(netProfitTargetBudgetCurrency),
+              "Campaign Net Profit Target in Campaign Currency",
+              netProfitTargetBudgetCurrency === "" ||
+              isNaN(parseFloat(netProfitTargetBudgetCurrency))
+                ? "N/A"
+                : parseFloat(netProfitTargetBudgetCurrency),
             ]);
             formattedData.push([
               "Campaign Estimated Income in EUR",
-              estimatedIncome === "" ? "N/A" : parseFloat(estimatedIncome),
+              estimatedIncome === "" || isNaN(parseFloat(estimatedIncome))
+                ? "N/A"
+                : parseFloat(estimatedIncome),
             ]);
             formattedData.push([
               "Campaign Estimated Costs in EUR",
-              parseFloat(estimatedCosts),
+              estimatedCosts === "" || isNaN(parseFloat(estimatedCosts))
+                ? "N/A"
+                : parseFloat(estimatedCosts),
             ]);
             formattedData.push([
-              budgetSource.value === "noBudget"
-                ? "Campaign Loss in EUR"
-                : "Campaign Net Profit Target in EUR",
-              parseFloat(netProfitTarget),
+              "Campaign Net Profit Target in EUR",
+              netProfitTarget === "" || isNaN(parseFloat(netProfitTarget))
+                ? "N/A"
+                : parseFloat(netProfitTarget),
             ]);
             formattedData.push([
               "Total Estimated Costs in Local Currency",
-              parseFloat(totalEstimatedCostsLC),
+              totalEstimatedCostsLC === "" ||
+              isNaN(parseFloat(totalEstimatedCostsLC))
+                ? "N/A"
+                : parseFloat(totalEstimatedCostsLC),
             ]);
             formattedData.push(["Vendor Name", vendorName.label]);
             formattedData.push(["VOD", vendor.debitor]);
@@ -2126,7 +2138,7 @@ export default function Cerov(props: Props) {
             createSubmission(true, null);
           }}
         >
-          {props.isDraft ? "Update" : "Draft"}
+          {props.isDraft ? "Save to draft" : "Draft"}
         </Button>
       </Box>
     </Box>
