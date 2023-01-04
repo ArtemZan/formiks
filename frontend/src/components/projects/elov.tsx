@@ -271,7 +271,7 @@ export default function Elov(props: Props) {
 
   function createSubmission(draft: boolean) {
     var projectId = "624ac98682eeddf1a9b6a622";
-
+    var today = new Date();
     var parent: Submission = {
       project: projectId,
       title: campaignName,
@@ -301,8 +301,10 @@ export default function Elov(props: Props) {
         businessUnit: vendor.bu,
         projectApproval: projectApproval,
         manufacturersFiscalQuarter: fiscalQuarter.label,
-        campaignStartDate: startDate === null ? null : startDate.toString(),
-        campaignEndDate: endDate === null ? null : endDate.toString(),
+        campaignStartDate:
+          startDate === null ? today.toString() : startDate.toString(),
+        campaignEndDate:
+          endDate === null ? today.toString() : endDate.toString(),
         budgetSource: budgetSource.label,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
@@ -695,7 +697,6 @@ export default function Elov(props: Props) {
       var localCur = ExchangeRates.find(
         (s: any) => s.label === requestorsCompanyName.value.currency
       );
-      console.log(localCur !== undefined ? localCur.value : 1);
       setTotalEstimatedCostsLC(
         (
           parseFloat(estimatedCostsBudgetCurrency) /
@@ -1492,7 +1493,7 @@ export default function Elov(props: Props) {
             ]);
             formattedData.push([
               "Campaign Estimated Income in EUR",
-              estimatedIncome === "" || NaN || "NaN"
+              estimatedIncome === "" || !isNaN(parseFloat(estimatedIncome))
                 ? "N/A"
                 : parseFloat(estimatedIncome),
             ]);

@@ -30,6 +30,7 @@ import { RestAPI } from "../../api/rest";
 import { DefaultSelectStyles } from "../../utils/Styles";
 import { RiCoinsLine } from "react-icons/ri";
 import { stringToObject } from "rsuite/esm/utils";
+import { CgToday } from "react-icons/cg";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -43,6 +44,7 @@ var ExchangeRates: any[] = [];
 var FiscalQuarter: any[] = [];
 var Year: any[] = [];
 var ProjectStartQuarter: any[] = [];
+var vendorsAfterCompanySelect: string[] = [];
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -554,7 +556,7 @@ export default function Cerov(props: Props) {
 
   function createSubmission(draft: boolean, local: string | null) {
     var projectId = "629dfb3f55d209262194a3e6";
-
+    var today = new Date();
     var parent: Submission = {
       project: projectId,
       title: campaignName,
@@ -584,8 +586,11 @@ export default function Cerov(props: Props) {
         businessUnit: vendor.bu,
         projectApproval: projectApproval,
         manufacturersFiscalQuarter: fiscalQuarter.label,
-        campaignStartDate: startDate === null ? null : startDate.toString(),
-        campaignEndDate: endDate === null ? null : endDate.toString(),
+
+        campaignStartDate:
+          startDate === null ? today.toString() : startDate.toString(),
+        campaignEndDate:
+          endDate === null ? today.toString() : endDate.toString(),
         budgetSource: budgetSource.label,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
@@ -1084,6 +1089,24 @@ export default function Cerov(props: Props) {
                 }
               });
               setLocalExchangeRate(ler);
+              console.log(value);
+              switch (value.value.code) {
+                case "1550":
+                  vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
+                  break;
+                case "6110":
+                  vendorsAfterCompanySelect = VendorsNames;
+                  break;
+                default:
+                  var temp = { ...vendor };
+                  temp.manufacturer = "";
+                  temp.creditor = "";
+                  temp.debitor = "";
+                  temp.bu = "";
+                  temp.ph = { label: "", value: "" };
+                  setVendor(temp);
+                  vendorsAfterCompanySelect = [];
+              }
               setRequestorsCompanyName(value);
               setOrganizingCompany(value.value.country);
             }}
@@ -1547,9 +1570,10 @@ export default function Cerov(props: Props) {
             isClearable={false}
             name="vendorsName"
             options={
-              requestorsCompanyName.value.code === "1550"
-                ? AlsoInternationalVendorsNames
-                : VendorsNames
+              vendorsAfterCompanySelect
+              // requestorsCompanyName.value.code === "1550"
+              //   ? AlsoInternationalVendorsNames
+              //   : VendorsNames
             }
           />
         </Box>

@@ -405,7 +405,7 @@ export default function Elmv(props: Props) {
 
   function createSubmission(draft: boolean) {
     var projectId = "6246ec8efa2a446faadb8d9b";
-
+    var today = new Date();
     var parent: Submission = {
       project: projectId,
       title: campaignName,
@@ -435,8 +435,10 @@ export default function Elmv(props: Props) {
         businessUnit: vendor.bu,
         projectApproval: projectApproval,
         manufacturersFiscalQuarter: fiscalQuarter.label,
-        campaignStartDate: startDate === null ? null : startDate.toString(),
-        campaignEndDate: endDate === null ? null : endDate.toString(),
+        campaignStartDate:
+          startDate === null ? today.toString() : startDate.toString(),
+        campaignEndDate:
+          endDate === null ? today.toString() : endDate.toString(),
         budgetSource: budgetSource.label,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
