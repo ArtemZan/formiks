@@ -173,8 +173,16 @@ export default function Cerov(props: Props) {
         label: props.submission.data.manufacturersFiscalQuarter ?? "",
         value: props.submission.data.manufacturersFiscalQuarter ?? "",
       });
-      setStartDate(new Date(props.submission.data.campaignStartDate) || null);
-      setEndDate(new Date(props.submission.data.campaignEndDate) || null);
+      setStartDate(
+        props.submission.data.campaignStartDate === null
+          ? ""
+          : new Date(props.submission.data.campaignStartDate)
+      );
+      setEndDate(
+        props.submission.data.campaignEndDate === null
+          ? ""
+          : new Date(props.submission.data.campaignEndDate)
+      );
       if (Budget.length > 0 && props.submission.data.budgetSource !== "") {
         setBudgetSource({
           label: props.submission.data.budgetSource ?? "",
@@ -249,7 +257,6 @@ export default function Cerov(props: Props) {
           label: vs.data.vendorName ?? "",
           value: vs.data.vendorName ?? "",
         });
-        console.log(vs);
         setVendor({
           vendor: vs.data.vendorName ?? "",
           projectManager: vs.data.productionProjectManager ?? "",
@@ -556,7 +563,6 @@ export default function Cerov(props: Props) {
 
   function createSubmission(draft: boolean, local: string | null) {
     var projectId = "629dfb3f55d209262194a3e6";
-    var today = new Date();
     var parent: Submission = {
       project: projectId,
       title: campaignName,
@@ -587,10 +593,8 @@ export default function Cerov(props: Props) {
         projectApproval: projectApproval,
         manufacturersFiscalQuarter: fiscalQuarter.label,
 
-        campaignStartDate:
-          startDate === null ? today.toString() : startDate.toString(),
-        campaignEndDate:
-          endDate === null ? today.toString() : endDate.toString(),
+        campaignStartDate: startDate === null ? null : startDate.toString(),
+        campaignEndDate: endDate === null ? null : endDate.toString(),
         budgetSource: budgetSource.label,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
@@ -641,7 +645,6 @@ export default function Cerov(props: Props) {
       },
     };
     var children: Submission[] = [];
-    console.log(vendor);
     children.push({
       project: projectId,
       title: "",
@@ -1089,7 +1092,6 @@ export default function Cerov(props: Props) {
                 }
               });
               setLocalExchangeRate(ler);
-              console.log(value);
               switch (value.value.code) {
                 case "1550":
                   vendorsAfterCompanySelect = AlsoInternationalVendorsNames;

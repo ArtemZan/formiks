@@ -160,8 +160,16 @@ export default function Elov(props: Props) {
         label: props.submission.data.manufacturersFiscalQuarter ?? "",
         value: props.submission.data.manufacturersFiscalQuarter ?? "",
       });
-      setStartDate(new Date(props.submission.data.campaignStartDate) || null);
-      setEndDate(new Date(props.submission.data.campaignEndDate) || null);
+      setStartDate(
+        props.submission.data.campaignStartDate === null
+          ? ""
+          : new Date(props.submission.data.campaignStartDate)
+      );
+      setEndDate(
+        props.submission.data.campaignEndDate === null
+          ? ""
+          : new Date(props.submission.data.campaignEndDate)
+      );
       if (Budget.length > 0 && props.submission.data.budgetSource !== "") {
         setBudgetSource({
           label: props.submission.data.budgetSource ?? "",
@@ -273,7 +281,6 @@ export default function Elov(props: Props) {
 
   function createSubmission(draft: boolean) {
     var projectId = "624ac98682eeddf1a9b6a622";
-    var today = new Date();
     var parent: Submission = {
       project: projectId,
       title: campaignName,
@@ -303,10 +310,8 @@ export default function Elov(props: Props) {
         businessUnit: vendor.bu,
         projectApproval: projectApproval,
         manufacturersFiscalQuarter: fiscalQuarter.label,
-        campaignStartDate:
-          startDate === null ? today.toString() : startDate.toString(),
-        campaignEndDate:
-          endDate === null ? today.toString() : endDate.toString(),
+        campaignStartDate: startDate === null ? null : startDate.toString(),
+        campaignEndDate: endDate === null ? null : endDate.toString(),
         budgetSource: budgetSource.label,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
