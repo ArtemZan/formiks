@@ -1364,7 +1364,6 @@ export function SubmissionsTable(props: Props) {
   }
 
   function fieldBackColor(props: any) {
-    console.log(props.rowData.data);
     if (
       props.rowData.data.invoiceTypeLMD === "Cancellation" ||
       (props.cellData && props.cellData.length > 0)
@@ -1428,7 +1427,6 @@ export function SubmissionsTable(props: Props) {
   function callSap(submissionId: string) {
     RestAPI.callSapSubmission(submissionId)
       .then((response) => {
-        console.log(response);
         var message = `Order ${response.data.IntOrderOut.EX_ORDERID} has been successfully created`;
         var type: ToastType = "success";
         switch (response.data.IntOrderOut.EX_SUBRC) {
@@ -5214,14 +5212,19 @@ export function SubmissionsTable(props: Props) {
                                 value
                               );
                               let set = false;
+
                               VendorsNames.every((v) => {
-                                if (v.label === value) {
+                                if (
+                                  v.label ===
+                                  value.substring(0, value.length - 11)
+                                ) {
                                   handleCommunicationCellUpdate(
                                     submission,
                                     "data.vodLMD",
                                     v.value.debitorischer
                                   );
                                   set = true;
+
                                   return false;
                                 }
                                 return true;
@@ -5239,6 +5242,7 @@ export function SubmissionsTable(props: Props) {
                                 );
                               } else {
                                 if (submissionData) {
+                                  console.log(submissionData);
                                   submissionData.every((s: any) => {
                                     if (
                                       s.group === "vendor" &&

@@ -355,7 +355,6 @@ export default function Elmv(props: Props) {
       if (ex) {
         data.push(ex);
       } else {
-        console.log(vendor);
         data.push({
           vendor: vendor.label,
           marketingResponsible: vendor.value.alsoMarketingConsultant,
@@ -498,7 +497,6 @@ export default function Elmv(props: Props) {
       //.slice(0, -1)
       .filter((vendor: any) => vendor.vendor !== "TOTAL")
       .forEach((vendor: any) => {
-        console.log(vendor);
         children.push({
           project: projectId,
           title: "",
@@ -718,7 +716,6 @@ export default function Elmv(props: Props) {
       nonMandatoryFields.push("debitorNumber");
     }
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
-    console.log(sub);
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
         switch (typeof sub.data[key]) {
@@ -771,7 +768,6 @@ export default function Elmv(props: Props) {
     } else {
       fieldKeys.push("vendorName");
     }
-    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -885,12 +881,10 @@ export default function Elmv(props: Props) {
     var totalCostsLC = parseFloat(totalEstimatedCostsLC);
     var totalCostsEur = parseFloat(estimatedCosts);
     var temp = [...vendors];
-    console.log(localExchangeRate);
     temp.slice(0, -1).forEach((row: any) => {
       row.eurBudget = (
         parseFloat(row.budgetAmount) / parseFloat(row.budgetCurrency.value)
       ).toFixed(2);
-      console.log(localExchangeRate);
       row.localBudget = (parseFloat(row.eurBudget) * localExchangeRate).toFixed(
         2
       );
@@ -946,16 +940,24 @@ export default function Elmv(props: Props) {
         }
         if (!isNaN(vbEur) && totalBudgetEur !== 0) {
           if (!isNaN(totalCostsCC)) {
-            row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
+            row.estimatedCostsCC = (
+              parseFloat(share.toFixed(2)) * totalCostsCC
+            ).toFixed(2);
           }
           if (!isNaN(totalIncomeCC)) {
-            row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
+            row.estimatedIncomeCC = (
+              parseFloat(share.toFixed(2)) * totalIncomeCC
+            ).toFixed(2);
           }
           if (!isNaN(totalCostsLC)) {
-            row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
+            row.estimatedCostsLC = (
+              parseFloat(share.toFixed(2)) * totalCostsLC
+            ).toFixed(2);
           }
           if (!isNaN(totalCostsEur)) {
-            row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
+            row.estimatedCostsEUR = (
+              parseFloat(share.toFixed(2)) * totalCostsEur
+            ).toFixed(2);
           }
         }
       }
@@ -966,9 +968,9 @@ export default function Elmv(props: Props) {
       row.netProfitTargetLC = (
         parseFloat(row.localBudget) - parseFloat(row.estimatedCostsLC)
       ).toFixed(2);
-      row.netProfitTargetVC =
-        `${budgetSource.value === "noBudget" ? "-" : ""}` +
-        (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
+      row.netProfitTargetVC = (
+        parseFloat(row.estimatedIncomeCC) - parseFloat(row.estimatedCostsCC)
+      ).toFixed(2);
 
       totalVendorBudgetInLC += parseFloat(row.localBudget);
       totalVendorBudgetInEUR += parseFloat(row.eurBudget);
@@ -1981,11 +1983,6 @@ export default function Elmv(props: Props) {
                     disabled
                     onChange={() => {}}
                     value={rowData.estimatedCostsCC}
-                    bg={totalAlert(
-                      totalEstimatedCostsLC,
-                      rowData.vendor,
-                      parseFloat(rowData.estimatedCostsCC)
-                    )}
                   />
                 )}
               </Cell>
