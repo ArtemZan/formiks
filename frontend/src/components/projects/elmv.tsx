@@ -689,6 +689,7 @@ export default function Elmv(props: Props) {
       "targetAudience",
       "projectApprover",
       "projectApproval",
+      "vendorBudgetCurrency",
       "manufacturersFiscalQuarter",
       "comments",
       "additionalInformation",
@@ -769,6 +770,7 @@ export default function Elmv(props: Props) {
       fieldKeys.push("vendorName");
     }
     setInputErrors(fieldKeys);
+    console.log(fieldKeys);
     return fieldKeys;
   }
 
