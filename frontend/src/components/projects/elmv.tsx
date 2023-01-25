@@ -683,6 +683,15 @@ export default function Elmv(props: Props) {
     }
   }
 
+  function cellNumberAlert(value: any, row: any) {
+    if (!Number.isNaN(value) && value !== "" && value !== "NaN") {
+    } else {
+      if (row.vendor !== "TOTAL") {
+        return useColorModeValue("red.300", "#ABB2BF");
+      }
+    }
+  }
+
   function submissionValidation(submission: SubmissionWithChildren) {
     var fieldKeys: string[] = [];
     var nonMandatoryFields: string[] = [
@@ -707,7 +716,47 @@ export default function Elmv(props: Props) {
       "estimatedCostsEUR",
       "estimatedResultEUR",
       "estimatedResultBC",
+      "estimatedIncomeCC",
+      "campaignName",
+      "marketingResponsible",
+      "creditorNumber",
     ];
+
+    var totalBudget = 0;
+    submission.children.forEach((e) => {
+      if (e.data.group === "vendor") {
+        Object.keys(e.data).forEach((key: any) => {
+          if (key === "eurBudget") {
+            totalBudget = totalBudget + e.data[key];
+          }
+          if (!nonMandatoryFields.includes(key)) {
+            switch (typeof e.data[key]) {
+              case "number":
+                if (isNaN(e.data[key]) || e.data[key] === 0) {
+                  fieldKeys.push(key);
+                }
+                break;
+              case "object":
+                if (e.data[key] === null) {
+                  fieldKeys.push(key);
+                }
+                break;
+              case "string":
+                if (e.data[key] === "") {
+                  fieldKeys.push(key);
+                }
+                break;
+              case "undefined":
+                fieldKeys.push(key);
+                break;
+            }
+          }
+        });
+      }
+    });
+    if (totalBudget !== totalVendorBudgetInEUR) {
+      fieldKeys.push("totalVendorBudgetInEUR");
+    }
 
     var sub = submission.submission;
     if (
@@ -770,7 +819,6 @@ export default function Elmv(props: Props) {
       fieldKeys.push("vendorName");
     }
     setInputErrors(fieldKeys);
-    console.log(fieldKeys);
     return fieldKeys;
   }
 
@@ -947,8 +995,6 @@ export default function Elmv(props: Props) {
             ).toFixed(2);
           }
           if (!isNaN(totalIncomeCC)) {
-            console.log(totalIncomeCC);
-            console.log(share.toFixed(4));
             row.estimatedIncomeCC = (
               parseFloat(share.toFixed(4)) * totalIncomeCC
             ).toFixed(2);
@@ -1899,12 +1945,15 @@ export default function Elmv(props: Props) {
                 {(rowData, index) => (
                   <Input
                     disabled={budgetSource.value === "noBudget"}
+                    isInvalid={inputErrors.includes("budgetAmount")}
                     value={rowData.budgetAmount}
                     onChange={(event) => {
+                      console.log(Number(rowData.budgetAmount) > 0);
                       var temp = [...vendors];
                       temp[index!].budgetAmount = event.target.value;
                       setVendors(temp);
                     }}
+                    bg={cellNumberAlert(rowData.budgetAmount, rowData)}
                   />
                 )}
               </Cell>
@@ -1921,6 +1970,7 @@ export default function Elmv(props: Props) {
                       temp[index!].localBudget = event.target.value;
                       setVendors(temp);
                     }}
+                    bg={cellNumberAlert(rowData.localBudget, rowData)}
                   />
                 )}
               </Cell>
