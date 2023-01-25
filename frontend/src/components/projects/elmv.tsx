@@ -943,22 +943,24 @@ export default function Elmv(props: Props) {
         if (!isNaN(vbEur) && totalBudgetEur !== 0) {
           if (!isNaN(totalCostsCC)) {
             row.estimatedCostsCC = (
-              parseFloat(share.toFixed(2)) * totalCostsCC
+              parseFloat(share.toFixed(4)) * totalCostsCC
             ).toFixed(2);
           }
           if (!isNaN(totalIncomeCC)) {
+            console.log(totalIncomeCC);
+            console.log(share.toFixed(4));
             row.estimatedIncomeCC = (
-              parseFloat(share.toFixed(2)) * totalIncomeCC
+              parseFloat(share.toFixed(4)) * totalIncomeCC
             ).toFixed(2);
           }
           if (!isNaN(totalCostsLC)) {
             row.estimatedCostsLC = (
-              parseFloat(share.toFixed(2)) * totalCostsLC
+              parseFloat(share.toFixed(4)) * totalCostsLC
             ).toFixed(2);
           }
           if (!isNaN(totalCostsEur)) {
             row.estimatedCostsEUR = (
-              parseFloat(share.toFixed(2)) * totalCostsEur
+              parseFloat(share.toFixed(4)) * totalCostsEur
             ).toFixed(2);
           }
         }
