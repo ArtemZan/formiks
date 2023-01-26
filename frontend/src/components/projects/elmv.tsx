@@ -692,6 +692,25 @@ export default function Elmv(props: Props) {
     }
   }
 
+  function cellTextAlert(value: any, row: any) {
+    if (value !== "") {
+    } else {
+      if (row.vendor !== "TOTAL") {
+        return useColorModeValue("red.300", "#ABB2BF");
+      }
+    }
+  }
+
+  function cellDropDownAlert(value: any, row: any) {
+    if (value !== "") {
+      return false;
+    } else {
+      if (row.vendor !== "TOTAL") {
+        return true;
+      } else return false;
+    }
+  }
+
   function submissionValidation(submission: SubmissionWithChildren) {
     var fieldKeys: string[] = [];
     var nonMandatoryFields: string[] = [
@@ -703,7 +722,6 @@ export default function Elmv(props: Props) {
       "comments",
       "additionalInformation",
       "status",
-      "businessUnit",
       "marketingResponsible",
       "manufacturerNumber",
       "PH1",
@@ -724,31 +742,37 @@ export default function Elmv(props: Props) {
 
     var totalBudget = 0;
     submission.children.forEach((e) => {
-      if (e.data.group === "vendor") {
+      if (e.group === "vendor") {
         Object.keys(e.data).forEach((key: any) => {
-          if (key === "eurBudget") {
+          if (key === "estimatedIncomeEUR") {
             totalBudget = totalBudget + e.data[key];
           }
           if (!nonMandatoryFields.includes(key)) {
-            switch (typeof e.data[key]) {
-              case "number":
-                if (isNaN(e.data[key]) || e.data[key] === 0) {
+            if (key !== "businessUnit") {
+              switch (typeof e.data[key]) {
+                case "number":
+                  if (
+                    isNaN(e.data[key]) ||
+                    e.data[key] === 0 ||
+                    e.data[key] === 0.0
+                  ) {
+                    fieldKeys.push(key);
+                  }
+                  break;
+                case "object":
+                  if (e.data[key] === null) {
+                    fieldKeys.push(key);
+                  }
+                  break;
+                case "string":
+                  if (e.data[key] === "") {
+                    fieldKeys.push(key);
+                  }
+                  break;
+                case "undefined":
                   fieldKeys.push(key);
-                }
-                break;
-              case "object":
-                if (e.data[key] === null) {
-                  fieldKeys.push(key);
-                }
-                break;
-              case "string":
-                if (e.data[key] === "") {
-                  fieldKeys.push(key);
-                }
-                break;
-              case "undefined":
-                fieldKeys.push(key);
-                break;
+                  break;
+              }
             }
           }
         });
@@ -768,25 +792,27 @@ export default function Elmv(props: Props) {
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
-        switch (typeof sub.data[key]) {
-          case "number":
-            if (isNaN(sub.data[key]) || sub.data[key] === 0) {
+        if (key !== "businessUnit") {
+          switch (typeof sub.data[key]) {
+            case "number":
+              if (isNaN(sub.data[key]) || sub.data[key] === 0) {
+                fieldKeys.push(key);
+              }
+              break;
+            case "object":
+              if (sub.data[key] === null) {
+                fieldKeys.push(key);
+              }
+              break;
+            case "string":
+              if (sub.data[key] === "") {
+                fieldKeys.push(key);
+              }
+              break;
+            case "undefined":
               fieldKeys.push(key);
-            }
-            break;
-          case "object":
-            if (sub.data[key] === null) {
-              fieldKeys.push(key);
-            }
-            break;
-          case "string":
-            if (sub.data[key] === "") {
-              fieldKeys.push(key);
-            }
-            break;
-          case "undefined":
-            fieldKeys.push(key);
-            break;
+              break;
+          }
         }
       }
     });
@@ -856,7 +882,6 @@ export default function Elmv(props: Props) {
     BUs = responses[10].data;
     AlsoInternationalVendorsNames = responses[11].data;
   }
-
   useEffect(() => {
     if (props.submission && !injectionReady) {
       return;
@@ -990,24 +1015,16 @@ export default function Elmv(props: Props) {
         }
         if (!isNaN(vbEur) && totalBudgetEur !== 0) {
           if (!isNaN(totalCostsCC)) {
-            row.estimatedCostsCC = (
-              parseFloat(share.toFixed(4)) * totalCostsCC
-            ).toFixed(2);
+            row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
           }
           if (!isNaN(totalIncomeCC)) {
-            row.estimatedIncomeCC = (
-              parseFloat(share.toFixed(4)) * totalIncomeCC
-            ).toFixed(2);
+            row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
           }
           if (!isNaN(totalCostsLC)) {
-            row.estimatedCostsLC = (
-              parseFloat(share.toFixed(4)) * totalCostsLC
-            ).toFixed(2);
+            row.estimatedCostsLC = (share * totalCostsLC).toFixed(2);
           }
           if (!isNaN(totalCostsEur)) {
-            row.estimatedCostsEUR = (
-              parseFloat(share.toFixed(4)) * totalCostsEur
-            ).toFixed(2);
+            row.estimatedCostsEUR = (share * totalCostsEur).toFixed(2);
           }
         }
       }
@@ -1650,6 +1667,12 @@ export default function Elmv(props: Props) {
                       temp[index!].vendor = event.target.value;
                       setVendors(temp);
                     }}
+                    bg={cellTextAlert(
+                      vendors[index!] !== undefined
+                        ? vendors[index!].vendor
+                        : "",
+                      rowData
+                    )}
                   />
                 )}
               </Cell>
@@ -1665,6 +1688,12 @@ export default function Elmv(props: Props) {
                       temp[index!].debitor = event.target.value;
                       setVendors(temp);
                     }}
+                    bg={cellTextAlert(
+                      vendors[index!] !== undefined
+                        ? vendors[index!].debitor
+                        : "",
+                      rowData
+                    )}
                   />
                 )}
               </Cell>
@@ -1697,6 +1726,12 @@ export default function Elmv(props: Props) {
                       temp[index!].manufacturer = event.target.value;
                       setVendors(temp);
                     }}
+                    bg={cellTextAlert(
+                      vendors[index!] !== undefined
+                        ? vendors[index!].manufacturer
+                        : "",
+                      rowData
+                    )}
                   />
                 )}
               </Cell>
@@ -1707,25 +1742,10 @@ export default function Elmv(props: Props) {
               <Cell dataKey="bu">
                 {(rowData, index) => (
                   <Select
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        zIndex: 1000000000,
-                      }),
-                      singleValue: (provided) => ({
-                        ...provided,
-                        color: "#718196",
-                      }),
-                      control: (base, state) => ({
-                        ...base,
-                        minHeight: 40,
-                        border: "1px solid #E2E8F0",
-                        transition: "0.3s",
-                        "&:hover": {
-                          border: "1px solid #CBD5E0",
-                        },
-                      }),
-                    }}
+                    styles={DefaultSelectStyles(
+                      useColorModeValue,
+                      cellDropDownAlert(rowData.bu, rowData)
+                    )}
                     theme={(theme) => ({
                       ...theme,
                       borderRadius: 6,
@@ -1896,25 +1916,10 @@ export default function Elmv(props: Props) {
                 {(rowData, index) => (
                   <Select
                     isDisabled={budgetSource.value === "noBudget"}
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        zIndex: 1000000000,
-                      }),
-                      singleValue: (provided) => ({
-                        ...provided,
-                        color: "#718196",
-                      }),
-                      control: (base, state) => ({
-                        ...base,
-                        minHeight: 40,
-                        border: "1px solid #E2E8F0",
-                        transition: "0.3s",
-                        "&:hover": {
-                          border: "1px solid #CBD5E0",
-                        },
-                      }),
-                    }}
+                    styles={DefaultSelectStyles(
+                      useColorModeValue,
+                      cellDropDownAlert(rowData.budgetCurrency, rowData)
+                    )}
                     theme={(theme) => ({
                       ...theme,
                       borderRadius: 6,
@@ -1948,7 +1953,6 @@ export default function Elmv(props: Props) {
                     isInvalid={inputErrors.includes("budgetAmount")}
                     value={rowData.budgetAmount}
                     onChange={(event) => {
-                      console.log(Number(rowData.budgetAmount) > 0);
                       var temp = [...vendors];
                       temp[index!].budgetAmount = event.target.value;
                       setVendors(temp);
@@ -2260,17 +2264,37 @@ export default function Elmv(props: Props) {
                 v.bu,
                 v.ph,
                 v.budgetCurrency.label,
-                isNaN(v.budgetAmount) ? 0.0 : v.budgetAmount,
-                isNaN(v.localBudget) ? 0.0 : v.localBudget,
-                isNaN(v.eurBudget) ? 0.0 : v.eurBudget,
-                isNaN(v.share) ? 0.0 : v.share,
-                isNaN(v.estimatedIncomeCC) ? 0.0 : v.estimatedIncomeCC,
-                isNaN(v.estimatedCostsCC) ? 0.0 : v.estimatedCostsCC,
-                isNaN(v.estimatedCostsLC) ? 0.0 : v.estimatedCostsLC,
-                isNaN(v.estimatedCostsEUR) ? 0.0 : v.estimatedCostsEUR,
-                isNaN(v.netProfitTargetVC) ? 0.0 : v.netProfitTargetVC,
-                isNaN(v.netProfitTargetLC) ? 0.0 : v.netProfitTargetLC,
-                isNaN(v.netProfitTargetEUR) ? 0.0 : v.netProfitTargetEUR,
+                isNaN(v.budgetAmount) || v.budgetAmount === ""
+                  ? 0.0
+                  : parseFloat(v.budgetAmount),
+                isNaN(v.localBudget) || v.localBudget === ""
+                  ? 0.0
+                  : parseFloat(v.localBudget),
+                isNaN(v.eurBudget) || v.eurBudget === ""
+                  ? 0.0
+                  : parseFloat(v.eurBudget),
+                isNaN(v.share) || v.share === "" ? 0.0 : parseFloat(v.share),
+                isNaN(v.estimatedIncomeCC) || v.estimatedIncomeCC === ""
+                  ? 0.0
+                  : parseFloat(v.estimatedIncomeCC),
+                isNaN(v.estimatedCostsCC) || v.estimatedCostsCC === ""
+                  ? 0.0
+                  : parseFloat(v.estimatedCostsCC),
+                isNaN(v.estimatedCostsLC) || v.estimatedCostsLC === ""
+                  ? 0.0
+                  : parseFloat(v.estimatedCostsLC),
+                isNaN(v.estimatedCostsEUR) || v.estimatedCostsEUR === ""
+                  ? 0.0
+                  : parseFloat(v.estimatedCostsEUR),
+                isNaN(v.netProfitTargetVC) || v.netProfitTargetVC === ""
+                  ? 0.0
+                  : parseFloat(v.netProfitTargetVC),
+                isNaN(v.netProfitTargetLC) || v.netProfitTargetLC === ""
+                  ? 0.0
+                  : parseFloat(v.netProfitTargetLC),
+                isNaN(v.netProfitTargetEUR) || v.netProfitTargetEUR === ""
+                  ? 0.0
+                  : parseFloat(v.netProfitTargetEUR),
               ]);
             });
             formattedData.push(["Comments", comments]);
