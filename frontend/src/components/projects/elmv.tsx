@@ -1003,7 +1003,7 @@ export default function Elmv(props: Props) {
           parseFloat(row.estimatedCostsEUR) * localExchangeRate
         ).toFixed(2);
       } else {
-        share = vbEur / totalBudgetEur;
+        share = parseFloat((vbEur / totalBudgetEur).toFixed(2));
         row.share = (share * 100).toFixed(2);
         if (index === temp.length - 1) {
           var totalShare = 0.0;
@@ -1018,6 +1018,7 @@ export default function Elmv(props: Props) {
             row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
           }
           if (!isNaN(totalIncomeCC)) {
+            console.log(share);
             row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
           }
           if (!isNaN(totalCostsLC)) {
