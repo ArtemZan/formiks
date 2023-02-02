@@ -1003,13 +1003,15 @@ export default function Elmv(props: Props) {
           parseFloat(row.estimatedCostsEUR) * localExchangeRate
         ).toFixed(2);
       } else {
-        share = parseFloat((vbEur / totalBudgetEur).toFixed(2));
-        row.share = (share * 100).toFixed(2);
+        share = vbEur / totalBudgetEur;
+        row.share = (share * 100).toFixed(0);
         if (index === temp.length - 1) {
           var totalShare = 0.0;
-          temp
-            .slice(0, temp.length - 2)
-            .forEach((t) => (totalShare += parseFloat(t.share)));
+          temp.slice(0, temp.length - 2).forEach((t) => {
+            totalShare += parseFloat(t.eurBudget) / totalBudgetEur;
+            console.log(totalShare);
+          });
+
           row.share = (100 - totalShare).toFixed(2);
           share = (100 - totalShare) * 0.01;
         }
@@ -1018,7 +1020,6 @@ export default function Elmv(props: Props) {
             row.estimatedCostsCC = (share * totalCostsCC).toFixed(2);
           }
           if (!isNaN(totalIncomeCC)) {
-            console.log(share);
             row.estimatedIncomeCC = (share * totalIncomeCC).toFixed(2);
           }
           if (!isNaN(totalCostsLC)) {
@@ -1040,9 +1041,15 @@ export default function Elmv(props: Props) {
         parseFloat(row.estimatedIncomeCC) - parseFloat(row.estimatedCostsCC)
       ).toFixed(2);
 
-      totalVendorBudgetInLC += parseFloat(row.localBudget);
-      totalVendorBudgetInEUR += parseFloat(row.eurBudget);
-      totalVendorShare += parseFloat(row.share);
+      totalVendorBudgetInLC +=
+        parseFloat(row.budgetAmount) /
+        row.budgetCurrency.value /
+        localExchangeRate;
+      totalVendorBudgetInEUR +=
+        parseFloat(row.budgetAmount) / row.budgetCurrency.value;
+
+      console.log(row);
+      totalVendorShare += (parseFloat(row.eurBudget) / totalBudgetEur) * 100;
       totalEstimatedIncomeInCC += parseFloat(row.estimatedIncomeCC);
       totalEstimatedCostsInCC += parseFloat(row.estimatedCostsCC);
       totalEstimatedCostsInLC += parseFloat(row.estimatedCostsLC);
@@ -1064,7 +1071,7 @@ export default function Elmv(props: Props) {
       budgetAmount: "",
       localBudget: totalVendorBudgetInLC.toFixed(2),
       eurBudget: totalVendorBudgetInEUR.toFixed(2),
-      share: totalVendorShare.toFixed(2),
+      share: totalVendorShare.toFixed(0),
       estimatedCostsCC: totalEstimatedCostsInCC.toFixed(2),
       estimatedIncomeCC: totalEstimatedIncomeInCC.toFixed(2),
       estimatedCostsLC: totalEstimatedCostsInLC.toFixed(2),
