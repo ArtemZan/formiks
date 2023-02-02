@@ -1003,13 +1003,12 @@ export default function Elmv(props: Props) {
           parseFloat(row.estimatedCostsEUR) * localExchangeRate
         ).toFixed(2);
       } else {
-        share = vbEur / totalBudgetEur;
+        share = row.budgetAmount / row.budgetCurrency.value / totalBudgetEur;
         row.share = (share * 100).toFixed(0);
         if (index === temp.length - 1) {
           var totalShare = 0.0;
           temp.slice(0, temp.length - 2).forEach((t) => {
             totalShare += parseFloat(t.eurBudget) / totalBudgetEur;
-            console.log(totalShare);
           });
 
           row.share = (100 - totalShare).toFixed(2);
