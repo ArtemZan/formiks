@@ -734,8 +734,6 @@ export default function Elmv(props: Props) {
       "estimatedCostsEUR",
       "estimatedResultEUR",
       "estimatedResultBC",
-      "estimatedIncomeCC",
-      "campaignName",
       "marketingResponsible",
       "creditorNumber",
     ];
@@ -748,6 +746,7 @@ export default function Elmv(props: Props) {
             totalBudget = totalBudget + e.data[key];
           }
           if (!nonMandatoryFields.includes(key)) {
+            console.log(key);
             if (key !== "businessUnit") {
               switch (typeof e.data[key]) {
                 case "number":
@@ -778,7 +777,7 @@ export default function Elmv(props: Props) {
         });
       }
     });
-    if (totalBudget !== totalVendorBudgetInEUR) {
+    if (totalBudget !== parseFloat(estimatedIncome)) {
       fieldKeys.push("totalVendorBudgetInEUR");
     }
 
@@ -844,6 +843,7 @@ export default function Elmv(props: Props) {
     } else {
       fieldKeys.push("vendorName");
     }
+    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
