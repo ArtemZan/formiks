@@ -83,11 +83,11 @@ MONGO_DB=formiks
 - `submissions`
 - `drafts`
 - `views`
-- *`bookmarks`*
-- *`dropdowns`*
-- *`reports`*
-- *`pipelines`*
-- *`templates`*
+- _`bookmarks`_
+- _`dropdowns`_
+- _`reports`_
+- _`pipelines`_
+- _`templates`_
 
 ### Users
 
@@ -142,10 +142,6 @@ auth: [`user`]
 ```http
   GET /api/users/roles
 ```
-
-| Parameter | Type | Description |
-| :-------- | :--- | :---------- |
-|           |      |             |
 
 ```json
 {
@@ -450,10 +446,6 @@ auth: [`public`]
   GET /api/submissions/{id}/sap
 ```
 
-| Parameter | Type | Description |
-| :-------- | :--- | :---------- |
-|           |      |             |
-
 ```json
 {
   "response": {
@@ -608,10 +600,6 @@ auth: [`public`]
   GET /api/drafts
 ```
 
-| Parameter | Type | Description |
-| :-------- | :--- | :---------- |
-|           |      |             |
-
 ```json
 [
   {
@@ -743,7 +731,6 @@ auth: [`public`]
   HTTP 200
 ```
 
-
 #### Create view
 
 auth: [`public`]
@@ -752,8 +739,8 @@ auth: [`public`]
   POST /api/views
 ```
 
-| Parameter    | Type       | Description                       |
-| :----------- | :--------- | :-------------------------------- |
+| Parameter    | Type       | Description                      |
+| :----------- | :--------- | :------------------------------- |
 | `submission` | `object`   | **Required**. Parent view object |
 | `children`   | `[]object` | View children                    |
 
@@ -783,13 +770,13 @@ auth: [`public`]
 
 | Parameter  | Type     | Description                     |
 | :--------- | :------- | :------------------------------ |
-| `id`       | `string` | **Required**. View id          |
+| `id`       | `string` | **Required**. View id           |
 | `project`  | `string` | **Required**. Parent project id |
-| `parentId` | `string` | **Required**. Parent view id   |
-| `title`    | `string` | **Required**. View title       |
-| `status`   | `string` | **Required**. View status      |
-| `group`    | `string` | **Required**. View group       |
-| `data`     | `object` | **Required**. View data        |
+| `parentId` | `string` | **Required**. Parent view id    |
+| `title`    | `string` | **Required**. View title        |
+| `status`   | `string` | **Required**. View status       |
+| `group`    | `string` | **Required**. View group        |
+| `data`     | `object` | **Required**. View data         |
 
 ```json
 {
@@ -815,8 +802,8 @@ auth: [`public`]
   DELETE /api/views/{id}
 ```
 
-| Parameter | Type     | Description             |
-| :-------- | :------- | :---------------------- |
+| Parameter | Type     | Description            |
+| :-------- | :------- | :--------------------- |
 | `id`      | `string` | **Required**. View id  |
 | `deep`    | `bool`   | Delete view's children |
 
