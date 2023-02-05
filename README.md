@@ -440,6 +440,10 @@ auth: [`public`]
 
 #### Call SAP
 
+> Creates `ZMCH` order in SAP with provided PROJECT_NUMBER, PROJECT_NAME and COMPANY_CODE.
+> 
+> Order is linked to submission's author (email mapping to `IM_PERSON_RESP`)
+
 auth: [`public`]
 
 ```http
