@@ -95,6 +95,17 @@ export function Viewer(props: Props) {
               />
             );
           }
+          if (response.data.submission.project === "62610ab73a88d397b05cea12") {
+            setPredefinedProject(
+              <Por
+                project={project}
+                submission={response.data.submission}
+                children={response.data.children}
+                history={props.history}
+                isDraft={true}
+              />
+            );
+          }
         });
       } else {
         RestAPI.getView(props.match.params.id).then((response) => {

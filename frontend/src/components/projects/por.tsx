@@ -44,6 +44,7 @@ interface Props {
   history: any;
   project: Project;
   isDraft?: boolean;
+  children?: any[];
   submission?: any;
 }
 
@@ -368,8 +369,9 @@ export default function Elov(props: Props) {
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
+    console.log(props.submission);
     if (props.submission) {
-      setProjectName(props.submission.projectName ?? "");
+      setProjectName(props.submission.data.requestorsCompanyName ?? "");
     }
   }, [props.submission]);
   return (
