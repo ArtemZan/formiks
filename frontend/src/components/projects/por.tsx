@@ -20,6 +20,8 @@ import Select from "react-select";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
 import isEqual from "lodash/isEqual";
 import DatePicker from "react-datepicker";
+import { toast } from "react-toastify";
+import Toast from "../../components/Toast";
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
@@ -41,6 +43,8 @@ const { Column, HeaderCell, Cell } = Table;
 interface Props {
   history: any;
   project: Project;
+  isDraft?: boolean;
+  submission?: any;
 }
 
 export default function Elov(props: Props) {
@@ -74,6 +78,7 @@ export default function Elov(props: Props) {
   });
   const [startDate, setStartDate] = useState<any>(null);
   const [endDate, setEndDate] = useState<any>(null);
+  const [inputErrors, setInputErrors] = useState<string[]>([]);
   const [budgetSource, setBudgetSource] = useState<any>({
     label: "",
     value: "",
@@ -137,6 +142,221 @@ export default function Elov(props: Props) {
     ProjectStartQuarter = responses[9].data;
   }
 
+  function submissionValidation(submission: SubmissionWithChildren) {
+    var fieldKeys: string[] = [];
+    var nonMandatoryFields: string[] = [
+      "targetAudience",
+      "projectApprover",
+      "totalEstimatedCostsLC",
+      "projectApproval",
+      "creditorNumber",
+      "manufacturersFiscalQuarter",
+      "comments",
+      "productionProjectManager",
+      "additionalInformation",
+      "status",
+      "campaignDescription",
+      "debitorNumber",
+      "manufacturerNumber",
+      "PH1",
+    ];
+    var sub = submission.submission;
+    var vendor = submission.children.filter((el) => el.group === "vendor")[0];
+    Object.keys(sub.data).forEach((key: any) => {
+      if (!nonMandatoryFields.includes(key)) {
+        switch (typeof sub.data[key]) {
+          case "number":
+            if (isNaN(sub.data[key])) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "object":
+            if (sub.data[key] === null) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "string":
+            if (sub.data[key] === "") {
+              fieldKeys.push(key);
+            }
+            break;
+          case "undefined":
+            fieldKeys.push(key);
+            break;
+        }
+      }
+    });
+    Object.keys(vendor.data).forEach((key: any) => {
+      if (!nonMandatoryFields.includes(key)) {
+        switch (typeof vendor.data[key]) {
+          case "number":
+            if (isNaN(vendor.data[key])) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "object":
+            if (vendor.data[key] === null) {
+              fieldKeys.push(key);
+            }
+            break;
+          case "string":
+            if (vendor.data[key] === "") {
+              fieldKeys.push(key);
+            }
+            break;
+          case "undefined":
+            fieldKeys.push(key);
+            break;
+        }
+      }
+    });
+    console.log(fieldKeys);
+    setInputErrors(fieldKeys);
+    return fieldKeys;
+  }
+
+  function createSubmission(draft: boolean) {
+    var projectId = "62610ab73a88d397b05cea12";
+    var parent: Submission = {
+      project: projectId,
+      parentId: null,
+      viewId: null,
+      group: null,
+      title: campaignName,
+      status: "New",
+      created: new Date(),
+      updated: new Date(),
+      author: requestorsName,
+      data: {
+        status: "New",
+        requestorsCompanyName: requestorsCompanyName.label,
+        companyCode: requestorsCompanyName.value.code,
+        requestorsCountry: requestorsCompanyName.value.country,
+        campaignName: campaignName,
+        projectName: campaignName,
+        serviceProvider: serviceProvider,
+        vendor: vendorsNames[0],
+      },
+    };
+    var children: Submission[] = [];
+
+    var submission: SubmissionWithChildren = {
+      submission: parent,
+      children,
+      local: null,
+    };
+
+    if (props.isDraft) {
+      if (draft) {
+        submission.submission.id = props.submission.id;
+
+        RestAPI.updateDraft(submission).then((response) => {
+          toast(
+            <Toast
+              title={"Draft save"}
+              message={`Draft has been successfully saved.`}
+              type={"info"}
+            />
+          );
+        });
+      } else {
+        if (submissionValidation(submission).length !== 0) {
+          toast(
+            <Toast
+              title={"Mandatory fields are not filled"}
+              message={"not all fields that are required were provided"}
+              type={"error"}
+            />
+          );
+          return;
+        }
+        RestAPI.deleteDraft(props.submission.id).then(() => {
+          RestAPI.createSubmissionWithChildren(submission).then((response) => {
+            if (response.data.hasChanged) {
+              toast(
+                <Toast
+                  title={"Project Number has been adjusted"}
+                  message={
+                    <p>
+                      Project Number changed to:{" "}
+                      <b>{response.data.submission.data.projectNumber}</b>
+                    </p>
+                  }
+                  type={"info"}
+                />
+              );
+            }
+            toast(
+              <Toast
+                title={"Project has been transferred"}
+                message={
+                  <p>
+                    Project ({" "}
+                    <b>{response.data.submission.data.projectNumber}</b> ) has
+                    been transferred into the tool
+                  </p>
+                }
+                type={"success"}
+              />
+            );
+            props.history.push("/submissions");
+          });
+        });
+      }
+    } else {
+      if (draft) {
+        RestAPI.createDraft(submission).then((response) => {
+          toast(
+            <Toast
+              title={"Draft save"}
+              message={`Draft has been successfully saved.`}
+              type={"info"}
+            />
+          );
+        });
+      } else {
+        if (submissionValidation(submission).length !== 0) {
+          toast(
+            <Toast
+              title={"Mandatory fields are not filled"}
+              message={"not all fields that are required were provided"}
+              type={"error"}
+            />
+          );
+          return;
+        }
+        RestAPI.createSubmissionWithChildren(submission).then((response) => {
+          if (response.data.hasChanged) {
+            toast(
+              <Toast
+                title={"Project Number has been adjusted"}
+                message={
+                  <p>
+                    Project Number changed to:{" "}
+                    <b>{response.data.submission.data.projectNumber}</b>
+                  </p>
+                }
+                type={"info"}
+              />
+            );
+          }
+          toast(
+            <Toast
+              title={"Project has been transferred"}
+              message={
+                <p>
+                  Project ( <b>{response.data.submission.data.projectNumber}</b>{" "}
+                  ) has been transferred into the tool
+                </p>
+              }
+              type={"success"}
+            />
+          );
+          props.history.push("/submissions");
+        });
+      }
+    }
+  }
   useEffect(() => {
     getAccountInfo().then((response) => {
       if (response) {
@@ -147,6 +367,11 @@ export default function Elov(props: Props) {
   }, []);
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
+  useEffect(() => {
+    if (props.submission) {
+      setProjectName(props.submission.projectName ?? "");
+    }
+  }, [props.submission]);
   return (
     <Box>
       <VStack spacing="20px" mb={"40px"} align="start">
@@ -734,6 +959,20 @@ export default function Elov(props: Props) {
         isDisabled={requestorsCompanyName.value.code !== "6110"}
       >
         Submit
+      </Button>
+      <Button
+        float="right"
+        mr="15px"
+        color={"white"}
+        bg={useColorModeValue("blue.400", "#4D97E2")}
+        _hover={{
+          bg: useColorModeValue("blue.300", "#377bbf"),
+        }}
+        onClick={() => {
+          createSubmission(true);
+        }}
+      >
+        {props.isDraft ? "Save to draft" : "Save to draft"}
       </Button>
     </Box>
   );
