@@ -178,7 +178,7 @@ class EditableTableCell extends React.Component<
               this.state.cellValue.map((cv: any) => {
                 return (
                   <Tag colorScheme={this.props.textColor} mb="5px" mr={"5px"}>
-                    {cv.label}
+                    {cv}
                   </Tag>
                 );
               })

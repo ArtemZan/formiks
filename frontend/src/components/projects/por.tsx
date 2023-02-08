@@ -27,6 +27,7 @@ import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 import { isDisabled } from "@chakra-ui/utils";
+import { SubscriptionManager } from "framer-motion/types/utils/subscription-manager";
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -123,6 +124,7 @@ export default function Elov(props: Props) {
   const [companiesParticipating, setCompaniesParticipating] = useState<any>([]);
   const [comments, setComments] = useState("");
   const [vendor, setVendor] = useState<any>({});
+  const [vensorNames, setVendorNames] = useState<any>([]);
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
 
   const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
@@ -130,6 +132,8 @@ export default function Elov(props: Props) {
 
   const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState("");
   const [services, setServices] = useState<any>([]);
+  const [submissions, setSubmissions] = useState<any>([]);
+  const [sub, setSub] = useState<any>();
 
   const [render, rerender] = useState(0);
 
@@ -231,7 +235,6 @@ export default function Elov(props: Props) {
         }
       }
     });
-    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -400,11 +403,17 @@ export default function Elov(props: Props) {
       }
     });
     fetchDropdowns().then(() => forceUpdate());
+    setVendorNames(VendorsNames);
+    RestAPI.getSubmissions().then((response) => {
+      var subs = response.data;
+      if (subs.length > 0) {
+        setSubmissions(subs);
+      }
+    });
   }, []);
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
   useEffect(() => {
-    console.log(props.submission);
     if (props.submission) {
       setRequestorsCompanyName({
         label: props.submission.data.requestorsCompanyName ?? "",
@@ -558,6 +567,34 @@ export default function Elov(props: Props) {
             onChange={(event) => {
               if (event.target.value.length < 13) {
                 setProjectNumber(event.target.value);
+                if (event.target.value.length === 12) {
+                  for (let sub of submissions) {
+                    if (
+                      sub.parentId === null &&
+                      sub.data.projectNumber === event.target.value
+                    ) {
+                      var children: any[] = [];
+                      var vendorNew: any[] = [];
+                      for (let child of submissions) {
+                        if (child.parentId === sub.id) {
+                          children.push(child);
+
+                          if (child.group === "vendor") {
+                            vendorNew.push({
+                              label: child.data.vendorName ?? "",
+                              value: child.data.vendorName ?? "",
+                            });
+                          }
+                        }
+                      }
+                      VendorsNames = vendorNew;
+                      sub.children = children;
+                      setSub(sub);
+
+                      break;
+                    }
+                  }
+                }
               }
             }}
             // disabled
