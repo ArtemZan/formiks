@@ -18,6 +18,7 @@ import {
 import Project from "../../types/project";
 import Select from "react-select";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
+import { DefaultSelectStyles } from "../../utils/Styles";
 import isEqual from "lodash/isEqual";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
@@ -93,6 +94,25 @@ export default function Elov(props: Props) {
     useState("");
   const [projectName, setProjectName] = useState("");
   const [serviceProvider, setServiceProvider] = useState("");
+  const [serviceType, setServiceType] = useState("");
+  const [serviceNetValueLC, setServiceNetValueLC] = useState("");
+  const [serviceLC, setServiceLC] = useState<any>({
+    label: "",
+    value: "",
+  });
+  const [serviceNetValuePOCurrency, setServiceNetValuePOCurrency] =
+    useState("");
+  const [servicePOCurrency, setServicePOCurrency] = useState<any>({
+    label: "",
+    value: "",
+  });
+  const [serviceNetValueEUR, setServiceNetValueEUR] = useState("");
+  const [serviceExtPONumber, setServiceExtPONumber] = useState("");
+  const [servicePODate, setServicePODate] = useState<any>(null);
+  const [serviceOrderingPerson, setServiceOrderingPerson] = useState("");
+  const [serviceApprovingPerson, setServiceApprovingPerson] = useState("");
+  const [serviceContactPerson, setServiceContactPerson] = useState("");
+  const [serviceContactDetails, setServiceContactDetails] = useState("");
   const [estimatedCostsBudgetCurrency, setEstimatedCostsBudgetCurrency] =
     useState("");
   const [netProfitTargetBudgetCurrency, setNetProfitTargetBudgetCurrency] =
@@ -117,7 +137,7 @@ export default function Elov(props: Props) {
     var dropdownsIds: string[] = [
       "619b630a9a5a2bb37a93b23b",
       "619b61419a5a2bb37a93b237",
-      "619b63429a5a2bb37a93b23d",
+      "6391eea09a3d043b9a89d767",
       "619b62d79a5a2bb37a93b239",
       "619b632c9a5a2bb37a93b23c",
       "619b62959a5a2bb37a93b238",
@@ -232,11 +252,26 @@ export default function Elov(props: Props) {
         status: "New",
         requestorsCompanyName: requestorsCompanyName.label,
         companyCode: requestorsCompanyName.value.code,
+        organizingCompany: requestorsCompanyName.country,
         requestorsCountry: requestorsCompanyName.value.country,
         campaignName: campaignName,
+        projectNumber: projectNumber,
         projectName: campaignName,
         serviceProvider: serviceProvider,
-        vendor: vendorsNames[0],
+        vendorsNames: vendorsNames.map((vendor: any) => vendor.label),
+        serviceNetValueLC: serviceNetValueLC,
+        serviceLC: serviceLC,
+        serviceType: serviceType,
+        serviceNetValuePOCurrency: serviceNetValuePOCurrency,
+        servicePOCurrency: servicePOCurrency,
+        serviceNetValueEUR: serviceNetValueEUR,
+        serviceExtPONumber: serviceExtPONumber,
+        servicePODate: servicePODate === null ? null : servicePODate.toString(),
+        serviceOrderingPerson: serviceOrderingPerson,
+        serviceApprovingPerson: serviceApprovingPerson,
+        serviceContactPerson: serviceContactPerson,
+        serviceContactDetails: serviceContactDetails,
+        comments: comments,
       },
     };
     var children: Submission[] = [];
@@ -371,7 +406,57 @@ export default function Elov(props: Props) {
   useEffect(() => {
     console.log(props.submission);
     if (props.submission) {
+      setRequestorsCompanyName({
+        label: props.submission.data.requestorsCompanyName ?? "",
+        value: {
+          name: props.submission.data.requestorsCompanyName ?? "",
+          code: props.submission.data.companyCode ?? "",
+          country: props.submission.data.requestorsCountry ?? "",
+          currency: props.submission.data.localCurrency ?? "",
+        },
+      });
       setProjectName(props.submission.data.requestorsCompanyName ?? "");
+      setCampaignName(props.submission.data.campaignName ?? "");
+      setProjectNumber(props.submission.data.projectNumber ?? "");
+      setVendorsNames(
+        (props.submission.data.vendorNamePO ?? []).map((vendor: string) => {
+          return { label: vendor, value: vendor };
+        })
+      );
+      setServiceType(props.submission.data.serviceType ?? "");
+      setServiceProvider(props.submission.data.serviceProvider ?? "");
+      setServiceNetValueLC(
+        props.submission.data.netValueOfServiceOrderedLC.toFixed(2) ?? ""
+      );
+      setServiceLC({
+        label: props.submission.data.localCurrency ?? "",
+        value: props.submission.data.localCurrency ?? "",
+      });
+      setServiceNetValuePOCurrency(
+        props.submission.data.netValuePOC.toFixed(2) ?? ""
+      );
+      setServicePOCurrency({
+        label: props.submission.data.purchaseOrderCurrency ?? "",
+        value: props.submission.data.purchaseOrderCurrency ?? "",
+      });
+      setServiceNetValueEUR(props.submission.data.netValueEur.toFixed(2) ?? "");
+      setServiceExtPONumber(props.submission.data.serviceExtPONumber ?? "");
+      setServicePODate(
+        props.submission.data.servicePODate === null
+          ? null
+          : new Date(props.submission.data.servicePODate) ?? null
+      );
+      setServiceOrderingPerson(
+        props.submission.data.serviceOrderingPerson ?? ""
+      );
+      setServiceApprovingPerson(
+        props.submission.data.serviceApprovingPerson ?? ""
+      );
+      setServiceContactPerson(props.submission.data.serviceContactPerson ?? "");
+      setServiceContactDetails(
+        props.submission.data.serviceContactDetails ?? ""
+      );
+      setComments(props.submission.data.comments ?? "");
     }
   }, [props.submission]);
   return (
@@ -543,294 +628,185 @@ export default function Elov(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Services</Text>
-          <Table
-            shouldUpdateScroll={false}
-            hover={false}
-            autoHeight
-            rowHeight={65}
-            data={services}
-          >
-            <Column width={200} resizable>
-              <HeaderCell>Service Type</HeaderCell>
-              <Cell dataKey="serviceType">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.serviceType}
-                    onChange={(event) => {
-                      var temp = [...services];
-                      temp[index!].serviceType = event.target.value;
-                      setServices(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Net Value (LC Currency)</HeaderCell>
-              <Cell dataKey="netValueLC">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.netValueLC}
-                    onChange={(event) => {
-                      var temp = [...services];
-                      temp[index!].netValueLC = event.target.value;
-                      setServices(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Local Currency</HeaderCell>
-              <Cell dataKey="localCurrency">
-                {(rowData, index) => (
-                  <Select
-                    menuPortalTarget={document.body}
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        zIndex: 1000000,
-                      }),
-                      singleValue: (provided) => ({
-                        ...provided,
-                        color: "#718196",
-                      }),
-                      control: (base, state) => ({
-                        ...base,
-                        minHeight: 40,
-                        border: "1px solid #E2E8F0",
-                        transition: "0.3s",
-                        "&:hover": {
-                          border: "1px solid #CBD5E0",
-                        },
-                      }),
-                    }}
-                    theme={(theme) => ({
-                      ...theme,
-                      borderRadius: 6,
-                      colors: {
-                        ...theme.colors,
-                        primary: "#3082CE",
-                      },
-                    })}
-                    value={{
-                      label: rowData.localCurrency,
-                      value: rowData.localCurrency,
-                    }}
-                    onChange={(value) => {
-                      var temp = [...services];
-                      temp[index!].localCurrency =
-                        value === null ? "" : value.label;
-                      setServices(temp);
-                    }}
-                    placeholder=""
-                    classNamePrefix="select"
-                    isClearable={false}
-                    name="localCurrency"
-                    options={ExchangeRates}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Net Value (Purchase Order Currency)</HeaderCell>
-              <Cell dataKey="netValuePO">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.netValuePO}
-                    onChange={(event) => {
-                      var temp = [...services];
-                      temp[index!].netValuePO = event.target.value;
-                      setServices(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Purchase Order Currency Code</HeaderCell>
-              <Cell dataKey="poCurrencyCode">
-                {(rowData, index) => (
-                  <Select
-                    menuPortalTarget={document.body}
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        zIndex: 1000000,
-                      }),
-                      singleValue: (provided) => ({
-                        ...provided,
-                        color: "#718196",
-                      }),
-                      control: (base, state) => ({
-                        ...base,
-                        minHeight: 40,
-                        border: "1px solid #E2E8F0",
-                        transition: "0.3s",
-                        "&:hover": {
-                          border: "1px solid #CBD5E0",
-                        },
-                      }),
-                    }}
-                    theme={(theme) => ({
-                      ...theme,
-                      borderRadius: 6,
-                      colors: {
-                        ...theme.colors,
-                        primary: "#3082CE",
-                      },
-                    })}
-                    value={{
-                      label: rowData.poCurrencyCode,
-                      value: rowData.poCurrencyCode,
-                    }}
-                    onChange={(value) => {
-                      var temp = [...services];
-                      temp[index!].poCurrencyCode =
-                        value === null ? "" : value.label;
-                      setServices(temp);
-                    }}
-                    placeholder=""
-                    classNamePrefix="select"
-                    isClearable={false}
-                    name="poCurrencyCode"
-                    options={ExchangeRates}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Net Value (EUR)</HeaderCell>
-              <Cell dataKey="netValueEUR">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.netValueEUR}
-                    onChange={(event) => {
-                      var temp = [...services];
-                      temp[index!].netValueEUR = event.target.value;
-                      setServices(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>External Purchase Order Number</HeaderCell>
-              <Cell dataKey="externalPurchaseOrderNumber">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.externalPurchaseOrderNumber}
-                    onChange={(event) => {
-                      var temp = [...services];
-                      temp[index!].externalPurchaseOrderNumber =
-                        event.target.value;
-                      setServices(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Purchase Order Date</HeaderCell>
-              <Cell dataKey="purchaseOrderDate">
-                {(rowData, index) => (
-                  <DatePicker
-                    portalId="root-portal"
-                    isClearable={false}
-                    selected={rowData.purchaseOrderDate}
-                    customInput={<Input value={rowData.purchaseOrderDate} />}
-                    onChange={(date) => {
-                      var temp = [...services];
-                      temp[index!].purchaseOrderDate = date;
-                      setServices(temp);
-                    }}
-                    dateFormat="dd.MM.yyyy"
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>
-                Name of Person Ordering the Service (ALSO)
-              </HeaderCell>
-              <Cell dataKey="orderingPerson">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.orderingPerson}
-                    onChange={(event) => {
-                      var temp = [...services];
-                      temp[index!].orderingPerson = event.target.value;
-                      setServices(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>
-                Name of Person Approving the Purchase Order (ALSO)
-              </HeaderCell>
-              <Cell dataKey="approvingPerson">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.approvingPerson}
-                    onChange={(event) => {
-                      var temp = [...services];
-                      temp[index!].approvingPerson = event.target.value;
-                      setServices(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>Contact Person from Service Provider Side</HeaderCell>
-              <Cell dataKey="contactPerson">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.contactPerson}
-                    onChange={(event) => {
-                      var temp = [...services];
-                      temp[index!].contactPerson = event.target.value;
-                      setServices(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-            <Column width={200} resizable>
-              <HeaderCell>
-                Contact Details of Person from Service Provider Side (e-mail,
-                phone)
-              </HeaderCell>
-              <Cell dataKey="contactDetails">
-                {(rowData, index) => (
-                  <Input
-                    value={rowData.contactDetails}
-                    onChange={(event) => {
-                      var temp = [...services];
-                      temp[index!].contactDetails = event.target.value;
-                      setServices(temp);
-                    }}
-                  />
-                )}
-              </Cell>
-            </Column>
-          </Table>
-          <Button
-            float="right"
-            marginTop="20px"
-            onClick={() => {
-              var temp = [...services];
-              temp.push({});
-              setServices(temp);
-            }}
-          >
-            add
-          </Button>
+          <Text mb="8px">Service Type</Text>
+          <Textarea
+            value={serviceType}
+            onChange={(event) => setServiceType(event.target.value)}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
+            size="md"
+            resize={"vertical"}
+            rows={5}
+          />
         </Box>
-
+        <HStack w="100%">
+          <Box w="100%">
+            <Text mb="8px">Net Value (LC Currency)</Text>
+            <Input
+              value={serviceNetValueLC}
+              onChange={(event) => setServiceNetValueLC(event.target.value)}
+              bg={useColorModeValue("white", "#2C313C")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
+            />
+          </Box>
+          <Box w="100%">
+            <Text mb="8px">Local Currency</Text>
+            <Select
+              menuPortalTarget={document.body}
+              styles={DefaultSelectStyles(
+                useColorModeValue,
+                inputErrors.includes("serviceLC")
+              )}
+              theme={(theme) => ({
+                ...theme,
+                borderRadius: 6,
+                colors: {
+                  ...theme.colors,
+                  primary: "#3082CE",
+                },
+              })}
+              value={{
+                label: serviceLC.label,
+                value: serviceLC.value,
+              }}
+              onChange={(value) => {
+                setServiceLC(value);
+              }}
+              placeholder=""
+              classNamePrefix="select"
+              isClearable={false}
+              name="serviceLC"
+              options={ExchangeRates}
+            />
+          </Box>
+        </HStack>
+        <HStack w="100%">
+          <Box w="100%">
+            <Text mb="8px">Net Value (Purchase Order Currency)</Text>
+            <Input
+              value={serviceNetValuePOCurrency}
+              onChange={(event) =>
+                setServiceNetValuePOCurrency(event.target.value)
+              }
+              bg={useColorModeValue("white", "#2C313C")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
+            />
+          </Box>
+          <Box w="100%">
+            <Text mb="8px">Purchase Order Currency Code</Text>
+            <Select
+              menuPortalTarget={document.body}
+              styles={DefaultSelectStyles(
+                useColorModeValue,
+                inputErrors.includes("servicePOCurrency")
+              )}
+              theme={(theme) => ({
+                ...theme,
+                borderRadius: 6,
+                colors: {
+                  ...theme.colors,
+                  primary: "#3082CE",
+                },
+              })}
+              value={{
+                label: servicePOCurrency.label,
+                value: servicePOCurrency.value,
+              }}
+              onChange={(value) => {
+                setServicePOCurrency(value);
+              }}
+              placeholder=""
+              classNamePrefix="select"
+              isClearable={false}
+              name="servicePOCurrency"
+              options={ExchangeRates}
+            />
+          </Box>
+        </HStack>
+        <Box w="50%">
+          <Text mb="8px">Net Value (EUR)</Text>
+          <Input
+            value={serviceNetValueEUR}
+            onChange={(event) => setServiceNetValueEUR(event.target.value)}
+            bg={useColorModeValue("white", "#2C313C")}
+            color={useColorModeValue("gray.800", "#ABB2BF")}
+          />
+        </Box>
+        <HStack w="100%">
+          <Box w="100%">
+            <Text mb="8px">External Purchase Order Number</Text>
+            <Input
+              value={serviceExtPONumber}
+              onChange={(event) => setServiceExtPONumber(event.target.value)}
+              bg={useColorModeValue("white", "#2C313C")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
+            />
+          </Box>
+          <Box w="100%">
+            <Text mb="8px">Purchase Order Date</Text>
+            <DatePicker
+              customInput={
+                <Input
+                  isInvalid={inputErrors.includes("servicePODate")}
+                  bg={useColorModeValue("white", "#2C313C")}
+                  color={useColorModeValue("gray.800", "#ABB2BF")}
+                />
+              }
+              selected={servicePODate}
+              onChange={(date) => {
+                setServicePODate(date);
+              }}
+              dateFormat="dd.MM.yyyy"
+            />
+          </Box>
+        </HStack>
+        <HStack w="100%">
+          <Box w="100%">
+            <Text mb="8px">Name of Person Ordering the Service (ALSO)</Text>
+            <Input
+              value={serviceOrderingPerson}
+              onChange={(event) => setServiceOrderingPerson(event.target.value)}
+              bg={useColorModeValue("white", "#2C313C")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
+            />
+          </Box>
+          <Box w="100%">
+            <Text mb="8px">
+              Name of Person Approving the Purchase Order (ALSO)
+            </Text>
+            <Input
+              value={serviceApprovingPerson}
+              onChange={(event) =>
+                setServiceApprovingPerson(event.target.value)
+              }
+              bg={useColorModeValue("white", "#2C313C")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
+            />
+          </Box>
+        </HStack>
+        <HStack w="100%">
+          <Box w="100%">
+            <Text mb="8px">Contact Person from Service Provider Side</Text>
+            <Input
+              value={serviceContactPerson}
+              onChange={(event) => setServiceContactPerson(event.target.value)}
+              bg={useColorModeValue("white", "#2C313C")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
+            />
+          </Box>
+          <Box w="100%">
+            <Text mb="8px">
+              Contact Details of Person from Service Provider Side (e-mail,
+              phone)
+            </Text>
+            <Input
+              value={serviceContactDetails}
+              onChange={(event) => setServiceContactDetails(event.target.value)}
+              bg={useColorModeValue("white", "#2C313C")}
+              color={useColorModeValue("gray.800", "#ABB2BF")}
+            />
+          </Box>
+        </HStack>
         <Box w="100%">
           <Text mb="8px">Comments</Text>
           <Textarea
@@ -922,36 +898,43 @@ export default function Elov(props: Props) {
               }
             }
             if (targetId.length > 0) {
-              RestAPI.updateSubmissionPartial(
-                targetId,
-                "data.purchaseOrderServiceProvider",
-                serviceProvider
-              );
-              RestAPI.updateSubmissionPartial(
-                targetId,
-                "data.vendorNamePO",
-                vendorsNames.map((v: any) => v.label).join(", ")
-              );
-              services.forEach(async (service: any) => {
-                await RestAPI.createSubmission({
-                  project: "62610ab73a88d397b05cea12",
-                  title: "",
-                  parentId: targetId,
-                  viewId: null,
-                  group: "vendor",
-                  created: new Date(),
-                  updated: new Date(),
-                  status: "New",
-                  author: requestorsName,
-                  data: {
-                    netValueOfServiceOrderedLC: service.netValueLC,
-                    localCurrency: service.localCurrency,
-                    netValuePOC: service.netValuePO,
-                    purchaseOrderCurrency: service.poCurrencyCode,
-                    netValueEur: service.netValueEUR,
-                  },
-                });
-              });
+              var uuugh = {
+                project: "62610ab73a88d397b05cea12",
+                title: "",
+                parentId: targetId,
+                viewId: null,
+                group: "vendor",
+                created: new Date(),
+                updated: new Date(),
+                status: "New",
+                author: requestorsName,
+                data: {
+                  projectNumber: projectNumber,
+                  servicePODate:
+                    servicePODate === null ? null : servicePODate.toString(),
+                  serviceType: serviceType,
+                  requestorsCompanyName: requestorsCompanyName.label,
+                  companyCode: requestorsCompanyName.value.code,
+                  requestorsCountry: requestorsCompanyName.value.country,
+                  netValueOfServiceOrderedLC: parseFloat(serviceNetValueLC),
+                  localCurrency: serviceLC.label,
+                  netValuePOC: parseFloat(serviceNetValuePOCurrency),
+                  purchaseOrderCurrency: servicePOCurrency.label,
+                  netValueEur: parseFloat(serviceNetValueEUR),
+                  vendorNamePO: vendorsNames.map((vendor: any) => vendor.label),
+                  comments: comments,
+                  serviceProvider: serviceProvider,
+                  serviceExtPONumber: serviceExtPONumber,
+                  serviceApprovingPerson: serviceApprovingPerson,
+                  serviceOrderingPerson: serviceOrderingPerson,
+                  serviceContactPerson: serviceContactPerson,
+                  serviceContactDetails: serviceContactDetails,
+
+                  purchaseOrderServiceProvider: serviceProvider,
+                },
+              };
+
+              RestAPI.createSubmission(uuugh);
               setTimeout(() => {
                 props.history.push("/submissions");
               }, 2000);

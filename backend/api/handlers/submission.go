@@ -93,15 +93,18 @@ func (r *Submission) Create(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
+	view, err := r.repo.CreateViews(context.TODO(), models.SubmissionWithChildren{Submission: submission})
 	submission.ID = primitive.NewObjectID()
 	submission.Created = time.Now()
 	submission.Updated = time.Now()
+	submission.ViewID = view.Submission.ID
 	submission, err = r.repo.Create(c.Request.Context(), submission)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to create submission", err)
 		c.Status(http.StatusInternalServerError)
 		return
 	}
+
 	c.JSON(http.StatusOK, submission)
 }
 

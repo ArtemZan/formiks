@@ -52,6 +52,7 @@ export function Viewer(props: Props) {
 
   function getProject(id: string) {
     RestAPI.getProject(id).then((response) => {
+      console.log(response.data);
       setProject(response.data);
     });
   }
@@ -109,8 +110,12 @@ export function Viewer(props: Props) {
         });
       } else {
         RestAPI.getView(props.match.params.id).then((response) => {
-          getProject(response.data.submission.project);
-          if (response.data.submission.project === "629dfb3f55d209262194a3e6") {
+          var projectId = response.data.submission.project;
+          if (projectId === "" && response.data.children.length > 0) {
+            projectId = response.data.children[0].project;
+          }
+          getProject(projectId);
+          if (projectId === "629dfb3f55d209262194a3e6") {
             setPredefinedProject(
               <Cerov
                 project={project}
@@ -121,7 +126,7 @@ export function Viewer(props: Props) {
               />
             );
           }
-          if (response.data.submission.project === "619515b754e61c8dd33daa52") {
+          if (projectId === "619515b754e61c8dd33daa52") {
             setPredefinedProject(
               <Ermv
                 project={project}
@@ -131,7 +136,7 @@ export function Viewer(props: Props) {
               />
             );
           }
-          if (response.data.submission.project === "6246ec8efa2a446faadb8d9b") {
+          if (projectId === "6246ec8efa2a446faadb8d9b") {
             setPredefinedProject(
               <Elmv
                 project={project}
@@ -141,7 +146,7 @@ export function Viewer(props: Props) {
               />
             );
           }
-          if (response.data.submission.project === "624ac98682eeddf1a9b6a622") {
+          if (projectId === "624ac98682eeddf1a9b6a622") {
             setPredefinedProject(
               <Elov
                 project={project}
@@ -151,9 +156,18 @@ export function Viewer(props: Props) {
               />
             );
           }
-          if (props.match.params.id === "62610ab73a88d397b05cea12") {
+          if (
+            projectId === "62610ab73a88d397b05cea12" &&
+            response.data.children.length > 0
+          ) {
+            console.log(response.data.children[0]);
             setPredefinedProject(
-              <Por project={project} history={props.history} />
+              <Por
+                project={project}
+                submission={response.data.children[0]}
+                children={[]}
+                history={props.history}
+              />
             );
           }
         });

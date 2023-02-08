@@ -2624,7 +2624,7 @@ export function SubmissionsTable(props: Props) {
       hidden: visibilityController("purchaseOrder", "data.vendorNamePO"),
       cellRenderer: (props: any) => (
         <EditableTableCell
-          type={"text"}
+          type={"multiple-dropdown"}
           readonly={true}
           backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
@@ -4377,6 +4377,44 @@ export function SubmissionsTable(props: Props) {
       className: "red-border",
       cellRenderer: (props: any) =>
         props.rowData.parentId === null &&
+        props.rowData.viewId !== null &&
+        props.rowData.author !== "formiks" &&
+        props.rowData.id !== "total" ? (
+          <EditableTableCell
+            type={"button"}
+            backgroundColor="#fef9fa"
+            textColor={"yellow"}
+            onUpdate={() => {
+              window.open(
+                "/submissions/view/" + props.rowData.viewId,
+                "_blank",
+                "noopener,noreferrer"
+              );
+            }}
+            rowIndex={props.rowIndex}
+            columnKey={props.column.dataKey}
+            rowData={props.rowData}
+            initialValue={"view"}
+          />
+        ) : (
+          <div
+            style={{
+              backgroundColor: "#F7FAFC",
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        ),
+    },
+    {
+      key: "__actions.viewPO",
+      dataKey: "__actions.viewPO",
+      title: "View purchase order",
+      width: columnWidth("__actions.viewPO", 100),
+      resizable: true,
+      className: "red-border",
+      cellRenderer: (props: any) =>
+        typeof props.rowData.data.purchaseOrderServiceProvider === "string" &&
         props.rowData.viewId !== null &&
         props.rowData.author !== "formiks" &&
         props.rowData.id !== "total" ? (
