@@ -103,7 +103,7 @@ class EditableTableCell extends React.Component<
             Array.isArray(this.props.initialValue)
           ) {
             this.props.initialValue.forEach((v: any) => {
-              value.push({ label: v, value: v });
+              value.push(v);
             });
           }
           break;
@@ -173,20 +173,19 @@ class EditableTableCell extends React.Component<
             ) : (
               ""
             )
-          ) : // : this.props.type === "multiple-dropdown" ? (
-          //   this.state.cellValue ? (
-          //     this.state.cellValue.map((cv: any) => {
-          //       return (
-          //         <Tag colorScheme={this.props.textColor} mb="5px" mr={"5px"}>
-          //           {cv.label}
-          //         </Tag>
-          //       );
-          //     })
-          //   ) : (
-          //     ""
-          //   )
-          // )
-          this.props.type === "date" ? (
+          ) : this.props.type === "multiple-dropdown" ? (
+            Array.isArray(this.state.cellValue) ? (
+              this.state.cellValue.map((cv: any) => {
+                return (
+                  <Tag colorScheme={this.props.textColor} mb="5px" mr={"5px"}>
+                    {cv.label}
+                  </Tag>
+                );
+              })
+            ) : (
+              ""
+            )
+          ) : this.props.type === "date" ? (
             this.state.cellValue && this.state.cellValue !== null ? (
               moment(this.state.cellValue).format("DD.MM.yyyy")
             ) : (
