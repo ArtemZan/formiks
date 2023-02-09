@@ -186,14 +186,14 @@ export default function Elov(props: Props) {
       "PH1",
     ];
     var sub = submission.submission;
-    console.log(sub);
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
-        if (key === "vendorNamePO") {
-          console.log(typeof sub.data[key]);
-        }
         switch (typeof sub.data[key]) {
           case "object":
+            if (!sub.data[key]) {
+              fieldKeys.push(key);
+              break;
+            }
             if (sub.data[key].length === 0) {
               fieldKeys.push(key);
             }
@@ -220,7 +220,6 @@ export default function Elov(props: Props) {
       }
     });
     setInputErrors(fieldKeys);
-    console.log(fieldKeys);
     return fieldKeys;
   }
 
@@ -233,8 +232,6 @@ export default function Elov(props: Props) {
         break;
       }
     }
-
-    console.log(targetId);
     var projectId = "62610ab73a88d397b05cea12";
     var parent: Submission = {
       project: projectId,
@@ -303,7 +300,6 @@ export default function Elov(props: Props) {
           );
           return;
         }
-        console.log(submission.submission);
         RestAPI.deleteDraft(props.submission.id).then(() => {
           RestAPI.createSubmission(submission.submission).then((response) => {
             toast(
