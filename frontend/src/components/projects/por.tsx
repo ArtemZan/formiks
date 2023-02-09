@@ -186,10 +186,18 @@ export default function Elov(props: Props) {
       "PH1",
     ];
     var sub = submission.submission;
-    var vendor = submission.children.filter((el) => el.group === "vendor")[0];
+    console.log(sub);
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
+        if (key === "vendorNamePO") {
+          console.log(typeof sub.data[key]);
+        }
         switch (typeof sub.data[key]) {
+          case "object":
+            if (sub.data[key].length === 0) {
+              fieldKeys.push(key);
+            }
+            break;
           case "number":
             if (isNaN(sub.data[key])) {
               fieldKeys.push(key);
@@ -211,70 +219,56 @@ export default function Elov(props: Props) {
         }
       }
     });
-    Object.keys(vendor.data).forEach((key: any) => {
-      if (!nonMandatoryFields.includes(key)) {
-        switch (typeof vendor.data[key]) {
-          case "number":
-            if (isNaN(vendor.data[key])) {
-              fieldKeys.push(key);
-            }
-            break;
-          case "object":
-            if (vendor.data[key] === null) {
-              fieldKeys.push(key);
-            }
-            break;
-          case "string":
-            if (vendor.data[key] === "") {
-              fieldKeys.push(key);
-            }
-            break;
-          case "undefined":
-            fieldKeys.push(key);
-            break;
-        }
-      }
-    });
     setInputErrors(fieldKeys);
+    console.log(fieldKeys);
     return fieldKeys;
   }
 
   function createSubmission(draft: boolean) {
+    var targetId = "";
+
+    for (let sub of submissions) {
+      if (sub.parentId === null && sub.data.projectNumber === projectNumber) {
+        targetId = sub.id || "";
+        break;
+      }
+    }
+
+    console.log(targetId);
     var projectId = "62610ab73a88d397b05cea12";
     var parent: Submission = {
       project: projectId,
-      parentId: null,
+      title: "",
+      parentId: targetId,
       viewId: null,
-      group: null,
-      title: campaignName,
-      status: "New",
+      group: "vendor",
       created: new Date(),
       updated: new Date(),
+      status: "New",
       author: requestorsName,
       data: {
-        status: "New",
+        projectNumber: projectNumber,
+        purchaseOrderStatus: "Invoice Not Received",
+        servicePODate: servicePODate === null ? null : servicePODate.toString(),
+        serviceType: serviceType,
         requestorsCompanyName: requestorsCompanyName.label,
         companyCode: requestorsCompanyName.value.code,
-        organizingCompany: requestorsCompanyName.country,
         requestorsCountry: requestorsCompanyName.value.country,
-        campaignName: campaignName,
-        projectNumber: projectNumber,
-        projectName: campaignName,
+        netValueOfServiceOrderedLC: parseFloat(serviceNetValueLC),
+        localCurrency: serviceLC.label,
+        netValuePOC: parseFloat(serviceNetValuePOCurrency),
+        purchaseOrderCurrency: servicePOCurrency.label,
+        netValueEur: parseFloat(serviceNetValueEUR),
+        vendorNamePO: vendorsNames.map((vendor: any) => vendor.label),
+        comments: comments,
         serviceProvider: serviceProvider,
-        vendorsNames: vendorsNames.map((vendor: any) => vendor.label),
-        serviceNetValueLC: serviceNetValueLC,
-        serviceLC: serviceLC,
-        serviceType: serviceType,
-        serviceNetValuePOCurrency: serviceNetValuePOCurrency,
-        servicePOCurrency: servicePOCurrency,
-        serviceNetValueEUR: serviceNetValueEUR,
         serviceExtPONumber: serviceExtPONumber,
-        servicePODate: servicePODate === null ? null : servicePODate.toString(),
-        serviceOrderingPerson: serviceOrderingPerson,
         serviceApprovingPerson: serviceApprovingPerson,
+        serviceOrderingPerson: serviceOrderingPerson,
         serviceContactPerson: serviceContactPerson,
         serviceContactDetails: serviceContactDetails,
-        comments: comments,
+
+        purchaseOrderServiceProvider: serviceProvider,
       },
     };
     var children: Submission[] = [];
@@ -284,7 +278,6 @@ export default function Elov(props: Props) {
       children,
       local: null,
     };
-
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
@@ -309,31 +302,14 @@ export default function Elov(props: Props) {
           );
           return;
         }
+        console.log(submission.submission);
         RestAPI.deleteDraft(props.submission.id).then(() => {
-          RestAPI.createSubmissionWithChildren(submission).then((response) => {
-            if (response.data.hasChanged) {
-              toast(
-                <Toast
-                  title={"Project Number has been adjusted"}
-                  message={
-                    <p>
-                      Project Number changed to:{" "}
-                      <b>{response.data.submission.data.projectNumber}</b>
-                    </p>
-                  }
-                  type={"info"}
-                />
-              );
-            }
+          RestAPI.createSubmission(submission.submission).then((response) => {
             toast(
               <Toast
-                title={"Project has been transferred"}
+                title={"Purchase order  has been transferred"}
                 message={
-                  <p>
-                    Project ({" "}
-                    <b>{response.data.submission.data.projectNumber}</b> ) has
-                    been transferred into the tool
-                  </p>
+                  <p>Purchase order has been transferred into the tool</p>
                 }
                 type={"success"}
               />
@@ -363,36 +339,20 @@ export default function Elov(props: Props) {
             />
           );
           return;
-        }
-        RestAPI.createSubmissionWithChildren(submission).then((response) => {
-          if (response.data.hasChanged) {
+        } else {
+          RestAPI.createSubmission(submission.submission).then((response) => {
             toast(
               <Toast
-                title={"Project Number has been adjusted"}
+                title={"Purchase order has been transferred"}
                 message={
-                  <p>
-                    Project Number changed to:{" "}
-                    <b>{response.data.submission.data.projectNumber}</b>
-                  </p>
+                  <p>Purchae order has been transferred into the tool</p>
                 }
-                type={"info"}
+                type={"success"}
               />
             );
-          }
-          toast(
-            <Toast
-              title={"Project has been transferred"}
-              message={
-                <p>
-                  Project ( <b>{response.data.submission.data.projectNumber}</b>{" "}
-                  ) has been transferred into the tool
-                </p>
-              }
-              type={"success"}
-            />
-          );
-          props.history.push("/submissions");
-        });
+            props.history.push("/submissions");
+          });
+        }
       }
     }
   }
@@ -424,7 +384,7 @@ export default function Elov(props: Props) {
           currency: props.submission.data.localCurrency ?? "",
         },
       });
-      setProjectName(props.submission.data.requestorsCompanyName ?? "");
+      setProjectName(props.submission.data.projectName ?? "");
       setCampaignName(props.submission.data.campaignName ?? "");
       setProjectNumber(props.submission.data.projectNumber ?? "");
       setVendorsNames(
@@ -435,20 +395,28 @@ export default function Elov(props: Props) {
       setServiceType(props.submission.data.serviceType ?? "");
       setServiceProvider(props.submission.data.serviceProvider ?? "");
       setServiceNetValueLC(
-        props.submission.data.netValueOfServiceOrderedLC.toFixed(2) ?? ""
+        props.submission.data.netValueOfServiceOrderedLC
+          ? props.submission.data.netValueOfServiceOrderedLC.toFixed(2)
+          : "0.00"
       );
       setServiceLC({
         label: props.submission.data.localCurrency ?? "",
         value: props.submission.data.localCurrency ?? "",
       });
       setServiceNetValuePOCurrency(
-        props.submission.data.netValuePOC.toFixed(2) ?? ""
+        props.submission.data.netValuePOC
+          ? props.submission.data.netValuePOC.toFixed(2)
+          : "0.00"
       );
       setServicePOCurrency({
         label: props.submission.data.purchaseOrderCurrency ?? "",
         value: props.submission.data.purchaseOrderCurrency ?? "",
       });
-      setServiceNetValueEUR(props.submission.data.netValueEur.toFixed(2) ?? "");
+      setServiceNetValueEUR(
+        props.submission.data.netValueEur
+          ? props.submission.data.netValueEur
+          : "0.00"
+      );
       setServiceExtPONumber(props.submission.data.serviceExtPONumber ?? "");
       setServicePODate(
         props.submission.data.servicePODate === null
@@ -511,9 +479,10 @@ export default function Elov(props: Props) {
               ExchangeRates.forEach((rate) => {
                 if (rate.label === value.value.currency) {
                   ler = parseFloat(rate.value);
+                  setServiceLC(rate);
                 }
               });
-              setLocalExchangeRate(ler);
+              // setServiceLC(ler);
               setRequestorsCompanyName(value);
             }}
             classNamePrefix="select"
@@ -564,6 +533,7 @@ export default function Elov(props: Props) {
           <Input
             placeholder="____________"
             value={projectNumber}
+            isInvalid={inputErrors.includes("projectNumber")}
             onChange={(event) => {
               if (event.target.value.length < 13) {
                 setProjectNumber(event.target.value);
@@ -590,7 +560,7 @@ export default function Elov(props: Props) {
                       VendorsNames = vendorNew;
                       sub.children = children;
                       setSub(sub);
-
+                      setProjectName(sub.data.projectName);
                       break;
                     }
                   }
@@ -606,6 +576,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Project Name</Text>
           <Input
             value={projectName}
+            isInvalid={inputErrors.includes("projectName")}
             onChange={(event) => setProjectName(event.target.value)}
             // disabled
             bg={useColorModeValue("white", "#2C313C")}
@@ -616,25 +587,10 @@ export default function Elov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Vendors</Text>
           <Select
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("vendorNamePO")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,
@@ -659,6 +615,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Service Provider</Text>
           <Input
             value={serviceProvider}
+            isInvalid={inputErrors.includes("serviceProvider")}
             onChange={(event) => setServiceProvider(event.target.value)}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -668,6 +625,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Service Type</Text>
           <Textarea
             value={serviceType}
+            isInvalid={inputErrors.includes("serviceType")}
             onChange={(event) => setServiceType(event.target.value)}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -681,6 +639,7 @@ export default function Elov(props: Props) {
             <Text mb="8px">Net Value (LC Currency)</Text>
             <Input
               value={serviceNetValueLC}
+              isInvalid={inputErrors.includes("netValueOfServiceOrderedLC")}
               onChange={(event) => setServiceNetValueLC(event.target.value)}
               bg={useColorModeValue("white", "#2C313C")}
               color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -692,7 +651,7 @@ export default function Elov(props: Props) {
               menuPortalTarget={document.body}
               styles={DefaultSelectStyles(
                 useColorModeValue,
-                inputErrors.includes("serviceLC")
+                inputErrors.includes("localCurrency")
               )}
               theme={(theme) => ({
                 ...theme,
@@ -722,6 +681,7 @@ export default function Elov(props: Props) {
             <Text mb="8px">Net Value (Purchase Order Currency)</Text>
             <Input
               value={serviceNetValuePOCurrency}
+              isInvalid={inputErrors.includes("netValuePOC")}
               onChange={(event) =>
                 setServiceNetValuePOCurrency(event.target.value)
               }
@@ -735,7 +695,7 @@ export default function Elov(props: Props) {
               menuPortalTarget={document.body}
               styles={DefaultSelectStyles(
                 useColorModeValue,
-                inputErrors.includes("servicePOCurrency")
+                inputErrors.includes("purchaseOrderCurrency")
               )}
               theme={(theme) => ({
                 ...theme,
@@ -764,6 +724,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Net Value (EUR)</Text>
           <Input
             value={serviceNetValueEUR}
+            isInvalid={inputErrors.includes("netValueEur")}
             onChange={(event) => setServiceNetValueEUR(event.target.value)}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -774,6 +735,7 @@ export default function Elov(props: Props) {
             <Text mb="8px">External Purchase Order Number</Text>
             <Input
               value={serviceExtPONumber}
+              isInvalid={inputErrors.includes("serviceExtPONumber")}
               onChange={(event) => setServiceExtPONumber(event.target.value)}
               bg={useColorModeValue("white", "#2C313C")}
               color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -802,6 +764,7 @@ export default function Elov(props: Props) {
             <Text mb="8px">Name of Person Ordering the Service (ALSO)</Text>
             <Input
               value={serviceOrderingPerson}
+              isInvalid={inputErrors.includes("serviceOrderingPerson")}
               onChange={(event) => setServiceOrderingPerson(event.target.value)}
               bg={useColorModeValue("white", "#2C313C")}
               color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -813,6 +776,7 @@ export default function Elov(props: Props) {
             </Text>
             <Input
               value={serviceApprovingPerson}
+              isInvalid={inputErrors.includes("serviceApprovingPerson")}
               onChange={(event) =>
                 setServiceApprovingPerson(event.target.value)
               }
@@ -826,6 +790,7 @@ export default function Elov(props: Props) {
             <Text mb="8px">Contact Person from Service Provider Side</Text>
             <Input
               value={serviceContactPerson}
+              isInvalid={inputErrors.includes("serviceContactPerson")}
               onChange={(event) => setServiceContactPerson(event.target.value)}
               bg={useColorModeValue("white", "#2C313C")}
               color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -838,6 +803,7 @@ export default function Elov(props: Props) {
             </Text>
             <Input
               value={serviceContactDetails}
+              isInvalid={inputErrors.includes("serviceContactDetails")}
               onChange={(event) => setServiceContactDetails(event.target.value)}
               bg={useColorModeValue("white", "#2C313C")}
               color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -922,61 +888,7 @@ export default function Elov(props: Props) {
         //   });
         // }}
         onClick={async () => {
-          RestAPI.getSubmissions().then((response) => {
-            var subs = response.data;
-            var targetId = "";
-            for (let sub of subs) {
-              if (
-                sub.parentId === null &&
-                sub.data.projectNumber === projectNumber
-              ) {
-                targetId = sub.id || "";
-                break;
-              }
-            }
-            if (targetId.length > 0) {
-              var uuugh = {
-                project: "62610ab73a88d397b05cea12",
-                title: "",
-                parentId: targetId,
-                viewId: null,
-                group: "vendor",
-                created: new Date(),
-                updated: new Date(),
-                status: "New",
-                author: requestorsName,
-                data: {
-                  projectNumber: projectNumber,
-                  servicePODate:
-                    servicePODate === null ? null : servicePODate.toString(),
-                  serviceType: serviceType,
-                  requestorsCompanyName: requestorsCompanyName.label,
-                  companyCode: requestorsCompanyName.value.code,
-                  requestorsCountry: requestorsCompanyName.value.country,
-                  netValueOfServiceOrderedLC: parseFloat(serviceNetValueLC),
-                  localCurrency: serviceLC.label,
-                  netValuePOC: parseFloat(serviceNetValuePOCurrency),
-                  purchaseOrderCurrency: servicePOCurrency.label,
-                  netValueEur: parseFloat(serviceNetValueEUR),
-                  vendorNamePO: vendorsNames.map((vendor: any) => vendor.label),
-                  comments: comments,
-                  serviceProvider: serviceProvider,
-                  serviceExtPONumber: serviceExtPONumber,
-                  serviceApprovingPerson: serviceApprovingPerson,
-                  serviceOrderingPerson: serviceOrderingPerson,
-                  serviceContactPerson: serviceContactPerson,
-                  serviceContactDetails: serviceContactDetails,
-
-                  purchaseOrderServiceProvider: serviceProvider,
-                },
-              };
-
-              RestAPI.createSubmission(uuugh);
-              setTimeout(() => {
-                props.history.push("/submissions");
-              }, 2000);
-            }
-          });
+          createSubmission(false);
         }}
         isDisabled={requestorsCompanyName.value.code !== "6110"}
       >
