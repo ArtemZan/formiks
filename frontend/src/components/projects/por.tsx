@@ -248,6 +248,7 @@ export default function Elov(props: Props) {
       author: requestorsName,
       data: {
         projectNumber: projectNumber,
+        projectName1: projectName,
         purchaseOrderStatus: "Invoice Not Received",
         servicePODate: servicePODate === null ? null : servicePODate.toString(),
         serviceType: serviceType,
@@ -576,7 +577,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Project Name</Text>
           <Input
             value={projectName}
-            isInvalid={inputErrors.includes("projectName")}
+            isInvalid={inputErrors.includes("projectName1")}
             onChange={(event) => setProjectName(event.target.value)}
             // disabled
             bg={useColorModeValue("white", "#2C313C")}
