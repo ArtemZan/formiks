@@ -746,7 +746,6 @@ export default function Elmv(props: Props) {
             totalBudget = totalBudget + e.data[key];
           }
           if (!nonMandatoryFields.includes(key)) {
-            console.log(key);
             if (key !== "businessUnit") {
               switch (typeof e.data[key]) {
                 case "number":
@@ -761,6 +760,10 @@ export default function Elmv(props: Props) {
                 case "object":
                   if (e.data[key] === null) {
                     fieldKeys.push(key);
+                  } else {
+                    if (e.data[key].length !== 0) {
+                      fieldKeys.push(key);
+                    }
                   }
                   break;
                 case "string":
@@ -880,7 +883,6 @@ export default function Elmv(props: Props) {
     Year = responses[8].data;
     ProjectStartQuarter = responses[9].data;
     BUs = responses[10].data;
-    AlsoInternationalVendorsNames = responses[11].data;
   }
   useEffect(() => {
     if (props.submission && !injectionReady) {
@@ -1605,25 +1607,10 @@ export default function Elmv(props: Props) {
           <Select
             // menuPortalTarget={document.body}
             isMulti
-            styles={{
-              menu: (provided) => ({
-                ...provided,
-                zIndex: 1000000,
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: "#718196",
-              }),
-              control: (base, state) => ({
-                ...base,
-                minHeight: 40,
-                border: "1px solid #E2E8F0",
-                transition: "0.3s",
-                "&:hover": {
-                  border: "1px solid #CBD5E0",
-                },
-              }),
-            }}
+            styles={DefaultSelectStyles(
+              useColorModeValue,
+              inputErrors.includes("vendorName")
+            )}
             theme={(theme) => ({
               ...theme,
               borderRadius: 6,

@@ -381,7 +381,7 @@ export default function Elov(props: Props) {
           currency: props.submission.data.localCurrency ?? "",
         },
       });
-      setProjectName(props.submission.data.projectName ?? "");
+      setProjectName(props.submission.data.projectName1 ?? "");
       setCampaignName(props.submission.data.campaignName ?? "");
       setProjectNumber(props.submission.data.projectNumber ?? "");
       setVendorsNames(
