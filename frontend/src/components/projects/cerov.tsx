@@ -999,6 +999,7 @@ export default function Cerov(props: Props) {
     var nonMandatoryFields: string[] = [
       "targetAudience",
       "projectApprover",
+      "productionProjectManager",
       "projectApproval",
       "manufacturersFiscalQuarter",
       "comments",
@@ -1059,6 +1060,7 @@ export default function Cerov(props: Props) {
         }
       }
     });
+    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
