@@ -34,6 +34,8 @@ interface Props {
 
 export function Viewer(props: Props) {
   const [predefinedProject, setPredefinedProject] = useState<any>(null);
+  const [warningText, setWarningText] = useState<any>(null);
+  const [warningText2, setWarningText2] = useState<any>(null);
   const [project, setProject] = useState<Project>({
     title: "",
     created: new Date(),
@@ -106,6 +108,10 @@ export function Viewer(props: Props) {
                 isDraft={true}
               />
             );
+            setWarningText("You are viewing existing purchase order form!");
+            setWarningText2(
+              "Please note that submitting this form will create new purchase order."
+            );
           }
         });
       } else {
@@ -125,6 +131,10 @@ export function Viewer(props: Props) {
                 isDraft={true}
               />
             );
+            setWarningText("You are viewing existing project!");
+            setWarningText2(
+              "Please note that submitting this form will create a new project"
+            );
           }
           if (projectId === "619515b754e61c8dd33daa52") {
             setPredefinedProject(
@@ -134,6 +144,10 @@ export function Viewer(props: Props) {
                 children={response.data.children}
                 history={props.history}
               />
+            );
+            setWarningText("You are viewing existing project!");
+            setWarningText2(
+              "Please note that submitting this form will create a new project"
             );
           }
           if (projectId === "6246ec8efa2a446faadb8d9b") {
@@ -145,6 +159,10 @@ export function Viewer(props: Props) {
                 history={props.history}
               />
             );
+            setWarningText("You are viewing existing project!");
+            setWarningText2(
+              "Please note that submitting this form will create a new project"
+            );
           }
           if (projectId === "624ac98682eeddf1a9b6a622") {
             setPredefinedProject(
@@ -155,12 +173,15 @@ export function Viewer(props: Props) {
                 history={props.history}
               />
             );
+            setWarningText("You are viewing existing project!");
+            setWarningText2(
+              "Please note that submitting this form will create a new project"
+            );
           }
           if (
             projectId === "62610ab73a88d397b05cea12" &&
             response.data.children.length > 0
           ) {
-            console.log(response.data.children[0]);
             setPredefinedProject(
               <Por
                 project={project}
@@ -168,6 +189,10 @@ export function Viewer(props: Props) {
                 children={[]}
                 history={props.history}
               />
+            );
+            setWarningText("You are viewing existing purchase order form!");
+            setWarningText2(
+              "Please note that submitting this form will create new purchase order."
             );
           }
         });
@@ -250,11 +275,9 @@ export function Viewer(props: Props) {
       >
         <AlertIcon boxSize="40px" mr={0} />
         <AlertTitle mt={4} mb={1} fontSize="lg">
-          You are viewing existing project!
+          {warningText ?? ""}
         </AlertTitle>
-        <AlertDescription maxWidth="sm">
-          Please note that submitting this form will create a new project
-        </AlertDescription>
+        <AlertDescription maxWidth="sm">{warningText2 ?? ""}</AlertDescription>
       </Alert>
 
       <Alert
