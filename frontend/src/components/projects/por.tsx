@@ -238,7 +238,7 @@ export default function Elov(props: Props) {
       title: "",
       parentId: targetId,
       viewId: null,
-      group: "vendor",
+      group: "PO",
       created: new Date(),
       updated: new Date(),
       status: "New",
@@ -246,6 +246,8 @@ export default function Elov(props: Props) {
       data: {
         projectNumber: projectNumber,
         projectName1: projectName,
+        campaignName: projectName,
+        organizingCompany: requestorsCompanyName.label,
         purchaseOrderStatus: "Invoice Not Received",
         servicePODate: servicePODate === null ? null : servicePODate.toString(),
         serviceType: serviceType,
@@ -384,6 +386,33 @@ export default function Elov(props: Props) {
       setProjectName(props.submission.data.projectName1 ?? "");
       setCampaignName(props.submission.data.campaignName ?? "");
       setProjectNumber(props.submission.data.projectNumber ?? "");
+      if (props.submission.data.projectNumber !== "") {
+        if (props.submission.data.projectNumber.length === 12) {
+          for (let sub of submissions) {
+            if (
+              sub.parentId === null &&
+              sub.data.projectNumber === props.submission.data.projectNumber
+            ) {
+              var children: any[] = [];
+              var vendorNew: any[] = [];
+              for (let child of submissions) {
+                if (child.parentId === sub.id) {
+                  children.push(child);
+                  if (child.group === "vendor") {
+                    vendorNew.push({
+                      label: child.data.vendorName ?? "",
+                      value: child.data.vendorName ?? "",
+                    });
+                  }
+                }
+              }
+              VendorsNames = vendorNew;
+              sub.children = children;
+              setSub(sub);
+            }
+          }
+        }
+      }
       setVendorsNames(
         (props.submission.data.vendorNamePO ?? []).map((vendor: string) => {
           return { label: vendor, value: vendor };
