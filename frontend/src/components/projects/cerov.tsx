@@ -1030,6 +1030,14 @@ export default function Cerov(props: Props) {
       "companyCode",
       "manufacturersFiscalQuarter",
       "comments",
+      "countryCostEstimationEur",
+      "countryBudgetContributionEur",
+      "estimatedResultEUR",
+      "estimatedCostsEUR",
+      "estimatedIncomeEUR",
+      "estimatedCostsCC",
+      "estimatedIncomeCC",
+      "estimatedResultCC",
       "additionalInformation",
       "status",
       "creditorNumber",
@@ -1043,13 +1051,15 @@ export default function Cerov(props: Props) {
 
     countries.forEach((country: any) => {
       console.log(country);
+      console.log(sub.data);
       Object.keys(country.data).forEach((key: any) => {
-        if (key === "productionProjectManager") {
+        if (key === "countryBudgetContributionEur") {
+          console.log(country.data[key]);
         }
         if (!nonMandatoryFields.includes(key)) {
           switch (typeof country.data[key]) {
             case "number":
-              if (isNaN(country.data[key])) {
+              if (isNaN(country.data[key]) || country.data[key] === 0) {
                 fieldKeys.push(key);
               }
               break;
