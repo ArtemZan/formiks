@@ -34,10 +34,10 @@ export function DefaultSelectStyles(color: any, invalid?: boolean) {
     control: (base: any, state: any) => ({
       ...base,
       minHeight: 40,
-      border: `3px solid ${invalid===true ? "red" : color("#E2E8F0", "#3E4249")}}`,
+      border: `2px solid ${invalid===true ? "red" : color("#E2E8F0", "#3E4249")}}`,
       transition: "0.3s",
       "&:hover": {
-        border: `3px solid ${color("#CBD5E0", "#565e71")}`,
+        border: `2px solid ${color("#CBD5E0", "#565e71")}`,
       },
       backgroundColor: color("white", "#2C313C"),
     }),
