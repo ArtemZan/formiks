@@ -928,7 +928,7 @@ export default function Cerov(props: Props) {
   function totalAlert(value: any, row: any, check: number) {
     if (value) {
       value = value.replace("%", "");
-      if (parseFloat(value) - check > 0.02 && row === "TOTAL") {
+      if (check - parseFloat(value) > 0.02 && row === "TOTAL") {
         return useColorModeValue("red.300", "#ABB2BF");
       }
     }
@@ -993,6 +993,32 @@ export default function Cerov(props: Props) {
     setTotalcbCostsEur(totalCostsEur.toFixed(2));
     setCostBreakdown(table);
   }
+  function cellNumberAlert(value: any, row: any) {
+    if (!Number.isNaN(value) && value !== "" && value !== "NaN") {
+    } else {
+      if (row.vendor !== "TOTAL") {
+        return useColorModeValue("red.300", "#ABB2BF");
+      }
+    }
+  }
+  function cellTextAlert(value: any, row: any) {
+    if (value !== "") {
+    } else {
+      if (row.vendor !== "TOTAL") {
+        return useColorModeValue("red.300", "#ABB2BF");
+      }
+    }
+  }
+
+  function cellDropDownAlert(value: any, row: any) {
+    if (value !== "") {
+      return false;
+    } else {
+      if (row.vendor !== "TOTAL") {
+        return true;
+      } else return false;
+    }
+  }
 
   function submissionValidation(submission: SubmissionWithChildren) {
     var fieldKeys: string[] = [];
@@ -1001,6 +1027,7 @@ export default function Cerov(props: Props) {
       "projectApprover",
       "productionProjectManager",
       "projectApproval",
+      "companyCode",
       "manufacturersFiscalQuarter",
       "comments",
       "additionalInformation",
@@ -1011,6 +1038,38 @@ export default function Cerov(props: Props) {
     if (sub.data.budgetSource === "noBudget") {
       nonMandatoryFields.push("debitorNumber");
     }
+
+    var countries = submission.children.filter((el) => el.group === "country");
+
+    countries.forEach((country: any) => {
+      console.log(country);
+      Object.keys(country.data).forEach((key: any) => {
+        if (key === "productionProjectManager") {
+        }
+        if (!nonMandatoryFields.includes(key)) {
+          switch (typeof country.data[key]) {
+            case "number":
+              if (isNaN(country.data[key])) {
+                fieldKeys.push(key);
+              }
+              break;
+            case "object":
+              if (country.data[key] === null) {
+                fieldKeys.push(key);
+              }
+              break;
+            case "string":
+              if (country.data[key] === "") {
+                fieldKeys.push(key);
+              }
+              break;
+            case "undefined":
+              fieldKeys.push(key);
+              break;
+          }
+        }
+      });
+    });
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
     Object.keys(sub.data).forEach((key: any) => {
       if (!nonMandatoryFields.includes(key)) {
@@ -1750,6 +1809,7 @@ export default function Cerov(props: Props) {
                       temp[index!].companyName = event.target.value;
                       setCostBreakdown(temp);
                     }}
+                    bg={cellTextAlert(rowData.companyName, rowData)}
                   />
                 )}
               </Cell>
@@ -1766,6 +1826,7 @@ export default function Cerov(props: Props) {
                       temp[index!].companyCode = event.target.value;
                       setCostBreakdown(temp);
                     }}
+                    bg={cellTextAlert(rowData.companyCode, rowData)}
                   />
                 )}
               </Cell>
@@ -1782,6 +1843,7 @@ export default function Cerov(props: Props) {
                       temp[index!].country = event.target.value;
                       setCostBreakdown(temp);
                     }}
+                    bg={cellTextAlert(rowData.country, rowData)}
                   />
                 )}
               </Cell>
@@ -1793,11 +1855,13 @@ export default function Cerov(props: Props) {
                 {(rowData, index) => (
                   <Input
                     value={rowData.contactEmail}
+                    isInvalid={inputErrors.includes("productionProjectManager")}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
                       temp[index!].contactEmail = event.target.value;
                       setCostBreakdown(temp);
                     }}
+                    bg={cellTextAlert(rowData.contactEmail, rowData)}
                   />
                 )}
               </Cell>
@@ -1814,6 +1878,7 @@ export default function Cerov(props: Props) {
                       temp[index!].projectNumber = event.target.value;
                       setCostBreakdown(temp);
                     }}
+                    bg={cellTextAlert(rowData.projectNumber, rowData)}
                   />
                 )}
               </Cell>
