@@ -223,7 +223,6 @@ export default function Elov(props: Props) {
     if (projectNumberCheck === "") {
       fieldKeys.push("projectNumber");
     }
-    console.log(fieldKeys);
     return fieldKeys;
   }
 
@@ -297,14 +296,25 @@ export default function Elov(props: Props) {
         });
       } else {
         if (submissionValidation(submission).length !== 0) {
-          toast(
-            <Toast
-              title={"Mandatory fields are not filled"}
-              message={"not all fields that are required were provided"}
-              type={"error"}
-            />
-          );
-          return;
+          if (projectNumberCheck === "") {
+            toast(
+              <Toast
+                title={"This project number does not exist in the tool."}
+                message={" Please provide correct project number"}
+                type={"error"}
+              />
+            );
+            return;
+          } else {
+            toast(
+              <Toast
+                title={"Mandatory fields are not filled"}
+                message={"not all fields that are required were provided"}
+                type={"error"}
+              />
+            );
+            return;
+          }
         }
         RestAPI.deleteDraft(props.submission.id).then(() => {
           RestAPI.createSubmission(submission.submission).then((response) => {
@@ -334,14 +344,25 @@ export default function Elov(props: Props) {
         });
       } else {
         if (submissionValidation(submission).length !== 0) {
-          toast(
-            <Toast
-              title={"Mandatory fields are not filled"}
-              message={"not all fields that are required were provided"}
-              type={"error"}
-            />
-          );
-          return;
+          if (projectNumberCheck === "") {
+            toast(
+              <Toast
+                title={"This project number does not exist in the tool."}
+                message={" Please provide correct project number"}
+                type={"error"}
+              />
+            );
+            return;
+          } else {
+            toast(
+              <Toast
+                title={"Mandatory fields are not filled"}
+                message={"not all fields that are required were provided"}
+                type={"error"}
+              />
+            );
+            return;
+          }
         } else {
           RestAPI.createSubmission(submission.submission).then((response) => {
             toast(

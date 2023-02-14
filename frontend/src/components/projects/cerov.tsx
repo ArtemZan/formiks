@@ -1056,12 +1056,7 @@ export default function Cerov(props: Props) {
     var countries = submission.children.filter((el) => el.group === "country");
 
     countries.forEach((country: any) => {
-      console.log(country);
-      console.log(sub.data);
       Object.keys(country.data).forEach((key: any) => {
-        if (key === "countryBudgetContributionEur") {
-          console.log(country.data[key]);
-        }
         if (!nonMandatoryFields.includes(key)) {
           switch (typeof country.data[key]) {
             case "number":
@@ -1135,7 +1130,6 @@ export default function Cerov(props: Props) {
         }
       }
     });
-    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
