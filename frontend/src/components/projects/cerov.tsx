@@ -926,9 +926,15 @@ export default function Cerov(props: Props) {
   }
 
   function totalAlert(value: any, row: any, check: number) {
+    console.log(value);
+    console.log(check);
     if (value) {
       value = value.replace("%", "");
-      if (check - parseFloat(value) > 0.02 && row === "TOTAL") {
+      var total = check - parseFloat(value);
+      if (total < 0) {
+        total = total * -1;
+      }
+      if (total > 0.02 && row === "TOTAL") {
         return useColorModeValue("red.300", "#ABB2BF");
       }
     }
