@@ -74,6 +74,7 @@ export default function Elov(props: Props) {
   });
   const [projectNumber, setProjectNumber] = useState("");
   const [requestorsName, setRequestorsName] = useState("");
+  const [projectNumberCheck, setProjectNumberCheck] = useState("");
   const [projectApproval, setProjectApproval] = useState("");
   const [fiscalQuarter, setFiscalQuarter] = useState<any>({
     label: "",
@@ -219,7 +220,10 @@ export default function Elov(props: Props) {
         }
       }
     });
-    setInputErrors(fieldKeys);
+    if (projectNumberCheck === "") {
+      fieldKeys.push("projectNumber");
+    }
+    console.log(fieldKeys);
     return fieldKeys;
   }
 
@@ -559,9 +563,10 @@ export default function Elov(props: Props) {
           <Input
             placeholder="____________"
             value={projectNumber}
-            isInvalid={inputErrors.includes("projectNumber")}
+            isInvalid={projectNumberCheck === ""}
             onChange={(event) => {
               if (event.target.value.length < 13) {
+                setProjectNumberCheck("");
                 setProjectNumber(event.target.value);
                 if (event.target.value.length === 12) {
                   for (let sub of submissions) {
@@ -569,6 +574,7 @@ export default function Elov(props: Props) {
                       sub.parentId === null &&
                       sub.data.projectNumber === event.target.value
                     ) {
+                      setProjectNumberCheck(sub.data.projectNumber);
                       var children: any[] = [];
                       var vendorNew: any[] = [];
                       for (let child of submissions) {
@@ -583,11 +589,11 @@ export default function Elov(props: Props) {
                           }
                         }
                       }
+
                       VendorsNames = vendorNew;
                       sub.children = children;
                       setSub(sub);
                       setProjectName(sub.data.projectName);
-                      break;
                     }
                   }
                 }
