@@ -115,7 +115,7 @@ export default function Cerov(props: Props) {
     },
   });
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
-
+  const [inputError, setInputError] = useState("");
   const [totalcbShare, setTotalcbShare] = useState("0.00");
   const [totalcbContribution, setTotalcbContribution] = useState("0.00");
   const [totalcbCosts, setTotalcbCosts] = useState("0.00");
@@ -925,9 +925,7 @@ export default function Cerov(props: Props) {
     }
   }
 
-  function totalAlert(value: any, row: any, check: number) {
-    console.log(value);
-    console.log(check);
+  function totalAlert(value: any, row: any, check: number, column: string) {
     if (value) {
       value = value.replace("%", "");
       var total = check - parseFloat(value);
@@ -935,7 +933,12 @@ export default function Cerov(props: Props) {
         total = total * -1;
       }
       if (total > 0.02 && row === "TOTAL") {
+        setInputError(column);
         return useColorModeValue("red.300", "#ABB2BF");
+      } else {
+        if (inputError.indexOf(column) > -1) {
+          setInputError("");
+        }
       }
     }
   }
@@ -1130,6 +1133,9 @@ export default function Cerov(props: Props) {
         }
       }
     });
+    if (inputError !== "") {
+      fieldKeys.push("total");
+    }
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -1906,7 +1912,12 @@ export default function Cerov(props: Props) {
                         event.target.value
                       );
                     }}
-                    bg={totalAlert(rowData.share, rowData.companyName, 100)}
+                    bg={totalAlert(
+                      rowData.share,
+                      rowData.companyName,
+                      100,
+                      "share"
+                    )}
                     // onChange={(event) => {
                     //   var temp = [...costBreakdown];
                     //   temp[index!].share = event.target.value;
@@ -1936,7 +1947,8 @@ export default function Cerov(props: Props) {
                     bg={totalAlert(
                       totalcbContribution,
                       rowData.companyName,
-                      parseFloat(estimatedIncomeBudgetCurrency)
+                      parseFloat(estimatedIncomeBudgetCurrency),
+                      "contribution"
                     )}
                   />
                 )}
@@ -1963,7 +1975,8 @@ export default function Cerov(props: Props) {
                     bg={totalAlert(
                       totalcbCosts,
                       rowData.companyName,
-                      parseFloat(estimatedCostsBudgetCurrency)
+                      parseFloat(estimatedCostsBudgetCurrency),
+                      "estimatedCosts"
                     )}
                   />
                 )}
@@ -1980,7 +1993,8 @@ export default function Cerov(props: Props) {
                     bg={totalAlert(
                       totalcbContributionEur,
                       rowData.companyName,
-                      parseFloat(estimatedIncome)
+                      parseFloat(estimatedIncome),
+                      "budgetContributionEur"
                     )}
                   />
                 )}
@@ -1996,7 +2010,8 @@ export default function Cerov(props: Props) {
                     bg={totalAlert(
                       totalcbCostsEur,
                       rowData.companyName,
-                      parseFloat(estimatedCosts)
+                      parseFloat(estimatedCosts),
+                      "estimatedCostsEur"
                     )}
                   />
                 )}

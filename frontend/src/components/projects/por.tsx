@@ -281,6 +281,7 @@ export default function Elov(props: Props) {
       children,
       local: null,
     };
+    setInputErrors(submissionValidation(submission));
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
@@ -344,6 +345,7 @@ export default function Elov(props: Props) {
         });
       } else {
         if (submissionValidation(submission).length !== 0) {
+          console.log(inputErrors);
           if (projectNumberCheck === "") {
             toast(
               <Toast
