@@ -74,7 +74,7 @@ export default function Elov(props: Props) {
   });
   const [projectNumber, setProjectNumber] = useState("");
   const [requestorsName, setRequestorsName] = useState("");
-  const [projectNumberCheck, setProjectNumberCheck] = useState("");
+  const [projectNumberCheck, setProjectNumberCheck] = useState("-");
   const [projectApproval, setProjectApproval] = useState("");
   const [fiscalQuarter, setFiscalQuarter] = useState<any>({
     label: "",
@@ -420,6 +420,7 @@ export default function Elov(props: Props) {
               sub.parentId === null &&
               sub.data.projectNumber === props.submission.data.projectNumber
             ) {
+              setProjectNumberCheck(sub.data.projectNumber);
               var children: any[] = [];
               var vendorNew: any[] = [];
               for (let child of submissions) {
@@ -450,7 +451,7 @@ export default function Elov(props: Props) {
       setServiceNetValueLC(
         props.submission.data.netValueOfServiceOrderedLC
           ? props.submission.data.netValueOfServiceOrderedLC.toFixed(2)
-          : "0.00"
+          : ""
       );
       setServiceLC({
         label: props.submission.data.localCurrency ?? "",
@@ -459,7 +460,7 @@ export default function Elov(props: Props) {
       setServiceNetValuePOCurrency(
         props.submission.data.netValuePOC
           ? props.submission.data.netValuePOC.toFixed(2)
-          : "0.00"
+          : ""
       );
       setServicePOCurrency({
         label: props.submission.data.purchaseOrderCurrency ?? "",
@@ -468,7 +469,7 @@ export default function Elov(props: Props) {
       setServiceNetValueEUR(
         props.submission.data.netValueEur
           ? props.submission.data.netValueEur
-          : "0.00"
+          : ""
       );
       setServiceExtPONumber(props.submission.data.serviceExtPONumber ?? "");
       setServicePODate(
