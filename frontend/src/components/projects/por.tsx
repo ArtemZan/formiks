@@ -126,6 +126,7 @@ export default function Elov(props: Props) {
   const [comments, setComments] = useState("");
   const [vendor, setVendor] = useState<any>({});
   const [vensorNames, setVendorNames] = useState<any>([]);
+  const [vendorsDD, setVendorsDD] = useState<any>([]);
   const [costBreakdown, setCostBreakdown] = useState<any>([]);
 
   const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
@@ -158,7 +159,11 @@ export default function Elov(props: Props) {
     );
     PH1 = responses[0].data;
     Companies = responses[1].data;
-    VendorsNames = responses[2].data;
+    if (VendorsNames.length === 0) {
+      VendorsNames = responses[2].data;
+    } else {
+      setVendorsDD(responses[2].data);
+    }
     CampaignChannel = responses[3].data;
     TargetAudience = responses[4].data;
     Budget = responses[5].data;
@@ -250,6 +255,7 @@ export default function Elov(props: Props) {
         projectNumber: projectNumber,
         projectName1: projectName,
         campaignName: projectName,
+        projectType: "Purchase Order",
         organizingCompany: requestorsCompanyName.label,
         purchaseOrderStatus: "Invoice Not Received",
         servicePODate: servicePODate === null ? null : servicePODate.toString(),
@@ -345,7 +351,6 @@ export default function Elov(props: Props) {
         });
       } else {
         if (submissionValidation(submission).length !== 0) {
-          console.log(inputErrors);
           if (projectNumberCheck === "") {
             toast(
               <Toast
@@ -389,13 +394,42 @@ export default function Elov(props: Props) {
       }
     });
     fetchDropdowns().then(() => forceUpdate());
+    if (props.isDraft) {
+    }
     setVendorNames(VendorsNames);
-    RestAPI.getSubmissions().then((response) => {
-      var subs = response.data;
-      if (subs.length > 0) {
-        setSubmissions(subs);
-      }
-    });
+    if (submissions.length === 0) {
+      RestAPI.getSubmissions().then(async (response) => {
+        var subs = response.data;
+        if (subs.length > 0) {
+          setSubmissions(subs);
+        }
+        for (let sub of submissions) {
+          if (
+            sub.parentId === null &&
+            sub.data.projectNumber === props.submission.data.projectNumber
+          ) {
+            setProjectNumberCheck(sub.data.projectNumber);
+            var children: any[] = [];
+            var vendorNew: any[] = [];
+            for (let child of submissions) {
+              if (child.parentId === sub.id) {
+                children.push(child);
+                if (child.group === "vendor") {
+                  vendorNew.push({
+                    label: child.data.vendorName ?? "",
+                    value: child.data.vendorName ?? "",
+                  });
+                }
+              }
+            }
+            VendorsNames = vendorNew;
+            setVendorNames(vendorNew);
+            sub.children = children;
+            setSub(sub);
+          }
+        }
+      });
+    }
   }, []);
   const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
@@ -435,10 +469,13 @@ export default function Elov(props: Props) {
                 }
               }
               VendorsNames = vendorNew;
+              setVendorNames(vendorNew);
               sub.children = children;
               setSub(sub);
             }
           }
+        } else {
+          VendorsNames = vendorsDD;
         }
       }
       setVendorsNames(
@@ -613,13 +650,15 @@ export default function Elov(props: Props) {
                           }
                         }
                       }
-
+                      setVendorsDD(VendorsNames);
                       VendorsNames = vendorNew;
                       sub.children = children;
                       setSub(sub);
                       setProjectName(sub.data.projectName);
                     }
                   }
+                } else {
+                  VendorsNames = vendorsDD;
                 }
               }
             }}

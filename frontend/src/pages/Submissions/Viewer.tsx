@@ -54,7 +54,6 @@ export function Viewer(props: Props) {
 
   function getProject(id: string) {
     RestAPI.getProject(id).then((response) => {
-      console.log(response.data);
       setProject(response.data);
     });
   }
