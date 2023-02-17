@@ -162,12 +162,12 @@ export default function Elov(props: Props) {
       });
       setStartDate(
         props.submission.data.campaignStartDate === null
-          ? ""
+          ? null
           : new Date(props.submission.data.campaignStartDate)
       );
       setEndDate(
         props.submission.data.campaignEndDate === null
-          ? ""
+          ? null
           : new Date(props.submission.data.campaignEndDate)
       );
       if (Budget.length > 0 && props.submission.data.budgetSource !== "") {
@@ -198,26 +198,26 @@ export default function Elov(props: Props) {
       setEstimatedIncome(
         props.submission.data.campaignEstimatedIncomeEur
           ? props.submission.data.campaignEstimatedIncomeEur.toFixed(2)
-          : "0.00"
+          : ""
       );
       setEstimatedCosts(
         props.submission.data.campaignEstimatedCostsEur
           ? props.submission.data.campaignEstimatedCostsEur.toFixed(2)
-          : "0.00"
+          : ""
       );
       setNetProfitTarget(
         props.submission.data.campaignNetProfitTargetEur
           ? props.submission.data.campaignNetProfitTargetEur.toFixed(2)
-          : "0.00"
+          : ""
       );
       setEstimatedCostsBudgetCurrency(
         (
-          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
+          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? ""
         ).toString()
       );
       setNetProfitTargetBudgetCurrency(
         (
-          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
+          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? ""
         ).toString()
       );
       setLocalExchangeRate(
@@ -233,7 +233,7 @@ export default function Elov(props: Props) {
       setTotalEstimatedCostsLC(
         props.submission.data.totalEstimatedCostsLC
           ? props.submission.data.totalEstimatedCostsLC.toFixed(2)
-          : "0.00"
+          : ""
       );
 
       //
@@ -319,7 +319,7 @@ export default function Elov(props: Props) {
         campaignEstimatedIncomeBudgetsCurrency: isNaN(
           parseFloat(estimatedIncomeBudgetCurrency)
         )
-          ? 0.0
+          ? ""
           : parseFloat(estimatedIncomeBudgetCurrency),
         campaignEstimatedCostsBudgetsCurrency: parseFloat(
           estimatedCostsBudgetCurrency
@@ -328,26 +328,26 @@ export default function Elov(props: Props) {
           netProfitTargetBudgetCurrency
         ),
         campaignEstimatedIncomeEur: isNaN(parseFloat(estimatedIncome))
-          ? 0.0
+          ? ""
           : parseFloat(estimatedIncome),
         campaignEstimatedCostsEur: isNaN(parseFloat(estimatedCosts))
-          ? 0.0
+          ? ""
           : parseFloat(estimatedCosts),
         campaignNetProfitTargetEur: isNaN(parseFloat(netProfitTarget))
-          ? 0.0
+          ? ""
           : parseFloat(netProfitTarget),
         totalEstimatedCostsLC: isNaN(parseFloat(totalEstimatedCostsLC))
-          ? 0.0
+          ? ""
           : parseFloat(totalEstimatedCostsLC),
         comments: comments,
         additionalInformation: comments,
         projectType: "Local One Vendor",
         estimatedCostsCC: isNaN(parseFloat(estimatedCostsBudgetCurrency))
-          ? 0.0
+          ? ""
           : parseFloat(estimatedCostsBudgetCurrency),
         estimatedIncomeCC:
           budgetSource.value === "noBudget"
-            ? 0.0
+            ? ""
             : parseFloat(estimatedIncomeBudgetCurrency),
         estimatedResultCC:
           parseFloat(netProfitTargetBudgetCurrency) *
@@ -523,7 +523,6 @@ export default function Elov(props: Props) {
     var nonMandatoryFields: string[] = [
       "targetAudience",
       "projectApprover",
-      "totalEstimatedCostsLC",
       "projectApproval",
       "creditorNumber",
       "manufacturersFiscalQuarter",
@@ -537,10 +536,6 @@ export default function Elov(props: Props) {
     var sub = submission.submission;
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
     Object.keys(sub.data).forEach((key: any) => {
-      if (key === "campaignEstimatedCostsBudgetsCurrency") {
-        console.log(sub.data[key]);
-        console.log(typeof sub.data[key]);
-      }
       if (!nonMandatoryFields.includes(key)) {
         switch (typeof sub.data[key]) {
           case "number":
