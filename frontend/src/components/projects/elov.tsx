@@ -531,18 +531,20 @@ export default function Elov(props: Props) {
       "productionProjectManager",
       "additionalInformation",
       "status",
-      "campaignDescription",
-      "debitorNumber",
-      "manufacturerNumber",
       "PH1",
     ];
+    console.log(submission);
     var sub = submission.submission;
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
     Object.keys(sub.data).forEach((key: any) => {
+      if (key === "campaignEstimatedCostsBudgetsCurrency") {
+        console.log(sub.data[key]);
+        console.log(typeof sub.data[key]);
+      }
       if (!nonMandatoryFields.includes(key)) {
         switch (typeof sub.data[key]) {
           case "number":
-            if (isNaN(sub.data[key])) {
+            if (isNaN(sub.data[key]) || sub.data[key] === 0) {
               fieldKeys.push(key);
             }
             break;
