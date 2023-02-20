@@ -17,7 +17,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script_stop: true
           script: |
-            cd /home/doublegrey/formiks
+            cd /home/$USER/formiks
             git reset --hard origin/master &> /dev/null
             git pull &> /dev/null
             cd frontend

@@ -17,10 +17,10 @@ jobs:
           port: ${{ secrets.PORT }}
           script_stop: true
           script: |
-            cd /home/doublegrey/formiks
+            cd /home/$USER/formiks
             git reset --hard origin/master &> /dev/null
             git pull &> /dev/null
-            cd /home/doublegrey/formiks/backend
+            cd /home/$USER/formiks/backend
             /usr/local/go/bin/go get
             /usr/local/go/bin/go build
             sudo systemctl restart formiks.service
