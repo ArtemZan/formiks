@@ -1133,6 +1133,7 @@ export default function Cerov(props: Props) {
         }
       }
     });
+
     if (inputError !== "") {
       fieldKeys.push("total");
     }
