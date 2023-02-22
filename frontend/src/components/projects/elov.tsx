@@ -1279,6 +1279,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Total Estimated Costs in Local Currency </Text>
           <Input
             value={totalEstimatedCostsLC}
+            isInvalid={inputErrors.includes("totalEstimatedCostsLC")}
             onChange={(event) => {
               setTotalEstimatedCostsLC(event.target.value);
             }}

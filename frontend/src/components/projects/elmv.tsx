@@ -141,6 +141,14 @@ export default function Elmv(props: Props) {
           currency: props.submission.data.localCurrency ?? "",
         },
       });
+      switch (props.submission.data.companyCode) {
+        case "1550":
+          vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
+          break;
+        case "6110":
+          vendorsAfterCompanySelect = VendorsNames;
+          break;
+      }
       setCampaignName(props.submission.data.campaignName ?? "");
       setCampaignDescription(props.submission.data.campaignDescription ?? "");
       setTargetAudience(props.submission.data.targetAudience ?? "");
@@ -170,12 +178,14 @@ export default function Elmv(props: Props) {
         value: props.submission.data.manufacturersFiscalQuarter ?? "",
       });
       setStartDate(
-        props.submission.data.campaignStartDate === null
+        props.submission.data.campaignStartDate === null ||
+          props.submission.data.campaignStartDate === ""
           ? ""
           : new Date(props.submission.data.campaignStartDate)
       );
       setEndDate(
-        props.submission.data.campaignEndDate === null
+        props.submission.data.campaignEndDate === null ||
+          props.submission.data.campaignEndDate === ""
           ? ""
           : new Date(props.submission.data.campaignEndDate)
       );
@@ -201,32 +211,32 @@ export default function Elmv(props: Props) {
       }
       setEstimatedIncomeBudgetCurrency(
         (
-          props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? 0
+          props.submission.data.campaignEstimatedIncomeBudgetsCurrency ?? ""
         ).toString()
       );
       setEstimatedIncome(
         props.submission.data.campaignEstimatedIncomeEur
           ? props.submission.data.campaignEstimatedIncomeEur.toFixed(2)
-          : "0.00"
+          : "NaN"
       );
       setEstimatedCosts(
         props.submission.data.campaignEstimatedCostsEur
           ? props.submission.data.campaignEstimatedCostsEur.toFixed(2)
-          : "0.00"
+          : "NaN"
       );
       setNetProfitTarget(
         props.submission.data.campaignNetProfitTargetEur
           ? props.submission.data.campaignNetProfitTargetEur.toFixed(2)
-          : "0.00"
+          : "NaN"
       );
       setEstimatedCostsBudgetCurrency(
         (
-          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
+          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? ""
         ).toString()
       );
       setNetProfitTargetBudgetCurrency(
         (
-          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
+          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? "NaN"
         ).toString()
       );
       setLocalExchangeRate(
@@ -242,7 +252,7 @@ export default function Elmv(props: Props) {
       setTotalEstimatedCostsLC(
         props.submission.data.totalEstimatedCostsLC
           ? props.submission.data.totalEstimatedCostsLC.toFixed(2)
-          : "0.00"
+          : "NaN"
       );
 
       //
@@ -443,8 +453,10 @@ export default function Elmv(props: Props) {
         businessUnit: vendor.bu,
         projectApproval: projectApproval,
         manufacturersFiscalQuarter: fiscalQuarter.label,
-        campaignStartDate: startDate === null ? null : startDate.toString(),
-        campaignEndDate: endDate === null ? null : endDate.toString(),
+        campaignStartDate:
+          startDate === null || startDate === "" ? null : startDate.toString(),
+        campaignEndDate:
+          endDate === null || endDate === "" ? null : endDate.toString(),
         budgetSource: budgetSource.label,
         campaignBudgetsCurrency: exchangeRates.label,
         campaignCurrency: exchangeRates.label,
@@ -452,18 +464,18 @@ export default function Elmv(props: Props) {
         campaignEstimatedIncomeBudgetsCurrency: isNaN(
           parseFloat(estimatedIncomeBudgetCurrency)
         )
-          ? 0.0
+          ? ""
           : parseFloat(estimatedIncomeBudgetCurrency),
         campaignEstimatedCostsBudgetsCurrency: isNaN(
           parseFloat(estimatedCostsBudgetCurrency)
         )
-          ? 0.0
+          ? ""
           : parseFloat(estimatedCostsBudgetCurrency),
         campaignNetProfitTargetBudgetsCurrency: parseFloat(
           netProfitTargetBudgetCurrency
         ),
         campaignEstimatedIncomeEur: isNaN(parseFloat(estimatedIncome))
-          ? 0.0
+          ? ""
           : parseFloat(estimatedIncome),
         campaignEstimatedCostsEur: parseFloat(estimatedCosts),
         campaignNetProfitTargetEur: parseFloat(netProfitTarget),
@@ -846,7 +858,6 @@ export default function Elmv(props: Props) {
     } else {
       fieldKeys.push("vendorName");
     }
-    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }

@@ -225,9 +225,8 @@ export default function Elov(props: Props) {
         }
       }
     });
-    console.log("Test");
-    if (projectNumberCheck === "" || projectNumberCheck === "-") {
-      fieldKeys.push("projectNumber");
+
+    if (projectNumberCheck === "") {
       setProjectNumberCheck("-");
     }
     return fieldKeys;
@@ -289,7 +288,8 @@ export default function Elov(props: Props) {
       children,
       local: null,
     };
-    setInputErrors(submissionValidation(submission));
+    var errors = submissionValidation(submission);
+    setInputErrors(errors);
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
@@ -304,8 +304,8 @@ export default function Elov(props: Props) {
           );
         });
       } else {
-        if (submissionValidation(submission).length !== 0) {
-          if (projectNumberCheck === "") {
+        if (errors.length !== 0 || projectNumberCheck === "-") {
+          if (projectNumberCheck === "-") {
             toast(
               <Toast
                 title={"This project number does not exist in the tool."}
@@ -313,8 +313,8 @@ export default function Elov(props: Props) {
                 type={"error"}
               />
             );
-            return;
-          } else {
+          }
+          if (errors.length !== 0) {
             toast(
               <Toast
                 title={"Mandatory fields are not filled"}
@@ -322,8 +322,8 @@ export default function Elov(props: Props) {
                 type={"error"}
               />
             );
-            return;
           }
+          return;
         }
         RestAPI.deleteDraft(props.submission.id).then(() => {
           RestAPI.createSubmission(submission.submission).then((response) => {
@@ -352,8 +352,8 @@ export default function Elov(props: Props) {
           );
         });
       } else {
-        if (submissionValidation(submission).length !== 0) {
-          if (projectNumberCheck === "") {
+        if (errors.length !== 0 || projectNumberCheck === "-") {
+          if (projectNumberCheck === "-") {
             toast(
               <Toast
                 title={"This project number does not exist in the tool."}
@@ -361,8 +361,8 @@ export default function Elov(props: Props) {
                 type={"error"}
               />
             );
-            return;
-          } else {
+          }
+          if (errors.length !== 0) {
             toast(
               <Toast
                 title={"Mandatory fields are not filled"}
@@ -370,8 +370,8 @@ export default function Elov(props: Props) {
                 type={"error"}
               />
             );
-            return;
           }
+          return;
         } else {
           RestAPI.createSubmission(submission.submission).then((response) => {
             toast(
@@ -402,59 +402,17 @@ export default function Elov(props: Props) {
     if (submissions.length === 0) {
       RestAPI.getSubmissions().then(async (response) => {
         var subs = response.data;
+        var subByProjectNumber: any;
         if (subs.length > 0) {
-          setSubmissions(subs);
-        }
-        for (let sub of submissions) {
-          if (
-            sub.parentId === null &&
-            sub.data.projectNumber === props.submission.data.projectNumber
-          ) {
-            setProjectNumberCheck(sub.data.projectNumber);
-            var children: any[] = [];
-            var vendorNew: any[] = [];
-            for (let child of submissions) {
-              if (child.parentId === sub.id) {
-                children.push(child);
-                if (child.group === "vendor") {
-                  vendorNew.push({
-                    label: child.data.vendorName ?? "",
-                    value: child.data.vendorName ?? "",
-                  });
-                }
-              }
-            }
-            VendorsNames = vendorNew;
-            setVendorNames(vendorNew);
-            sub.children = children;
-            setSub(sub);
+          var projectNumber: string = "";
+          if (props.isDraft) {
+            projectNumber = props.submission.data.projectNumber;
           }
-        }
-      });
-    }
-  }, []);
-  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
-
-  useEffect(() => {
-    if (props.submission) {
-      setRequestorsCompanyName({
-        label: props.submission.data.requestorsCompanyName ?? "",
-        value: {
-          name: props.submission.data.requestorsCompanyName ?? "",
-          code: props.submission.data.companyCode ?? "",
-          country: props.submission.data.requestorsCountry ?? "",
-          currency: props.submission.data.localCurrency ?? "",
-        },
-      });
-      setProjectName(props.submission.data.projectName1 ?? "");
-      setCampaignName(props.submission.data.campaignName ?? "");
-      setProjectNumber(props.submission.data.projectNumber ?? "");
-      if (props.submission.data.projectNumber !== "") {
-        if (props.submission.data.projectNumber.length === 12) {
-          for (let sub of submissions) {
+          setSubmissions(subs);
+          for (let sub of subs) {
             if (
               sub.parentId === null &&
-              sub.data.projectNumber === props.submission.data.projectNumber
+              sub.data.projectNumber === projectNumber
             ) {
               setProjectNumberCheck(sub.data.projectNumber);
               var children: any[] = [];
@@ -472,61 +430,126 @@ export default function Elov(props: Props) {
               }
               VendorsNames = vendorNew;
               setVendorNames(vendorNew);
-              sub.children = children;
-              setSub(sub);
+              subByProjectNumber = sub;
+              subByProjectNumber.children = children;
+              setSub(subByProjectNumber);
+            } else {
+              setProjectNumberCheck("-");
             }
           }
         } else {
-          VendorsNames = vendorsDD;
+          setProjectNumberCheck("-");
         }
-      }
-      setVendorsNames(
-        (props.submission.data.vendorNamePO ?? []).map((vendor: string) => {
-          return { label: vendor, value: vendor };
-        })
-      );
-      setServiceType(props.submission.data.serviceType ?? "");
-      setServiceProvider(props.submission.data.serviceProvider ?? "");
-      setServiceNetValueLC(
-        props.submission.data.netValueOfServiceOrderedLC
-          ? props.submission.data.netValueOfServiceOrderedLC.toFixed(2)
-          : ""
-      );
-      setServiceLC({
-        label: props.submission.data.localCurrency ?? "",
-        value: props.submission.data.localCurrency ?? "",
       });
-      setServiceNetValuePOCurrency(
-        props.submission.data.netValuePOC
-          ? props.submission.data.netValuePOC.toFixed(2)
-          : ""
-      );
-      setServicePOCurrency({
-        label: props.submission.data.purchaseOrderCurrency ?? "",
-        value: props.submission.data.purchaseOrderCurrency ?? "",
+    }
+  }, []);
+  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
+
+  useEffect(() => {
+    if (props.submission) {
+      RestAPI.getSubmissions().then((response) => {
+        setRequestorsCompanyName({
+          label: props.submission.data.requestorsCompanyName ?? "",
+          value: {
+            name: props.submission.data.requestorsCompanyName ?? "",
+            code: props.submission.data.companyCode ?? "",
+            country: props.submission.data.requestorsCountry ?? "",
+            currency: props.submission.data.localCurrency ?? "",
+          },
+        });
+        setProjectName(props.submission.data.projectName1 ?? "");
+        setCampaignName(props.submission.data.campaignName ?? "");
+        setProjectNumber(props.submission.data.projectNumber ?? "");
+        if (props.submission.data.projectNumber !== "") {
+          if (props.submission.data.projectNumber.length === 12) {
+            var allSubs: any[] = [];
+            if (submissions.length === 0) {
+              setSubmissions(response.data);
+              allSubs = response.data;
+            } else {
+              allSubs = submissions;
+            }
+            console.log(allSubs);
+            for (let sub of allSubs) {
+              if (
+                sub.parentId === null &&
+                sub.data.projectNumber === props.submission.data.projectNumber
+              ) {
+                setProjectNumberCheck(sub.data.projectNumber);
+
+                var children: any[] = [];
+                var vendorNew: any[] = [];
+                for (let child of allSubs) {
+                  if (child.parentId === sub.id) {
+                    children.push(child);
+                    if (child.group === "vendor") {
+                      vendorNew.push({
+                        label: child.data.vendorName ?? "",
+                        value: child.data.vendorName ?? "",
+                      });
+                    }
+                  }
+                }
+                VendorsNames = vendorNew;
+                setVendorNames(vendorNew);
+                sub.children = children;
+                setSub(sub);
+              }
+            }
+          } else {
+            VendorsNames = vendorsDD;
+          }
+        }
+        setVendorsNames(
+          (props.submission.data.vendorNamePO ?? []).map((vendor: string) => {
+            return { label: vendor, value: vendor };
+          })
+        );
+        setServiceType(props.submission.data.serviceType ?? "");
+        setServiceProvider(props.submission.data.serviceProvider ?? "");
+        setServiceNetValueLC(
+          props.submission.data.netValueOfServiceOrderedLC
+            ? props.submission.data.netValueOfServiceOrderedLC.toFixed(2)
+            : ""
+        );
+        setServiceLC({
+          label: props.submission.data.localCurrency ?? "",
+          value: props.submission.data.localCurrency ?? "",
+        });
+        setServiceNetValuePOCurrency(
+          props.submission.data.netValuePOC
+            ? props.submission.data.netValuePOC.toFixed(2)
+            : ""
+        );
+        setServicePOCurrency({
+          label: props.submission.data.purchaseOrderCurrency ?? "",
+          value: props.submission.data.purchaseOrderCurrency ?? "",
+        });
+        setServiceNetValueEUR(
+          props.submission.data.netValueEur
+            ? props.submission.data.netValueEur
+            : ""
+        );
+        setServiceExtPONumber(props.submission.data.serviceExtPONumber ?? "");
+        setServicePODate(
+          props.submission.data.servicePODate === null
+            ? null
+            : new Date(props.submission.data.servicePODate) ?? null
+        );
+        setServiceOrderingPerson(
+          props.submission.data.serviceOrderingPerson ?? ""
+        );
+        setServiceApprovingPerson(
+          props.submission.data.serviceApprovingPerson ?? ""
+        );
+        setServiceContactPerson(
+          props.submission.data.serviceContactPerson ?? ""
+        );
+        setServiceContactDetails(
+          props.submission.data.serviceContactDetails ?? ""
+        );
+        setComments(props.submission.data.comments ?? "");
       });
-      setServiceNetValueEUR(
-        props.submission.data.netValueEur
-          ? props.submission.data.netValueEur
-          : ""
-      );
-      setServiceExtPONumber(props.submission.data.serviceExtPONumber ?? "");
-      setServicePODate(
-        props.submission.data.servicePODate === null
-          ? null
-          : new Date(props.submission.data.servicePODate) ?? null
-      );
-      setServiceOrderingPerson(
-        props.submission.data.serviceOrderingPerson ?? ""
-      );
-      setServiceApprovingPerson(
-        props.submission.data.serviceApprovingPerson ?? ""
-      );
-      setServiceContactPerson(props.submission.data.serviceContactPerson ?? "");
-      setServiceContactDetails(
-        props.submission.data.serviceContactDetails ?? ""
-      );
-      setComments(props.submission.data.comments ?? "");
     }
   }, [props.submission]);
   return (
@@ -632,7 +655,16 @@ export default function Elov(props: Props) {
                 setProjectNumberCheck("");
                 setProjectNumber(event.target.value);
                 if (event.target.value.length === 12) {
-                  for (let sub of submissions) {
+                  var allSubs: any[] = [];
+                  if (submissions.length === 0) {
+                    RestAPI.getSubmissions().then((response) => {
+                      setSubmissions(response.data);
+                      allSubs = response.data;
+                    });
+                  } else {
+                    allSubs = submissions;
+                  }
+                  for (let sub of allSubs) {
                     if (
                       sub.parentId === null &&
                       sub.data.projectNumber === event.target.value
@@ -653,10 +685,11 @@ export default function Elov(props: Props) {
                         }
                       }
                       setVendorsDD(VendorsNames);
+                      setVendorsNames([]);
                       VendorsNames = vendorNew;
                       sub.children = children;
                       setSub(sub);
-                      setProjectName(sub.data.projectName);
+                      setProjectName(sub.data.projectName || "");
                     }
                   }
                 } else {
