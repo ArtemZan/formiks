@@ -74,7 +74,7 @@ export default function Elov(props: Props) {
   });
   const [projectNumber, setProjectNumber] = useState("");
   const [requestorsName, setRequestorsName] = useState("");
-  const [projectNumberCheck, setProjectNumberCheck] = useState("-");
+  const [projectNumberCheck, setProjectNumberCheck] = useState("");
   const [projectApproval, setProjectApproval] = useState("");
   const [fiscalQuarter, setFiscalQuarter] = useState<any>({
     label: "",
@@ -225,8 +225,10 @@ export default function Elov(props: Props) {
         }
       }
     });
-    if (projectNumberCheck === "") {
+    console.log(projectNumberCheck);
+    if (projectNumberCheck === "" || projectNumberCheck === "-") {
       fieldKeys.push("projectNumber");
+      setProjectNumberCheck("-");
     }
     return fieldKeys;
   }
@@ -624,7 +626,7 @@ export default function Elov(props: Props) {
           <Input
             placeholder="____________"
             value={projectNumber}
-            isInvalid={projectNumberCheck === ""}
+            isInvalid={projectNumberCheck === "-"}
             onChange={(event) => {
               if (event.target.value.length < 13) {
                 setProjectNumberCheck("");
@@ -658,6 +660,7 @@ export default function Elov(props: Props) {
                     }
                   }
                 } else {
+                  setProjectNumberCheck("-");
                   VendorsNames = vendorsDD;
                 }
               }
