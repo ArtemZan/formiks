@@ -469,7 +469,6 @@ export default function Elov(props: Props) {
             } else {
               allSubs = submissions;
             }
-            console.log(allSubs);
             for (let sub of allSubs) {
               if (
                 sub.parentId === null &&
