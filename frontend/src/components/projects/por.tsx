@@ -693,6 +693,8 @@ export default function Elov(props: Props) {
                   }
                 } else {
                   setProjectNumberCheck("-");
+                  setProjectName("");
+                  setVendorsNames([]);
                   VendorsNames = vendorsDD;
                 }
               }
