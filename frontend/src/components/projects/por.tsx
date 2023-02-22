@@ -225,7 +225,7 @@ export default function Elov(props: Props) {
         }
       }
     });
-    console.log(projectNumberCheck);
+    console.log("Test");
     if (projectNumberCheck === "" || projectNumberCheck === "-") {
       fieldKeys.push("projectNumber");
       setProjectNumberCheck("-");
