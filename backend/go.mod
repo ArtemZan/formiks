@@ -5,15 +5,12 @@ go 1.18
 require (
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19
 	github.com/gin-gonic/gin v1.7.4
-	github.com/go-co-op/gocron v1.13.0
+	github.com/go-co-op/gocron v1.18.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rs/zerolog v1.25.0
-	go.kuoruan.net/v8go-polyfills v0.4.0
 	go.mongodb.org/mongo-driver v1.7.3
-	rogchap.com/v8go v0.6.0
 )
 
 require (

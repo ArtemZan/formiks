@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/doublegrey/formiks/backend/driver"
-	"github.com/doublegrey/formiks/backend/dropdowns"
 	"github.com/doublegrey/formiks/backend/logger"
 	"github.com/doublegrey/formiks/backend/models"
 	"github.com/gin-gonic/gin"
@@ -39,7 +38,7 @@ func (d *Dropdown) Sync(c *gin.Context) {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-	go dropdowns.SyncDropdown(nil, dropdown)
+
 	c.Status(http.StatusOK)
 }
 
@@ -110,7 +109,7 @@ func (d *Dropdown) Update(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	go dropdowns.SyncDropdown(nil, dropdown)
+
 	d.db.Collection("dropdowns").ReplaceOne(c.Request.Context(), bson.M{"_id": dropdown.ID}, dropdown)
 	c.Status(http.StatusOK)
 }
