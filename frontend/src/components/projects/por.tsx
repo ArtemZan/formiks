@@ -378,7 +378,7 @@ export default function Elov(props: Props) {
               <Toast
                 title={"Purchase order has been transferred"}
                 message={
-                  <p>Purchae order has been transferred into the tool</p>
+                  <p>Purchase order has been transferred into the tool</p>
                 }
                 type={"success"}
               />
@@ -663,11 +663,13 @@ export default function Elov(props: Props) {
                   } else {
                     allSubs = submissions;
                   }
+                  setProjectNumberCheck("-");
                   for (let sub of allSubs) {
                     if (
                       sub.parentId === null &&
                       sub.data.projectNumber === event.target.value
                     ) {
+                      console.log(sub.data);
                       setProjectNumberCheck(sub.data.projectNumber);
                       var children: any[] = [];
                       var vendorNew: any[] = [];
@@ -689,6 +691,10 @@ export default function Elov(props: Props) {
                       sub.children = children;
                       setSub(sub);
                       setProjectName(sub.data.projectName || "");
+                    } else {
+                      // setProjectNumberCheck("-");
+                      // setProjectName("");
+                      // setVendorsNames([]);
                     }
                   }
                 } else {
