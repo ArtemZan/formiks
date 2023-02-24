@@ -159,11 +159,11 @@ export default function Elov(props: Props) {
     );
     PH1 = responses[0].data;
     Companies = responses[1].data;
-    if (VendorsNames.length === 0) {
-      VendorsNames = responses[2].data;
-    } else {
-      setVendorsDD(responses[2].data);
-    }
+    // if (VendorsNames.length === 0) {
+    //   VendorsNames = responses[2].data;
+    // } else {
+    //   setVendorsDD(responses[2].data);
+    // }
     CampaignChannel = responses[3].data;
     TargetAudience = responses[4].data;
     Budget = responses[5].data;
