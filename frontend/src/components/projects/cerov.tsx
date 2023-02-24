@@ -145,6 +145,14 @@ export default function Cerov(props: Props) {
           currency: props.submission.data.localCurrency ?? "",
         },
       });
+      switch (props.submission.data.companyCode) {
+        case "1550":
+          vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
+          break;
+        case "6110":
+          vendorsAfterCompanySelect = VendorsNames;
+          break;
+      }
       setCampaignName(props.submission.data.campaignName ?? "");
       setCampaignDescription(props.submission.data.campaignDescription ?? "");
       setTargetAudience(props.submission.data.targetAudience ?? "");
@@ -174,12 +182,14 @@ export default function Cerov(props: Props) {
         value: props.submission.data.manufacturersFiscalQuarter ?? "",
       });
       setStartDate(
-        props.submission.data.campaignStartDate === null
+        props.submission.data.campaignStartDate === null ||
+          props.submission.data.campaignStartDate === ""
           ? ""
           : new Date(props.submission.data.campaignStartDate)
       );
       setEndDate(
-        props.submission.data.campaignEndDate === null
+        props.submission.data.campaignEndDate === null ||
+          props.submission.data.campaignEndDate === ""
           ? ""
           : new Date(props.submission.data.campaignEndDate)
       );
@@ -211,26 +221,26 @@ export default function Cerov(props: Props) {
       setEstimatedIncome(
         props.submission.data.campaignEstimatedIncomeEur
           ? props.submission.data.campaignEstimatedIncomeEur.toFixed(2)
-          : "0.00"
+          : "NaN"
       );
       setEstimatedCosts(
         props.submission.data.campaignEstimatedCostsEur
           ? props.submission.data.campaignEstimatedCostsEur.toFixed(2)
-          : "0.00"
+          : "NaN"
       );
       setNetProfitTarget(
         props.submission.data.campaignNetProfitTargetEur
           ? props.submission.data.campaignNetProfitTargetEur.toFixed(2)
-          : "0.00"
+          : "NaN"
       );
       setEstimatedCostsBudgetCurrency(
         (
-          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? 0
+          props.submission.data.campaignEstimatedCostsBudgetsCurrency ?? "NaN"
         ).toString()
       );
       setNetProfitTargetBudgetCurrency(
         (
-          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? 0
+          props.submission.data.campaignNetProfitTargetBudgetsCurrency ?? "NaN"
         ).toString()
       );
       setLocalExchangeRate(
@@ -238,7 +248,7 @@ export default function Cerov(props: Props) {
           (
             ExchangeRates.find(
               (rate) => rate.label === props.submission.data.campaignCurrency
-            ) || "0"
+            ) || "NaN"
           ).value
         )
       );
@@ -246,7 +256,7 @@ export default function Cerov(props: Props) {
       setTotalEstimatedCostsLC(
         props.submission.data.totalEstimatedCostsLC
           ? props.submission.data.totalEstimatedCostsLC.toFixed(2)
-          : "0.00"
+          : "NaN"
       );
 
       //
@@ -602,7 +612,7 @@ export default function Cerov(props: Props) {
         campaignEstimatedIncomeBudgetsCurrency: isNaN(
           parseFloat(estimatedIncomeBudgetCurrency)
         )
-          ? 0.0
+          ? ""
           : parseFloat(estimatedIncomeBudgetCurrency),
         campaignEstimatedCostsBudgetsCurrency: parseFloat(
           estimatedCostsBudgetCurrency
@@ -611,7 +621,7 @@ export default function Cerov(props: Props) {
           netProfitTargetBudgetCurrency
         ),
         campaignEstimatedIncomeEur: isNaN(parseFloat(estimatedIncome))
-          ? 0.0
+          ? ""
           : parseFloat(estimatedIncome),
         campaignEstimatedCostsEur: parseFloat(estimatedCosts),
         campaignNetProfitTargetEur: parseFloat(netProfitTarget),
@@ -1043,9 +1053,6 @@ export default function Cerov(props: Props) {
       "countryBudgetContributionEur",
       "estimatedResultEUR",
       "estimatedCostsEUR",
-      "estimatedIncomeEUR",
-      "estimatedCostsCC",
-      "estimatedIncomeCC",
       "estimatedResultCC",
       "additionalInformation",
       "status",
@@ -1061,6 +1068,16 @@ export default function Cerov(props: Props) {
     countries.forEach((country: any) => {
       Object.keys(country.data).forEach((key: any) => {
         if (!nonMandatoryFields.includes(key)) {
+          if ( key === "estimatedIncomeEUR") {
+            if (isNaN(country.data[key]) || country.data[key] === 0) {
+              fieldKeys.push("estimatedIncometable");
+            }
+          } else { 
+          if (key === "estimatedIncomeCC"){
+            if (isNaN(country.data[key]) || country.data[key] === 0) {
+              fieldKeys.push("estimatedIncomeCCtable");
+            }
+          } else { 
           switch (typeof country.data[key]) {
             case "number":
               if (isNaN(country.data[key]) || country.data[key] === 0) {
@@ -1082,6 +1099,8 @@ export default function Cerov(props: Props) {
               break;
           }
         }
+        }
+      }
       });
     });
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
@@ -1107,6 +1126,7 @@ export default function Cerov(props: Props) {
             fieldKeys.push(key);
             break;
         }
+      
       }
     });
     Object.keys(vendor.data).forEach((key: any) => {
@@ -1138,6 +1158,7 @@ export default function Cerov(props: Props) {
       fieldKeys.push("total");
     }
     setInputErrors(fieldKeys);
+    console.log(fieldKeys)
     return fieldKeys;
   }
 
@@ -1531,9 +1552,8 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Estimated Income in Campaign Currency</Text>
           <Input
             isInvalid={
-              budgetSource.value === "noBudget"
-                ? false
-                : inputErrors.includes("estimatedIncomeCC")
+
+                inputErrors.includes("estimatedIncomeCC")
             }
             disabled={budgetSource.value === "noBudget"}
             value={estimatedIncomeBudgetCurrency}
@@ -1548,7 +1568,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in Campaign Currency</Text>
           <Input
             value={estimatedCostsBudgetCurrency}
-            isInvalid={inputErrors.includes("estimatedCostsCC")}
+            isInvalid={inputErrors.includes("campaignEstimatedCostsBudgetsCurrency")}
             onChange={(event) => {
               setEstimatedCostsBudgetCurrency(event.target.value);
             }}
@@ -1564,7 +1584,7 @@ export default function Cerov(props: Props) {
           </Text>
           <Input
             value={netProfitTargetBudgetCurrency}
-            isInvalid={inputErrors.includes("estimatedResultCC")}
+            isInvalid={inputErrors.includes("campaignNetProfitTargetBudgetsCurrency")}
             onChange={(event) => {
               setNetProfitTargetBudgetCurrency(event.target.value);
             }}
@@ -1575,7 +1595,6 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Campaign Estimated Income in EUR</Text>
           <Input
-            disabled={budgetSource.value === "noBudget"}
             isInvalid={inputErrors.includes("estimatedIncomeEUR")}
             value={estimatedIncome}
             onChange={(event) => {
@@ -1589,7 +1608,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in EUR</Text>
           <Input
             value={estimatedCosts}
-            isInvalid={inputErrors.includes("estimatedCostsEUR")}
+            isInvalid={inputErrors.includes("campaignEstimatedCostsEur")}
             onChange={(event) => {
               setEstimatedCosts(event.target.value);
             }}
@@ -1606,7 +1625,7 @@ export default function Cerov(props: Props) {
           <Input
             // value={netProfitTarget}
             value={netProfitTarget}
-            isInvalid={inputErrors.includes("estimatedResultEUR")}
+            isInvalid={inputErrors.includes("campaignNetProfitTargetEur")}
             onChange={(event) => {
               setNetProfitTarget(event.target.value);
             }}
