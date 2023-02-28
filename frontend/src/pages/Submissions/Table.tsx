@@ -4998,6 +4998,19 @@ export function SubmissionsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
+                              if (value.length < 12) {
+                                toast(
+                                  <Toast
+                                    title={
+                                      "SAP document number must contain 12 digits"
+                                    }
+                                    message={
+                                      "Please enter correct SAP document number"
+                                    }
+                                    type={"error"}
+                                  />
+                                );
+                              }
                               handleCommunicationCellUpdate(
                                 submission,
                                 "data.operatorCMCT",
@@ -5037,6 +5050,14 @@ export function SubmissionsTable(props: Props) {
                                 value
                               );
                             }}
+                            backgroundColor={
+                              props.cellData &&
+                              props.cellData.length !== 12 &&
+                              props.rowData.data.statusLMD ===
+                                "OK FOR INVOICING"
+                                ? "#f7cdd6"
+                                : "#F5FAEF"
+                            }
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -5250,12 +5271,9 @@ export function SubmissionsTable(props: Props) {
                                 value
                               );
                               let set = false;
-
                               VendorsNames.every((v) => {
-                                if (
-                                  v.label ===
-                                  value.substring(0, value.length - 11)
-                                ) {
+                                if (v.label === value) {
+                                  console.log(v);
                                   handleCommunicationCellUpdate(
                                     submission,
                                     "data.vodLMD",
@@ -5533,7 +5551,7 @@ export function SubmissionsTable(props: Props) {
                               handleCommunicationCellUpdate(
                                 submission,
                                 "data.sendToLMD",
-                                "none"
+                                ""
                               );
                             }}
                             // onUpdate={handleCommunicationCellUpdate}
@@ -5749,6 +5767,7 @@ export function SubmissionsTable(props: Props) {
                                   "data.invoiceTextLMD",
                                   vs[0].data.campaignDescription
                                 );
+                                console.log(vs);
                                 var amount = 0;
                                 switch (vs[0].data.projectType) {
                                   case "Local One Vendor" ||
@@ -6251,7 +6270,8 @@ export function SubmissionsTable(props: Props) {
                         header: "Actions",
                         className: "red-border",
                         cellRenderer: (props: any) =>
-                          props.rowData.parentId === null ? (
+                          props.rowData.parentId === null &&
+                          props.rowData.data.statusLMD !== "INVOICED" ? (
                             <EditableTableCell
                               invoiced={lmdColumnEdit(
                                 props.rowData.data.statusLMD
@@ -6380,16 +6400,17 @@ export function SubmissionsTable(props: Props) {
                         key: "__actions.create",
                         dataKey: "__actions.create",
                         title: "",
-                        width: columnWidth("__actions.create", 100),
+                        width: columnWidth("__actions.create", 150),
                         resizable: false,
                         className: "red-border",
                         cellRenderer: (props: any) =>
-                          props.rowData.parentId === null ? (
+                          props.rowData.parentId === null &&
+                          props.rowData.data.statusLMD !== "INVOICED" ? (
                             <EditableTableCell
                               type={"button"}
-                              invoiced={lmdColumnEdit(
-                                props.rowData.data.statusLMD
-                              )}
+                              invoiced={
+                                props.rowData.data.statusLMD === "INVOICED"
+                              }
                               backgroundColor="#fef9fa"
                               textColor={"blue"}
                               onUpdate={(submissionId: string) => {
@@ -6403,7 +6424,7 @@ export function SubmissionsTable(props: Props) {
                                   title: "",
                                   author: "",
                                   status: "",
-                                  data: {},
+                                  data: props.rowData.data,
                                 };
                                 RestAPI.createSubmission(submission).then(
                                   (response) => {
@@ -6416,7 +6437,7 @@ export function SubmissionsTable(props: Props) {
                               rowIndex={props.rowIndex}
                               columnKey={props.column.dataKey}
                               rowData={props.rowData}
-                              initialValue={"create"}
+                              initialValue={"create new line"}
                             />
                           ) : (
                             <div
@@ -6435,44 +6456,54 @@ export function SubmissionsTable(props: Props) {
                         width: columnWidth("__actions.delete", 100),
                         resizable: false,
                         className: "red-border",
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            invoiced={lmdColumnEdit(
-                              props.rowData.data.statusLMD
-                            )}
-                            type={"button"}
-                            textColor={"red"}
-                            backgroundColor="#fef9fa"
-                            onUpdate={(submissionId: string) => {
-                              var tbd: string[] = [submissionId];
-                              var submissionIndex =
-                                communicationSubmissions.findIndex(
-                                  (s) => s.id === submissionId
-                                );
-                              if (submissionIndex > -1) {
-                                var temp = [...communicationSubmissions];
-                                temp.splice(submissionIndex, 1);
-                                temp.forEach((s, index) => {
-                                  if (
-                                    s.parentId !== null &&
-                                    s.parentId === submissionId
-                                  ) {
-                                    if (s.id) {
-                                      temp.splice(index, 1);
-                                      tbd.push(s.id);
+                        cellRenderer: (props: any) =>
+                          props.rowData.data &&
+                          props.rowData.data.statusLMD !== "INVOICED" ? (
+                            <EditableTableCell
+                              invoiced={lmdColumnEdit(
+                                props.rowData.data.statusLMD
+                              )}
+                              type={"button"}
+                              textColor={"red"}
+                              backgroundColor="#fef9fa"
+                              onUpdate={(submissionId: string) => {
+                                var tbd: string[] = [submissionId];
+                                var submissionIndex =
+                                  communicationSubmissions.findIndex(
+                                    (s) => s.id === submissionId
+                                  );
+                                if (submissionIndex > -1) {
+                                  var temp = [...communicationSubmissions];
+                                  temp.splice(submissionIndex, 1);
+                                  temp.forEach((s, index) => {
+                                    if (
+                                      s.parentId !== null &&
+                                      s.parentId === submissionId
+                                    ) {
+                                      if (s.id) {
+                                        temp.splice(index, 1);
+                                        tbd.push(s.id);
+                                      }
                                     }
-                                  }
-                                });
-                                setCommunicationSubmissions(temp);
-                                RestAPI.deleteSubmission(submissionId);
-                              }
-                            }}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={"delete"}
-                          />
-                        ),
+                                  });
+                                  setCommunicationSubmissions(temp);
+                                  RestAPI.deleteSubmission(submissionId);
+                                }
+                              }}
+                              rowIndex={props.rowIndex}
+                              columnKey={props.column.dataKey}
+                              rowData={props.rowData}
+                              initialValue={"delete"}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                backgroundColor: "#F7FAFC",
+                                width: "100%",
+                                height: "100%",
+                              }}
+                            />
+                          ),
                       },
                     ]}
                     headerRenderer={headerRendererForTable}

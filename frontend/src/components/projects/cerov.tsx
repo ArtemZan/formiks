@@ -986,6 +986,7 @@ export default function Cerov(props: Props) {
       }
     });
 
+    console.log(table[row][column] / sum);
     table.forEach((row: any) => {
       arr.forEach((col: any, index: number) => {
         if (col !== column) {
@@ -995,7 +996,14 @@ export default function Cerov(props: Props) {
           ) {
             row[col] = 0;
           } else {
-            row[col] = ((row.share * total[index!]) / 100).toFixed(2);
+            var s = row.share;
+
+            if (row[column] !== undefined) {
+              s = (row[column] / sum) * 100;
+            }
+            console.log(row);
+            console.log(s);
+            row[col] = ((s * total[index!]) / 100).toFixed(2);
           }
         }
       });
@@ -1068,39 +1076,39 @@ export default function Cerov(props: Props) {
     countries.forEach((country: any) => {
       Object.keys(country.data).forEach((key: any) => {
         if (!nonMandatoryFields.includes(key)) {
-          if ( key === "estimatedIncomeEUR") {
+          if (key === "estimatedIncomeEUR") {
             if (isNaN(country.data[key]) || country.data[key] === 0) {
               fieldKeys.push("estimatedIncometable");
             }
-          } else { 
-          if (key === "estimatedIncomeCC"){
-            if (isNaN(country.data[key]) || country.data[key] === 0) {
-              fieldKeys.push("estimatedIncomeCCtable");
-            }
-          } else { 
-          switch (typeof country.data[key]) {
-            case "number":
+          } else {
+            if (key === "estimatedIncomeCC") {
               if (isNaN(country.data[key]) || country.data[key] === 0) {
-                fieldKeys.push(key);
+                fieldKeys.push("estimatedIncomeCCtable");
               }
-              break;
-            case "object":
-              if (country.data[key] === null) {
-                fieldKeys.push(key);
+            } else {
+              switch (typeof country.data[key]) {
+                case "number":
+                  if (isNaN(country.data[key]) || country.data[key] === 0) {
+                    fieldKeys.push(key);
+                  }
+                  break;
+                case "object":
+                  if (country.data[key] === null) {
+                    fieldKeys.push(key);
+                  }
+                  break;
+                case "string":
+                  if (country.data[key] === "") {
+                    fieldKeys.push(key);
+                  }
+                  break;
+                case "undefined":
+                  fieldKeys.push(key);
+                  break;
               }
-              break;
-            case "string":
-              if (country.data[key] === "") {
-                fieldKeys.push(key);
-              }
-              break;
-            case "undefined":
-              fieldKeys.push(key);
-              break;
+            }
           }
         }
-        }
-      }
       });
     });
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
@@ -1126,7 +1134,6 @@ export default function Cerov(props: Props) {
             fieldKeys.push(key);
             break;
         }
-      
       }
     });
     Object.keys(vendor.data).forEach((key: any) => {
@@ -1158,7 +1165,6 @@ export default function Cerov(props: Props) {
       fieldKeys.push("total");
     }
     setInputErrors(fieldKeys);
-    console.log(fieldKeys)
     return fieldKeys;
   }
 
@@ -1551,10 +1557,7 @@ export default function Cerov(props: Props) {
         <Box w="100%">
           <Text mb="8px">Campaign Estimated Income in Campaign Currency</Text>
           <Input
-            isInvalid={
-
-                inputErrors.includes("estimatedIncomeCC")
-            }
+            isInvalid={inputErrors.includes("estimatedIncomeCC")}
             disabled={budgetSource.value === "noBudget"}
             value={estimatedIncomeBudgetCurrency}
             onChange={(event) => {
@@ -1568,7 +1571,9 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Campaign Estimated Costs in Campaign Currency</Text>
           <Input
             value={estimatedCostsBudgetCurrency}
-            isInvalid={inputErrors.includes("campaignEstimatedCostsBudgetsCurrency")}
+            isInvalid={inputErrors.includes(
+              "campaignEstimatedCostsBudgetsCurrency"
+            )}
             onChange={(event) => {
               setEstimatedCostsBudgetCurrency(event.target.value);
             }}
@@ -1584,7 +1589,9 @@ export default function Cerov(props: Props) {
           </Text>
           <Input
             value={netProfitTargetBudgetCurrency}
-            isInvalid={inputErrors.includes("campaignNetProfitTargetBudgetsCurrency")}
+            isInvalid={inputErrors.includes(
+              "campaignNetProfitTargetBudgetsCurrency"
+            )}
             onChange={(event) => {
               setNetProfitTargetBudgetCurrency(event.target.value);
             }}
