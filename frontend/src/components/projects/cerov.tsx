@@ -269,7 +269,6 @@ export default function Cerov(props: Props) {
         });
         setVendor({
           vendor: vs.data.vendorName ?? "",
-          projectManager: vs.data.productionProjectManager ?? "",
           creditor: vs.data.creditorNumber ?? "",
 
           debitor: vs.data.debitorNumber ?? "",
@@ -670,7 +669,6 @@ export default function Cerov(props: Props) {
         vendorName: vendorName.label,
         projectNumber: projectNumber,
         companyCode: requestorsCompanyName.value.code,
-        productionProjectManager: vendor.projectManager,
         creditorNumber: vendor.creditor,
         debitorNumber: vendor.debitor,
         manufacturerNumber: vendor.manufacturer,
@@ -985,8 +983,6 @@ export default function Cerov(props: Props) {
         c.share = ((c.estimatedCosts / sum) * 100).toFixed(2);
       }
     });
-
-    console.log(table[row][column] / sum);
     table.forEach((row: any) => {
       arr.forEach((col: any, index: number) => {
         if (col !== column) {
@@ -1001,8 +997,6 @@ export default function Cerov(props: Props) {
             if (row[column] !== undefined) {
               s = (row[column] / sum) * 100;
             }
-            console.log(row);
-            console.log(s);
             row[col] = ((s * total[index!]) / 100).toFixed(2);
           }
         }
@@ -1022,29 +1016,28 @@ export default function Cerov(props: Props) {
   }
   function cellNumberAlert(value: any, row: any) {
     if (!Number.isNaN(value) && value !== "" && value !== "NaN") {
-    } else {
-      if (row.vendor !== "TOTAL") {
-        return useColorModeValue("red.300", "#ABB2BF");
-      }
+      return;
+    }
+    if (row.vendor !== "TOTAL") {
+      return useColorModeValue("red.300", "#ABB2BF");
     }
   }
   function cellTextAlert(value: any, row: any) {
     if (value !== "") {
-    } else {
-      if (row.vendor !== "TOTAL") {
-        return useColorModeValue("red.300", "#ABB2BF");
-      }
+      return;
+    }
+    if (row.vendor !== "TOTAL") {
+      return useColorModeValue("red.300", "#ABB2BF");
     }
   }
 
   function cellDropDownAlert(value: any, row: any) {
     if (value !== "") {
       return false;
-    } else {
-      if (row.vendor !== "TOTAL") {
-        return true;
-      } else return false;
     }
+    if (row.vendor !== "TOTAL") {
+      return true;
+    } else return false;
   }
 
   function submissionValidation(submission: SubmissionWithChildren) {
@@ -1052,7 +1045,6 @@ export default function Cerov(props: Props) {
     var nonMandatoryFields: string[] = [
       "targetAudience",
       "projectApprover",
-      "productionProjectManager",
       "projectApproval",
       "companyCode",
       "manufacturersFiscalQuarter",
@@ -1072,7 +1064,7 @@ export default function Cerov(props: Props) {
     }
 
     var countries = submission.children.filter((el) => el.group === "country");
-
+    console.log(countries);
     countries.forEach((country: any) => {
       Object.keys(country.data).forEach((key: any) => {
         if (!nonMandatoryFields.includes(key)) {
@@ -1164,6 +1156,7 @@ export default function Cerov(props: Props) {
     if (inputError !== "") {
       fieldKeys.push("total");
     }
+    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -1898,7 +1891,6 @@ export default function Cerov(props: Props) {
                 {(rowData, index) => (
                   <Input
                     value={rowData.contactEmail}
-                    isInvalid={inputErrors.includes("productionProjectManager")}
                     onChange={(event) => {
                       var temp = [...costBreakdown];
                       temp[index!].contactEmail = event.target.value;

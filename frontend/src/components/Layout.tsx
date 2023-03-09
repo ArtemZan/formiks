@@ -476,16 +476,16 @@ interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "Projects",
+    label: "Request Forms",
     children: [
       {
-        label: "Existing Projects",
-        subLabel: "Explore existing projects",
+        label: "Request Forms",
+        subLabel: "Explore existing request forms",
         href: "/projects",
       },
       {
-        label: "New Project",
-        subLabel: "Create new project",
+        label: "New Request Form",
+        subLabel: "Create new request form",
         href: "/projects/create",
         isAdmin: true,
       },
@@ -493,11 +493,11 @@ const NAV_ITEMS: Array<NavItem> = [
   },
 
   {
-    label: "Submissions",
+    label: "Projects",
     children: [
       {
-        label: "Submissions Table",
-        subLabel: "Explore all active submissions",
+        label: "Projects Table",
+        subLabel: "Explore all active projects",
         href: "/submissions",
       },
       {
@@ -507,7 +507,7 @@ const NAV_ITEMS: Array<NavItem> = [
       },
       {
         label: "Drafts",
-        subLabel: "Explore unpublished submissions",
+        subLabel: "Explore unpublished projects",
         href: "/drafts",
       },
     ],

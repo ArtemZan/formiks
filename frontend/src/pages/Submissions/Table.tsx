@@ -54,6 +54,7 @@ import {
   RiUserFill,
   RiGroupFill,
   IoSave,
+  FaSleigh,
 } from "react-icons/all";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
@@ -1327,6 +1328,42 @@ export function SubmissionsTable(props: Props) {
       path = s.join(".");
     }
     RestAPI.updateSubmissionPartial(submission, path, value);
+  }
+
+  function hasRequiredFields(ts: any) {
+    if (!ts || !ts.data) {
+      return false;
+    }
+    const requiredFields = [
+      "invoicingDateLMD",
+      "vendorLMD",
+      "invoiceTypeLMD",
+      "materialNumberLMD",
+      "alsoMarketingProjectNumberLMD",
+      "invoiceTextLMD",
+      "amountLMD",
+      "documentCurrencyLMD",
+      "paymentMethodLMD",
+      "dunningStopLMD",
+      "sendToLMD",
+    ];
+
+    // Check if all required fields are present and not empty
+    for (let field of requiredFields) {
+      if (!ts.data[field] || ts.data[field].length === 0) {
+        return false;
+      }
+    }
+
+    // Check if paymentMethodLMD is "Money in House" and depositNumberLMD is present and not empty
+    if (
+      ts.data.paymentMethodLMD === "Money in House" &&
+      (!ts.data.depositNumberLMD || ts.data.depositNumberLMD.length === 0)
+    ) {
+      return false;
+    }
+
+    return true;
   }
 
   function handleCellUpdate(submission: string, path: string, value: any) {
@@ -4724,7 +4761,7 @@ export function SubmissionsTable(props: Props) {
       >
         <Tabs isLazy={false} variant="enclosed">
           <TabList>
-            <Tab>Submissions</Tab>
+            <Tab>Projects</Tab>
             <Tab>Invoicing</Tab>
           </TabList>
           <TabPanels>
@@ -5270,10 +5307,21 @@ export function SubmissionsTable(props: Props) {
                                 path,
                                 value
                               );
+                              var tmpValue = "";
+                              var tmpBU = "";
+                              if (value.toString().includes("BU")) {
+                                tmpValue = value
+                                  .toString()
+                                  .substring(0, value.length - 7);
+                                tmpBU = value
+                                  .toString()
+                                  .substring(value.length - 3, value.length);
+                              } else {
+                                tmpValue = value;
+                              }
                               let set = false;
                               VendorsNames.every((v) => {
-                                if (v.label === value) {
-                                  console.log(v);
+                                if (v.label === tmpValue) {
                                   handleCommunicationCellUpdate(
                                     submission,
                                     "data.vodLMD",
@@ -5298,30 +5346,65 @@ export function SubmissionsTable(props: Props) {
                                 );
                               } else {
                                 if (submissionData) {
-                                  console.log(submissionData);
                                   submissionData.every((s: any) => {
-                                    if (
-                                      s.group === "vendor" &&
-                                      s.data.debitorNumber ===
-                                        props.rowData.data.vodLMD
-                                    ) {
-                                      handleCommunicationCellUpdate(
-                                        submission,
-                                        "data.amountLMD",
-                                        s.data.vendorAmount
-                                      );
-                                      handleCommunicationCellUpdate(
-                                        submission,
-                                        "data.documentCurrencyLMD",
-                                        s.data.vendorBudgetCurrency
-                                      );
-                                      handleCommunicationCellUpdate(
-                                        submission,
-                                        "data.buLMD",
-                                        s.data.businessUnit
-                                      );
+                                    if (s.group === "vendor") {
+                                      if (tmpBU === "") {
+                                        if (
+                                          s.group === "vendor" &&
+                                          s.data.debitorNumber ===
+                                            props.rowData.data.vodLMD
+                                        ) {
+                                          handleCommunicationCellUpdate(
+                                            submission,
+                                            "data.amountLMD",
+                                            s.data.vendorAmount
+                                          );
+                                          handleCommunicationCellUpdate(
+                                            submission,
+                                            "data.documentCurrencyLMD",
+                                            s.data.vendorBudgetCurrency
+                                          );
+                                          handleCommunicationCellUpdate(
+                                            submission,
+                                            "data.buLMD",
+                                            s.data.businessUnit
+                                          );
+                                          return false;
+                                        }
+                                      } else {
+                                        if (
+                                          s.group === "vendor" &&
+                                          s.data.debitorNumber ===
+                                            props.rowData.data.vodLMD &&
+                                          s.data.businessUnit.substring(
+                                            0,
+                                            3
+                                          ) === tmpBU
+                                        ) {
+                                          handleCommunicationCellUpdate(
+                                            submission,
+                                            "data.amountLMD",
+                                            s.data.vendorAmount
+                                          );
+                                          handleCommunicationCellUpdate(
+                                            submission,
+                                            "data.documentCurrencyLMD",
+                                            s.data.vendorBudgetCurrency
+                                          );
+                                          if (
+                                            tmpBU ===
+                                            s.data.businessUnit.substring(0, 3)
+                                          ) {
+                                            handleCommunicationCellUpdate(
+                                              submission,
+                                              "data.buLMD",
+                                              s.data.businessUnit
+                                            );
+                                          }
 
-                                      return false;
+                                          return false;
+                                        }
+                                      }
                                     }
                                     return true;
                                   });
@@ -5430,7 +5513,6 @@ export function SubmissionsTable(props: Props) {
                             invoiced={lmdColumnEdit(
                               props.rowData.data.statusLMD
                             )}
-                            readonly={props.rowData.parentId !== null}
                             loadOptions={() => {
                               return [
                                 {
@@ -5538,11 +5620,13 @@ export function SubmissionsTable(props: Props) {
                                   ""
                                 );
                               }
-                              handleCommunicationCellUpdate(
-                                submission,
-                                "data.statusLMD",
-                                "INCOMPLETE"
-                              );
+                              if (props.rowData.parentId === null) {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.statusLMD",
+                                  "INCOMPLETE"
+                                );
+                              }
                               handleCommunicationCellUpdate(
                                 submission,
                                 path,
@@ -5644,7 +5728,7 @@ export function SubmissionsTable(props: Props) {
                             invoiced={lmdColumnEdit(
                               props.rowData.data.statusLMD
                             )}
-                            readonly={props.rowData.parentId !== null}
+                            // readonly={props.rowData.parentId !== null}
                             loadOptions={() => {
                               return [
                                 {
@@ -5767,7 +5851,6 @@ export function SubmissionsTable(props: Props) {
                                   "data.invoiceTextLMD",
                                   vs[0].data.campaignDescription
                                 );
-                                console.log(vs);
                                 var amount = 0;
                                 switch (vs[0].data.projectType) {
                                   case "Local One Vendor" ||
@@ -6299,86 +6382,62 @@ export function SubmissionsTable(props: Props) {
                                       }
                                     });
                                   }
-
+                                  var isInvoiceCorrect: number = 0;
+                                  var parent: any;
                                   is.forEach((ts, tsi) => {
-                                    if (
-                                      ts.data.invoicingDateLMD &&
-                                      ts.data.invoicingDateLMD.length > 0 &&
-                                      ts.data.vendorLMD &&
-                                      ts.data.vendorLMD.length > 0 &&
-                                      ts.data.invoiceTypeLMD &&
-                                      ts.data.invoiceTypeLMD.length > 0 &&
-                                      ts.data.materialNumberLMD &&
-                                      ts.data.materialNumberLMD.length > 0 &&
-                                      ts.data.alsoMarketingProjectNumberLMD &&
-                                      ts.data.alsoMarketingProjectNumberLMD
-                                        .length > 0 &&
-                                      ts.data.invoiceTextLMD &&
-                                      ts.data.invoiceTextLMD.length > 0 &&
-                                      ts.data.amountLMD &&
-                                      typeof ts.data.amountLMD === "number" &&
-                                      ts.data.documentCurrencyLMD &&
-                                      ts.data.documentCurrencyLMD.length > 0 &&
-                                      ts.data.paymentMethodLMD &&
-                                      ts.data.paymentMethodLMD.length > 0 &&
-                                      ts.data.dunningStopLMD &&
-                                      ts.data.dunningStopLMD.length > 0 &&
-                                      ts.data.sendToLMD &&
-                                      ts.data.sendToLMD.length > 0 &&
-                                      (ts.data.paymentMethodLMD ===
-                                      "Money in House"
-                                        ? ts.data.depositNumberLMD &&
-                                          ts.data.depositNumberLMD.length > 0
-                                        : true)
-                                    ) {
-                                      var today = new Date();
-                                      today.setHours(23, 59, 59, 998);
-                                      if (
-                                        ts.data.invoicingDateLMD &&
-                                        new Date(ts.data.invoicingDateLMD) >
-                                          today
-                                      ) {
-                                        handleCommunicationCellUpdate(
-                                          ts.id!,
-                                          "data.statusLMD",
-                                          "FUTURE INVOICE"
-                                        );
-                                      } else {
-                                        handleCommunicationCellUpdate(
-                                          ts.id!,
-                                          "data.statusLMD",
-                                          "OK FOR INVOICING"
-                                        );
-                                      }
-                                      toast(
-                                        <Toast
-                                          title={"Successful Validation"}
-                                          message={
-                                            (tsi === 0 ? `Parent` : "Child") +
-                                            " submission validated successfully"
-                                          }
-                                          type={"success"}
-                                        />
-                                      );
-                                    } else {
-                                      toast(
-                                        <Toast
-                                          title={"Incomplete Request"}
-                                          message={
-                                            (tsi === 0 ? `Parent` : "Child") +
-                                            " submission could not be validated: incomplete data"
-                                          }
-                                          type={"error"}
-                                        />
-                                      );
-
-                                      handleCommunicationCellUpdate(
-                                        ts.id!,
-                                        "data.statusLMD",
-                                        "INCOMPLETE"
-                                      );
+                                    if (ts.parentId === null) {
+                                      parent = ts;
+                                    }
+                                    if (!hasRequiredFields(ts)) {
+                                      isInvoiceCorrect += 1;
                                     }
                                   });
+                                  if (isInvoiceCorrect === 0) {
+                                    var today = new Date();
+                                    today.setHours(23, 59, 59, 998);
+                                    if (
+                                      parent.data.invoicingDateLMD &&
+                                      new Date(parent.data.invoicingDateLMD) >
+                                        today
+                                    ) {
+                                      handleCommunicationCellUpdate(
+                                        parent.id!,
+                                        "data.statusLMD",
+                                        "FUTURE INVOICE"
+                                      );
+                                    } else {
+                                      handleCommunicationCellUpdate(
+                                        parent.id!,
+                                        "data.statusLMD",
+                                        "OK FOR INVOICING"
+                                      );
+                                    }
+                                    toast(
+                                      <Toast
+                                        title={"Successful Validation"}
+                                        message={
+                                          "Parent submission validated successfully"
+                                        }
+                                        type={"success"}
+                                      />
+                                    );
+                                  } else {
+                                    toast(
+                                      <Toast
+                                        title={"Incomplete Request"}
+                                        message={
+                                          "Parent submission could not be validated: incomplete data"
+                                        }
+                                        type={"error"}
+                                      />
+                                    );
+
+                                    handleCommunicationCellUpdate(
+                                      parent.id!,
+                                      "data.statusLMD",
+                                      "INCOMPLETE"
+                                    );
+                                  }
                                 }
                               }}
                               rowIndex={props.rowIndex}
@@ -6414,7 +6473,7 @@ export function SubmissionsTable(props: Props) {
                               backgroundColor="#fef9fa"
                               textColor={"blue"}
                               onUpdate={(submissionId: string) => {
-                                var submission: Submission = {
+                                var submissionNew: Submission = {
                                   project: props.rowData.project,
                                   parentId: submissionId,
                                   viewId: null,
@@ -6424,11 +6483,38 @@ export function SubmissionsTable(props: Props) {
                                   title: "",
                                   author: "",
                                   status: "",
-                                  data: props.rowData.data,
+                                  data: {
+                                    documentCurrencyLMD:
+                                      props.rowData.data.documentCurrencyLMD,
+                                    invoicingDateLMD:
+                                      props.rowData.data.invoicingDateLMD,
+                                    requestorLMD:
+                                      props.rowData.data.requestorLMD,
+                                    vendorLMD: props.rowData.data.vendorLMD,
+                                    vodLMD: props.rowData.data.vodLMD,
+                                    buLMD: props.rowData.data.buLMD,
+                                    invoiceTypeLMD:
+                                      props.rowData.data.invoiceTypeLMD,
+                                    cancellationInfoLMD:
+                                      props.rowData.data.cancellationInfoLMD,
+                                    materialNumberLMD:
+                                      props.rowData.data.materialNumberLMD,
+                                    reasonLMD: props.rowData.data.reasonLMD,
+                                    reasonCodeLMD:
+                                      props.rowData.data.reasonCodeLMD,
+                                    paymentMethodLMD:
+                                      props.rowData.data.paymentMethodLMD,
+                                    dunningStopLMD:
+                                      props.rowData.data.dunningStopLMD,
+                                    depositNumberLMD:
+                                      props.rowData.data.depositNumberLMD,
+                                    sendToLMD: props.rowData.data.sendToLMD,
+                                  },
                                 };
-                                RestAPI.createSubmission(submission).then(
+                                RestAPI.createSubmission(submissionNew).then(
                                   (response) => {
                                     var temp = [...communicationSubmissions];
+
                                     temp.push(response.data);
                                     setCommunicationSubmissions(temp);
                                   }
