@@ -686,6 +686,7 @@ export default function Cerov(props: Props) {
         projectType: "European One Vendor",
       },
     });
+    //comment that has no meaning
     costBreakdown.forEach((company: any) => {
       if (local !== null && local === company.companyCode) {
         children.push({
