@@ -4761,7 +4761,7 @@ export function SubmissionsTable(props: Props) {
       >
         <Tabs isLazy={false} variant="enclosed">
           <TabList>
-            <Tab>Projects</Tab>
+            <Tab>Submissions</Tab>
             <Tab>Invoicing</Tab>
           </TabList>
           <TabPanels>
@@ -5198,6 +5198,7 @@ export function SubmissionsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
+                              console.log(props);
                               handleCommunicationCellUpdate(
                                 submission,
                                 "data.requestorLMD",
@@ -6367,6 +6368,11 @@ export function SubmissionsTable(props: Props) {
                                   communicationSubmissions.findIndex(
                                     (s) => s.id === submissionId
                                   );
+
+                                var targetChildSubs =
+                                  communicationSubmissions.filter(
+                                    (s) => s.parentId === submissionId
+                                  );
                                 if (targetSubmissionIndex > -1) {
                                   var is: Submission[] = [];
                                   is.push(
@@ -6395,23 +6401,28 @@ export function SubmissionsTable(props: Props) {
                                   if (isInvoiceCorrect === 0) {
                                     var today = new Date();
                                     today.setHours(23, 59, 59, 998);
+                                    var statusToBeSet = "";
                                     if (
                                       parent.data.invoicingDateLMD &&
                                       new Date(parent.data.invoicingDateLMD) >
                                         today
                                     ) {
-                                      handleCommunicationCellUpdate(
-                                        parent.id!,
-                                        "data.statusLMD",
-                                        "FUTURE INVOICE"
-                                      );
+                                      statusToBeSet = "FUTURE INVOICE";
                                     } else {
-                                      handleCommunicationCellUpdate(
-                                        parent.id!,
-                                        "data.statusLMD",
-                                        "OK FOR INVOICING"
-                                      );
+                                      statusToBeSet = "OK FOR INVOICING";
                                     }
+                                    handleCommunicationCellUpdate(
+                                      parent.id!,
+                                      "data.statusLMD",
+                                      statusToBeSet
+                                    );
+                                    targetChildSubs.forEach((element) => {
+                                      handleCommunicationCellUpdate(
+                                        element.id!,
+                                        "data.statusLMD",
+                                        statusToBeSet
+                                      );
+                                    });
                                     toast(
                                       <Toast
                                         title={"Successful Validation"}
