@@ -1751,7 +1751,6 @@ export function SubmissionsTable(props: Props) {
             (element) => element === props.column.key
           ) > -1
         ) {
-          console.log(props.cellData);
           if (
             (props.cellData && props.cellData.length > 0) ||
             props.cellData !== ""
@@ -1813,7 +1812,6 @@ export function SubmissionsTable(props: Props) {
     if (props === undefined) {
       return false;
     }
-
     switch (props.rowData.data.invoiceTypeLMD) {
       case "Invoice":
         if (
@@ -1829,7 +1827,7 @@ export function SubmissionsTable(props: Props) {
         if (
           preInvoiceReadonlyFields.findIndex(
             (element) => element === props.column.key
-          ) - 1
+          ) > -1
         ) {
           return true;
         } else {
@@ -1839,7 +1837,7 @@ export function SubmissionsTable(props: Props) {
         if (
           internalInvocieReadonlyFields.findIndex(
             (element) => element === props.column.key
-          ) - 1
+          ) > -1
         ) {
           return true;
         } else {
@@ -5394,7 +5392,6 @@ export function SubmissionsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              console.log(props);
                               handleCommunicationCellUpdate(
                                 submission,
                                 "data.requestorLMD",
@@ -6313,7 +6310,6 @@ export function SubmissionsTable(props: Props) {
                                   }
                                   break;
                                 case "Internal Invoice":
-                                  console.log(value);
                                   switch (value) {
                                     case "Payment":
                                       dunningStop = "";
@@ -6560,91 +6556,126 @@ export function SubmissionsTable(props: Props) {
                               backgroundColor="#fef9fa"
                               textColor={"green"}
                               onUpdate={(submissionId: string) => {
+                                var isInvoiceCorrect: number = 0;
+                                var targetChildSubs: any[] = [];
+                                var parent: any;
                                 var targetSubmissionIndex =
                                   communicationSubmissions.findIndex(
                                     (s) => s.id === submissionId
                                   );
 
-                                var targetChildSubs =
-                                  communicationSubmissions.filter(
-                                    (s) => s.parentId === submissionId
-                                  );
-                                if (targetSubmissionIndex > -1) {
-                                  var is: Submission[] = [];
-                                  is.push(
+                                if (
+                                  communicationSubmissions[
+                                    targetSubmissionIndex
+                                  ].data.invoiceTypeLMD === "Cancellation"
+                                ) {
+                                  parent =
                                     communicationSubmissions[
                                       targetSubmissionIndex
-                                    ]
-                                  );
-
-                                  if (is[0].parentId === null) {
-                                    communicationSubmissions.forEach((s) => {
-                                      if (s.parentId === submissionId) {
-                                        is.push(s);
-                                      }
-                                    });
+                                    ];
+                                  if (
+                                    communicationSubmissions[
+                                      targetSubmissionIndex
+                                    ].data.additionalInformationLMD.length >
+                                      0 &&
+                                    communicationSubmissions[
+                                      targetSubmissionIndex
+                                    ].data.cancellationInfoLMD.length > 0
+                                  ) {
+                                    isInvoiceCorrect = 0;
+                                  } else {
+                                    isInvoiceCorrect = 1;
                                   }
-                                  var isInvoiceCorrect: number = 0;
-                                  var parent: any;
-                                  is.forEach((ts, tsi) => {
-                                    if (ts.parentId === null) {
-                                      parent = ts;
+                                } else {
+                                  if (
+                                    communicationSubmissions[
+                                      targetSubmissionIndex
+                                    ].data.invoiceTypeLMD !== "Cancellation"
+                                  ) {
+                                    targetChildSubs =
+                                      communicationSubmissions.filter(
+                                        (s) => s.parentId === submissionId
+                                      );
+                                    if (targetSubmissionIndex > -1) {
+                                      var is: Submission[] = [];
+                                      is.push(
+                                        communicationSubmissions[
+                                          targetSubmissionIndex
+                                        ]
+                                      );
+
+                                      if (is[0].parentId === null) {
+                                        communicationSubmissions.forEach(
+                                          (s) => {
+                                            if (s.parentId === submissionId) {
+                                              is.push(s);
+                                            }
+                                          }
+                                        );
+                                      }
+                                      isInvoiceCorrect = 0;
+
+                                      is.forEach((ts, tsi) => {
+                                        if (ts.parentId === null) {
+                                          parent = ts;
+                                        }
+                                        if (!hasRequiredFields(ts)) {
+                                          isInvoiceCorrect += 1;
+                                        }
+                                      });
                                     }
-                                    if (!hasRequiredFields(ts)) {
-                                      isInvoiceCorrect += 1;
-                                    }
-                                  });
-                                  if (isInvoiceCorrect === 0) {
-                                    var today = new Date();
-                                    today.setHours(23, 59, 59, 998);
-                                    var statusToBeSet = "";
-                                    if (
-                                      parent.data.invoicingDateLMD &&
-                                      new Date(parent.data.invoicingDateLMD) >
-                                        today
-                                    ) {
-                                      statusToBeSet = "FUTURE INVOICE";
-                                    } else {
-                                      statusToBeSet = "OK FOR INVOICING";
-                                    }
+                                  }
+                                }
+                                if (isInvoiceCorrect === 0) {
+                                  var today = new Date();
+                                  today.setHours(23, 59, 59, 998);
+                                  var statusToBeSet = "";
+                                  if (
+                                    parent.data.invoicingDateLMD &&
+                                    new Date(parent.data.invoicingDateLMD) >
+                                      today
+                                  ) {
+                                    statusToBeSet = "FUTURE INVOICE";
+                                  } else {
+                                    statusToBeSet = "OK FOR INVOICING";
+                                  }
+                                  handleCommunicationCellUpdate(
+                                    parent.id!,
+                                    "data.statusLMD",
+                                    statusToBeSet
+                                  );
+                                  targetChildSubs.forEach((element) => {
                                     handleCommunicationCellUpdate(
-                                      parent.id!,
+                                      element.id!,
                                       "data.statusLMD",
                                       statusToBeSet
                                     );
-                                    targetChildSubs.forEach((element) => {
-                                      handleCommunicationCellUpdate(
-                                        element.id!,
-                                        "data.statusLMD",
-                                        statusToBeSet
-                                      );
-                                    });
-                                    toast(
-                                      <Toast
-                                        title={"Successful Validation"}
-                                        message={
-                                          "Parent submission validated successfully"
-                                        }
-                                        type={"success"}
-                                      />
-                                    );
-                                  } else {
-                                    toast(
-                                      <Toast
-                                        title={"Incomplete Request"}
-                                        message={
-                                          "Parent submission could not be validated: incomplete data"
-                                        }
-                                        type={"error"}
-                                      />
-                                    );
+                                  });
+                                  toast(
+                                    <Toast
+                                      title={"Successful Validation"}
+                                      message={
+                                        "Parent submission validated successfully"
+                                      }
+                                      type={"success"}
+                                    />
+                                  );
+                                } else {
+                                  toast(
+                                    <Toast
+                                      title={"Incomplete Request"}
+                                      message={
+                                        "Parent submission could not be validated: incomplete data"
+                                      }
+                                      type={"error"}
+                                    />
+                                  );
 
-                                    handleCommunicationCellUpdate(
-                                      parent.id!,
-                                      "data.statusLMD",
-                                      "INCOMPLETE"
-                                    );
-                                  }
+                                  handleCommunicationCellUpdate(
+                                    parent.id!,
+                                    "data.statusLMD",
+                                    "INCOMPLETE"
+                                  );
                                 }
                               }}
                               rowIndex={props.rowIndex}
