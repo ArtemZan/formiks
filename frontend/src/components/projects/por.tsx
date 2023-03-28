@@ -140,7 +140,7 @@ export default function Elov(props: Props) {
   const [render, rerender] = useState(0);
 
   async function fetchDropdowns() {
-    var dropdownsIds: string[] = [
+    const dropdownsIds: string[] = [
       "619b630a9a5a2bb37a93b23b",
       "619b61419a5a2bb37a93b237",
       "6391eea09a3d043b9a89d767",
@@ -159,11 +159,6 @@ export default function Elov(props: Props) {
     );
     PH1 = responses[0].data;
     Companies = responses[1].data;
-    // if (VendorsNames.length === 0) {
-    //   VendorsNames = responses[2].data;
-    // } else {
-    //   setVendorsDD(responses[2].data);
-    // }
     CampaignChannel = responses[3].data;
     TargetAudience = responses[4].data;
     Budget = responses[5].data;

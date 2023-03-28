@@ -5385,7 +5385,10 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             type={"date"}
                             invoiced={lmdColumnEdit(props.rowData.data)}
-                            readonly={cellReadonly(props)}
+                            readonly={
+                              props.rowData.parentId !== null ||
+                              cellReadonly(props)
+                            }
                             backgroundColor={mandatoryFieldValidation(props)}
                             onUpdate={(
                               submission: string,
@@ -5448,7 +5451,10 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            readonly={cellReadonly(props)}
+                            readonly={
+                              props.rowData.parentId !== null ||
+                              cellReadonly(props)
+                            }
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             loadOptions={() => {
                               if (
@@ -5620,7 +5626,10 @@ export function SubmissionsTable(props: Props) {
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             type={"text"}
                             backgroundColor="#F5FAEF"
-                            readonly={cellReadonly(props)}
+                            readonly={
+                              props.rowData.parentId !== null ||
+                              cellReadonly(props)
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -5644,7 +5653,10 @@ export function SubmissionsTable(props: Props) {
                             loadOptions={() => {
                               return BUs;
                             }}
-                            readonly={cellReadonly(props)}
+                            readonly={
+                              props.rowData.parentId !== null ||
+                              cellReadonly(props)
+                            }
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
@@ -5991,16 +6003,60 @@ export function SubmissionsTable(props: Props) {
                                   />
                                 );
                               } else {
-                                var currentVendor =
-                                  props.rowData.data.vendorLMD;
+                                var currentVendor = "";
+                                if (props.rowData.data.vendorLMD === "") {
+                                  var parent = communicationSubmissions.find(
+                                    ({ id }) => id === props.rowData.parentId
+                                  );
+                                  if (parent !== undefined) {
+                                    currentVendor = parent?.data.vendorLMD;
+                                  } else {
+                                    currentVendor = "";
+                                  }
+                                } else {
+                                  currentVendor = props.rowData.data.vendorLMD;
+                                }
+                                console.log(currentVendor);
                                 if (typeof currentVendor === "string") {
                                   var valid = false;
                                   vs.forEach((s) => {
-                                    if (
-                                      s.data.vendorName !== undefined &&
-                                      currentVendor === s.data.vendorName
-                                    ) {
-                                      valid = true;
+                                    if (s.data.vendorName !== undefined) {
+                                      var vendor: string = "";
+                                      var vendorBU: string = "";
+                                      if (s.data.vendorName.includes("BU")) {
+                                        vendor = s.data.vendorName
+                                          .toString()
+                                          .substring(
+                                            0,
+                                            s.data.vendorName.toString()
+                                              .length - 7
+                                          );
+                                        vendorBU = s.data.vendorName
+                                          .toString()
+                                          .substring(
+                                            s.data.vendorName.toString()
+                                              .length - 3,
+                                            s.data.vendorName.toString().length
+                                          );
+                                      } else {
+                                        vendor = s.data.vendorName;
+                                      }
+                                      console.log(currentVendor === vendor);
+                                      if (currentVendor === vendor) {
+                                        handleCommunicationCellUpdate(
+                                          submission,
+                                          "data.vendorLMD",
+                                          s.data.vendorName.toString()
+                                        );
+                                        if (vendorBU !== "") {
+                                          handleCommunicationCellUpdate(
+                                            submission,
+                                            "data.buLMD",
+                                            s.data.businessUnit
+                                          );
+                                        }
+                                        valid = true;
+                                      }
                                     }
                                   });
                                   if (!valid) {
