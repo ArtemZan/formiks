@@ -2286,7 +2286,8 @@ export function SubmissionsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"value-dropdown"}
-          readonly={projectColumnEdit(props.rowData)}
+          // readonly={projectColumnEdit(props.rowData)}
+          readonly={true}
           loadOptions={() => {
             return props.rowData.data.companyCode === "1550"
               ? InternationalVendorsNames
@@ -5527,6 +5528,7 @@ export function SubmissionsTable(props: Props) {
                                 }
                                 return true;
                               });
+                              console.log(VendorsNames);
                               if (!set) {
                                 handleCommunicationCellUpdate(
                                   submission,
@@ -5540,6 +5542,7 @@ export function SubmissionsTable(props: Props) {
                                 );
                               } else {
                                 if (submissionData) {
+                                  console.log(submissionData);
                                   submissionData.every((s: any) => {
                                     if (s.group === "vendor") {
                                       if (tmpBU === "") {
@@ -5995,6 +5998,21 @@ export function SubmissionsTable(props: Props) {
                               );
                               var vs = findSubmissionsByPO(value);
                               if (vs.length < 1) {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vendorLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vodLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.buLMD",
+                                  ""
+                                );
                                 toast(
                                   <Toast
                                     title={"Unknown Project Number"}
@@ -6016,7 +6034,6 @@ export function SubmissionsTable(props: Props) {
                                 } else {
                                   currentVendor = props.rowData.data.vendorLMD;
                                 }
-                                console.log(currentVendor);
                                 if (typeof currentVendor === "string") {
                                   var valid = false;
                                   vs.forEach((s) => {
@@ -6041,20 +6058,28 @@ export function SubmissionsTable(props: Props) {
                                       } else {
                                         vendor = s.data.vendorName;
                                       }
-                                      console.log(currentVendor === vendor);
                                       if (currentVendor === vendor) {
                                         handleCommunicationCellUpdate(
                                           submission,
                                           "data.vendorLMD",
                                           s.data.vendorName.toString()
                                         );
-                                        if (vendorBU !== "") {
-                                          handleCommunicationCellUpdate(
-                                            submission,
-                                            "data.buLMD",
-                                            s.data.businessUnit
-                                          );
-                                        }
+                                        handleCommunicationCellUpdate(
+                                          submission,
+                                          "data.buLMD",
+                                          s.data.businessUnit
+                                        );
+                                        handleCommunicationCellUpdate(
+                                          submission,
+                                          "data.vodLMD",
+                                          s.data.debitorNumber
+                                        );
+                                        handleCommunicationCellUpdate(
+                                          submission,
+                                          "data.documentCurrencyLMD",
+                                          s.data.vendorBudgetCurrency
+                                        );
+                                        console.log(s.data);
                                         valid = true;
                                       }
                                     }
@@ -6063,6 +6088,11 @@ export function SubmissionsTable(props: Props) {
                                     handleCommunicationCellUpdate(
                                       submission,
                                       "data.vendorLMD",
+                                      ""
+                                    );
+                                    handleCommunicationCellUpdate(
+                                      submission,
+                                      "data.vodLMD",
                                       ""
                                     );
                                     toast(
@@ -6079,7 +6109,7 @@ export function SubmissionsTable(props: Props) {
                                 handleCommunicationCellUpdate(
                                   submission,
                                   "data.invoiceTextLMD",
-                                  vs[0].data.campaignDescription
+                                  vs[0].data.projectName
                                 );
                                 var amount = 0;
                                 switch (vs[0].data.projectType) {
@@ -6381,12 +6411,13 @@ export function SubmissionsTable(props: Props) {
                                 case "Cancelation":
                                   break;
                               }
-                              // if (
-                              //   value === "Money in House" ||
-                              //   value === "Credit Note from Vendor"
-                              // ) {
-                              //   dunningStop = "Yes";
-                              // }
+                              if (value !== "Money in House") {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.depositNumberLMD",
+                                  ""
+                                );
+                              }
                               handleCommunicationCellUpdate(
                                 submission,
                                 "data.dunningStopLMD",
@@ -6463,11 +6494,13 @@ export function SubmissionsTable(props: Props) {
                             type={"text"}
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             readonly={
-                              typeof props.rowData.data.dunningStopLMD ===
-                                "string" &&
-                              props.rowData.data.dunningStopLMD.toLowerCase() ===
-                                "no" &&
-                              cellReadonly(props)
+                              props.rowData.data.paymentMethodLMD !==
+                              "Money in House"
+                              // &&
+                              // typeof props.rowData.data.dunningStopLMD ===
+                              //   "string" &&
+                              // props.rowData.data.dunningStopLMD.toLowerCase() ===
+                              //   "no"
                             }
                             backgroundColor={
                               props.rowData.data.invoiceTypeLMD ===
@@ -6652,6 +6685,7 @@ export function SubmissionsTable(props: Props) {
                                       communicationSubmissions.filter(
                                         (s) => s.parentId === submissionId
                                       );
+
                                     if (targetSubmissionIndex > -1) {
                                       var is: Submission[] = [];
                                       is.push(
@@ -6679,6 +6713,26 @@ export function SubmissionsTable(props: Props) {
                                           isInvoiceCorrect += 1;
                                         }
                                       });
+
+                                      var targetChildSameVOD =
+                                        targetChildSubs.filter(
+                                          (s) => s.vodLMD === parent.data.vodLMD
+                                        );
+                                      if (
+                                        targetChildSameVOD.length !==
+                                        targetChildSubs.length
+                                      ) {
+                                        isInvoiceCorrect += 1;
+                                        toast(
+                                          <Toast
+                                            title={"Incomplete Request"}
+                                            message={
+                                              "Invoice contains two different VOD numbers, and invoice can be requested only for one vendor"
+                                            }
+                                            type={"error"}
+                                          />
+                                        );
+                                      }
                                     }
                                   }
                                 }

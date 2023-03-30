@@ -571,7 +571,7 @@ export default function Elmv(props: Props) {
       children,
       local: null,
     };
-
+    console.log(draft);
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
@@ -596,6 +596,7 @@ export default function Elmv(props: Props) {
           return;
         }
         RestAPI.deleteDraft(props.submission.id).then(() => {
+          console.log(props.submission.id);
           RestAPI.createSubmissionWithChildren(submission).then((response) => {
             if (response.data.hasChanged) {
               toast(
