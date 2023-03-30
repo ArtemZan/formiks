@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/doublegrey/formiks/backend/api/handlers"
+	"github.com/doublegrey/formiks/backend/api/wrike"
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/middlewares/msal"
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,7 @@ func RegisterRoutes(r *gin.Engine) {
 	templatesGroup := apiGroup.Group("templates")
 	draftsGroup := apiGroup.Group("drafts")
 	viewsGroup := apiGroup.Group("views")
+	wrikeGroup := apiGroup.Group("wrike")
 
 	projectsGroup.GET("/", projectHandler.Fetch)        // get all projects available to user
 	projectsGroup.GET("/:id", projectHandler.FetchByID) // get project
@@ -84,4 +86,6 @@ func RegisterRoutes(r *gin.Engine) {
 	draftsGroup.DELETE("/:id", draftHandler.Delete)
 
 	viewsGroup.GET("/:id", viewHandler.FetchByID)
+
+	wrikeGroup.POST("/email", wrike.Email)
 }
