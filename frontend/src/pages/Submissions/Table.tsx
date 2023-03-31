@@ -1751,10 +1751,7 @@ export function SubmissionsTable(props: Props) {
             (element) => element === props.column.key
           ) > -1
         ) {
-          if (
-            (props.cellData && props.cellData.length > 0) ||
-            props.cellData !== ""
-          ) {
+          if (props.cellData && props.cellData.length > 0) {
             return "#F5FAEF";
           } else {
             return "#f7cdd6";
@@ -2815,7 +2812,7 @@ export function SubmissionsTable(props: Props) {
         <EditableTableCell
           type={"text"}
           readonly={true}
-          backgroundColor="#f5faef"
+          backgroundColor={mandatoryFieldValidation(props)}
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -5555,7 +5552,6 @@ export function SubmissionsTable(props: Props) {
                                           "data.documentCurrencyLMD",
                                           s.data.vendorBudgetCurrency
                                         );
-                                        console.log(s.data);
                                         valid = true;
                                       }
                                     }
@@ -5718,7 +5714,6 @@ export function SubmissionsTable(props: Props) {
                                 }
                                 return true;
                               });
-                              console.log(VendorsNames);
                               if (!set) {
                                 handleCommunicationCellUpdate(
                                   submission,
@@ -5732,7 +5727,6 @@ export function SubmissionsTable(props: Props) {
                                 );
                               } else {
                                 if (submissionData) {
-                                  console.log(submissionData);
                                   submissionData.every((s: any) => {
                                     if (s.group === "vendor") {
                                       if (tmpBU === "") {
@@ -5946,6 +5940,16 @@ export function SubmissionsTable(props: Props) {
                                   "data.reasonCodeLMD",
                                   "ZWKZ"
                                 );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.cancellationInfoLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.additionalInformationLMD",
+                                  ""
+                                );
                               }
                               if (value === "Pre-Invoice") {
                                 handleCommunicationCellUpdate(
@@ -5969,6 +5973,16 @@ export function SubmissionsTable(props: Props) {
                                   "data.reasonCodeLMD",
                                   "ZWKZ"
                                 );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.cancellationInfoLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.additionalInformationLMD",
+                                  ""
+                                );
                               }
                               if (value === "Internal Invoice") {
                                 handleCommunicationCellUpdate(
@@ -5984,6 +5998,16 @@ export function SubmissionsTable(props: Props) {
                                 handleCommunicationCellUpdate(
                                   submission,
                                   "data.reasonLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.cancellationInfoLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.additionalInformationLMD",
                                   ""
                                 );
                               }
