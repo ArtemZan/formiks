@@ -5638,10 +5638,7 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            readonly={
-                              props.rowData.parentId !== null ||
-                              cellReadonly(props)
-                            }
+                            readonly={cellReadonly(props)}
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             loadOptions={() => {
                               if (
@@ -6144,7 +6141,17 @@ export function SubmissionsTable(props: Props) {
                               ];
                             }}
                             backgroundColor={fieldBackColor(props)}
-                            onUpdate={handleCommunicationCellUpdate}
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
+                            }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -6739,12 +6746,16 @@ export function SubmissionsTable(props: Props) {
 
                                       var targetChildSameVOD =
                                         targetChildSubs.filter(
-                                          (s) => s.vodLMD === parent.data.vodLMD
+                                          (s) =>
+                                            s.data.vodLMD === parent.data.vodLMD
                                         );
                                       if (
                                         targetChildSameVOD.length !==
                                         targetChildSubs.length
                                       ) {
+                                        console.log(parent.data.vodLMD);
+                                        console.log(targetChildSameVOD);
+                                        console.log(targetChildSubs);
                                         isInvoiceCorrect += 1;
                                         toast(
                                           <Toast
@@ -6997,6 +7008,8 @@ export function SubmissionsTable(props: Props) {
                               data: {
                                 materialNumberLMD: "7000100",
                                 invoiceTypeLMD: "Invoice",
+                                reasonLMD: "25",
+                                reasonCodeLMD: "ZWKZ",
                               },
                             };
                             RestAPI.createSubmission(submission).then(
