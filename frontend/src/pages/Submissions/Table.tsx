@@ -5440,7 +5440,197 @@ export function SubmissionsTable(props: Props) {
                           />
                         ),
                       },
+                      {
+                        key: "data.alsoMarketingProjectNumberLMD",
+                        dataKey: "data.alsoMarketingProjectNumberLMD",
+                        group: "Input of Local Marketing Department",
 
+                        title: "ALSO Marketing Project Number",
+                        width: columnWidth(
+                          "data.alsoMarketingProjectNumberLMD",
+                          250
+                        ),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.alsoMarketingProjectNumberLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            maxLength={12}
+                            readonly={cellReadonly(props)}
+                            backgroundColor={fieldBackColor(props)}
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
+                              var vs = findSubmissionsByPO(value);
+                              if (vs.length < 1) {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vendorLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vodLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.buLMD",
+                                  ""
+                                );
+                                toast(
+                                  <Toast
+                                    title={"Unknown Project Number"}
+                                    message={"Project Number not found"}
+                                    type={"error"}
+                                  />
+                                );
+                              } else {
+                                var currentVendor = "";
+                                if (props.rowData.data.vendorLMD === "") {
+                                  var parent = communicationSubmissions.find(
+                                    ({ id }) => id === props.rowData.parentId
+                                  );
+                                  if (parent !== undefined) {
+                                    currentVendor = parent?.data.vendorLMD;
+                                  } else {
+                                    currentVendor = "";
+                                  }
+                                } else {
+                                  currentVendor = props.rowData.data.vendorLMD;
+                                }
+                                if (typeof currentVendor === "string") {
+                                  var valid = false;
+                                  vs.forEach((s) => {
+                                    if (s.data.vendorName !== undefined) {
+                                      var vendor: string = "";
+                                      var vendorBU: string = "";
+                                      if (s.data.vendorName.includes("BU")) {
+                                        vendor = s.data.vendorName
+                                          .toString()
+                                          .substring(
+                                            0,
+                                            s.data.vendorName.toString()
+                                              .length - 7
+                                          );
+                                        vendorBU = s.data.vendorName
+                                          .toString()
+                                          .substring(
+                                            s.data.vendorName.toString()
+                                              .length - 3,
+                                            s.data.vendorName.toString().length
+                                          );
+                                      } else {
+                                        vendor = s.data.vendorName;
+                                      }
+                                      if (currentVendor === vendor) {
+                                        handleCommunicationCellUpdate(
+                                          submission,
+                                          "data.vendorLMD",
+                                          s.data.vendorName.toString()
+                                        );
+                                        handleCommunicationCellUpdate(
+                                          submission,
+                                          "data.buLMD",
+                                          s.data.businessUnit
+                                        );
+                                        handleCommunicationCellUpdate(
+                                          submission,
+                                          "data.vodLMD",
+                                          s.data.debitorNumber
+                                        );
+                                        handleCommunicationCellUpdate(
+                                          submission,
+                                          "data.documentCurrencyLMD",
+                                          s.data.vendorBudgetCurrency
+                                        );
+                                        console.log(s.data);
+                                        valid = true;
+                                      }
+                                    }
+                                  });
+                                  if (!valid) {
+                                    handleCommunicationCellUpdate(
+                                      submission,
+                                      "data.vendorLMD",
+                                      ""
+                                    );
+                                    handleCommunicationCellUpdate(
+                                      submission,
+                                      "data.vodLMD",
+                                      ""
+                                    );
+                                    toast(
+                                      <Toast
+                                        title={"Unknown Vendor Selected"}
+                                        message={
+                                          "Vendor does not exist under this project"
+                                        }
+                                        type={"error"}
+                                      />
+                                    );
+                                  }
+                                }
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.invoiceTextLMD",
+                                  vs[0].data.projectName
+                                );
+                                var amount = 0;
+                                switch (vs[0].data.projectType) {
+                                  case "Local One Vendor" ||
+                                    "European One Vendor":
+                                    amount =
+                                      vs[0].data
+                                        .campaignEstimatedIncomeBudgetsCurrency;
+                                    break;
+                                  case "Local Multi Vendor" ||
+                                    "European Multi Vendor":
+                                    vs.map((s) => {
+                                      if (!isNaN(s.data.vendorBudgetAmount)) {
+                                        amount += Number(
+                                          s.data.vendorBudgetAmount
+                                        );
+                                      }
+                                    });
+                                    break;
+                                  default:
+                                    amount = NaN;
+                                }
+                                if (!isNaN(amount)) {
+                                  handleCommunicationCellUpdate(
+                                    submission,
+                                    "data.amountLMD",
+                                    amount
+                                  );
+                                }
+                                toast(
+                                  <Toast
+                                    title={"Project Found"}
+                                    message={"Data copied from parent project"}
+                                    type={"success"}
+                                  />
+                                );
+                              }
+                            }}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
                       {
                         key: "data.vendorLMD",
                         dataKey: "data.vendorLMD",
@@ -5957,197 +6147,6 @@ export function SubmissionsTable(props: Props) {
                             backgroundColor={fieldBackColor(props)}
                             readonly={cellReadonly(props)}
                             onUpdate={handleCommunicationCellUpdate}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={props.cellData}
-                          />
-                        ),
-                      },
-                      {
-                        key: "data.alsoMarketingProjectNumberLMD",
-                        dataKey: "data.alsoMarketingProjectNumberLMD",
-                        group: "Input of Local Marketing Department",
-
-                        title: "ALSO Marketing Project Number",
-                        width: columnWidth(
-                          "data.alsoMarketingProjectNumberLMD",
-                          250
-                        ),
-                        resizable: true,
-                        hidden: visibilityController(
-                          "LMD",
-                          "data.alsoMarketingProjectNumberLMD"
-                        ),
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            type={"text"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
-                            maxLength={12}
-                            readonly={cellReadonly(props)}
-                            backgroundColor={fieldBackColor(props)}
-                            onUpdate={(
-                              submission: string,
-                              path: string,
-                              value: any
-                            ) => {
-                              handleCommunicationCellUpdate(
-                                submission,
-                                path,
-                                value
-                              );
-                              var vs = findSubmissionsByPO(value);
-                              if (vs.length < 1) {
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.vendorLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.vodLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.buLMD",
-                                  ""
-                                );
-                                toast(
-                                  <Toast
-                                    title={"Unknown Project Number"}
-                                    message={"Project Number not found"}
-                                    type={"error"}
-                                  />
-                                );
-                              } else {
-                                var currentVendor = "";
-                                if (props.rowData.data.vendorLMD === "") {
-                                  var parent = communicationSubmissions.find(
-                                    ({ id }) => id === props.rowData.parentId
-                                  );
-                                  if (parent !== undefined) {
-                                    currentVendor = parent?.data.vendorLMD;
-                                  } else {
-                                    currentVendor = "";
-                                  }
-                                } else {
-                                  currentVendor = props.rowData.data.vendorLMD;
-                                }
-                                if (typeof currentVendor === "string") {
-                                  var valid = false;
-                                  vs.forEach((s) => {
-                                    if (s.data.vendorName !== undefined) {
-                                      var vendor: string = "";
-                                      var vendorBU: string = "";
-                                      if (s.data.vendorName.includes("BU")) {
-                                        vendor = s.data.vendorName
-                                          .toString()
-                                          .substring(
-                                            0,
-                                            s.data.vendorName.toString()
-                                              .length - 7
-                                          );
-                                        vendorBU = s.data.vendorName
-                                          .toString()
-                                          .substring(
-                                            s.data.vendorName.toString()
-                                              .length - 3,
-                                            s.data.vendorName.toString().length
-                                          );
-                                      } else {
-                                        vendor = s.data.vendorName;
-                                      }
-                                      if (currentVendor === vendor) {
-                                        handleCommunicationCellUpdate(
-                                          submission,
-                                          "data.vendorLMD",
-                                          s.data.vendorName.toString()
-                                        );
-                                        handleCommunicationCellUpdate(
-                                          submission,
-                                          "data.buLMD",
-                                          s.data.businessUnit
-                                        );
-                                        handleCommunicationCellUpdate(
-                                          submission,
-                                          "data.vodLMD",
-                                          s.data.debitorNumber
-                                        );
-                                        handleCommunicationCellUpdate(
-                                          submission,
-                                          "data.documentCurrencyLMD",
-                                          s.data.vendorBudgetCurrency
-                                        );
-                                        console.log(s.data);
-                                        valid = true;
-                                      }
-                                    }
-                                  });
-                                  if (!valid) {
-                                    handleCommunicationCellUpdate(
-                                      submission,
-                                      "data.vendorLMD",
-                                      ""
-                                    );
-                                    handleCommunicationCellUpdate(
-                                      submission,
-                                      "data.vodLMD",
-                                      ""
-                                    );
-                                    toast(
-                                      <Toast
-                                        title={"Unknown Vendor Selected"}
-                                        message={
-                                          "Vendor does not exist under this project"
-                                        }
-                                        type={"error"}
-                                      />
-                                    );
-                                  }
-                                }
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.invoiceTextLMD",
-                                  vs[0].data.projectName
-                                );
-                                var amount = 0;
-                                switch (vs[0].data.projectType) {
-                                  case "Local One Vendor" ||
-                                    "European One Vendor":
-                                    amount =
-                                      vs[0].data
-                                        .campaignEstimatedIncomeBudgetsCurrency;
-                                    break;
-                                  case "Local Multi Vendor" ||
-                                    "European Multi Vendor":
-                                    vs.map((s) => {
-                                      if (!isNaN(s.data.vendorBudgetAmount)) {
-                                        amount += Number(
-                                          s.data.vendorBudgetAmount
-                                        );
-                                      }
-                                    });
-                                    break;
-                                  default:
-                                    amount = NaN;
-                                }
-                                if (!isNaN(amount)) {
-                                  handleCommunicationCellUpdate(
-                                    submission,
-                                    "data.amountLMD",
-                                    amount
-                                  );
-                                }
-                                toast(
-                                  <Toast
-                                    title={"Project Found"}
-                                    message={"Data copied from parent project"}
-                                    type={"success"}
-                                  />
-                                );
-                              }
-                            }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
