@@ -6972,6 +6972,7 @@ export function SubmissionsTable(props: Props) {
                               status: "",
                               data: {
                                 materialNumberLMD: "7000100",
+                                invoiceTypeLMD: "Invoice",
                               },
                             };
                             RestAPI.createSubmission(submission).then(
