@@ -5,6 +5,7 @@ import {
   Input,
   Text,
   useColorModeValue,
+  Icon,
   IconButton,
   Stack,
   VStack,
@@ -29,6 +30,7 @@ import {
   useReducer,
   useState,
 } from "react";
+import { MdEmail } from "react-icons/md";
 import EditableTableCell from "../../components/EditableTableCell";
 import Creatable from "react-select/creatable";
 import CreateModal from "../../components/RejectModal";
@@ -829,6 +831,10 @@ const DisplayedColumnsListOptions = DisplayedColumnsList.map((group: any) => {
 
 export function SubmissionsTable(props: Props) {
   const [rejectedSubmission, setRejectedSubmission] = useState<
+    Submission | undefined
+  >(undefined);
+
+  const [rejectedSubmissionComm, setRejectedSubmissionComm] = useState<
     Submission | undefined
   >(undefined);
   const [selectedTemplate, setSelectedTemplate] = useState("local");
@@ -1659,6 +1665,7 @@ export function SubmissionsTable(props: Props) {
       "data.invoiceTypeLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
+      "data.buLMD",
       "data.alsoMarketingProjectNumberLMD",
       "data.invoiceTextLMD",
       "data.amountLMD",
@@ -1768,7 +1775,8 @@ export function SubmissionsTable(props: Props) {
       value.statusLMD === undefined ||
       value.statusLMD === null ||
       value.statusLMD === "" ||
-      value.statusLMD === "INCOMPLETE"
+      value.statusLMD === "INCOMPLETE" ||
+      value.statusLMD === "REJECTED"
     ) {
       return false;
     } else {
@@ -1777,7 +1785,11 @@ export function SubmissionsTable(props: Props) {
   }
 
   function cellReadonly(props: any) {
-    let invoiceReadonlyFields: string[] = ["data.cancellationInfoLMD"];
+    let invoiceReadonlyFields: string[] = [
+      "data.cancellationInfoLMD",
+      "data.reasonLMD",
+      "data.reasonCodeLMD",
+    ];
     let preInvoiceReadonlyFields: string[] = ["data.cancellationInfoLMD"];
     let internalInvocieReadonlyFields: string[] = [
       "data.sendToLMD",
@@ -1859,7 +1871,9 @@ export function SubmissionsTable(props: Props) {
       value.data.status === "INCOMPLETE" ||
       value.data.status === "NEW" ||
       value.data.status === "Incomplete" ||
-      value.data.status === "New"
+      value.data.status === "New" ||
+      value.data.status === "REJECTED" ||
+      value.data.status === "Rejected"
     ) {
       return false;
     } else {
@@ -1876,6 +1890,13 @@ export function SubmissionsTable(props: Props) {
       frozen: Column.FrozenDirection.LEFT,
       resizable: false,
       cellRenderer: () => <div />,
+      // cellRenderer: (props: any) => {
+      //   if (props.rowData.parentId !== null) {
+      //     return <div>AAA</div>;
+      //   } else {
+      //     return <div />;
+      //   }
+      // },
       className: "expand",
     },
     {
@@ -2283,8 +2304,8 @@ export function SubmissionsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"value-dropdown"}
-          // readonly={projectColumnEdit(props.rowData)}
-          readonly={true}
+          readonly={projectColumnEdit(props.rowData)}
+          // readonly={true}
           loadOptions={() => {
             return props.rowData.data.companyCode === "1550"
               ? InternationalVendorsNames
@@ -4758,6 +4779,27 @@ export function SubmissionsTable(props: Props) {
           }
         }}
       />
+      <RejectModal
+        submission={rejectedSubmissionComm}
+        onClose={() => {
+          setRejectedSubmissionComm(undefined);
+        }}
+        onReject={(comment: string) => {
+          if (rejectedSubmissionComm !== undefined) {
+            handleCommunicationCellUpdate(
+              rejectedSubmissionComm.id!,
+              "data.statusLMD",
+              "REJECTED"
+            );
+            handleCommunicationCellUpdate(
+              rejectedSubmissionComm.id!,
+              "data.rejectReasonLMD",
+              comment
+            );
+            setRejectedSubmissionComm(undefined);
+          }
+        }}
+      />
       <Box h="70px" textAlign={"end"}>
         <IconButton
           icon={<IoSave />}
@@ -5203,6 +5245,43 @@ export function SubmissionsTable(props: Props) {
                         className: "expand",
                       },
                       {
+                        key: "__actions.rejectComm",
+                        dataKey: "__actions.rejectComm",
+                        title: "Reject",
+                        width: columnWidth("__actions.rejectComm", 100),
+                        resizable: true,
+                        className: "red-border",
+                        cellRenderer: (props: any) =>
+                          props.rowData.parentId === null &&
+                          props.rowData.data.statusLMD ===
+                            "OK FOR INVOICING" ? (
+                            <EditableTableCell
+                              type={"button"}
+                              textColor={"red"}
+                              backgroundColor="#fef9fa"
+                              invoiced={
+                                props.rowData.data.statusLMD !==
+                                "OK FOR INVOICING"
+                              }
+                              onUpdate={(submissionId: string) => {
+                                setRejectedSubmissionComm(props.rowData);
+                              }}
+                              rowIndex={props.rowIndex}
+                              columnKey={props.column.dataKey}
+                              rowData={props.rowData}
+                              initialValue={"reject"}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                backgroundColor: "#F7FAFC",
+                                width: "100%",
+                                height: "100%",
+                              }}
+                            />
+                          ),
+                      },
+                      {
                         key: "data.documentNumberCMCT",
                         dataKey: "data.documentNumberCMCT",
                         title: "SAP Document Number",
@@ -5218,11 +5297,12 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             readonly={
-                              props.rowData.data.statusLMD !==
+                              (props.rowData.data.statusLMD !==
                                 "FUTURE INVOICE" &&
-                              props.rowData.data.statusLMD !==
-                                "OK FOR INVOICING" &&
-                              props.rowData.data.statusLMD !== "INVOICED"
+                                props.rowData.data.statusLMD !==
+                                  "OK FOR INVOICING" &&
+                                props.rowData.data.statusLMD !== "INVOICED") ||
+                              props.rowData.parentId !== null
                             }
                             invoiced={
                               props.rowData.data.statusLMD === "INVOICED"
@@ -5255,12 +5335,34 @@ export function SubmissionsTable(props: Props) {
                                 "data.dateCMCT",
                                 new Date().toString()
                               );
+                              var targetChildSubs =
+                                communicationSubmissions.filter(
+                                  (s) => s.parentId === props.rowData.id
+                                );
                               if (value.length === 12) {
                                 handleCommunicationCellUpdate(
                                   submission,
                                   "data.statusLMD",
                                   "INVOICED"
                                 );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.rejectReasonLMD",
+                                  ""
+                                );
+                                targetChildSubs.forEach((s: any) => {
+                                  console.log(s);
+                                  handleCommunicationCellUpdate(
+                                    s !== undefined ? s.id : "",
+                                    "data.documentNumberCMCT",
+                                    value
+                                  );
+                                  handleCommunicationCellUpdate(
+                                    s !== undefined ? s.id : "",
+                                    "data.statusLMD",
+                                    "INVOICED"
+                                  );
+                                });
                               }
 
                               var mi = submissions.findIndex(
@@ -5290,7 +5392,7 @@ export function SubmissionsTable(props: Props) {
                               props.rowData.data.statusLMD ===
                                 "OK FOR INVOICING"
                                 ? "#f7cdd6"
-                                : "#F5FAEF"
+                                : "#f9f9ff"
                             }
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -5358,6 +5460,36 @@ export function SubmissionsTable(props: Props) {
                             type={"dropdown"}
                             readonly={true}
                             loadOptions={loadOptions}
+                            backgroundColor={
+                              props.rowData.data.statusLMD === "INCOMPLETE" ||
+                              props.rowData.data.statusLMD === "REJECTED"
+                                ? "#f7cdd6"
+                                : "#F5FAEF"
+                            }
+                            onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.rejectReasonLMD",
+                        dataKey: "data.rejectReasonLMD",
+                        title: "Rejected reason",
+                        width: columnWidth("data.rejectReasonLMD", 150),
+                        resizable: true,
+                        group: "Input of Local Marketing Department",
+                        header: "Input of Local Marketing Department",
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.rejectReasonLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            readonly={true}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -5495,6 +5627,7 @@ export function SubmissionsTable(props: Props) {
                                 );
                               } else {
                                 var currentVendor = "";
+                                console.log(props.rowData.data.vendorLMD);
                                 if (props.rowData.data.vendorLMD === "") {
                                   var parent = communicationSubmissions.find(
                                     ({ id }) => id === props.rowData.parentId
@@ -5513,6 +5646,14 @@ export function SubmissionsTable(props: Props) {
                                     if (s.data.vendorName !== undefined) {
                                       var vendor: string = "";
                                       var vendorBU: string = "";
+                                      if (currentVendor.includes("BU")) {
+                                        currentVendor = currentVendor
+                                          .toString()
+                                          .substring(
+                                            0,
+                                            currentVendor.toString().length - 7
+                                          );
+                                      }
                                       if (s.data.vendorName.includes("BU")) {
                                         vendor = s.data.vendorName
                                           .toString()
@@ -5698,8 +5839,14 @@ export function SubmissionsTable(props: Props) {
                                 tmpValue = value;
                               }
                               let set = false;
+                              console.log(VendorsNames);
                               VendorsNames.every((v) => {
-                                if (v.label === tmpValue) {
+                                console.log(v.label.length);
+                                if (
+                                  v.label === tmpValue ||
+                                  v.label.substr(0, v.label.length - 10) ===
+                                    tmpValue
+                                ) {
                                   handleCommunicationCellUpdate(
                                     submission,
                                     "data.vodLMD",
@@ -5842,7 +5989,7 @@ export function SubmissionsTable(props: Props) {
                               cellReadonly(props)
                             }
                             invoiced={lmdColumnEdit(props.rowData.data)}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={mandatoryFieldValidation(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -5866,6 +6013,7 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
+                            invoiced={lmdColumnEdit(props.rowData.data)}
                             type={"date"}
                             readonly={cellReadonly(props)}
                             backgroundColor="#F5FAEF"
@@ -6753,15 +6901,33 @@ export function SubmissionsTable(props: Props) {
                                         targetChildSameVOD.length !==
                                         targetChildSubs.length
                                       ) {
-                                        console.log(parent.data.vodLMD);
-                                        console.log(targetChildSameVOD);
-                                        console.log(targetChildSubs);
                                         isInvoiceCorrect += 1;
                                         toast(
                                           <Toast
                                             title={"Incomplete Request"}
                                             message={
                                               "Invoice contains two different VOD numbers, and invoice can be requested only for one vendor"
+                                            }
+                                            type={"error"}
+                                          />
+                                        );
+                                      }
+                                      var targetChildSameCurr =
+                                        targetChildSubs.filter(
+                                          (s) =>
+                                            s.data.documentCurrencyLMD ===
+                                            parent.data.documentCurrencyLMD
+                                        );
+                                      if (
+                                        targetChildSameCurr.length !==
+                                        targetChildSubs.length
+                                      ) {
+                                        isInvoiceCorrect += 1;
+                                        toast(
+                                          <Toast
+                                            title={"Incomplete Request"}
+                                            message={
+                                              "Invoice contains two different currencies, and invoice can be requested only for one currency"
                                             }
                                             type={"error"}
                                           />
@@ -6852,7 +7018,9 @@ export function SubmissionsTable(props: Props) {
                             <EditableTableCell
                               type={"button"}
                               invoiced={
-                                props.rowData.data.statusLMD === "INVOICED"
+                                props.rowData.data.statusLMD === "INVOICED" ||
+                                props.rowData.data.statusLMD ===
+                                  "OK FOR INVOICING"
                               }
                               backgroundColor="#fef9fa"
                               textColor={"blue"}
