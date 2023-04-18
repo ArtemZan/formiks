@@ -31,8 +31,10 @@ import {
   useState,
 } from "react";
 import { MdEmail } from "react-icons/md";
+import styled from "styled-components";
 import EditableTableCell from "../../components/EditableTableCell";
 import Creatable from "react-select/creatable";
+import { keyframes } from "styled-components";
 import CreateModal from "../../components/RejectModal";
 import Select from "react-select";
 import { Submission } from "../../types/submission";
@@ -67,6 +69,7 @@ import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import { FilterField, Template } from "../../types/template";
 import RejectModal from "../../components/RejectModal";
+import { types } from "util";
 
 interface Props {
   history: any;
@@ -228,6 +231,10 @@ const filterTypes = {
     { label: "Range", value: "range" },
   ],
 };
+
+const expandIconProps = ({ rowData }: { rowData: any }) => ({
+  expanding: !rowData.children || rowData.children.length === 0,
+});
 
 const DisplayedColumnsList = [
   {
@@ -1716,11 +1723,23 @@ export function SubmissionsTable(props: Props) {
             (element) => element === props.column.key
           ) > -1
         ) {
-          if (props.cellData && props.cellData.length > 0) {
-            return "#F5FAEF";
-          } else {
-            return "#f7cdd6";
+          switch (typeof props.cellData) {
+            case "number":
+              if (props.cellData > 0) {
+                return "#F5FAEF";
+              } else {
+                return "#f7cdd6";
+              }
+            case "string":
+              if (props.cellData && props.cellData.length > 0) {
+                return "#F5FAEF";
+              } else {
+                return "#f7cdd6";
+              }
+            case "undefined":
+              return "#F5FAEF";
           }
+          return "#F5FAEF";
         } else {
           return "#F5FAEF";
         }
@@ -1730,11 +1749,23 @@ export function SubmissionsTable(props: Props) {
             (element) => element === props.column.key
           ) > -1
         ) {
-          if (props.cellData && props.cellData.length > 0) {
-            return "#F5FAEF";
-          } else {
-            return "#f7cdd6";
+          switch (typeof props.cellData) {
+            case "number":
+              if (props.cellData > 0) {
+                return "#F5FAEF";
+              } else {
+                return "#f7cdd6";
+              }
+            case "string":
+              if (props.cellData && props.cellData.length > 0) {
+                return "#F5FAEF";
+              } else {
+                return "#f7cdd6";
+              }
+            case "undefined":
+              return "#F5FAEF";
           }
+          return "#F5FAEF";
         } else {
           return "#F5FAEF";
         }
@@ -1744,11 +1775,23 @@ export function SubmissionsTable(props: Props) {
             (element) => element === props.column.key
           ) > -1
         ) {
-          if (props.cellData && props.cellData.length > 0) {
-            return "#F5FAEF";
-          } else {
-            return "#f7cdd6";
+          switch (typeof props.cellData) {
+            case "number":
+              if (props.cellData > 0) {
+                return "#F5FAEF";
+              } else {
+                return "#f7cdd6";
+              }
+            case "string":
+              if (props.cellData && props.cellData.length > 0) {
+                return "#F5FAEF";
+              } else {
+                return "#f7cdd6";
+              }
+            case "undefined":
+              return "#F5FAEF";
           }
+          return "#F5FAEF";
         } else {
           return "#F5FAEF";
         }
@@ -1758,11 +1801,23 @@ export function SubmissionsTable(props: Props) {
             (element) => element === props.column.key
           ) > -1
         ) {
-          if (props.cellData && props.cellData.length > 0) {
-            return "#F5FAEF";
-          } else {
-            return "#f7cdd6";
+          switch (typeof props.cellData) {
+            case "number":
+              if (props.cellData > 0) {
+                return "#F5FAEF";
+              } else {
+                return "#f7cdd6";
+              }
+            case "string":
+              if (props.cellData && props.cellData.length > 0) {
+                return "#F5FAEF";
+              } else {
+                return "#f7cdd6";
+              }
+            case "undefined":
+              return "#F5FAEF";
           }
+          return "#F5FAEF";
         } else {
           return "#F5FAEF";
         }
@@ -1789,6 +1844,15 @@ export function SubmissionsTable(props: Props) {
       "data.cancellationInfoLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
+    ];
+    let invoiceSubLineReadonlyFields: string[] = [
+      "data.cancellationInfoLMD",
+      "data.reasonLMD",
+      "data.reasonCodeLMD",
+      "data.materialNumberLMD",
+      "data.paymentMethodLMD",
+      "data.dunningStopLMD",
+      "data.sendToLMD",
     ];
     let preInvoiceReadonlyFields: string[] = ["data.cancellationInfoLMD"];
     let internalInvocieReadonlyFields: string[] = [
@@ -1823,14 +1887,26 @@ export function SubmissionsTable(props: Props) {
     }
     switch (props.rowData.data.invoiceTypeLMD) {
       case "Invoice":
-        if (
-          invoiceReadonlyFields.findIndex(
-            (element) => element === props.column.key
-          ) > -1
-        ) {
-          return true;
+        if (props.rowData.parentId) {
+          if (
+            invoiceSubLineReadonlyFields.findIndex(
+              (element) => element === props.column.key
+            ) > -1
+          ) {
+            return true;
+          } else {
+            return false;
+          }
         } else {
-          return false;
+          if (
+            invoiceReadonlyFields.findIndex(
+              (element) => element === props.column.key
+            ) > -1
+          ) {
+            return true;
+          } else {
+            return false;
+          }
         }
       case "Pre-Invoice":
         if (
@@ -1889,14 +1965,9 @@ export function SubmissionsTable(props: Props) {
       width: 50,
       frozen: Column.FrozenDirection.LEFT,
       resizable: false,
-      cellRenderer: () => <div />,
-      // cellRenderer: (props: any) => {
-      //   if (props.rowData.parentId !== null) {
-      //     return <div>AAA</div>;
-      //   } else {
-      //     return <div />;
-      //   }
-      // },
+      cellRenderer: (props: any) => {
+        return "";
+      },
       className: "expand",
     },
     {
@@ -4703,7 +4774,7 @@ export function SubmissionsTable(props: Props) {
       key: "__actions.reject",
       dataKey: "__actions.reject",
       title: "Reject",
-      width: columnWidth("__actions.reject", 100),
+      width: columnWidth("__actions.reject", 60),
       resizable: true,
       className: "red-border",
       cellRenderer: (props: any) =>
@@ -5201,6 +5272,7 @@ export function SubmissionsTable(props: Props) {
                 )}
               </AutoResizer>
             </TabPanel>
+
             <TabPanel w="100%" h="80vh">
               <AutoResizer
                 onResize={({
@@ -5228,6 +5300,7 @@ export function SubmissionsTable(props: Props) {
                     }}
                     rowRenderer={rowRenderer}
                     overscanRowCount={10}
+                    expandIconProps={expandIconProps}
                     ignoreFunctionInColumnCompare={false}
                     expandColumnKey={"__expand"}
                     width={width}
@@ -5351,7 +5424,6 @@ export function SubmissionsTable(props: Props) {
                                   ""
                                 );
                                 targetChildSubs.forEach((s: any) => {
-                                  console.log(s);
                                   handleCommunicationCellUpdate(
                                     s !== undefined ? s.id : "",
                                     "data.documentNumberCMCT",
@@ -5601,6 +5673,11 @@ export function SubmissionsTable(props: Props) {
                                 path,
                                 value
                               );
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.newLine",
+                                true
+                              );
                               var vs = findSubmissionsByPO(value);
                               if (vs.length < 1) {
                                 handleCommunicationCellUpdate(
@@ -5627,7 +5704,6 @@ export function SubmissionsTable(props: Props) {
                                 );
                               } else {
                                 var currentVendor = "";
-                                console.log(props.rowData.data.vendorLMD);
                                 if (props.rowData.data.vendorLMD === "") {
                                   var parent = communicationSubmissions.find(
                                     ({ id }) => id === props.rowData.parentId
@@ -5752,13 +5828,27 @@ export function SubmissionsTable(props: Props) {
                                     amount
                                   );
                                 }
-                                toast(
-                                  <Toast
-                                    title={"Project Found"}
-                                    message={"Data copied from parent project"}
-                                    type={"success"}
-                                  />
-                                );
+                                if (props.rowData.data.newLine) {
+                                  toast(
+                                    <Toast
+                                      title={"Project Found"}
+                                      message={
+                                        "Data copied from project-check amounts and currencies"
+                                      }
+                                      type={"success"}
+                                    />
+                                  );
+                                } else {
+                                  toast(
+                                    <Toast
+                                      title={"Project Found"}
+                                      message={
+                                        "Data copied from parent project"
+                                      }
+                                      type={"success"}
+                                    />
+                                  );
+                                }
                               }
                             }}
                             rowIndex={props.rowIndex}
@@ -5839,9 +5929,7 @@ export function SubmissionsTable(props: Props) {
                                 tmpValue = value;
                               }
                               let set = false;
-                              console.log(VendorsNames);
                               VendorsNames.every((v) => {
-                                console.log(v.label.length);
                                 if (
                                   v.label === tmpValue ||
                                   v.label.substr(0, v.label.length - 10) ===
@@ -6430,14 +6518,9 @@ export function SubmissionsTable(props: Props) {
                             type={"number"}
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             backgroundColor={
-                              props.rowData.data.invoiceTypeLMD ===
-                              "Cancellation"
-                                ? "#F5FAEF"
-                                : props.cellData &&
-                                  props.cellData !== 0 &&
-                                  props.cellData.toString().trim().length > 0
-                                ? "#F5FAEF"
-                                : "#f7cdd6"
+                              props.rowData.data.newLine
+                                ? "#d0d0ff"
+                                : mandatoryFieldValidation(props)
                             }
                             onUpdate={handleCommunicationCellUpdate}
                             readonly={cellReadonly(props)}
@@ -6495,7 +6578,11 @@ export function SubmissionsTable(props: Props) {
                             loadOptions={() => {
                               return ExchangeRates;
                             }}
-                            backgroundColor={mandatoryFieldValidation(props)}
+                            backgroundColor={
+                              props.rowData.data.newLine
+                                ? "#d0d0ff"
+                                : mandatoryFieldValidation(props)
+                            }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -6884,6 +6971,7 @@ export function SubmissionsTable(props: Props) {
                                       isInvoiceCorrect = 0;
 
                                       is.forEach((ts, tsi) => {
+                                        ts.data.newLine = undefined;
                                         if (ts.parentId === null) {
                                           parent = ts;
                                         }
@@ -7036,6 +7124,7 @@ export function SubmissionsTable(props: Props) {
                                   author: "",
                                   status: "",
                                   data: {
+                                    newLine: true,
                                     documentCurrencyLMD:
                                       props.rowData.data.documentCurrencyLMD,
                                     invoicingDateLMD:
@@ -7174,6 +7263,14 @@ export function SubmissionsTable(props: Props) {
                               author: "",
                               status: "",
                               data: {
+                                newLine: true,
+                                paymentMethodLMD: "",
+                                dunningStopLMD: "",
+                                sendToLMD: "",
+                                invoiceTextLMD: "",
+                                vendorLMD: "",
+                                invoicingDateLMD: "",
+                                alsoMarketingProjectNumberLMD: "",
                                 materialNumberLMD: "7000100",
                                 invoiceTypeLMD: "Invoice",
                                 reasonLMD: "25",
