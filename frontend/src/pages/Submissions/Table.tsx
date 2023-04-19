@@ -5301,7 +5301,6 @@ export function SubmissionsTable(props: Props) {
                     }}
                     rowRenderer={rowRenderer}
                     overscanRowCount={10}
-                    expandIconProps={renderExpandIcon()}
                     ignoreFunctionInColumnCompare={false}
                     expandColumnKey={"__expand"}
                     width={width}
