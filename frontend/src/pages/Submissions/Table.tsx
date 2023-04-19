@@ -38,6 +38,7 @@ import { keyframes } from "styled-components";
 import CreateModal from "../../components/RejectModal";
 import Select from "react-select";
 import { Submission } from "../../types/submission";
+import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import Toast, { ToastType } from "../../components/Toast";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
 
@@ -5300,7 +5301,7 @@ export function SubmissionsTable(props: Props) {
                     }}
                     rowRenderer={rowRenderer}
                     overscanRowCount={10}
-                    expandIconProps={expandIconProps}
+                    expandIconProps={renderExpandIcon()}
                     ignoreFunctionInColumnCompare={false}
                     expandColumnKey={"__expand"}
                     width={width}
