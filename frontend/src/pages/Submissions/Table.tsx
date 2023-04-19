@@ -1524,17 +1524,6 @@ export function SubmissionsTable(props: Props) {
     var sd = (defaultColumnsWidth as any)[column];
     return sd ? sd : dw;
   }
-  //   async function saveCellWidth(cell: string, width: number) {
-  //     localStorage.setItem(cell, width.toString());
-  //   }
-  //   function getCellWidth(cell: string, defaultWidth: number) {
-  //     console.log("get");
-  //     var value = localStorage.getItem(cell);
-  //     if (value !== null) {
-  //       return Number(value);
-  //     }
-  //     return defaultWidth;
-  //   }
 
   useEffect(() => {
     var selected = localStorage.getItem("template") || "local";
