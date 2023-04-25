@@ -114,6 +114,64 @@ var defaultColumns = [
   "LMD",
 ];
 
+let invoiceBlueFields: string[] = [
+  "data.invoiceTypeLMD",
+  "data.amountLMD",
+  "data.documentCurrencyLMD",
+];
+
+let invoiceMandatoryFields: string[] = [
+  "data.invoicingDateLMD",
+  "data.requestorLMD",
+  "data.vendorLMD",
+  "data.vodLMD",
+  "data.entryDateLMD",
+  "data.invoiceTypeLMD",
+  "data.reasonLMD",
+  "data.reasonCodeLMD",
+  "data.buLMD",
+  "data.alsoMarketingProjectNumberLMD",
+  "data.invoiceTextLMD",
+  "data.amountLMD",
+  "data.documentCurrencyLMD",
+  "data.paymentMethodLMD",
+  "data.dunningStopLMD",
+  "data.sendToLMD",
+  "data.materialNumberLMD",
+];
+let preInvoiceMandatoryFields: string[] = [
+  "data.invoicingDateLMD",
+  "data.vendorLMD",
+  "data.invoiceTypeLMD",
+  "data.reasonLMD",
+  "data.reasonCodeLMD",
+  "data.alsoMarketingProjectNumberLMD",
+  "data.invoiceTextLMD",
+  "data.amountLMD",
+  "data.documentCurrencyLMD",
+  "data.paymentMethodLMD",
+  "data.dunningStopLMD",
+  "data.sendToLMD",
+];
+let internalInvocieMandatoryFields: string[] = [
+  "data.invoicingDateLMD",
+  "data.vendorLMD",
+  "data.invoiceTypeLMD",
+  "data.reasonLMD",
+  "data.reasonCodeLMD",
+  "data.alsoMarketingProjectNumberLMD",
+  "data.invoiceTextLMD",
+  "data.amountLMD",
+  "data.documentCurrencyLMD",
+  "data.paymentMethodLMD",
+  "data.dunningStopLMD",
+  "data.sendToLMD",
+];
+let cancellationMandatoryFields: string[] = [
+  "data.cancellationInfoLMD",
+  "data.additionalInformationLMD",
+];
+
 async function fetchDropdowns() {
   var dropdownsIds: string[] = [
     "619b630a9a5a2bb37a93b23b",
@@ -1350,9 +1408,14 @@ export function SubmissionsTable(props: Props) {
     }
     const requiredFields = [
       "invoicingDateLMD",
+      "requestorLMD",
       "vendorLMD",
+      "vodLMD",
+      "entryDateLMD",
       "invoiceTypeLMD",
-      "materialNumberLMD",
+      "reasonLMD",
+      "reasonCodeLMD",
+      "buLMD",
       "alsoMarketingProjectNumberLMD",
       "invoiceTextLMD",
       "amountLMD",
@@ -1360,6 +1423,7 @@ export function SubmissionsTable(props: Props) {
       "paymentMethodLMD",
       "dunningStopLMD",
       "sendToLMD",
+      "materialNumberLMD",
     ];
 
     // Check if all required fields are present and not empty
@@ -1449,6 +1513,24 @@ export function SubmissionsTable(props: Props) {
       temp[submissionIndex].parentId = null;
       partialUpdate(submissionId, "parentId", null);
       setSubmissions(temp);
+    }
+  }
+
+  function cellColor(props: any): string {
+    if (
+      invoiceMandatoryFields.includes(props.column.key) &&
+      mandatoryFieldValidation(props) === "#f7cdd6"
+    ) {
+      return "#f7cdd6";
+    } else {
+      if (
+        invoiceBlueFields.includes(props.column.key) &&
+        props.rowData.data.newLine!
+      ) {
+        return "#d0d0ff";
+      } else {
+        return "#F5FAEF";
+      }
     }
   }
 
@@ -1655,54 +1737,12 @@ export function SubmissionsTable(props: Props) {
     }
   }
 
+  function createNewLineActive(props: any) {
+    console.log(props);
+    return true;
+  }
+
   function mandatoryFieldValidation(props: any) {
-    let invoiceMandatoryFields: string[] = [
-      "data.invoicingDateLMD",
-      "data.vendorLMD",
-      "data.invoiceTypeLMD",
-      "data.reasonLMD",
-      "data.reasonCodeLMD",
-      "data.buLMD",
-      "data.alsoMarketingProjectNumberLMD",
-      "data.invoiceTextLMD",
-      "data.amountLMD",
-      "data.documentCurrencyLMD",
-      "data.paymentMethodLMD",
-      "data.dunningStopLMD",
-      "data.sendToLMD",
-    ];
-    let preInvoiceMandatoryFields: string[] = [
-      "data.invoicingDateLMD",
-      "data.vendorLMD",
-      "data.invoiceTypeLMD",
-      "data.reasonLMD",
-      "data.reasonCodeLMD",
-      "data.alsoMarketingProjectNumberLMD",
-      "data.invoiceTextLMD",
-      "data.amountLMD",
-      "data.documentCurrencyLMD",
-      "data.paymentMethodLMD",
-      "data.dunningStopLMD",
-      "data.sendToLMD",
-    ];
-    let internalInvocieMandatoryFields: string[] = [
-      "data.invoicingDateLMD",
-      "data.vendorLMD",
-      "data.invoiceTypeLMD",
-      "data.reasonLMD",
-      "data.reasonCodeLMD",
-      "data.alsoMarketingProjectNumberLMD",
-      "data.invoiceTextLMD",
-      "data.amountLMD",
-      "data.documentCurrencyLMD",
-      "data.paymentMethodLMD",
-      "data.dunningStopLMD",
-      "data.sendToLMD",
-    ];
-    let cancellationMandatoryFields: string[] = [
-      "data.cancellationInfoLMD",
-      "data.additionalInformationLMD",
-    ];
     if (props === undefined) {
       return "#F5FAEF";
     }
@@ -1834,6 +1874,8 @@ export function SubmissionsTable(props: Props) {
       "data.cancellationInfoLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
+      "data.entryDateLMD",
+      "data.requestorLMD",
     ];
     let invoiceSubLineReadonlyFields: string[] = [
       "data.cancellationInfoLMD",
@@ -1843,6 +1885,9 @@ export function SubmissionsTable(props: Props) {
       "data.paymentMethodLMD",
       "data.dunningStopLMD",
       "data.sendToLMD",
+      "data.invoiceTypeLMD",
+      "data.requestorLMD",
+      "data.entryDateLMD",
     ];
     let preInvoiceReadonlyFields: string[] = ["data.cancellationInfoLMD"];
     let internalInvocieReadonlyFields: string[] = [
@@ -5303,7 +5348,23 @@ export function SubmissionsTable(props: Props) {
                         width: 50,
                         frozen: Column.FrozenDirection.LEFT,
                         resizable: false,
-                        cellRenderer: () => <div />,
+                        cellRenderer: (props: any) => {
+                          if (props.rowData.parentId !== null) {
+                            return (
+                              <div
+                                style={{
+                                  marginTop: 0,
+                                  marginLeft: 0,
+                                  position: "absolute",
+                                }}
+                              >
+                                <RiUserFill />
+                              </div>
+                            );
+                          }
+
+                          return <div></div>;
+                        },
                         className: "expand",
                       },
                       {
@@ -6117,6 +6178,7 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
+                            readonly={cellReadonly(props)}
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             loadOptions={() => {
                               return [
@@ -6135,12 +6197,7 @@ export function SubmissionsTable(props: Props) {
                                 },
                               ];
                             }}
-                            backgroundColor={
-                              (props.cellData && props.cellData.length > 0) ||
-                              props.rowData.parentId !== null
-                                ? "#F5FAEF"
-                                : "#f7cdd6"
-                            }
+                            backgroundColor={cellColor(props)}
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -6506,11 +6563,7 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             type={"number"}
                             invoiced={lmdColumnEdit(props.rowData.data)}
-                            backgroundColor={
-                              props.rowData.data.newLine
-                                ? "#d0d0ff"
-                                : mandatoryFieldValidation(props)
-                            }
+                            backgroundColor={cellColor(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             readonly={cellReadonly(props)}
                             rowIndex={props.rowIndex}
@@ -6567,11 +6620,7 @@ export function SubmissionsTable(props: Props) {
                             loadOptions={() => {
                               return ExchangeRates;
                             }}
-                            backgroundColor={
-                              props.rowData.data.newLine
-                                ? "#d0d0ff"
-                                : mandatoryFieldValidation(props)
-                            }
+                            backgroundColor={cellColor(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -6960,7 +7009,11 @@ export function SubmissionsTable(props: Props) {
                                       isInvoiceCorrect = 0;
 
                                       is.forEach((ts, tsi) => {
-                                        ts.data.newLine = undefined;
+                                        handleCommunicationCellUpdate(
+                                          ts.id!,
+                                          "data.newLine",
+                                          false
+                                        );
                                         if (ts.parentId === null) {
                                           parent = ts;
                                         }
@@ -7102,53 +7155,63 @@ export function SubmissionsTable(props: Props) {
                               backgroundColor="#fef9fa"
                               textColor={"blue"}
                               onUpdate={(submissionId: string) => {
-                                var submissionNew: Submission = {
-                                  project: props.rowData.project,
-                                  parentId: submissionId,
-                                  viewId: null,
-                                  group: "communication",
-                                  created: new Date(),
-                                  updated: new Date(),
-                                  title: "",
-                                  author: "",
-                                  status: "",
-                                  data: {
-                                    newLine: true,
-                                    documentCurrencyLMD:
-                                      props.rowData.data.documentCurrencyLMD,
-                                    invoicingDateLMD:
-                                      props.rowData.data.invoicingDateLMD,
-                                    requestorLMD:
-                                      props.rowData.data.requestorLMD,
-                                    vendorLMD: props.rowData.data.vendorLMD,
-                                    vodLMD: props.rowData.data.vodLMD,
-                                    buLMD: props.rowData.data.buLMD,
-                                    invoiceTypeLMD:
-                                      props.rowData.data.invoiceTypeLMD,
-                                    cancellationInfoLMD:
-                                      props.rowData.data.cancellationInfoLMD,
-                                    materialNumberLMD:
-                                      props.rowData.data.materialNumberLMD,
-                                    reasonLMD: props.rowData.data.reasonLMD,
-                                    reasonCodeLMD:
-                                      props.rowData.data.reasonCodeLMD,
-                                    paymentMethodLMD:
-                                      props.rowData.data.paymentMethodLMD,
-                                    dunningStopLMD:
-                                      props.rowData.data.dunningStopLMD,
-                                    depositNumberLMD:
-                                      props.rowData.data.depositNumberLMD,
-                                    sendToLMD: props.rowData.data.sendToLMD,
-                                  },
-                                };
-                                RestAPI.createSubmission(submissionNew).then(
-                                  (response) => {
-                                    var temp = [...communicationSubmissions];
+                                if (hasRequiredFields(props.rowData)) {
+                                  var submissionNew: Submission = {
+                                    project: props.rowData.project,
+                                    parentId: submissionId,
+                                    viewId: null,
+                                    group: "communication",
+                                    created: new Date(),
+                                    updated: new Date(),
+                                    title: "",
+                                    author: "",
+                                    status: "",
+                                    data: {
+                                      newLine: true,
+                                      documentCurrencyLMD:
+                                        props.rowData.data.documentCurrencyLMD,
+                                      invoicingDateLMD:
+                                        props.rowData.data.invoicingDateLMD,
+                                      requestorLMD:
+                                        props.rowData.data.requestorLMD,
+                                      vendorLMD: props.rowData.data.vendorLMD,
+                                      vodLMD: props.rowData.data.vodLMD,
+                                      buLMD: props.rowData.data.buLMD,
+                                      invoiceTypeLMD:
+                                        props.rowData.data.invoiceTypeLMD,
+                                      cancellationInfoLMD:
+                                        props.rowData.data.cancellationInfoLMD,
+                                      materialNumberLMD:
+                                        props.rowData.data.materialNumberLMD,
+                                      reasonLMD: props.rowData.data.reasonLMD,
+                                      reasonCodeLMD:
+                                        props.rowData.data.reasonCodeLMD,
+                                      paymentMethodLMD:
+                                        props.rowData.data.paymentMethodLMD,
+                                      dunningStopLMD:
+                                        props.rowData.data.dunningStopLMD,
+                                      sendToLMD: props.rowData.data.sendToLMD,
+                                    },
+                                  };
+                                  RestAPI.createSubmission(submissionNew).then(
+                                    (response) => {
+                                      var temp = [...communicationSubmissions];
 
-                                    temp.push(response.data);
-                                    setCommunicationSubmissions(temp);
-                                  }
-                                );
+                                      temp.push(response.data);
+                                      setCommunicationSubmissions(temp);
+                                    }
+                                  );
+                                } else {
+                                  toast(
+                                    <Toast
+                                      title={"Not all field entered"}
+                                      message={
+                                        "You need to enter all obligatory fields before you can add invoice lines"
+                                      }
+                                      type={"error"}
+                                    />
+                                  );
+                                }
                               }}
                               rowIndex={props.rowIndex}
                               columnKey={props.column.dataKey}
