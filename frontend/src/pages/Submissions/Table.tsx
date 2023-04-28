@@ -115,61 +115,71 @@ var defaultColumns = [
 ];
 
 let invoiceBlueFields: string[] = [
-  "data.invoiceTypeLMD",
-  "data.amountLMD",
-  "data.documentCurrencyLMD",
+  "invoiceTypeLMD",
+  "amountLMD",
+  "documentCurrencyLMD",
 ];
 
 let invoiceMandatoryFields: string[] = [
-  "data.invoicingDateLMD",
-  "data.requestorLMD",
-  "data.vendorLMD",
-  "data.vodLMD",
-  "data.entryDateLMD",
-  "data.invoiceTypeLMD",
-  "data.reasonLMD",
-  "data.reasonCodeLMD",
-  "data.buLMD",
-  "data.alsoMarketingProjectNumberLMD",
-  "data.invoiceTextLMD",
-  "data.amountLMD",
-  "data.documentCurrencyLMD",
-  "data.paymentMethodLMD",
-  "data.dunningStopLMD",
-  "data.sendToLMD",
-  "data.materialNumberLMD",
+  "invoicingDateLMD",
+  "requestorLMD",
+  "vendorLMD",
+  "vodLMD",
+  "entryDateLMD",
+  "invoiceTypeLMD",
+  "reasonLMD",
+  "reasonCodeLMD",
+  "buLMD",
+  "alsoMarketingProjectNumberLMD",
+  "invoiceTextLMD",
+  "amountLMD",
+  "documentCurrencyLMD",
+  "paymentMethodLMD",
+  "dunningStopLMD",
+  "sendToLMD",
+  "materialNumberLMD",
 ];
 let preInvoiceMandatoryFields: string[] = [
-  "data.invoicingDateLMD",
-  "data.vendorLMD",
-  "data.invoiceTypeLMD",
-  "data.reasonLMD",
-  "data.reasonCodeLMD",
-  "data.alsoMarketingProjectNumberLMD",
-  "data.invoiceTextLMD",
-  "data.amountLMD",
-  "data.documentCurrencyLMD",
-  "data.paymentMethodLMD",
-  "data.dunningStopLMD",
-  "data.sendToLMD",
+  "invoicingDateLMD",
+  "requestorLMD",
+  "vendorLMD",
+  "vodLMD",
+  "buLMD",
+  "entryDateLMD",
+  "invoiceTypeLMD",
+  "reasonLMD",
+  "reasonCodeLMD",
+  "alsoMarketingProjectNumberLMD",
+  "invoiceTextLMD",
+  "amountLMD",
+  "documentCurrencyLMD",
+  "paymentMethodLMD",
+  "dunningStopLMD",
+  "sendToLMD",
+  "materialNumberLMD",
 ];
-let internalInvocieMandatoryFields: string[] = [
-  "data.invoicingDateLMD",
-  "data.vendorLMD",
-  "data.invoiceTypeLMD",
-  "data.reasonLMD",
-  "data.reasonCodeLMD",
-  "data.alsoMarketingProjectNumberLMD",
-  "data.invoiceTextLMD",
-  "data.amountLMD",
-  "data.documentCurrencyLMD",
-  "data.paymentMethodLMD",
-  "data.dunningStopLMD",
-  "data.sendToLMD",
+let internalInvoiceMandatoryFields: string[] = [
+  "invoicingDateLMD",
+  "requestorLMD",
+  "vendorLMD",
+  "vodLMD",
+  "buLMD",
+  "entryDateLMD",
+  "invoiceTypeLMD",
+  "reasonLMD",
+  "reasonCodeLMD",
+  "alsoMarketingProjectNumberLMD",
+  "invoiceTextLMD",
+  "amountLMD",
+  "documentCurrencyLMD",
+  "paymentMethodLMD",
+  "dunningStopLMD",
+  "sendToLMD",
+  "materialNumberLMD",
 ];
 let cancellationMandatoryFields: string[] = [
-  "data.cancellationInfoLMD",
-  "data.additionalInformationLMD",
+  "cancellationInfoLMD",
+  "additionalInformationLMD",
 ];
 
 async function fetchDropdowns() {
@@ -1406,25 +1416,22 @@ export function SubmissionsTable(props: Props) {
     if (!ts || !ts.data) {
       return false;
     }
-    const requiredFields = [
-      "invoicingDateLMD",
-      "requestorLMD",
-      "vendorLMD",
-      "vodLMD",
-      "entryDateLMD",
-      "invoiceTypeLMD",
-      "reasonLMD",
-      "reasonCodeLMD",
-      "buLMD",
-      "alsoMarketingProjectNumberLMD",
-      "invoiceTextLMD",
-      "amountLMD",
-      "documentCurrencyLMD",
-      "paymentMethodLMD",
-      "dunningStopLMD",
-      "sendToLMD",
-      "materialNumberLMD",
-    ];
+    console.log(ts);
+    let requiredFields: string[] = [];
+    switch (ts.data["invoiceTypeLMD"]) {
+      case "Invoice":
+        requiredFields = invoiceMandatoryFields;
+        break;
+      case "Pre-Invoice":
+        requiredFields = preInvoiceMandatoryFields;
+        break;
+      case "Internal Invoice":
+        requiredFields = internalInvoiceMandatoryFields;
+        break;
+      case "Cancellation":
+        requiredFields = cancellationMandatoryFields;
+        break;
+    }
 
     // Check if all required fields are present and not empty
     for (let field of requiredFields) {
@@ -1518,13 +1525,18 @@ export function SubmissionsTable(props: Props) {
 
   function cellColor(props: any): string {
     if (
-      invoiceMandatoryFields.includes(props.column.key) &&
+      invoiceMandatoryFields.includes(
+        props.column.key.substring(5, props.column.key.length)
+      ) &&
       mandatoryFieldValidation(props) === "#f7cdd6"
     ) {
+      console.log("aaa");
       return "#f7cdd6";
     } else {
       if (
-        invoiceBlueFields.includes(props.column.key) &&
+        invoiceBlueFields.includes(
+          props.column.key.substring(5, props.column.key.length)
+        ) &&
         props.rowData.data.newLine!
       ) {
         return "#d0d0ff";
@@ -1750,11 +1762,15 @@ export function SubmissionsTable(props: Props) {
       case "Invoice":
         if (
           invoiceMandatoryFields.findIndex(
-            (element) => element === props.column.key
+            (element) =>
+              element === props.column.key.substring(5, props.column.key.length)
           ) > -1
         ) {
           switch (typeof props.cellData) {
             case "number":
+              if (!props.cellData) {
+                return "#f7cdd6";
+              }
               if (props.cellData > 0) {
                 return "#F5FAEF";
               } else {
@@ -1767,7 +1783,7 @@ export function SubmissionsTable(props: Props) {
                 return "#f7cdd6";
               }
             case "undefined":
-              return "#F5FAEF";
+              return "#f7cdd6";
           }
           return "#F5FAEF";
         } else {
@@ -1776,7 +1792,8 @@ export function SubmissionsTable(props: Props) {
       case "Pre-Invoice":
         if (
           preInvoiceMandatoryFields.findIndex(
-            (element) => element === props.column.key
+            (element) =>
+              element === props.column.key.substring(5, props.column.key.length)
           ) > -1
         ) {
           switch (typeof props.cellData) {
@@ -1801,8 +1818,9 @@ export function SubmissionsTable(props: Props) {
         }
       case "Internal Invoice":
         if (
-          internalInvocieMandatoryFields.findIndex(
-            (element) => element === props.column.key
+          internalInvoiceMandatoryFields.findIndex(
+            (element) =>
+              element === props.column.key.substring(5, props.column.key.length)
           ) > -1
         ) {
           switch (typeof props.cellData) {
@@ -1828,7 +1846,8 @@ export function SubmissionsTable(props: Props) {
       case "Cancellation":
         if (
           cancellationMandatoryFields.findIndex(
-            (element) => element === props.column.key
+            (element) =>
+              element === props.column.key.substring(5, props.column.key.length)
           ) > -1
         ) {
           switch (typeof props.cellData) {
@@ -1875,6 +1894,9 @@ export function SubmissionsTable(props: Props) {
       "data.reasonLMD",
       "data.reasonCodeLMD",
       "data.entryDateLMD",
+      "data.reasonLMD",
+      "data.reasonCodeLMD",
+      "data.materialNumberLMD",
       "data.requestorLMD",
     ];
     let invoiceSubLineReadonlyFields: string[] = [
@@ -1889,10 +1911,24 @@ export function SubmissionsTable(props: Props) {
       "data.requestorLMD",
       "data.entryDateLMD",
     ];
-    let preInvoiceReadonlyFields: string[] = ["data.cancellationInfoLMD"];
-    let internalInvocieReadonlyFields: string[] = [
-      "data.sendToLMD",
+    let preInvoiceReadonlyFields: string[] = [
       "data.cancellationInfoLMD",
+      "data.reasonLMD",
+      "data.reasonCodeLMD",
+      "data.entryDateLMD",
+      "data.reasonLMD",
+      "data.reasonCodeLMD",
+      "data.alsoMarketingProjectNumberLMD",
+      "data.materialNumberLMD",
+      "data.requestorLMD",
+    ];
+    let internalInvocieReadonlyFields: string[] = [
+      "data.cancellationInfoLMD",
+      "data.entryDateLMD",
+      "data.reasonCodeLMD",
+      "data.alsoMarketingProjectNumberLMD",
+      "data.materialNumberLMD",
+      "data.requestorLMD",
     ];
     let cancellationReadonlyFields: string[] = [
       "data.invoicingDateLMD",
@@ -6229,6 +6265,16 @@ export function SubmissionsTable(props: Props) {
                                   "data.additionalInformationLMD",
                                   ""
                                 );
+                                if (
+                                  props.rowData.data.paymentMethodLMD ===
+                                  "Central CN"
+                                ) {
+                                  handleCommunicationCellUpdate(
+                                    submission,
+                                    "data.paymentMethodLMD",
+                                    ""
+                                  );
+                                }
                               }
                               if (value === "Pre-Invoice") {
                                 handleCommunicationCellUpdate(
@@ -6262,6 +6308,16 @@ export function SubmissionsTable(props: Props) {
                                   "data.additionalInformationLMD",
                                   ""
                                 );
+                                if (
+                                  props.rowData.data.paymentMethodLMD ===
+                                  "Central CN"
+                                ) {
+                                  handleCommunicationCellUpdate(
+                                    submission,
+                                    "data.paymentMethodLMD",
+                                    ""
+                                  );
+                                }
                               }
                               if (value === "Internal Invoice") {
                                 handleCommunicationCellUpdate(
@@ -6298,6 +6354,82 @@ export function SubmissionsTable(props: Props) {
                                 );
                                 handleCommunicationCellUpdate(
                                   submission,
+                                  "data.alsoMarketingProjectNumberLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vendorLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.amountLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.documentCurrencyLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.referenceNumberFromVendor",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.activityIdForPortalVendors",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.additionalInformationLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.dateOfServiceRenderedLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.linkToProofsLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.sendToLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.dunningStopLMD",
+                                  ""
+                                );
+
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.paymentMethodLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vodLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.buLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.invoiceTextLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
                                   "data.reasonCodeLMD",
                                   ""
                                 );
@@ -6309,6 +6441,11 @@ export function SubmissionsTable(props: Props) {
                                 handleCommunicationCellUpdate(
                                   submission,
                                   "data.alsoMarketingProjectNumberLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.paymentMethodLMD",
                                   ""
                                 );
                               }
@@ -6647,17 +6784,37 @@ export function SubmissionsTable(props: Props) {
                             readonly={cellReadonly(props)}
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             loadOptions={() => {
-                              return [
-                                { label: "Payment", value: "Payment" },
-                                {
-                                  label: "Money in House",
-                                  value: "Money in House",
-                                },
-                                {
-                                  label: "Credit Note from Vendor",
-                                  value: "Credit Note from Vendor",
-                                },
-                              ];
+                              var res = [];
+                              if (
+                                props.rowData.data.invoiceTypeLMD !==
+                                "Internal Invoice"
+                              ) {
+                                res = [
+                                  { label: "Payment", value: "Payment" },
+                                  {
+                                    label: "Money in House",
+                                    value: "Money in House",
+                                  },
+                                  {
+                                    label: "Credit Note from Vendor",
+                                    value: "Credit Note from Vendor",
+                                  },
+                                ];
+                              } else {
+                                res = [
+                                  { label: "Payment", value: "Payment" },
+                                  {
+                                    label: "Money in House",
+                                    value: "Money in House",
+                                  },
+                                  {
+                                    label: "Credit Note from Vendor",
+                                    value: "Credit Note from Vendor",
+                                  },
+                                  { label: "Central CN", value: "Central CN" },
+                                ];
+                              }
+                              return res;
                             }}
                             backgroundColor={mandatoryFieldValidation(props)}
                             onUpdate={(
@@ -6799,11 +6956,6 @@ export function SubmissionsTable(props: Props) {
                             readonly={
                               props.rowData.data.paymentMethodLMD !==
                               "Money in House"
-                              // &&
-                              // typeof props.rowData.data.dunningStopLMD ===
-                              //   "string" &&
-                              // props.rowData.data.dunningStopLMD.toLowerCase() ===
-                              //   "no"
                             }
                             backgroundColor={
                               props.rowData.data.invoiceTypeLMD ===
@@ -7150,7 +7302,9 @@ export function SubmissionsTable(props: Props) {
                               invoiced={
                                 props.rowData.data.statusLMD === "INVOICED" ||
                                 props.rowData.data.statusLMD ===
-                                  "OK FOR INVOICING"
+                                  "OK FOR INVOICING" ||
+                                props.rowData.data.invoiceTypeLMD ===
+                                  "Cancellation"
                               }
                               backgroundColor="#fef9fa"
                               textColor={"blue"}
@@ -7191,8 +7345,21 @@ export function SubmissionsTable(props: Props) {
                                       dunningStopLMD:
                                         props.rowData.data.dunningStopLMD,
                                       sendToLMD: props.rowData.data.sendToLMD,
+                                      alsoMarketingProjectNumberLMD:
+                                        props.rowData.data.invoiceTypeLMD ===
+                                        "Pre-Invoice"
+                                          ? props.rowData.data
+                                              .alsoMarketingProjectNumberLMD
+                                          : null,
                                     },
                                   };
+                                  console.log(
+                                    props.rowData.data.invoiceTypeLMD ===
+                                      "Pre-Invoice"
+                                      ? props.rowData.data
+                                          .alsoMarketingProjectNumberLMD
+                                      : null
+                                  );
                                   RestAPI.createSubmission(submissionNew).then(
                                     (response) => {
                                       var temp = [...communicationSubmissions];
