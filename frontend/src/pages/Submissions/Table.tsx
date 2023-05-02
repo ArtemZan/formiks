@@ -174,12 +174,12 @@ let internalInvoiceMandatoryFields: string[] = [
   "documentCurrencyLMD",
   "paymentMethodLMD",
   "dunningStopLMD",
-  "sendToLMD",
   "materialNumberLMD",
 ];
 let cancellationMandatoryFields: string[] = [
   "cancellationInfoLMD",
   "additionalInformationLMD",
+  "sendToLMD",
 ];
 
 async function fetchDropdowns() {
@@ -1530,7 +1530,6 @@ export function SubmissionsTable(props: Props) {
       ) &&
       mandatoryFieldValidation(props) === "#f7cdd6"
     ) {
-      console.log("aaa");
       return "#f7cdd6";
     } else {
       if (
@@ -1539,6 +1538,9 @@ export function SubmissionsTable(props: Props) {
         ) &&
         props.rowData.data.newLine!
       ) {
+        if (props.rowData.data.invoiceTypeLMD === "Cancellation") {
+          return "#F5FAEF";
+        }
         return "#d0d0ff";
       } else {
         return "#F5FAEF";
@@ -1929,6 +1931,7 @@ export function SubmissionsTable(props: Props) {
       "data.alsoMarketingProjectNumberLMD",
       "data.materialNumberLMD",
       "data.requestorLMD",
+      "data.sendToLMD",
     ];
     let cancellationReadonlyFields: string[] = [
       "data.invoicingDateLMD",
@@ -1950,7 +1953,6 @@ export function SubmissionsTable(props: Props) {
       "data.documentCurrencyLMD",
       "data.paymentMethodLMD",
       "data.dunningStopLMD",
-      "data.sendToLMD",
       "data.dateOfServiceRenderedLMD",
     ];
     if (props === undefined) {
@@ -7489,6 +7491,8 @@ export function SubmissionsTable(props: Props) {
                                 invoiceTextLMD: "",
                                 vendorLMD: "",
                                 invoicingDateLMD: "",
+                                amountLMD: "",
+                                documentCurrencyLMD: "",
                                 alsoMarketingProjectNumberLMD: "",
                                 materialNumberLMD: "7000100",
                                 invoiceTypeLMD: "Invoice",
