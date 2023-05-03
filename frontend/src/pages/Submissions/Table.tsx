@@ -1416,7 +1416,6 @@ export function SubmissionsTable(props: Props) {
     if (!ts || !ts.data) {
       return false;
     }
-    console.log(ts);
     let requiredFields: string[] = [];
     switch (ts.data["invoiceTypeLMD"]) {
       case "Invoice":
@@ -1752,7 +1751,6 @@ export function SubmissionsTable(props: Props) {
   }
 
   function createNewLineActive(props: any) {
-    console.log(props);
     return true;
   }
 
@@ -6006,6 +6004,7 @@ export function SubmissionsTable(props: Props) {
                               );
                               var tmpValue = "";
                               var tmpBU = "";
+
                               if (value.toString().includes("BU")) {
                                 tmpValue = value
                                   .toString()
@@ -6016,24 +6015,49 @@ export function SubmissionsTable(props: Props) {
                               } else {
                                 tmpValue = value;
                               }
+                              console.log(InternationalVendorsNames);
                               let set = false;
-                              VendorsNames.every((v) => {
-                                if (
-                                  v.label === tmpValue ||
-                                  v.label.substr(0, v.label.length - 10) ===
-                                    tmpValue
-                                ) {
-                                  handleCommunicationCellUpdate(
-                                    submission,
-                                    "data.vodLMD",
-                                    v.value.debitorischer
-                                  );
-                                  set = true;
+                              if (
+                                props.rowData.data.alsoMarketingProjectNumberLMD.includes(
+                                  "IS"
+                                )
+                              ) {
+                                InternationalVendorsNames.every((v) => {
+                                  if (
+                                    v.label === tmpValue ||
+                                    v.label.substr(0, v.label.length - 10) ===
+                                      tmpValue
+                                  ) {
+                                    handleCommunicationCellUpdate(
+                                      submission,
+                                      "data.vodLMD",
+                                      v.value.debitorischer
+                                    );
+                                    set = true;
 
-                                  return false;
-                                }
-                                return true;
-                              });
+                                    return false;
+                                  }
+                                  return true;
+                                });
+                              } else {
+                                VendorsNames.every((v) => {
+                                  if (
+                                    v.label === tmpValue ||
+                                    v.label.substr(0, v.label.length - 10) ===
+                                      tmpValue
+                                  ) {
+                                    handleCommunicationCellUpdate(
+                                      submission,
+                                      "data.vodLMD",
+                                      v.value.debitorischer
+                                    );
+                                    set = true;
+
+                                    return false;
+                                  }
+                                  return true;
+                                });
+                              }
                               if (!set) {
                                 handleCommunicationCellUpdate(
                                   submission,
@@ -6047,68 +6071,96 @@ export function SubmissionsTable(props: Props) {
                                 );
                               } else {
                                 if (submissionData) {
-                                  submissionData.every((s: any) => {
-                                    if (s.group === "vendor") {
-                                      if (tmpBU === "") {
-                                        if (
-                                          s.group === "vendor" &&
-                                          s.data.debitorNumber ===
-                                            props.rowData.data.vodLMD
-                                        ) {
-                                          handleCommunicationCellUpdate(
-                                            submission,
-                                            "data.amountLMD",
-                                            s.data.vendorAmount
-                                          );
-                                          handleCommunicationCellUpdate(
-                                            submission,
-                                            "data.documentCurrencyLMD",
-                                            s.data.vendorBudgetCurrency
-                                          );
-                                          handleCommunicationCellUpdate(
-                                            submission,
-                                            "data.buLMD",
-                                            s.data.businessUnit
-                                          );
-                                          return false;
-                                        }
-                                      } else {
-                                        if (
-                                          s.group === "vendor" &&
-                                          s.data.debitorNumber ===
-                                            props.rowData.data.vodLMD &&
-                                          s.data.businessUnit.substring(
-                                            0,
-                                            3
-                                          ) === tmpBU
-                                        ) {
-                                          handleCommunicationCellUpdate(
-                                            submission,
-                                            "data.amountLMD",
-                                            s.data.vendorAmount
-                                          );
-                                          handleCommunicationCellUpdate(
-                                            submission,
-                                            "data.documentCurrencyLMD",
-                                            s.data.vendorBudgetCurrency
-                                          );
+                                  if (
+                                    props.rowData.data.alsoMarketingProjectNumberLMD.includes(
+                                      "IS"
+                                    )
+                                  ) {
+                                    submissionData.every((s: any) => {
+                                      handleCommunicationCellUpdate(
+                                        submission,
+                                        "data.amountLMD",
+                                        s.data.vendorAmount
+                                      );
+                                      handleCommunicationCellUpdate(
+                                        submission,
+                                        "data.documentCurrencyLMD",
+                                        s.data.vendorBudgetCurrency
+                                      );
+                                      handleCommunicationCellUpdate(
+                                        submission,
+                                        "data.buLMD",
+                                        s.data.businessUnit
+                                      );
+                                      return false;
+                                    });
+                                  } else {
+                                    submissionData.every((s: any) => {
+                                      if (s.group === "vendor") {
+                                        if (tmpBU === "") {
                                           if (
-                                            tmpBU ===
-                                            s.data.businessUnit.substring(0, 3)
+                                            s.group === "vendor" &&
+                                            s.data.debitorNumber ===
+                                              props.rowData.data.vodLMD
                                           ) {
+                                            handleCommunicationCellUpdate(
+                                              submission,
+                                              "data.amountLMD",
+                                              s.data.vendorAmount
+                                            );
+                                            handleCommunicationCellUpdate(
+                                              submission,
+                                              "data.documentCurrencyLMD",
+                                              s.data.vendorBudgetCurrency
+                                            );
                                             handleCommunicationCellUpdate(
                                               submission,
                                               "data.buLMD",
                                               s.data.businessUnit
                                             );
+                                            return false;
                                           }
+                                        } else {
+                                          if (
+                                            s.group === "vendor" &&
+                                            s.data.debitorNumber ===
+                                              props.rowData.data.vodLMD &&
+                                            s.data.businessUnit.substring(
+                                              0,
+                                              3
+                                            ) === tmpBU
+                                          ) {
+                                            handleCommunicationCellUpdate(
+                                              submission,
+                                              "data.amountLMD",
+                                              s.data.vendorAmount
+                                            );
+                                            handleCommunicationCellUpdate(
+                                              submission,
+                                              "data.documentCurrencyLMD",
+                                              s.data.vendorBudgetCurrency
+                                            );
+                                            if (
+                                              tmpBU ===
+                                              s.data.businessUnit.substring(
+                                                0,
+                                                3
+                                              )
+                                            ) {
+                                              handleCommunicationCellUpdate(
+                                                submission,
+                                                "data.buLMD",
+                                                s.data.businessUnit
+                                              );
+                                            }
 
-                                          return false;
+                                            return false;
+                                          }
                                         }
                                       }
-                                    }
-                                    return true;
-                                  });
+                                      return true;
+                                    });
+                                  }
                                 }
                               }
                             }}
@@ -7109,7 +7161,20 @@ export function SubmissionsTable(props: Props) {
                                   communicationSubmissions.findIndex(
                                     (s) => s.id === submissionId
                                   );
-
+                                if (
+                                  props.rowData.data.invoiceTypeLMD === "" ||
+                                  !props.rowData.data.invoiceTypeLMD
+                                ) {
+                                  isInvoiceCorrect += 1;
+                                  toast(
+                                    <Toast
+                                      title={"Incomplete Request"}
+                                      message={"Invoice type cannot be emtpy"}
+                                      type={"error"}
+                                    />
+                                  );
+                                  return isInvoiceCorrect;
+                                }
                                 if (
                                   communicationSubmissions[
                                     targetSubmissionIndex
@@ -7355,13 +7420,6 @@ export function SubmissionsTable(props: Props) {
                                           : null,
                                     },
                                   };
-                                  console.log(
-                                    props.rowData.data.invoiceTypeLMD ===
-                                      "Pre-Invoice"
-                                      ? props.rowData.data
-                                          .alsoMarketingProjectNumberLMD
-                                      : null
-                                  );
                                   RestAPI.createSubmission(submissionNew).then(
                                     (response) => {
                                       var temp = [...communicationSubmissions];
