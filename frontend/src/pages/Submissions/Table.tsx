@@ -71,6 +71,7 @@ import * as XLSX from "xlsx";
 import { FilterField, Template } from "../../types/template";
 import RejectModal from "../../components/RejectModal";
 import { types } from "util";
+import { modalPropTypes } from "rsuite/esm/Overlay/Modal";
 
 interface Props {
   history: any;
@@ -1523,10 +1524,27 @@ export function SubmissionsTable(props: Props) {
   }
 
   function cellColor(props: any): string {
+    var mandatoryFields: any = [];
+    if (props.column.key === "data.invoiceTypeLMD" && props.cellData === "") {
+      return "#f7cdd6";
+    }
+    switch (props.rowData.data.invoiceTypeLMD) {
+      case "Invoice":
+        mandatoryFields = invoiceMandatoryFields;
+        break;
+      case "Pre-Invoice":
+        mandatoryFields = preInvoiceMandatoryFields;
+        break;
+      case "Internal Invoice":
+        mandatoryFields = internalInvoiceMandatoryFields;
+        break;
+      case "Cancellation":
+        mandatoryFields = cancellationMandatoryFields;
+        break;
+    }
+
     if (
-      invoiceMandatoryFields.includes(
-        props.column.key.substring(5, props.column.key.length)
-      ) &&
+      mandatoryFields.includes(props.column.key.length) &&
       mandatoryFieldValidation(props) === "#f7cdd6"
     ) {
       return "#f7cdd6";
@@ -6015,48 +6033,51 @@ export function SubmissionsTable(props: Props) {
                               } else {
                                 tmpValue = value;
                               }
-                              console.log(InternationalVendorsNames);
                               let set = false;
                               if (
                                 props.rowData.data.alsoMarketingProjectNumberLMD.includes(
                                   "IS"
                                 )
                               ) {
-                                InternationalVendorsNames.every((v) => {
-                                  if (
-                                    v.label === tmpValue ||
-                                    v.label.substr(0, v.label.length - 10) ===
-                                      tmpValue
-                                  ) {
-                                    handleCommunicationCellUpdate(
-                                      submission,
-                                      "data.vodLMD",
-                                      v.value.debitorischer
-                                    );
-                                    set = true;
-
-                                    return false;
-                                  }
-                                  return true;
-                                });
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vodLMD",
+                                  submissionData[0].data.debitorNumber
+                                );
+                                set = true;
                               } else {
-                                VendorsNames.every((v) => {
-                                  if (
-                                    v.label === tmpValue ||
-                                    v.label.substr(0, v.label.length - 10) ===
-                                      tmpValue
-                                  ) {
-                                    handleCommunicationCellUpdate(
-                                      submission,
-                                      "data.vodLMD",
-                                      v.value.debitorischer
-                                    );
-                                    set = true;
-
-                                    return false;
+                                console.log(submissionData);
+                                submissionData.every((s: any) => {
+                                  if (s.group === "vendor") {
+                                    if (s.data.vendorName === value) {
+                                      handleCommunicationCellUpdate(
+                                        submission,
+                                        "data.vodLMD",
+                                        s.data.debitorNumber
+                                      );
+                                      set = true;
+                                      return false;
+                                    }
                                   }
                                   return true;
                                 });
+                                // VendorsNames.every((v) => {
+                                //   if (
+                                //     v.label === tmpValue ||
+                                //     v.label.substr(0, v.label.length - 10) ===
+                                //       tmpValue
+                                //   ) {
+                                //     handleCommunicationCellUpdate(
+                                //       submission,
+                                //       "data.vodLMD",
+                                //       v.value.debitorischer
+                                //     );
+                                //     set = true;
+
+                                //     return false;
+                                //   }
+                                //   return true;
+                                // });
                               }
                               if (!set) {
                                 handleCommunicationCellUpdate(
@@ -6077,6 +6098,7 @@ export function SubmissionsTable(props: Props) {
                                     )
                                   ) {
                                     submissionData.every((s: any) => {
+                                      console.log(s);
                                       handleCommunicationCellUpdate(
                                         submission,
                                         "data.amountLMD",
