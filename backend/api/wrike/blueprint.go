@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/doublegrey/formiks/backend/network"
 )
 
 func CopyTaskFromBlueprint(title, blueprint, parentFolder string) (string, error) {
@@ -53,7 +55,8 @@ func CopyTaskFromBlueprint(title, blueprint, parentFolder string) (string, error
 	if err != nil {
 		return "", err
 	}
-	client := &http.Client{}
+	// client := &http.Client{}
+	client := network.Client
 	req, _ := http.NewRequest(http.MethodPost, url, bytes.NewReader(payload))
 	req.Header.Add("content-type", "application/json")
 	req.Header.Add("x-w-account", "2930721")
@@ -87,7 +90,8 @@ func CopyTaskFromBlueprint(title, blueprint, parentFolder string) (string, error
 }
 
 func convertID(id, entityType string) ConverterResponse {
-	client := &http.Client{}
+	// client := &http.Client{}
+	client := network.Client
 	var response ConverterResponse
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://www.wrike.com/api/v4/ids?ids=[%s]&type=%s", id, entityType), nil)
 	if err != nil {

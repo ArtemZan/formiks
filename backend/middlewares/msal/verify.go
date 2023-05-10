@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang-jwt/jwt"
 
+	"github.com/doublegrey/formiks/backend/network"
 	"github.com/doublegrey/formiks/backend/repositories"
 
 	"github.com/gin-gonic/gin"
@@ -155,7 +156,8 @@ func getPubKey(kid string) ([]byte, error) {
 	if len(PubKey) > 0 {
 		return PubKey, nil
 	}
-	client := &http.Client{}
+	// client := &http.Client{}
+	client := network.Client
 	req, _ := http.NewRequest(http.MethodGet, "https://login.microsoftonline.com/common/discovery/keys", nil)
 	resp, _ := client.Do(req)
 	body, err := ioutil.ReadAll(resp.Body)

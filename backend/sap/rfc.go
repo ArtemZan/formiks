@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/doublegrey/formiks/backend/models"
+	"github.com/doublegrey/formiks/backend/network"
 )
 
 func ZsdMdfOrder(submission models.Submission) interface{} {
@@ -22,7 +23,8 @@ func ZsdMdfOrder(submission models.Submission) interface{} {
 	r.IM_CO_AREA = "A002"
 
 	bs, _ := json.Marshal(r)
-	client := &http.Client{}
+	// client := &http.Client{}
+	client := network.Client
 	req, _ := http.NewRequest(http.MethodPost, "https://b2b-test.also.com/rad/ActWebServices.Wrike:api/IntOrder", bytes.NewReader(bs))
 	req.SetBasicAuth("WRIKE", "mMvnfh67#hhz")
 	req.Header.Add("Content-Type", "application/json")
@@ -61,7 +63,8 @@ func ValidateProjectNumber(projectNo string) bool {
 	r.IM_CO_AREA = "A002"
 	r.IM_TEST_RUN = "X"
 	bs, _ := json.Marshal(r)
-	client := &http.Client{}
+	// client := &http.Client{}
+	client := network.Client
 	req, _ := http.NewRequest(http.MethodPost, "https://b2b-test.also.com/rad/ActWebServices.Wrike:api/IntOrder", bytes.NewReader(bs))
 	req.SetBasicAuth("WRIKE", "mMvnfh67#hhz")
 	req.Header.Add("Content-Type", "application/json")

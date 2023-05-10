@@ -15,6 +15,7 @@ import (
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/dropdowns"
 	"github.com/doublegrey/formiks/backend/models"
+	"github.com/doublegrey/formiks/backend/network"
 	"github.com/doublegrey/formiks/backend/utils"
 )
 
@@ -94,7 +95,8 @@ func FetchAccountLines() error {
     }
 	}`)
 
-	client := &http.Client{Timeout: time.Minute * 5}
+	// client := &http.Client{Timeout: time.Minute * 5}
+	client := network.Client
 	req, err := http.NewRequest(http.MethodPost, "https://b2b-test.also.com/rad/ActWebServices.Wrike:api/getGLAccountLines", payload)
 
 	if err != nil {

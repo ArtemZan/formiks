@@ -17,6 +17,7 @@ import (
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/middlewares"
 	"github.com/doublegrey/formiks/backend/middlewares/msal"
+	"github.com/doublegrey/formiks/backend/network"
 	"github.com/doublegrey/formiks/backend/sap"
 )
 
@@ -28,6 +29,7 @@ func main() {
 			log.Fatalf("Failed to read .env file: %v\n", err)
 		}
 	}
+	network.Initialize()
 	err := driver.Connect()
 	if err != nil {
 		log.Fatalf("Failed to initialize database connection: %v\n", err)

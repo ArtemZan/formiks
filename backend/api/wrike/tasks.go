@@ -11,10 +11,13 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/doublegrey/formiks/backend/network"
 )
 
 func getTask(id string) (TaskResponse, error) {
-	client := &http.Client{}
+	// client := &http.Client{}
+	client := network.Client
 	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("https://www.wrike.com/api/v4/tasks/%s", id), nil)
 	req.Header.Set("Authorization", os.Getenv("WRIKE_TOKEN"))
 	resp, _ := client.Do(req)
@@ -34,7 +37,8 @@ func getTask(id string) (TaskResponse, error) {
 }
 
 func updateTask(id, description, customFields, importance string, dates ProjectSettings) {
-	client := &http.Client{}
+	// client := &http.Client{}
+	client := network.Client
 	form := url.Values{}
 	fmt.Println(customFields)
 	form.Add("customFields", customFields)
