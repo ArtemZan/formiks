@@ -1542,9 +1542,10 @@ export function SubmissionsTable(props: Props) {
         mandatoryFields = cancellationMandatoryFields;
         break;
     }
-
     if (
-      mandatoryFields.includes(props.column.key.length) &&
+      mandatoryFields.includes(
+        props.column.key.substring(5, props.column.key.length)
+      ) &&
       mandatoryFieldValidation(props) === "#f7cdd6"
     ) {
       return "#f7cdd6";
@@ -5766,7 +5767,7 @@ export function SubmissionsTable(props: Props) {
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             maxLength={12}
                             readonly={cellReadonly(props)}
-                            backgroundColor={fieldBackColor(props)}
+                            backgroundColor={cellColor(props)}
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -6046,7 +6047,6 @@ export function SubmissionsTable(props: Props) {
                                 );
                                 set = true;
                               } else {
-                                console.log(submissionData);
                                 submissionData.every((s: any) => {
                                   if (s.group === "vendor") {
                                     if (s.data.vendorName === value) {
@@ -6098,7 +6098,6 @@ export function SubmissionsTable(props: Props) {
                                     )
                                   ) {
                                     submissionData.every((s: any) => {
-                                      console.log(s);
                                       handleCommunicationCellUpdate(
                                         submission,
                                         "data.amountLMD",
@@ -6595,7 +6594,7 @@ export function SubmissionsTable(props: Props) {
                             type={"text"}
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             readonly={cellReadonly(props)}
-                            backgroundColor={fieldBackColor(props)}
+                            backgroundColor={cellColor(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             // loadOptions={() => {
                             //   return VendorsNames.map((vendor) => {
@@ -6635,7 +6634,7 @@ export function SubmissionsTable(props: Props) {
                                 { label: "40", value: "40" },
                               ];
                             }}
-                            backgroundColor={fieldBackColor(props)}
+                            backgroundColor={cellColor(props)}
                             onUpdate={(
                               submission: string,
                               path: string,
@@ -6670,7 +6669,7 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             type={"text"}
-                            backgroundColor={fieldBackColor(props)}
+                            backgroundColor={cellColor(props)}
                             readonly={cellReadonly(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
