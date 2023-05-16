@@ -1809,9 +1809,6 @@ export function SubmissionsTable(props: Props) {
           return "#F5FAEF";
         }
       case "Pre-Invoice":
-        if (props.column.key === "data.invoiceTextLMD") {
-          console.log(typeof props.cellData);
-        }
         if (
           preInvoiceMandatoryFields.findIndex(
             (element) =>
@@ -1940,6 +1937,7 @@ export function SubmissionsTable(props: Props) {
       "data.cancellationInfoLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
+      "data.alsoMarketingProjectNumberLMD",
       "data.entryDateLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
@@ -1950,7 +1948,6 @@ export function SubmissionsTable(props: Props) {
       "data.cancellationInfoLMD",
       "data.entryDateLMD",
       "data.reasonCodeLMD",
-      "data.alsoMarketingProjectNumberLMD",
       "data.materialNumberLMD",
       "data.requestorLMD",
       "data.sendToLMD",
@@ -6050,7 +6047,6 @@ export function SubmissionsTable(props: Props) {
                                   "data.vodLMD",
                                   submissionData[0].data.debitorNumber
                                 );
-                                console.log(submissionData[0]);
                                 set = true;
                               } else {
                                 VendorsNames.every((v) => {
