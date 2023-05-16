@@ -1682,7 +1682,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">VOD</Text>
           <Input
             value={vendor.debitor}
-            disabled={budgetSource.value === "noBudget"}
+            disabled={true}
             isInvalid={inputErrors.includes("debitorNumber")}
             bg={useColorModeValue("white", "#2C313C")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
@@ -1711,6 +1711,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Manufacturer</Text>
           <Input
             bg={useColorModeValue("white", "#2C313C")}
+            disabled={true}
             isInvalid={inputErrors.includes("manufacturerNumber")}
             color={useColorModeValue("gray.800", "#ABB2BF")}
             value={vendor.manufacturer}

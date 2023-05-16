@@ -1689,6 +1689,7 @@ export default function Elmv(props: Props) {
                 {(rowData, index) => (
                   <Input
                     value={rowData.debitor}
+                    disabled={true}
                     onChange={(event) => {
                       var temp = [...vendors];
                       temp[index!].debitor = event.target.value;
@@ -1727,6 +1728,7 @@ export default function Elmv(props: Props) {
                 {(rowData, index) => (
                   <Input
                     value={rowData.manufacturer}
+                    disabled={true}
                     onChange={(event) => {
                       var temp = [...vendors];
                       temp[index!].manufacturer = event.target.value;

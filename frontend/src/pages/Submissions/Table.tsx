@@ -1801,6 +1801,12 @@ export function SubmissionsTable(props: Props) {
               } else {
                 return "#f7cdd6";
               }
+            case "object":
+              if (props.cellData === null) {
+                return "#f7cdd6";
+              } else {
+                return "#F5FAEF";
+              }
             case "undefined":
               return "#f7cdd6";
           }
@@ -1831,6 +1837,12 @@ export function SubmissionsTable(props: Props) {
               } else {
                 return "#f7cdd6";
               }
+            case "object":
+              if (props.cellData === null) {
+                return "#f7cdd6";
+              } else {
+                return "#F5FAEF";
+              }
             case "undefined":
               return "#f7cdd6";
           }
@@ -1857,6 +1869,12 @@ export function SubmissionsTable(props: Props) {
                 return "#F5FAEF";
               } else {
                 return "#f7cdd6";
+              }
+            case "object":
+              if (props.cellData === null) {
+                return "#f7cdd6";
+              } else {
+                return "#F5FAEF";
               }
             case "undefined":
               return "#F5FAEF";
@@ -1926,6 +1944,7 @@ export function SubmissionsTable(props: Props) {
       "data.reasonLMD",
       "data.reasonCodeLMD",
       "data.materialNumberLMD",
+      "data.buLMD",
       "data.paymentMethodLMD",
       "data.dunningStopLMD",
       "data.sendToLMD",
@@ -1944,6 +1963,19 @@ export function SubmissionsTable(props: Props) {
       "data.materialNumberLMD",
       "data.requestorLMD",
     ];
+
+    let preInvoiceSubLineReadonlyFields: string[] = [
+      "data.cancellationInfoLMD",
+      "data.reasonLMD",
+      "data.reasonCodeLMD",
+      "data.alsoMarketingProjectNumberLMD",
+      "data.entryDateLMD",
+      "data.reasonLMD",
+      "data.reasonCodeLMD",
+      "data.materialNumberLMD",
+      "data.requestorLMD",
+    ];
+
     let internalInvocieReadonlyFields: string[] = [
       "data.cancellationInfoLMD",
       "data.entryDateLMD",
@@ -2001,14 +2033,26 @@ export function SubmissionsTable(props: Props) {
           }
         }
       case "Pre-Invoice":
-        if (
-          preInvoiceReadonlyFields.findIndex(
-            (element) => element === props.column.key
-          ) > -1
-        ) {
-          return true;
+        if (props.rowData.parentId) {
+          if (
+            preInvoiceReadonlyFields.findIndex(
+              (element) => element === props.column.key
+            ) > -1
+          ) {
+            return true;
+          } else {
+            return false;
+          }
         } else {
-          return false;
+          if (
+            preInvoiceSubLineReadonlyFields.findIndex(
+              (element) => element === props.column.key
+            ) > -1
+          ) {
+            return true;
+          } else {
+            return false;
+          }
         }
       case "Internal Invoice":
         if (
@@ -6221,12 +6265,9 @@ export function SubmissionsTable(props: Props) {
                             loadOptions={() => {
                               return BUs;
                             }}
-                            readonly={
-                              props.rowData.parentId !== null ||
-                              cellReadonly(props)
-                            }
+                            readonly={cellReadonly(props)}
                             invoiced={lmdColumnEdit(props.rowData.data)}
-                            backgroundColor={mandatoryFieldValidation(props)}
+                            backgroundColor={cellColor(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -7406,7 +7447,11 @@ export function SubmissionsTable(props: Props) {
                                         props.rowData.data.requestorLMD,
                                       vendorLMD: props.rowData.data.vendorLMD,
                                       vodLMD: props.rowData.data.vodLMD,
-                                      buLMD: props.rowData.data.buLMD,
+                                      buLMD:
+                                        props.rowData.data.invoiceTypeLMD ===
+                                        "Pre-Invoice"
+                                          ? null
+                                          : props.rowData.data.buLMD,
                                       invoiceTypeLMD:
                                         props.rowData.data.invoiceTypeLMD,
                                       cancellationInfoLMD:

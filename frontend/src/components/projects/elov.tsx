@@ -1319,7 +1319,7 @@ export default function Elov(props: Props) {
           <Input
             bgColor={"white"}
             value={vendor.debitor}
-            disabled={budgetSource.value === "noBudget"}
+            disabled={true}
             isInvalid={
               budgetSource.value === "noBudget"
                 ? false
@@ -1349,6 +1349,7 @@ export default function Elov(props: Props) {
           <Text mb="8px">Manufacturer</Text>
           <Input
             bgColor={"white"}
+            disabled={true}
             isInvalid={inputErrors.includes("manufacturerNumber")}
             value={vendor.manufacturer}
             onChange={(event) => {
