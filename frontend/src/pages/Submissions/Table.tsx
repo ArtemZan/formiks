@@ -1937,7 +1937,6 @@ export function SubmissionsTable(props: Props) {
       "data.entryDateLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
-      "data.alsoMarketingProjectNumberLMD",
       "data.materialNumberLMD",
       "data.requestorLMD",
     ];
@@ -6045,39 +6044,26 @@ export function SubmissionsTable(props: Props) {
                                   "data.vodLMD",
                                   submissionData[0].data.debitorNumber
                                 );
+                                console.log(submissionData[0]);
                                 set = true;
                               } else {
-                                submissionData.every((s: any) => {
-                                  if (s.group === "vendor") {
-                                    if (s.data.vendorName === value) {
-                                      handleCommunicationCellUpdate(
-                                        submission,
-                                        "data.vodLMD",
-                                        s.data.debitorNumber
-                                      );
-                                      set = true;
-                                      return false;
-                                    }
+                                VendorsNames.every((v) => {
+                                  if (
+                                    v.label === tmpValue ||
+                                    v.label.substr(0, v.label.length - 10) ===
+                                      tmpValue
+                                  ) {
+                                    handleCommunicationCellUpdate(
+                                      submission,
+                                      "data.vodLMD",
+                                      v.value.debitorischer
+                                    );
+                                    set = true;
+
+                                    return false;
                                   }
                                   return true;
                                 });
-                                // VendorsNames.every((v) => {
-                                //   if (
-                                //     v.label === tmpValue ||
-                                //     v.label.substr(0, v.label.length - 10) ===
-                                //       tmpValue
-                                //   ) {
-                                //     handleCommunicationCellUpdate(
-                                //       submission,
-                                //       "data.vodLMD",
-                                //       v.value.debitorischer
-                                //     );
-                                //     set = true;
-
-                                //     return false;
-                                //   }
-                                //   return true;
-                                // });
                               }
                               if (!set) {
                                 handleCommunicationCellUpdate(
