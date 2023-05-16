@@ -1809,6 +1809,9 @@ export function SubmissionsTable(props: Props) {
           return "#F5FAEF";
         }
       case "Pre-Invoice":
+        if (props.column.key === "data.invoiceTextLMD") {
+          console.log(typeof props.cellData);
+        }
         if (
           preInvoiceMandatoryFields.findIndex(
             (element) =>
@@ -1817,6 +1820,9 @@ export function SubmissionsTable(props: Props) {
         ) {
           switch (typeof props.cellData) {
             case "number":
+              if (!props.cellData) {
+                return "#f7cdd6";
+              }
               if (props.cellData > 0) {
                 return "#F5FAEF";
               } else {
@@ -1829,7 +1835,7 @@ export function SubmissionsTable(props: Props) {
                 return "#f7cdd6";
               }
             case "undefined":
-              return "#F5FAEF";
+              return "#f7cdd6";
           }
           return "#F5FAEF";
         } else {
