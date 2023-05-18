@@ -1886,6 +1886,12 @@ export function SubmissionsTable(props: Props) {
         }
       case "Cancellation":
         if (
+          props.column.key === "data.cancellationInfoLMD" &&
+          props.cellData.length < 12
+        ) {
+          return "#f7cdd6";
+        }
+        if (
           cancellationMandatoryFields.findIndex(
             (element) =>
               element === props.column.key.substring(5, props.column.key.length)
@@ -6129,6 +6135,11 @@ export function SubmissionsTable(props: Props) {
                                     }
                                     type={"error"}
                                   />
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  path,
+                                  value
                                 );
                               } else {
                                 handleCommunicationCellUpdate(
