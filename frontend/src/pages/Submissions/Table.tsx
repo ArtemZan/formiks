@@ -181,6 +181,7 @@ let cancellationMandatoryFields: string[] = [
   "cancellationInfoLMD",
   "additionalInformationLMD",
   "sendToLMD",
+  "invoicingDateLMD",
 ];
 
 async function fetchDropdowns() {
@@ -1877,7 +1878,7 @@ export function SubmissionsTable(props: Props) {
                 return "#F5FAEF";
               }
             case "undefined":
-              return "#F5FAEF";
+              return "#f7cdd6";
           }
           return "#F5FAEF";
         } else {
@@ -1903,8 +1904,14 @@ export function SubmissionsTable(props: Props) {
               } else {
                 return "#f7cdd6";
               }
+            case "object":
+              if (props.cellData === null) {
+                return "#f7cdd6";
+              } else {
+                return "#F5FAEF";
+              }
             case "undefined":
-              return "#F5FAEF";
+              return "#f7cdd6";
           }
           return "#F5FAEF";
         } else {
@@ -1976,7 +1983,7 @@ export function SubmissionsTable(props: Props) {
       "data.requestorLMD",
     ];
 
-    let internalInvocieReadonlyFields: string[] = [
+    let internalInvoiceReadonlyFields: string[] = [
       "data.cancellationInfoLMD",
       "data.entryDateLMD",
       "data.reasonCodeLMD",
@@ -1984,8 +1991,16 @@ export function SubmissionsTable(props: Props) {
       "data.requestorLMD",
       "data.sendToLMD",
     ];
+    let internalInvoiceSubLineReadonlyFields: string[] = [
+      "data.cancellationInfoLMD",
+      "data.entryDateLMD",
+      "data.reasonCodeLMD",
+      "data.materialNumberLMD",
+      "data.requestorLMD",
+      "data.reasonLMD",
+      "data.sendToLMD",
+    ];
     let cancellationReadonlyFields: string[] = [
-      "data.invoicingDateLMD",
       "data.requestorLMD",
       "data.vendorLMD",
       "data.vodLMD",
@@ -2055,14 +2070,26 @@ export function SubmissionsTable(props: Props) {
           }
         }
       case "Internal Invoice":
-        if (
-          internalInvocieReadonlyFields.findIndex(
-            (element) => element === props.column.key
-          ) > -1
-        ) {
-          return true;
+        if (props.rowData.parentId) {
+          if (
+            internalInvoiceSubLineReadonlyFields.findIndex(
+              (element) => element === props.column.key
+            ) > -1
+          ) {
+            return true;
+          } else {
+            return false;
+          }
         } else {
-          return false;
+          if (
+            internalInvoiceReadonlyFields.findIndex(
+              (element) => element === props.column.key
+            ) > -1
+          ) {
+            return true;
+          } else {
+            return false;
+          }
         }
       case "Cancellation":
         if (
@@ -5725,7 +5752,7 @@ export function SubmissionsTable(props: Props) {
                       {
                         key: "data.invoicingDateLMD",
                         dataKey: "data.invoicingDateLMD",
-                        title: "Date of Invoicing",
+                        title: "Date of document",
                         width: columnWidth("data.invoicingDateLMD", 200),
                         resizable: true,
                         group: "Input of Local Marketing Department",
@@ -5785,6 +5812,332 @@ export function SubmissionsTable(props: Props) {
                             backgroundColor="#F5FAEF"
                             readonly={cellReadonly(props)}
                             onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.invoiceTypeLMD",
+                        dataKey: "data.invoiceTypeLMD",
+                        title: "Type of document",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.invoiceTypeLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.invoiceTypeLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"dropdown"}
+                            readonly={cellReadonly(props)}
+                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            loadOptions={() => {
+                              return [
+                                {
+                                  label: "Invoice",
+                                  value: "Invoice",
+                                },
+                                { label: "Pre-Invoice", value: "Pre-Invoice" },
+                                {
+                                  label: "Internal Invoice",
+                                  value: "Internal Invoice",
+                                },
+                                {
+                                  label: "Cancellation",
+                                  value: "Cancellation",
+                                },
+                              ];
+                            }}
+                            backgroundColor={cellColor(props)}
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              if (value === "Invoice") {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.materialNumberLMD",
+                                  "7000100"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonLMD",
+                                  "25"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonCodeLMD",
+                                  "ZWKZ"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.cancellationInfoLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.additionalInformationLMD",
+                                  ""
+                                );
+                                if (
+                                  props.rowData.data.paymentMethodLMD ===
+                                  "Central CN"
+                                ) {
+                                  handleCommunicationCellUpdate(
+                                    submission,
+                                    "data.paymentMethodLMD",
+                                    ""
+                                  );
+                                }
+                              }
+                              if (value === "Pre-Invoice") {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.materialNumberLMD",
+                                  "7000100"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.alsoMarketingProjectNumberLMD",
+                                  "6110VZ01"
+                                );
+
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonLMD",
+                                  "40"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonCodeLMD",
+                                  "ZWKZ"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.cancellationInfoLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.additionalInformationLMD",
+                                  ""
+                                );
+                                if (
+                                  props.rowData.data.paymentMethodLMD ===
+                                  "Central CN"
+                                ) {
+                                  handleCommunicationCellUpdate(
+                                    submission,
+                                    "data.paymentMethodLMD",
+                                    ""
+                                  );
+                                }
+                              }
+                              if (value === "Internal Invoice") {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.materialNumberLMD",
+                                  "7000100"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonCodeLMD",
+                                  "ZWKZ"
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.cancellationInfoLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.additionalInformationLMD",
+                                  ""
+                                );
+                              }
+                              if (value === "Cancellation") {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.materialNumberLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.alsoMarketingProjectNumberLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vendorLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.amountLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.documentCurrencyLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.referenceNumberFromVendor",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.activityIdForPortalVendors",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.additionalInformationLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.dateOfServiceRenderedLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.linkToProofsLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.sendToLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.dunningStopLMD",
+                                  ""
+                                );
+
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.paymentMethodLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.vodLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.buLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.invoiceTextLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonCodeLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.reasonLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.alsoMarketingProjectNumberLMD",
+                                  ""
+                                );
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.paymentMethodLMD",
+                                  ""
+                                );
+                              }
+                              if (props.rowData.parentId === null) {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  "data.statusLMD",
+                                  "INCOMPLETE"
+                                );
+                              }
+                              handleCommunicationCellUpdate(
+                                submission,
+                                path,
+                                value
+                              );
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.sendToLMD",
+                                ""
+                              );
+                            }}
+                            // onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
+                      {
+                        key: "data.cancellationInfoLMD",
+                        dataKey: "data.cancellationInfoLMD",
+                        title: "Document number to be cancelled",
+                        group: "Input of Local Marketing Department",
+
+                        width: columnWidth("data.cancellationInfoLMD", 200),
+                        resizable: true,
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.cancellationInfoLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            type={"text"}
+                            readonly={cellReadonly(props)}
+                            backgroundColor={cellColor(props)}
+                            onUpdate={(
+                              submission: string,
+                              path: string,
+                              value: any
+                            ) => {
+                              if (value.length < 12) {
+                                toast(
+                                  <Toast
+                                    title={
+                                      "SAP document number must contain 12 digits"
+                                    }
+                                    message={
+                                      "Please enter correct SAP document number"
+                                    }
+                                    type={"error"}
+                                  />
+                                );
+                              } else {
+                                handleCommunicationCellUpdate(
+                                  submission,
+                                  path,
+                                  value
+                                );
+                              }
+                            }}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={props.rowData}
@@ -6237,7 +6590,7 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             type={"text"}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={cellColor(props)}
                             readonly={
                               props.rowData.parentId !== null ||
                               cellReadonly(props)
@@ -6303,309 +6656,6 @@ export function SubmissionsTable(props: Props) {
                           />
                         ),
                       },
-                      {
-                        key: "data.invoiceTypeLMD",
-                        dataKey: "data.invoiceTypeLMD",
-                        title: "Invoice Type",
-                        group: "Input of Local Marketing Department",
-
-                        width: columnWidth("data.invoiceTypeLMD", 200),
-                        resizable: true,
-                        hidden: visibilityController(
-                          "LMD",
-                          "data.invoiceTypeLMD"
-                        ),
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            type={"dropdown"}
-                            readonly={cellReadonly(props)}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
-                            loadOptions={() => {
-                              return [
-                                {
-                                  label: "Invoice",
-                                  value: "Invoice",
-                                },
-                                { label: "Pre-Invoice", value: "Pre-Invoice" },
-                                {
-                                  label: "Internal Invoice",
-                                  value: "Internal Invoice",
-                                },
-                                {
-                                  label: "Cancellation",
-                                  value: "Cancellation",
-                                },
-                              ];
-                            }}
-                            backgroundColor={cellColor(props)}
-                            onUpdate={(
-                              submission: string,
-                              path: string,
-                              value: any
-                            ) => {
-                              if (value === "Invoice") {
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.materialNumberLMD",
-                                  "7000100"
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.reasonLMD",
-                                  "25"
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.reasonCodeLMD",
-                                  "ZWKZ"
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.cancellationInfoLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.additionalInformationLMD",
-                                  ""
-                                );
-                                if (
-                                  props.rowData.data.paymentMethodLMD ===
-                                  "Central CN"
-                                ) {
-                                  handleCommunicationCellUpdate(
-                                    submission,
-                                    "data.paymentMethodLMD",
-                                    ""
-                                  );
-                                }
-                              }
-                              if (value === "Pre-Invoice") {
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.materialNumberLMD",
-                                  "7000100"
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.alsoMarketingProjectNumberLMD",
-                                  "6110VZ01"
-                                );
-
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.reasonLMD",
-                                  "40"
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.reasonCodeLMD",
-                                  "ZWKZ"
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.cancellationInfoLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.additionalInformationLMD",
-                                  ""
-                                );
-                                if (
-                                  props.rowData.data.paymentMethodLMD ===
-                                  "Central CN"
-                                ) {
-                                  handleCommunicationCellUpdate(
-                                    submission,
-                                    "data.paymentMethodLMD",
-                                    ""
-                                  );
-                                }
-                              }
-                              if (value === "Internal Invoice") {
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.materialNumberLMD",
-                                  "7000100"
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.reasonCodeLMD",
-                                  "ZWKZ"
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.reasonLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.cancellationInfoLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.additionalInformationLMD",
-                                  ""
-                                );
-                              }
-                              if (value === "Cancellation") {
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.materialNumberLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.alsoMarketingProjectNumberLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.vendorLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.amountLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.documentCurrencyLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.referenceNumberFromVendor",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.activityIdForPortalVendors",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.additionalInformationLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.dateOfServiceRenderedLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.linkToProofsLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.sendToLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.dunningStopLMD",
-                                  ""
-                                );
-
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.paymentMethodLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.vodLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.buLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.invoiceTextLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.reasonCodeLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.reasonLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.alsoMarketingProjectNumberLMD",
-                                  ""
-                                );
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.paymentMethodLMD",
-                                  ""
-                                );
-                              }
-                              if (props.rowData.parentId === null) {
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.statusLMD",
-                                  "INCOMPLETE"
-                                );
-                              }
-                              handleCommunicationCellUpdate(
-                                submission,
-                                path,
-                                value
-                              );
-                              handleCommunicationCellUpdate(
-                                submission,
-                                "data.sendToLMD",
-                                ""
-                              );
-                            }}
-                            // onUpdate={handleCommunicationCellUpdate}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={props.cellData}
-                          />
-                        ),
-                      },
-                      {
-                        key: "data.cancellationInfoLMD",
-                        dataKey: "data.cancellationInfoLMD",
-                        title: "Document number to be cancelled",
-                        group: "Input of Local Marketing Department",
-
-                        width: columnWidth("data.cancellationInfoLMD", 200),
-                        resizable: true,
-                        hidden: visibilityController(
-                          "LMD",
-                          "data.cancellationInfoLMD"
-                        ),
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
-                            type={"text"}
-                            readonly={cellReadonly(props)}
-                            backgroundColor={mandatoryFieldValidation(props)}
-                            onUpdate={handleCommunicationCellUpdate}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={props.cellData}
-                          />
-                        ),
-                      },
-
                       {
                         key: "data.materialNumberLMD",
                         dataKey: "data.materialNumberLMD",
@@ -6960,14 +7010,18 @@ export function SubmissionsTable(props: Props) {
                                   }
                                   break;
                                 case "Internal Invoice":
+                                  console.log(value);
                                   switch (value) {
                                     case "Payment":
-                                      dunningStop = "";
+                                      dunningStop = "No";
                                       break;
                                     case "Money in House":
                                       dunningStop = "Yes";
                                       break;
                                     case "Credit Note from Vendor":
+                                      dunningStop = "Yes";
+                                      break;
+                                    case "Central CN":
                                       dunningStop = "Yes";
                                       break;
                                   }
