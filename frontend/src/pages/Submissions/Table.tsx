@@ -138,6 +138,7 @@ let invoiceMandatoryFields: string[] = [
   "paymentMethodLMD",
   "dunningStopLMD",
   "sendToLMD",
+  "depositNumberLMD",
   "materialNumberLMD",
 ];
 let preInvoiceMandatoryFields: string[] = [
@@ -158,6 +159,7 @@ let preInvoiceMandatoryFields: string[] = [
   "dunningStopLMD",
   "sendToLMD",
   "materialNumberLMD",
+  "depositNumberLMD",
 ];
 let internalInvoiceMandatoryFields: string[] = [
   "invoicingDateLMD",
@@ -175,6 +177,7 @@ let internalInvoiceMandatoryFields: string[] = [
   "documentCurrencyLMD",
   "paymentMethodLMD",
   "dunningStopLMD",
+  "depositNumberLMD",
   "materialNumberLMD",
 ];
 let cancellationMandatoryFields: string[] = [
@@ -1780,6 +1783,16 @@ export function SubmissionsTable(props: Props) {
     }
     switch (props.rowData.data.invoiceTypeLMD) {
       case "Invoice":
+        if (props.column.key === "data.depositNumberLMD") {
+          if (
+            props.rowData.data.paymentMethodLMD === "Money in House" ||
+            props.rowData.data.paymentMethodLMD === "Central CN"
+          ) {
+            return "#f7cdd6";
+          } else {
+            return "#F5FAEF";
+          }
+        }
         if (
           invoiceMandatoryFields.findIndex(
             (element) =>
@@ -1816,6 +1829,16 @@ export function SubmissionsTable(props: Props) {
           return "#F5FAEF";
         }
       case "Pre-Invoice":
+        if (props.column.key === "data.depositNumberLMD") {
+          if (
+            props.rowData.data.paymentMethodLMD === "Money in House" ||
+            props.rowData.data.paymentMethodLMD === "Central CN"
+          ) {
+            return "#f7cdd6";
+          } else {
+            return "#F5FAEF";
+          }
+        }
         if (
           preInvoiceMandatoryFields.findIndex(
             (element) =>
@@ -1852,6 +1875,17 @@ export function SubmissionsTable(props: Props) {
           return "#F5FAEF";
         }
       case "Internal Invoice":
+        if (props.column.key === "data.depositNumberLMD") {
+          if (
+            (props.rowData.data.paymentMethodLMD === "Money in House" ||
+              props.rowData.data.paymentMethodLMD === "Central CN") &&
+            props.cellData === ""
+          ) {
+            return "#f7cdd6";
+          } else {
+            return "#F5FAEF";
+          }
+        }
         if (
           internalInvoiceMandatoryFields.findIndex(
             (element) =>
@@ -1885,9 +1919,6 @@ export function SubmissionsTable(props: Props) {
           return "#F5FAEF";
         }
       case "Cancellation":
-        if (props.column.key === "data.sendToLMD") {
-          console.log(typeof props.cellData);
-        }
         if (
           props.cellData &&
           props.column.key === "data.cancellationInfoLMD" &&
@@ -2036,6 +2067,16 @@ export function SubmissionsTable(props: Props) {
     }
     switch (props.rowData.data.invoiceTypeLMD) {
       case "Invoice":
+        if (props.column.key === "data.depositNumberLMD") {
+          if (
+            props.rowData.data.paymentMethodLMD === "Money in House" ||
+            props.rowData.data.paymentMethodLMD === "Central CN"
+          ) {
+            return false;
+          } else {
+            return true;
+          }
+        }
         if (props.rowData.parentId) {
           if (
             invoiceSubLineReadonlyFields.findIndex(
@@ -2058,6 +2099,16 @@ export function SubmissionsTable(props: Props) {
           }
         }
       case "Pre-Invoice":
+        if (props.column.key === "data.depositNumberLMD") {
+          if (
+            props.rowData.data.paymentMethodLMD === "Money in House" ||
+            props.rowData.data.paymentMethodLMD === "Central CN"
+          ) {
+            return false;
+          } else {
+            return true;
+          }
+        }
         if (props.rowData.parentId) {
           if (
             preInvoiceReadonlyFields.findIndex(
@@ -2080,6 +2131,16 @@ export function SubmissionsTable(props: Props) {
           }
         }
       case "Internal Invoice":
+        if (props.column.key === "data.depositNumberLMD") {
+          if (
+            props.rowData.data.paymentMethodLMD === "Money in House" ||
+            props.rowData.data.paymentMethodLMD === "Central CN"
+          ) {
+            return false;
+          } else {
+            return true;
+          }
+        }
         if (props.rowData.parentId) {
           if (
             internalInvoiceSubLineReadonlyFields.findIndex(
@@ -6292,7 +6353,6 @@ export function SubmissionsTable(props: Props) {
                                       }
                                     }
                                   });
-                                  console.log(props);
                                   if (props.rowData.data.vendorLMD === "") {
                                     valid = true;
                                   }
@@ -7029,7 +7089,6 @@ export function SubmissionsTable(props: Props) {
                                   }
                                   break;
                                 case "Internal Invoice":
-                                  console.log(value);
                                   switch (value) {
                                     case "Payment":
                                       dunningStop = "No";
@@ -7119,7 +7178,7 @@ export function SubmissionsTable(props: Props) {
                         dataKey: "data.depositNumberLMD",
                         group: "Input of Local Marketing Department",
 
-                        title: "Deposit Number",
+                        title: "Deposit number/Central CN",
                         width: columnWidth("data.depositNumberLMD", 200),
                         resizable: true,
                         hidden: visibilityController(
@@ -7130,21 +7189,29 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             invoiced={lmdColumnEdit(props.rowData.data)}
-                            readonly={
-                              props.rowData.data.paymentMethodLMD !==
-                              "Money in House"
-                            }
-                            backgroundColor={
-                              props.rowData.data.invoiceTypeLMD ===
-                              "Cancellation"
-                                ? "#F5FAEF"
-                                : props.rowData.data.paymentMethodLMD ===
-                                  "Money in House"
-                                ? props.cellData && props.cellData.length > 0
-                                  ? "#F5FAEF"
-                                  : "#f7cdd6"
-                                : "#F5FAEF"
-                            }
+                            // readonly={
+                            //   !(
+                            //     props.rowData.data.paymentMethodLMD ===
+                            //       "Money in House" ||
+                            //     props.rowData.data.paymentMethodLMD ===
+                            //       "Central CN"
+                            //   )
+                            // }
+                            readonly={cellReadonly(props)}
+                            backgroundColor={cellColor(props)}
+                            // backgroundColor={
+                            //   props.rowData.data.invoiceTypeLMD ===
+                            //   "Cancellation"
+                            //     ? "#F5FAEF"
+                            //     : props.rowData.data.paymentMethodLMD ===
+                            //         "Money in House" ||
+                            //       props.rowData.data.paymentMethodLMD ===
+                            //         "Central CN"
+                            //     ? props.cellData && props.cellData.length > 0
+                            //       ? "#F5FAEF"
+                            //       : "#f7cdd6"
+                            //     : "#F5FAEF"
+                            // }
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
