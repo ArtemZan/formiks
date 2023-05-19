@@ -1885,6 +1885,9 @@ export function SubmissionsTable(props: Props) {
           return "#F5FAEF";
         }
       case "Cancellation":
+        if (props.column.key === "data.sendToLMD") {
+          console.log(typeof props.cellData);
+        }
         if (
           props.cellData &&
           props.column.key === "data.cancellationInfoLMD" &&
@@ -7192,7 +7195,7 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             type={"text"}
-                            backgroundColor={mandatoryFieldValidation(props)}
+                            backgroundColor={cellColor(props)}
                             readonly={cellReadonly(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -7304,15 +7307,19 @@ export function SubmissionsTable(props: Props) {
                                     communicationSubmissions[
                                       targetSubmissionIndex
                                     ];
-                                  if (
-                                    communicationSubmissions[
-                                      targetSubmissionIndex
-                                    ].data.additionalInformationLMD.length >
-                                      0 &&
-                                    communicationSubmissions[
-                                      targetSubmissionIndex
-                                    ].data.cancellationInfoLMD.length > 0
-                                  ) {
+                                  // if (
+                                  //   communicationSubmissions[
+                                  //     targetSubmissionIndex
+                                  //   ].data.additionalInformationLMD.length >
+                                  //     0 &&
+                                  //   communicationSubmissions[
+                                  //     targetSubmissionIndex
+                                  //   ].data.cancellationInfoLMD.length > 0 &&
+                                  //   communicationSubmissions[
+                                  //     targetSubmissionIndex
+                                  //   ].data.sendTo.length > 0
+                                  // )
+                                  if (hasRequiredFields(parent)) {
                                     isInvoiceCorrect = 0;
                                   } else {
                                     isInvoiceCorrect = 1;
