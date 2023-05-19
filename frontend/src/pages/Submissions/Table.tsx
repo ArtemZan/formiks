@@ -1886,6 +1886,7 @@ export function SubmissionsTable(props: Props) {
         }
       case "Cancellation":
         if (
+          props.cellData &&
           props.column.key === "data.cancellationInfoLMD" &&
           props.cellData.length < 12
         ) {
