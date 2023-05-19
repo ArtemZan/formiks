@@ -6289,6 +6289,10 @@ export function SubmissionsTable(props: Props) {
                                       }
                                     }
                                   });
+                                  console.log(props);
+                                  if (props.rowData.data.vendorLMD === "") {
+                                    valid = true;
+                                  }
                                   if (!valid) {
                                     handleCommunicationCellUpdate(
                                       submission,
