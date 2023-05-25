@@ -138,7 +138,6 @@ let invoiceMandatoryFields: string[] = [
   "paymentMethodLMD",
   "dunningStopLMD",
   "sendToLMD",
-  "depositNumberLMD",
   "materialNumberLMD",
 ];
 let preInvoiceMandatoryFields: string[] = [
@@ -159,7 +158,6 @@ let preInvoiceMandatoryFields: string[] = [
   "dunningStopLMD",
   "sendToLMD",
   "materialNumberLMD",
-  "depositNumberLMD",
 ];
 let internalInvoiceMandatoryFields: string[] = [
   "invoicingDateLMD",
@@ -177,7 +175,6 @@ let internalInvoiceMandatoryFields: string[] = [
   "documentCurrencyLMD",
   "paymentMethodLMD",
   "dunningStopLMD",
-  "depositNumberLMD",
   "materialNumberLMD",
 ];
 let cancellationMandatoryFields: string[] = [
@@ -882,7 +879,7 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
-        label: "Deposit Number",
+        label: "Deposit Number/Central CN Number",
         value: "data.depositNumberLMD",
         type: "string",
       },
@@ -1436,7 +1433,7 @@ export function SubmissionsTable(props: Props) {
         requiredFields = cancellationMandatoryFields;
         break;
     }
-
+    console.log(requiredFields);
     // Check if all required fields are present and not empty
     for (let field of requiredFields) {
       if (!ts.data[field] || ts.data[field].length === 0) {
@@ -1981,6 +1978,7 @@ export function SubmissionsTable(props: Props) {
       "data.cancellationInfoLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
+      "data.vodLMD",
       "data.entryDateLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
@@ -1992,6 +1990,7 @@ export function SubmissionsTable(props: Props) {
       "data.reasonLMD",
       "data.reasonCodeLMD",
       "data.materialNumberLMD",
+      "data.vodLMD",
       "data.buLMD",
       "data.paymentMethodLMD",
       "data.dunningStopLMD",
@@ -2004,6 +2003,7 @@ export function SubmissionsTable(props: Props) {
       "data.cancellationInfoLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
+      "data.vodLMD",
       "data.alsoMarketingProjectNumberLMD",
       "data.entryDateLMD",
       "data.reasonLMD",
@@ -2016,6 +2016,7 @@ export function SubmissionsTable(props: Props) {
       "data.cancellationInfoLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
+      "data.vodLMD",
       "data.alsoMarketingProjectNumberLMD",
       "data.entryDateLMD",
       "data.reasonLMD",
@@ -2027,6 +2028,7 @@ export function SubmissionsTable(props: Props) {
     let internalInvoiceReadonlyFields: string[] = [
       "data.cancellationInfoLMD",
       "data.entryDateLMD",
+      "data.vodLMD",
       "data.reasonCodeLMD",
       "data.materialNumberLMD",
       "data.requestorLMD",
@@ -2036,6 +2038,7 @@ export function SubmissionsTable(props: Props) {
       "data.cancellationInfoLMD",
       "data.entryDateLMD",
       "data.reasonCodeLMD",
+      "data.vodLMD",
       "data.materialNumberLMD",
       "data.requestorLMD",
       "data.reasonLMD",
@@ -6329,6 +6332,7 @@ export function SubmissionsTable(props: Props) {
                                         vendor = s.data.vendorName;
                                       }
                                       if (currentVendor === vendor) {
+                                        console.log(s.data);
                                         handleCommunicationCellUpdate(
                                           submission,
                                           "data.vendorLMD",
@@ -6348,6 +6352,11 @@ export function SubmissionsTable(props: Props) {
                                           submission,
                                           "data.documentCurrencyLMD",
                                           s.data.vendorBudgetCurrency
+                                        );
+                                        handleCommunicationCellUpdate(
+                                          submission,
+                                          "data.amountLMD",
+                                          s.data.vendorAmount
                                         );
                                         valid = true;
                                       }
