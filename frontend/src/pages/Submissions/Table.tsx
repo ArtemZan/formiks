@@ -1551,6 +1551,17 @@ export function SubmissionsTable(props: Props) {
     ) {
       return "#f7cdd6";
     } else {
+      if (props.column.key === "data.depositNumberLMD") {
+        if (
+          (props.rowData.data.paymentMethodLMD === "Money in House" ||
+            props.rowData.data.paymentMethodLMD === "Central CN") &&
+          props.cellData === ""
+        ) {
+          return "#f7cdd6";
+        } else {
+          return "#F5FAEF";
+        }
+      }
       if (
         invoiceBlueFields.includes(
           props.column.key.substring(5, props.column.key.length)
@@ -2019,6 +2030,7 @@ export function SubmissionsTable(props: Props) {
       "data.vodLMD",
       "data.alsoMarketingProjectNumberLMD",
       "data.entryDateLMD",
+      "data.invoiceTypeLMD",
       "data.reasonLMD",
       "data.reasonCodeLMD",
       "data.materialNumberLMD",
@@ -2037,6 +2049,7 @@ export function SubmissionsTable(props: Props) {
     let internalInvoiceSubLineReadonlyFields: string[] = [
       "data.cancellationInfoLMD",
       "data.entryDateLMD",
+      "data.invoiceTypeLMD",
       "data.reasonCodeLMD",
       "data.vodLMD",
       "data.materialNumberLMD",
@@ -7614,6 +7627,7 @@ export function SubmissionsTable(props: Props) {
                                       reasonLMD: props.rowData.data.reasonLMD,
                                       reasonCodeLMD:
                                         props.rowData.data.reasonCodeLMD,
+                                      depositNumberLMD: "",
                                       paymentMethodLMD:
                                         props.rowData.data.paymentMethodLMD,
                                       dunningStopLMD:
