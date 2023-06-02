@@ -7214,7 +7214,7 @@ export function SubmissionsTable(props: Props) {
                         dataKey: "data.depositNumberLMD",
                         group: "Input of Local Marketing Department",
 
-                        title: "Deposit number/Central CN Number",
+                        title: "Deposit Number/Central CN Number",
                         width: columnWidth("data.depositNumberLMD", 200),
                         resizable: true,
                         hidden: visibilityController(
