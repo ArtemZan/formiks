@@ -72,6 +72,7 @@ import { FilterField, Template } from "../../types/template";
 import RejectModal from "../../components/RejectModal";
 import { types } from "util";
 import { modalPropTypes } from "rsuite/esm/Overlay/Modal";
+import { table } from "console";
 
 interface Props {
   history: any;
@@ -1466,6 +1467,7 @@ export function SubmissionsTable(props: Props) {
   function getColumnName(dataKey: string, group: string) {
     var column = DisplayedColumnsListOptions.find((el) => el.value === group);
     console.log(column);
+    return column ? column.label : "";
   }
 
   function handleCommunicationCellUpdate(
@@ -1890,7 +1892,6 @@ export function SubmissionsTable(props: Props) {
         }
       case "Internal Invoice":
         if (props.column.key === "data.depositNumberLMD") {
-          console.log(props.rowData.data.paymentMethodLMD);
           if (
             (props.rowData.data.paymentMethodLMD === "Money in House" ||
               props.rowData.data.paymentMethodLMD === "Central CN") &&
@@ -5089,6 +5090,13 @@ export function SubmissionsTable(props: Props) {
     },
     []
   );
+  // function alterGetDisplsayedColumns() {
+  //   var alterDisplayedColumns = []
+  //   tableCells.forEach((cell) => {
+  //     if (cell.group === "General Information") {
+  //   });
+  // }
+
   return (
     <div>
       <RejectModal
@@ -7206,7 +7214,7 @@ export function SubmissionsTable(props: Props) {
                         dataKey: "data.depositNumberLMD",
                         group: "Input of Local Marketing Department",
 
-                        title: "Deposit number/Central CN",
+                        title: "Deposit number/Central CN number",
                         width: columnWidth("data.depositNumberLMD", 200),
                         resizable: true,
                         hidden: visibilityController(
