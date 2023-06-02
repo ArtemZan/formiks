@@ -1442,7 +1442,8 @@ export function SubmissionsTable(props: Props) {
 
     // Check if paymentMethodLMD is "Money in House" and depositNumberLMD is present and not empty
     if (
-      ts.data.paymentMethodLMD === "Money in House" &&
+      (ts.data.paymentMethodLMD === "Money in House" ||
+        ts.data.paymentMethodLMD === "Central CN") &&
       (!ts.data.depositNumberLMD || ts.data.depositNumberLMD.length === 0)
     ) {
       return false;
@@ -1889,6 +1890,7 @@ export function SubmissionsTable(props: Props) {
         }
       case "Internal Invoice":
         if (props.column.key === "data.depositNumberLMD") {
+          console.log(props.rowData.data.paymentMethodLMD);
           if (
             (props.rowData.data.paymentMethodLMD === "Money in House" ||
               props.rowData.data.paymentMethodLMD === "Central CN") &&
@@ -1899,7 +1901,6 @@ export function SubmissionsTable(props: Props) {
             return "#F5FAEF";
           }
         }
-        console.log(internalInvoiceMandatoryFields);
         if (
           internalInvoiceMandatoryFields.findIndex(
             (element) =>
@@ -7134,13 +7135,13 @@ export function SubmissionsTable(props: Props) {
                                 case "Cancelation":
                                   break;
                               }
-                              if (value !== "Money in House") {
-                                handleCommunicationCellUpdate(
-                                  submission,
-                                  "data.depositNumberLMD",
-                                  ""
-                                );
-                              }
+                              //if (value !== "Money in House") {
+                              handleCommunicationCellUpdate(
+                                submission,
+                                "data.depositNumberLMD",
+                                ""
+                              );
+                              //}
                               handleCommunicationCellUpdate(
                                 submission,
                                 "data.dunningStopLMD",
