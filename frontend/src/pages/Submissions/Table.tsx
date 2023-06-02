@@ -1433,7 +1433,6 @@ export function SubmissionsTable(props: Props) {
         requiredFields = cancellationMandatoryFields;
         break;
     }
-    console.log(requiredFields);
     // Check if all required fields are present and not empty
     for (let field of requiredFields) {
       if (!ts.data[field] || ts.data[field].length === 0) {
@@ -1462,6 +1461,12 @@ export function SubmissionsTable(props: Props) {
       }
     }
   }
+
+  function getColumnName(dataKey: string, group: string) {
+    var column = DisplayedColumnsListOptions.find((el) => el.value === group);
+    console.log(column);
+  }
+
   function handleCommunicationCellUpdate(
     submission: string,
     path: string,
@@ -1894,6 +1899,7 @@ export function SubmissionsTable(props: Props) {
             return "#F5FAEF";
           }
         }
+        console.log(internalInvoiceMandatoryFields);
         if (
           internalInvoiceMandatoryFields.findIndex(
             (element) =>
@@ -6345,7 +6351,6 @@ export function SubmissionsTable(props: Props) {
                                         vendor = s.data.vendorName;
                                       }
                                       if (currentVendor === vendor) {
-                                        console.log(s.data);
                                         handleCommunicationCellUpdate(
                                           submission,
                                           "data.vendorLMD",
