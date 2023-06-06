@@ -5829,7 +5829,7 @@ export function SubmissionsTable(props: Props) {
                       {
                         key: "data.rejectReasonLMD",
                         dataKey: "data.rejectReasonLMD",
-                        title: "Rejected reason",
+                        title: "Rejection reason",
                         width: columnWidth("data.rejectReasonLMD", 150),
                         resizable: true,
                         group: "Input of Local Marketing Department",
