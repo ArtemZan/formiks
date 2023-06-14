@@ -119,6 +119,7 @@ var defaultColumns = [
 let invoiceBlueFields: string[] = [
   "invoiceTypeLMD",
   "amountLMD",
+  "activityIdForPortalVendors",
   "documentCurrencyLMD",
 ];
 
@@ -129,6 +130,7 @@ let invoiceMandatoryFields: string[] = [
   "vodLMD",
   "entryDateLMD",
   "invoiceTypeLMD",
+  "linkToProofsLMD",
   "reasonLMD",
   "reasonCodeLMD",
   "buLMD",
@@ -145,6 +147,7 @@ let preInvoiceMandatoryFields: string[] = [
   "invoicingDateLMD",
   "requestorLMD",
   "vendorLMD",
+  "linkToProofsLMD",
   "vodLMD",
   "buLMD",
   "entryDateLMD",
@@ -165,6 +168,7 @@ let internalInvoiceMandatoryFields: string[] = [
   "requestorLMD",
   "vendorLMD",
   "vodLMD",
+  "linkToProofsLMD",
   "buLMD",
   "entryDateLMD",
   "invoiceTypeLMD",
@@ -1465,9 +1469,10 @@ export function SubmissionsTable(props: Props) {
   }
 
   function getColumnName(dataKey: string, group: string) {
-    var column = DisplayedColumnsListOptions.find((el) => el.value === group);
+    console.log(tableCells);
+    var column = tableCells.find((el) => el.dataKey === dataKey);
     console.log(column);
-    return column ? column.label : "";
+    return column ? column.title : "";
   }
 
   function handleCommunicationCellUpdate(
@@ -1537,6 +1542,7 @@ export function SubmissionsTable(props: Props) {
     if (props.column.key === "data.invoiceTypeLMD" && props.cellData === "") {
       return "#f7cdd6";
     }
+
     switch (props.rowData.data.invoiceTypeLMD) {
       case "Invoice":
         mandatoryFields = invoiceMandatoryFields;
@@ -1570,19 +1576,20 @@ export function SubmissionsTable(props: Props) {
           return "#F5FAEF";
         }
       }
-      if (
-        invoiceBlueFields.includes(
-          props.column.key.substring(5, props.column.key.length)
-        ) &&
-        props.rowData.data.newLine!
-      ) {
-        if (props.rowData.data.invoiceTypeLMD === "Cancellation") {
-          return "#F5FAEF";
-        }
-        return "#d0d0ff";
-      } else {
+    }
+
+    if (
+      invoiceBlueFields.includes(
+        props.column.key.substring(5, props.column.key.length)
+      ) &&
+      props.rowData.data.newLine!
+    ) {
+      if (props.rowData.data.invoiceTypeLMD === "Cancellation") {
         return "#F5FAEF";
       }
+      return "#d0d0ff";
+    } else {
+      return "#F5FAEF";
     }
   }
 
@@ -6946,7 +6953,7 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             type={"text"}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor={cellColor(props)}
                             readonly={cellReadonly(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -7353,7 +7360,7 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             type={"text"}
-                            backgroundColor={"#F5FAEF"}
+                            backgroundColor={cellColor(props)}
                             readonly={cellReadonly(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -7387,6 +7394,10 @@ export function SubmissionsTable(props: Props) {
                                   communicationSubmissions.findIndex(
                                     (s) => s.id === submissionId
                                   );
+                                getColumnName(
+                                  "data.depositNumberLMD",
+                                  "Input of Local Marketing Department"
+                                );
                                 if (
                                   props.rowData.data.invoiceTypeLMD === "" ||
                                   !props.rowData.data.invoiceTypeLMD
