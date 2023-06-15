@@ -501,7 +501,7 @@ const NAV_ITEMS: Array<NavItem> = [
         href: "/submissions",
       },
       {
-        label: "Reports Table",
+        label: "Marketing PA Allocation report",
         subLabel: "Explore all reports",
         href: "/reports",
       },
