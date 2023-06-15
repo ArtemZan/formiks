@@ -2,6 +2,8 @@ package report
 
 import (
 	"context"
+	"log"
+	"strconv"
 	"time"
 
 	"github.com/doublegrey/formiks/backend/models"
@@ -44,14 +46,28 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 			rdata.InvoiceNumber, _ = element.Data["invoiceNumberSI"].(string)
 			rdata.IncomeAccount, _ = element.Data["incomeAccountSI"].(string)
 			rdata.InvoiceRecipientName, _ = element.Data["name1SI"].(string)
-			rdata.InvoiceRecipientNumber, _ = element.Data["sapNumberSI"].(string)
-			for _, vendorData := range submissions {
-				if vendorData.ParentID == element.ParentID && vendorData.Group == "vendor" {
-					if rdata.InvoiceRecipientNumber == vendorData.Data["vendorNumber"] {
-
-					}
-				}
+			// rdata.IncomeAmountLCSI, _ = element.Data["incomeAmountLCSI"].string()
+			value, ok := element.Data["incomeAmountLCSI"].(float64) // assert type to float64
+			if !ok {
+				log.Fatalf("Value is not a float64")
 			}
+			rdata.IncomeAmountLCSI = strconv.FormatFloat(value, 'f', -1, 64) 
+			rdata.InvoiceRecipientNumber, _ = element.Data["sapNumberSI"].(string)
+			rdata.VendorVODNumber, _= element.Data["debitorNumber"].(string)
+			rdata.VendorManufacturerNumber, _= element.Data["manufacturerNumber"].(string)
+			rdata.VendorManucturerName, _= element.Data["vendorName"].(string)
+			rdata.Value = rdata.IncomeAmountLCSI
+			rdata.VendorBU, _= element.Data["businessUnit"].(string)
+			if (rdata.InvoiceRecipientNumber == rdata.VendorVODNumber || rdata.InvoiceRecipientNumber == "00"+rdata.VendorVODNumber){
+				valid = true
+			}
+			// for _, vendorData := range submissions {
+			// 	if vendorData.ParentID == element.ParentID && vendorData.Group == "vendor" {
+			// 		if rdata.InvoiceRecipientNumber == vendorData.Data["vendorNumber"] {
+			// 			valid = true
+			// 		}
+			// 	}
+			// }
 			if !valid {
 				for _, vendorData := range submissions {
 					if vendorData.ParentID == element.ParentID && vendorData.Group == "country" {
@@ -63,8 +79,12 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 			}
 			if !valid {
 				rdata.Validation = "NOT OK"
+			} else {
+				rdata.Validation = "OK"
 			}
-			reports = append(reports, rdata)
+			if (rdata.ProjectName != ""){ 
+				reports = append(reports, rdata)
+			}
 		}
 	}
 	return reports, err

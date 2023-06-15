@@ -26,6 +26,7 @@ export interface PAreport {
   projectName: string;
   invoiceNumber: string;
   incomeAccount: string;
+  incomeAmountLCSI: string;
   invoiceRecipientName: string;
   invoiceRecipientNumber: string;
   requestFromVendorNumber: string;
