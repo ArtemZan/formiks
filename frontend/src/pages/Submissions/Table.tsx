@@ -5134,6 +5134,22 @@ export function SubmissionsTable(props: Props) {
               "data.statusLMD",
               "REJECTED"
             );
+            var targetChildSubs: any[] = [];
+            targetChildSubs = communicationSubmissions.filter(
+              (s) => s.parentId === rejectedSubmissionComm.id
+            );
+            targetChildSubs.forEach((s) => {
+              handleCommunicationCellUpdate(
+                s.id!,
+                "data.statusLMD",
+                "REJECTED"
+              );
+              handleCommunicationCellUpdate(
+                rejectedSubmissionComm.id!,
+                "data.rejectReasonLMD",
+                comment
+              );
+            });
             handleCommunicationCellUpdate(
               rejectedSubmissionComm.id!,
               "data.rejectReasonLMD",

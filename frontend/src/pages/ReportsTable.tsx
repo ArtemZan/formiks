@@ -67,6 +67,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "companyCode",
                 dataKey: "companyCode",
+                group: "Company",
                 title: "Company Code",
                 width: 150,
                 resizable: true,
@@ -75,6 +76,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "yearMonth",
                 dataKey: "yearMonth",
+                group: "Company",
                 title: "Year/Month",
                 width: 150,
                 resizable: true,
@@ -83,6 +85,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "projectNumber",
                 dataKey: "projectNumber",
+                group: "Company",
                 title: "Project Number",
                 width: 150,
                 resizable: true,
@@ -92,6 +95,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "projectName",
                 dataKey: "projectName",
+                group: "Company",
                 title: "Project Name",
                 width: 150,
                 resizable: true,
@@ -100,6 +104,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "invoiceNumber",
                 dataKey: "invoiceNumber",
+                group: "Company",
                 title: "Invoice Number",
                 width: 150,
                 resizable: true,
@@ -108,6 +113,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "incomeAccount",
                 dataKey: "incomeAccount",
+                group: "Company",
                 title: "Income Account",
                 width: 150,
                 resizable: true,
@@ -116,6 +122,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "incomeAmountLCSI",
                 dataKey: "incomeAmountLCSI",
+                group: "Data",
                 title: "Income Amount",
                 width: 150,
                 resizable: true,
@@ -124,6 +131,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "invoiceRecipientName",
                 dataKey: "invoiceRecipientName",
+                group: "Data",
                 title: "Invoice Recipient Name",
                 width: 150,
                 resizable: true,
@@ -132,6 +140,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "invoiceRecipientNumber",
                 dataKey: "invoiceRecipientNumber",
+                group: "Data",
                 title: "Invoice Recipient`s Account",
                 width: 150,
                 resizable: true,
@@ -140,6 +149,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "validation",
                 dataKey: "validation",
+                group: "Data",
                 title: "Validation",
                 width: 150,
                 resizable: true,
@@ -149,6 +159,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "value",
                 dataKey: "value",
+                group: "Data",
                 title: "Value",
                 width: 150,
                 resizable: true,
@@ -158,6 +169,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorVODNumber",
                 dataKey: "vendorVODNumber",
+                group: "Data",
                 title: "VOD Number",
                 width: 150,
                 resizable: true,
@@ -167,6 +179,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorManufacturerNumber",
                 dataKey: "vendorManufacturerNumber",
+                group: "Data",
                 title: "Manufacturer Number",
                 width: 150,
                 resizable: true,
@@ -176,6 +189,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorManucturerName",
                 dataKey: "vendorManucturerName",
+                group: "Data",
                 title: "Manufacturer Name",
                 width: 150,
                 resizable: true,
@@ -185,6 +199,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorBU",
                 dataKey: "vendorBU",
+                group: "Data",
                 title: "Business Unit",
                 width: 150,
                 resizable: true,
@@ -194,6 +209,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorShare",
                 dataKey: "vendorShare",
+                group: "Data",
                 title: "Vendor % Share",
                 width: 150,
                 resizable: true,
@@ -203,6 +219,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorValue",
                 dataKey: "vendorValue",
+                group: "Data",
                 title: "Vendor Value",
                 width: 150,
                 resizable: true,
@@ -212,6 +229,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorManufacturerNumber",
                 dataKey: "vendorManufacturerNumber",
+                group: "Data",
                 title: "Manufacturer Number",
                 width: 150,
                 resizable: true,
@@ -221,6 +239,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorManufacturerName",
                 dataKey: "vendorManufacturerName",
+                group: "Data",
                 title: "Manufacturer Name",
                 width: 150,
                 resizable: true,
@@ -230,6 +249,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorBU",
                 dataKey: "vendorBU",
+                group: "Data",
                 title: "Business Unit",
                 width: 150,
                 resizable: true,
