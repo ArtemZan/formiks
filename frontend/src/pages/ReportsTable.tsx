@@ -42,9 +42,12 @@ export default function ReportsTable(props: Props) {
       </div>
     );
   };
+  interface Option {
+    value: string;
+    label: string;
+  }
 
-  const [uniqueYearMonths, setUniqueYearMonths] = useState<string[]>([]);
-  const [options, setOptions] = useState<any[]>([]);
+  const [options, setOptions] = useState<Option[]>([]);
 
   const headerRendererForTable = useCallback(
     (props: {
@@ -77,15 +80,19 @@ export default function ReportsTable(props: Props) {
     RestAPI.getPAreport().then((response) => {
       setAllReports(response.data);
       setReports(response.data);
-      console.log("reports", reports);
-      setOptions(
-        reports.map((report) => ({
-          value: report.yearMonth,
-          label: report.yearMonth,
-        }))
-      );
     });
   }, []);
+
+  useEffect(() => {
+    const uniqueYearMonths = Array.from(
+      new Set(allReports.map((report) => report.yearMonth))
+    );
+    const optionsData = uniqueYearMonths.map((yearMonth) => ({
+      value: yearMonth,
+      label: yearMonth,
+    }));
+    setOptions(optionsData);
+  }, [allReports]);
 
   return (
     <div>
@@ -113,10 +120,7 @@ export default function ReportsTable(props: Props) {
           classNamePrefix="select"
           name="color"
           isClearable={false}
-          options={allReports.map((report) => ({
-            value: report.yearMonth,
-            label: report.yearMonth,
-          }))}
+          options={options}
           onChange={(value: any) => {
             var b = allReports.filter((report) => {
               return report.yearMonth === value.value;
