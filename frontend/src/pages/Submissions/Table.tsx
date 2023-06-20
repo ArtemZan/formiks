@@ -5081,6 +5081,7 @@ export function SubmissionsTable(props: Props) {
       headerIndex: number;
     }) => {
       const { headerIndex, columns, cells } = props;
+      console.log("headerIndex", headerIndex);
       if (headerIndex === 0) {
         return cells.map((cell, index) => {
           return cloneElement(cell as ReactElement, {

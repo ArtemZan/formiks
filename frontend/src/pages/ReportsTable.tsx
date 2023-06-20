@@ -6,7 +6,15 @@ import BaseTable, {
   unflatten,
 } from "react-base-table";
 import "react-base-table/styles.css";
-import React, { useEffect, useState } from "react";
+import React, {
+  cloneElement,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import { RestAPI } from "../api/rest";
 import { PAreport } from "../types/submission";
 import { reduce } from "lodash";
@@ -31,6 +39,33 @@ export default function ReportsTable(props: Props) {
       </div>
     );
   };
+
+  const headerRendererForTable = useCallback(
+    (props: {
+      cells: ReactNode[];
+      columns: ColumnShape<{
+        [k: string]: string;
+      }>;
+      headerIndex: number;
+    }) => {
+      const { headerIndex, columns, cells } = props;
+      console.log("headerIndex", columns);
+      if (headerIndex === 0) {
+        return cells.map((cell, index) => {
+          return cloneElement(cell as ReactElement, {
+            className: "BaseTable__header-cell",
+            children: (
+              <span style={{ fontWeight: 650 }} key={index}>
+                {columns[index].header ? columns[index].header : ""}
+              </span>
+            ),
+          });
+        });
+      }
+      return cells;
+    },
+    []
+  );
 
   useEffect(() => {
     RestAPI.getPAreport().then((Response) => setReports(Response.data));
@@ -62,11 +97,15 @@ export default function ReportsTable(props: Props) {
             }) => {}}
             width={width}
             height={height}
+            rowKey="id"
+            headerRenderer={headerRendererForTable}
+            headerClassName="header-cells"
             fixed
             columns={[
               {
                 key: "companyCode",
                 dataKey: "companyCode",
+                className: "red-border",
                 group: "Company",
                 title: "Company Code",
                 width: 150,
@@ -76,6 +115,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "yearMonth",
                 dataKey: "yearMonth",
+                className: "red-border",
                 group: "Company",
                 title: "Year/Month",
                 width: 150,
@@ -85,6 +125,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "projectNumber",
                 dataKey: "projectNumber",
+                className: "red-border",
                 group: "Company",
                 title: "Project Number",
                 width: 150,
@@ -95,6 +136,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "projectName",
                 dataKey: "projectName",
+                className: "red-border",
                 group: "Company",
                 title: "Project Name",
                 width: 150,
@@ -104,6 +146,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "invoiceNumber",
                 dataKey: "invoiceNumber",
+                className: "red-border",
                 group: "Company",
                 title: "Invoice Number",
                 width: 150,
@@ -113,6 +156,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "incomeAccount",
                 dataKey: "incomeAccount",
+                className: "red-border",
                 group: "Company",
                 title: "Income Account",
                 width: 150,
@@ -122,6 +166,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "incomeAmountLCSI",
                 dataKey: "incomeAmountLCSI",
+                className: "red-border",
                 group: "Data",
                 title: "Income Amount",
                 width: 150,
@@ -131,6 +176,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "invoiceRecipientName",
                 dataKey: "invoiceRecipientName",
+                className: "red-border",
                 group: "Data",
                 title: "Invoice Recipient Name",
                 width: 150,
@@ -140,6 +186,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "invoiceRecipientNumber",
                 dataKey: "invoiceRecipientNumber",
+                className: "red-border",
                 group: "Data",
                 title: "Invoice Recipient`s Account",
                 width: 150,
@@ -149,6 +196,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "validation",
                 dataKey: "validation",
+                className: "red-border",
                 group: "Data",
                 title: "Validation",
                 width: 150,
@@ -159,6 +207,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "value",
                 dataKey: "value",
+                className: "red-border",
                 group: "Data",
                 title: "Value",
                 width: 150,
@@ -169,6 +218,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorVODNumber",
                 dataKey: "vendorVODNumber",
+                className: "red-border",
                 group: "Data",
                 title: "VOD Number",
                 width: 150,
@@ -179,6 +229,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorManufacturerNumber",
                 dataKey: "vendorManufacturerNumber",
+                className: "red-border",
                 group: "Data",
                 title: "Manufacturer Number",
                 width: 150,
@@ -189,6 +240,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorManucturerName",
                 dataKey: "vendorManucturerName",
+                className: "red-border",
                 group: "Data",
                 title: "Manufacturer Name",
                 width: 150,
@@ -199,6 +251,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorBU",
                 dataKey: "vendorBU",
+                className: "red-border",
                 group: "Data",
                 title: "Business Unit",
                 width: 150,
@@ -209,6 +262,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorShare",
                 dataKey: "vendorShare",
+                className: "red-border",
                 group: "Data",
                 title: "Vendor % Share",
                 width: 150,
@@ -219,6 +273,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorValue",
                 dataKey: "vendorValue",
+                className: "red-border",
                 group: "Data",
                 title: "Vendor Value",
                 width: 150,
@@ -229,6 +284,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorManufacturerNumber",
                 dataKey: "vendorManufacturerNumber",
+                className: "red-border",
                 group: "Data",
                 title: "Manufacturer Number",
                 width: 150,
@@ -239,6 +295,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorManufacturerName",
                 dataKey: "vendorManufacturerName",
+                className: "red-border",
                 group: "Data",
                 title: "Manufacturer Name",
                 width: 150,
@@ -249,6 +306,7 @@ export default function ReportsTable(props: Props) {
               {
                 key: "vendorBU",
                 dataKey: "vendorBU",
+                className: "red-border",
                 group: "Data",
                 title: "Business Unit",
                 width: 150,
@@ -257,7 +315,7 @@ export default function ReportsTable(props: Props) {
                 cellRenderer: RenderCell,
               },
             ]}
-            data={reports}
+            data={unflatten([...reports] as any[])}
           ></BaseTable>
         )}
       </AutoResizer>
