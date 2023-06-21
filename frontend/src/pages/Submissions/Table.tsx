@@ -767,11 +767,11 @@ const DisplayedColumnsList = [
     label: "Input of Central Marketing Controlling Team",
     value: "CMCT",
     children: [
-      {
-        label: "Status",
-        value: "data.statusCMCT",
-        type: "dropdown",
-      },
+      // {
+      //   label: "Status",
+      //   value: "data.statusCMCT",
+      //   type: "dropdown",
+      // },
       {
         label: "SAP Document Number",
         value: "data.documentNumberCMCT",
@@ -793,6 +793,11 @@ const DisplayedColumnsList = [
     label: "Input of Local Marketing Department",
     value: "LMD",
     children: [
+      {
+        label: "Rejected reason",
+        value: "data.rejectReasonLMD",
+        type: "string",
+      },
       {
         label: "Status",
         value: "data.statusLMD",
@@ -836,6 +841,11 @@ const DisplayedColumnsList = [
       {
         label: "Document number to be cancelled",
         value: "data.cancellationInfoLMD",
+        type: "string",
+      },
+      {
+        label: "ALSO Marketing Project Number",
+        value: "data.alsoMarketingProjectNumberLMD",
         type: "string",
       },
       {
@@ -5839,7 +5849,7 @@ export function SubmissionsTable(props: Props) {
                         key: "data.rejectReasonLMD",
                         dataKey: "data.rejectReasonLMD",
                         title: "Rejection reason",
-                        width: columnWidth("data.rejectReasonLMD", 150),
+                        width: columnWidth("data.rejectReasonLMD", 250),
                         resizable: true,
                         group: "Input of Local Marketing Department",
                         header: "Input of Local Marketing Department",
@@ -5855,7 +5865,9 @@ export function SubmissionsTable(props: Props) {
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
-                            rowData={props.rowData}
+                            rowData={
+                              props.rowData != undefined ? props.rowData : ""
+                            }
                             initialValue={props.cellData}
                           />
                         ),
@@ -5864,10 +5876,9 @@ export function SubmissionsTable(props: Props) {
                         key: "data.statusLMD",
                         dataKey: "data.statusLMD",
                         title: "Status",
-                        width: columnWidth("data.statusLMD", 300),
+                        width: columnWidth("data.statusLMD", 150),
                         resizable: true,
                         group: "Input of Local Marketing Department",
-                        header: "Input of Local Marketing Department",
                         hidden: visibilityController("LMD", "data.statusLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
