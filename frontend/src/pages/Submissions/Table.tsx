@@ -778,11 +778,6 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
-        label: "Additional Information",
-        value: "data.infoCMCT",
-        type: "string",
-      },
-      {
         label: "Date",
         value: "data.dateCMCT",
         type: "date",
@@ -869,8 +864,8 @@ const DisplayedColumnsList = [
         type: "number",
       },
       {
-        label: "Additional Info on Invoice",
-        value: "data.additionalInvoiceInfoLMD",
+        label: "Additional Information",
+        value: "data.infoCMCT",
         type: "string",
       },
       {
@@ -5688,7 +5683,7 @@ export function SubmissionsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              if (value.length < 12) {
+                              if (value.length != 12) {
                                 toast(
                                   <Toast
                                     title={
@@ -5726,6 +5721,10 @@ export function SubmissionsTable(props: Props) {
                                   "data.rejectReasonLMD",
                                   ""
                                 );
+                                var targetSubmission =
+                                  communicationSubmissions.find(
+                                    (s) => s.id === submission
+                                  );
                                 targetChildSubs.forEach((s: any) => {
                                   handleCommunicationCellUpdate(
                                     s !== undefined ? s.id : "",
@@ -5736,6 +5735,20 @@ export function SubmissionsTable(props: Props) {
                                     s !== undefined ? s.id : "",
                                     "data.statusLMD",
                                     "INVOICED"
+                                  );
+                                  handleCommunicationCellUpdate(
+                                    s !== undefined ? s.id : "",
+                                    "data.operatorCMCT",
+                                    targetSubmission !== undefined
+                                      ? targetSubmission.data.operatorCMCT
+                                      : ""
+                                  );
+                                  handleCommunicationCellUpdate(
+                                    s !== undefined ? s.id : "",
+                                    "data.dateCMCT",
+                                    targetSubmission !== undefined
+                                      ? targetSubmission.data.dateCMCT
+                                      : ""
                                   );
                                 });
                               }
@@ -5821,6 +5834,32 @@ export function SubmissionsTable(props: Props) {
                           />
                         ),
                       },
+
+                      {
+                        key: "data.rejectReasonLMD",
+                        dataKey: "data.rejectReasonLMD",
+                        title: "Rejection reason",
+                        width: columnWidth("data.rejectReasonLMD", 150),
+                        resizable: true,
+                        group: "Input of Local Marketing Department",
+                        header: "Input of Local Marketing Department",
+                        hidden: visibilityController(
+                          "LMD",
+                          "data.rejectReasonLMD"
+                        ),
+                        cellRenderer: (props: any) => (
+                          <EditableTableCell
+                            type={"text"}
+                            readonly={true}
+                            backgroundColor="#F5FAEF"
+                            onUpdate={handleCommunicationCellUpdate}
+                            rowIndex={props.rowIndex}
+                            columnKey={props.column.dataKey}
+                            rowData={props.rowData}
+                            initialValue={props.cellData}
+                          />
+                        ),
+                      },
                       {
                         key: "data.statusLMD",
                         dataKey: "data.statusLMD",
@@ -5841,31 +5880,6 @@ export function SubmissionsTable(props: Props) {
                                 ? "#f7cdd6"
                                 : "#F5FAEF"
                             }
-                            onUpdate={handleCommunicationCellUpdate}
-                            rowIndex={props.rowIndex}
-                            columnKey={props.column.dataKey}
-                            rowData={props.rowData}
-                            initialValue={props.cellData}
-                          />
-                        ),
-                      },
-                      {
-                        key: "data.rejectReasonLMD",
-                        dataKey: "data.rejectReasonLMD",
-                        title: "Rejection reason",
-                        width: columnWidth("data.rejectReasonLMD", 150),
-                        resizable: true,
-                        group: "Input of Local Marketing Department",
-                        header: "Input of Local Marketing Department",
-                        hidden: visibilityController(
-                          "LMD",
-                          "data.rejectReasonLMD"
-                        ),
-                        cellRenderer: (props: any) => (
-                          <EditableTableCell
-                            type={"text"}
-                            readonly={true}
-                            backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -6243,7 +6257,7 @@ export function SubmissionsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              if (value.length < 12) {
+                              if (value.length != 12) {
                                 toast(
                                   <Toast
                                     title={

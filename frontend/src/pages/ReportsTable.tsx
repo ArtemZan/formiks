@@ -58,13 +58,14 @@ export default function ReportsTable(props: Props) {
       headerIndex: number;
     }) => {
       const { headerIndex, columns, cells } = props;
-
+      // const customStyle = headerIndex === 6 ? { border: "2px solid red" } : {};
       if (headerIndex === 0) {
         return cells.map((cell, index) => {
+          console.log(index);
           return cloneElement(cell as ReactElement, {
             className: "BaseTable__header-cell",
             children: (
-              <span style={{ fontWeight: 650 }} key={index}>
+              <span style={{ fontWeight: 650 }}>
                 {columns[index].header ? columns[index].header : ""}
               </span>
             ),
@@ -75,6 +76,40 @@ export default function ReportsTable(props: Props) {
     },
     []
   );
+
+  // const headerRendererForTable = useCallback(
+  //   (props: {
+  //     cells: ReactNode[];
+  //     columns: ColumnShape<{
+  //       [k: string]: string;
+  //     }>;
+  //     headerIndex: number;
+  //   }) => {
+  //     console.log("AAAA");
+  //     const { cells, columns } = props;
+
+  //     return cells.map((cell, index) => {
+  //       const column = columns[index];
+  //       console.log(columns);
+  //       // Apply custom style to the column with wider right border
+  //       const customStyle =
+  //         column.dataKey === "companyCode"
+  //           ? { borderRight: "2px solid red" }
+  //           : {};
+
+  //       return cloneElement(cell as ReactElement, {
+  //         className: "BaseTable__header-cell",
+  //         style: { ...customStyle },
+  //         children: (
+  //           <span style={{ fontWeight: 650 }} key={index}>
+  //             {column.header ? column.header : ""}
+  //           </span>
+  //         ),
+  //       });
+  //     });
+  //   },
+  //   []
+  // );
 
   useEffect(() => {
     RestAPI.getPAreport().then((response) => {
@@ -97,6 +132,7 @@ export default function ReportsTable(props: Props) {
   return (
     <div>
       <Box
+        key="ASD233"
         shadow="md"
         color="gray.600"
         height={"170"}
@@ -107,8 +143,11 @@ export default function ReportsTable(props: Props) {
         rounded="md"
         w={"100%"}
       >
-        <Text mb="8px">Period</Text>
+        <Text key="ASD" mb="8px">
+          Period
+        </Text>
         <Select
+          key={"DSADSA"}
           theme={(theme) => ({
             ...theme,
             borderRadius: 6,
@@ -131,6 +170,7 @@ export default function ReportsTable(props: Props) {
       </Box>
       <Box
         w={"100%"}
+        key={"123213"}
         bg={"white"}
         minH={"85vh"}
         mb={5}
@@ -174,6 +214,7 @@ export default function ReportsTable(props: Props) {
                   className: "red-border",
                   group: "Data pulled from Sales Invoice Section",
                   title: "Company Code",
+                  style: { borderRight: "2px solid red" },
                   width: 200,
                   resizable: true,
                   align: "center",
@@ -350,7 +391,7 @@ export default function ReportsTable(props: Props) {
                   cellRenderer: RenderCell,
                 },
                 {
-                  key: "vendorManufacturerNumber",
+                  key: "vendorManufacturerNumber2",
                   dataKey: "vendorManufacturerNumber",
                   className: "red-border",
                   group: "Data",
@@ -361,7 +402,7 @@ export default function ReportsTable(props: Props) {
                   cellRenderer: RenderCell,
                 },
                 {
-                  key: "vendorManufacturerName",
+                  key: "vendorManufacturerName2",
                   dataKey: "vendorManufacturerName",
                   className: "red-border",
                   group: "Data",
@@ -372,7 +413,7 @@ export default function ReportsTable(props: Props) {
                   cellRenderer: RenderCell,
                 },
                 {
-                  key: "vendorBU",
+                  key: "vendorBU2",
                   dataKey: "vendorBU",
                   className: "red-border",
                   group: "Data",
