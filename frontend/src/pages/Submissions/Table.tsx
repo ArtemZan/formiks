@@ -5849,10 +5849,10 @@ export function SubmissionsTable(props: Props) {
                         key: "data.rejectReasonLMD",
                         dataKey: "data.rejectReasonLMD",
                         title: "Rejection reason",
-                        width: columnWidth("data.rejectReasonLMD", 250),
+                        width: columnWidth("data.rejectReasonLMD", 200),
                         resizable: true,
-                        group: "Input of Local Marketing Department",
-                        header: "Input of Local Marketing Department",
+                        group: "Input of Central Marketing Controlling Team",
+
                         hidden: visibilityController(
                           "LMD",
                           "data.rejectReasonLMD"
@@ -5861,7 +5861,7 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             readonly={true}
-                            backgroundColor="#F5FAEF"
+                            backgroundColor="#f9f9ff"
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
@@ -5876,9 +5876,10 @@ export function SubmissionsTable(props: Props) {
                         key: "data.statusLMD",
                         dataKey: "data.statusLMD",
                         title: "Status",
-                        width: columnWidth("data.statusLMD", 150),
+                        width: columnWidth("data.statusLMD", 250),
                         resizable: true,
                         group: "Input of Local Marketing Department",
+                        header: "Input of Local Marketing Department",
                         hidden: visibilityController("LMD", "data.statusLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
