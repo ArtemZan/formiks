@@ -1,7 +1,6 @@
 import { Box, Text } from "@chakra-ui/react";
 import BaseTable, {
   AutoResizer,
-  Column,
   ColumnShape,
   unflatten,
 } from "react-base-table";
@@ -12,13 +11,15 @@ import React, {
   ReactNode,
   useCallback,
   useEffect,
-  useReducer,
   useState,
 } from "react";
 import { RestAPI } from "../api/rest";
+import EditableTableCell from "../components/EditableTableCell";
+import { NumberWithCommas } from "../utils/Numbers";
 import Select from "react-select";
 import { PAreport } from "../types/submission";
-import { reduce } from "lodash";
+import { random, reduce } from "lodash";
+import { AiTwotoneFileZip } from "react-icons/ai";
 
 interface Props {
   history: any;
@@ -26,8 +27,12 @@ interface Props {
 
 export default function ReportsTable(props: Props) {
   const [reports, setReports] = useState<PAreport[]>([]);
-  const [filteredReports, setFilteredReports] = useState<PAreport[]>([]);
   const [allReports, setAllReports] = useState<PAreport[]>([]);
+  const [options, setOptions] = useState<Option[]>([]);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [updateVersion, setUpdateVersion] = useState(0);
+  const [columns, SetColumns] = useState<any[]>([]);
 
   const RenderCell = (p: any) => {
     return (
@@ -47,8 +52,6 @@ export default function ReportsTable(props: Props) {
     label: string;
   }
 
-  const [options, setOptions] = useState<Option[]>([]);
-
   const headerRendererForTable = useCallback(
     (props: {
       cells: ReactNode[];
@@ -61,7 +64,6 @@ export default function ReportsTable(props: Props) {
       // const customStyle = headerIndex === 6 ? { border: "2px solid red" } : {};
       if (headerIndex === 0) {
         return cells.map((cell, index) => {
-          console.log(index);
           return cloneElement(cell as ReactElement, {
             className: "BaseTable__header-cell",
             children: (
@@ -77,42 +79,13 @@ export default function ReportsTable(props: Props) {
     []
   );
 
-  // const headerRendererForTable = useCallback(
-  //   (props: {
-  //     cells: ReactNode[];
-  //     columns: ColumnShape<{
-  //       [k: string]: string;
-  //     }>;
-  //     headerIndex: number;
-  //   }) => {
-  //     console.log("AAAA");
-  //     const { cells, columns } = props;
-
-  //     return cells.map((cell, index) => {
-  //       const column = columns[index];
-  //       console.log(columns);
-  //       // Apply custom style to the column with wider right border
-  //       const customStyle =
-  //         column.dataKey === "companyCode"
-  //           ? { borderRight: "2px solid red" }
-  //           : {};
-
-  //       return cloneElement(cell as ReactElement, {
-  //         className: "BaseTable__header-cell",
-  //         style: { ...customStyle },
-  //         children: (
-  //           <span style={{ fontWeight: 650 }} key={index}>
-  //             {column.header ? column.header : ""}
-  //           </span>
-  //         ),
-  //       });
-  //     });
-  //   },
-  //   []
-  // );
-
   useEffect(() => {
     RestAPI.getPAreport().then((response) => {
+      let sum = 0;
+      response.data.forEach((report) => {
+        sum += parseFloat(report.incomeAmountLCSI);
+      });
+      setTotalAmount(sum);
       setAllReports(response.data);
       setReports(response.data);
     });
@@ -129,10 +102,23 @@ export default function ReportsTable(props: Props) {
     setOptions(optionsData);
   }, [allReports]);
 
+  useEffect(() => {
+    let sum = 0;
+    reports.forEach((report) => {
+      const incomeAmount = parseFloat(report.incomeAmountLCSI);
+
+      if (!isNaN(incomeAmount)) {
+        sum += incomeAmount;
+      }
+    });
+    setTotalAmount(sum);
+    setUpdateVersion((prevVersion) => prevVersion + 1);
+  }, [reports]);
+
   return (
     <div>
       <Box
-        key="ASD233"
+        key={"Box1"}
         shadow="md"
         color="gray.600"
         height={"170"}
@@ -143,11 +129,11 @@ export default function ReportsTable(props: Props) {
         rounded="md"
         w={"100%"}
       >
-        <Text key="ASD" mb="8px">
+        <Text key={"Text1"} mb="8px">
           Period
         </Text>
         <Select
-          key={"DSADSA"}
+          key={"select1"}
           theme={(theme) => ({
             ...theme,
             borderRadius: 6,
@@ -191,6 +177,7 @@ export default function ReportsTable(props: Props) {
         >
           {({ width, height }) => (
             <BaseTable
+              key={updateVersion}
               onColumnResizeEnd={({
                 column,
                 width,
@@ -205,6 +192,15 @@ export default function ReportsTable(props: Props) {
               headerRenderer={headerRendererForTable}
               headerClassName="header-cells"
               fixed
+              frozenData={
+                [
+                  {
+                    id: "total",
+                    data: {},
+                    parentId: null,
+                  },
+                ] as any[]
+              }
               columns={[
                 {
                   key: "companyCode",
@@ -279,6 +275,12 @@ export default function ReportsTable(props: Props) {
                   width: 150,
                   resizable: true,
                   align: "center",
+                  cellRenderer: ({ cellData, column, rowData }) => {
+                    if (rowData.id === "total") {
+                      return totalAmount.toFixed(2);
+                    }
+                    return cellData;
+                  },
                 },
                 {
                   key: "invoiceRecipientName",
@@ -321,7 +323,12 @@ export default function ReportsTable(props: Props) {
                   width: 150,
                   resizable: true,
                   align: "center",
-                  cellRenderer: RenderCell,
+                  cellRenderer: ({ cellData, column, rowData }) => {
+                    if (rowData.id === "total") {
+                      return totalAmount.toFixed(2);
+                    }
+                    return cellData;
+                  },
                 },
                 {
                   key: "vendorVODNumber",
