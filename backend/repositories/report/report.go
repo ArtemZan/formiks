@@ -39,6 +39,7 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 		if element.Data["incomeAccountSI"] != nil {
 			var rdata models.PAreport
 			var valid = false
+			rdata.ID = element.ID
 			rdata.CompanyCode, _ = element.Data["companyCode"].(string)
 			rdata.YearMonth, _ = element.Data["yearMonthSI"].(string)
 			rdata.ProjectNumber, _ = element.Data["projectNumber"].(string)
@@ -53,11 +54,20 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 			}
 			rdata.IncomeAmountLCSI = strconv.FormatFloat(value, 'f', -1, 64) 
 			rdata.InvoiceRecipientNumber, _ = element.Data["sapNumberSI"].(string)
-			rdata.VendorVODNumber, _= element.Data["debitorNumber"].(string)
-			rdata.VendorManufacturerNumber, _= element.Data["manufacturerNumber"].(string)
-			rdata.VendorManucturerName, _= element.Data["vendorName"].(string)
 			rdata.Value = rdata.IncomeAmountLCSI
-			rdata.VendorBU, _= element.Data["businessUnit"].(string)
+
+			for _, vendorData := range submissions {
+				vendorName, ok := vendorData.Data["vendorName"].(string)
+				if vendorData.ParentID == element.ParentID && ok && vendorName != "" {
+					rdata.VendorManufacturerNumber, _ = vendorData.Data["manufacturerNumber"].(string)
+					rdata.VendorManucturerName, _ = vendorData.Data["vendorName"].(string)
+					rdata.VendorBU, _= vendorData.Data["businessUnit"].(string)
+					rdata.ProjectName, _= vendorData.Data["projectName"].(string)
+					rdata.VendorVODNumber, _= vendorData.Data["debitorNumber"].(string)
+					break
+				}
+			}
+
 			if (rdata.InvoiceRecipientNumber == rdata.VendorVODNumber || rdata.InvoiceRecipientNumber == "00"+rdata.VendorVODNumber){
 				valid = true
 			}
@@ -68,15 +78,15 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 			// 		}
 			// 	}
 			// }
-			if !valid {
-				for _, vendorData := range submissions {
-					if vendorData.ParentID == element.ParentID && vendorData.Group == "country" {
-						if rdata.InvoiceRecipientNumber == vendorData.Data["countrySAPnumber"] {
+			// if !valid {
+			// 	for _, vendorData := range submissions {
+			// 		if vendorData.ParentID == element.ParentID && vendorData.Group == "country" {
+			// 			if rdata.InvoiceRecipientNumber == vendorData.Data["countrySAPnumber"] {
 
-						}
-					}
-				}
-			}
+			// 			}
+			// 		}
+			// 	}
+			// }
 			if !valid {
 				rdata.Validation = "NOT OK"
 			} else {
