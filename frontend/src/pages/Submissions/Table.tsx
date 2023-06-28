@@ -1203,13 +1203,18 @@ export function SubmissionsTable(props: Props) {
               "Input of Central Marketing Controlling Team"
             )
           ) {
+            console.log("AAAA");
             return;
           }
+          console.log(submission);
           if (
             filter.selectedValues !== null &&
             filter.selectedValues.length > 0
           ) {
             var value = _.get(submission, filter.columnValue);
+            if (value === undefined || value === null) {
+              value = "";
+            }
             if (value === undefined) {
               valid = false;
               return;
