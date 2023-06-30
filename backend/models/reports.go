@@ -33,3 +33,27 @@ type PAreport struct {
 	VendorManucturerName		 string             `bson:"vendorManucturerName" json:"vendorManucturerName"`
 	VendorBU 				   string             `bson:"vendorBU" json:"vendorBU"`
 }
+
+type PAreport2 struct {
+	ID                           primitive.ObjectID `bson:"_id" json:"id,omitempty"`
+	CompanyCode                  string             `bson:"companyCode" json:"companyCode"`
+	YearMonth                    string             `bson:"yearMonth" json:"yearMonth"`
+	ProjectNumber                string             `bson:"projectNumber" json:"projectNumber"`
+	ProjectName                  string             `json:"projectName" bson:"projectName"`
+	InvoiceNumber                string             `json:"invoiceNumber" bson:"invoiceNumber"`
+	IncomeAccount                string             `json:"incomeAccount" bson:"incomeAccount"`
+	IncomeAmountLCSI			 string             `json:"incomeAmountLCSI" bson:"incomeAmountLCSI"`
+	InvoiceRecipientName         string             `json:"invoiceRecipientName" bson:"invoiceRecipientName"`
+	InvoiceRecipientNumber       string             `json:"invoiceRecipientNumber" bson:"invoiceRecipientNumber"`
+	ExSalesValue 					  string        `json:"exSalesValue" bson:"exSalesValue"`
+	ExSalesVODNumber			  string             `json:"exSalesVODNumber" bson:"exSalesVODNumber"`
+	ExSalesManufacturerNumber           string			 `bson:"exSalesManufacturerNumber" json:"exSalesManufacturerNumber"`
+	ExSalesManufacturerName             string             `bson:"exSalesManufacturerName" json:"exSalesManufacturerName"`
+	ExSalesBU						   string             `bson:"exSalesBU" json:"exSalesBU"`
+	IntSalesVendorShare string			 `bson:"intSalesVendorShare" json:"intSalesVendorShare"`
+	IntSalesVendorAmount string			 `bson:"intSalesVendorAmount" json:"intSalesVendorAmount"`
+	IntSalesManufacturerNumber string			 `bson:"intSalesManufacturerNumber" json:"intSalesManufacturerNumber"`
+	IntSalesManufacturerName string			 `bson:"intSalesManufacturerName" json:"intSalesManufacturerName"`
+	IntSalesBU string			 `bson:"intSalesBU" json:"intSalesBU"`
+	Validation                   string             `bson:"validation" json:"validation"`
+}

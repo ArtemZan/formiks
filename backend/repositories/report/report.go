@@ -25,8 +25,8 @@ type reportRepo struct {
 	Cache *cache.Cache
 }
 
-func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, error) {
-	reports := make([]models.PAreport, 0)
+func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport2, error) {
+	reports := make([]models.PAreport2, 0)
 	submissions := make([]models.Submission, 0)
 
 	cursor, err := r.Conn.Collection("submissions").Find(ctx, bson.M{})
@@ -37,7 +37,7 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 
 	for _, element := range submissions {
 		if element.Data["incomeAccountSI"] != nil {
-			var rdata models.PAreport
+			var rdata models.PAreport2
 			var valid = false
 			rdata.ID = element.ID
 			rdata.CompanyCode, _ = element.Data["companyCode"].(string)
@@ -54,21 +54,33 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport, erro
 			}
 			rdata.IncomeAmountLCSI = strconv.FormatFloat(value, 'f', -1, 64) 
 			rdata.InvoiceRecipientNumber, _ = element.Data["sapNumberSI"].(string)
-			rdata.Value = rdata.IncomeAmountLCSI
+			rdata.ExSalesValue = rdata.IncomeAmountLCSI
+			if len(rdata.InvoiceRecipientNumber) > 0 && rdata.InvoiceRecipientNumber[0] == '9' {
+				for _, vendorData := range submissions {
+					vendorName, ok := vendorData.Data["vendorName"].(string)
+					if vendorData.ParentID == element.ParentID && ok && vendorName != "" {
+						rdata.IntSalesManufacturerNumber, _ = vendorData.Data["manufacturerNumber"].(string)
+						rdata.IntSalesManufacturerName, _ = vendorData.Data["vendorName"].(string)
+						rdata.IntSalesBU, _= vendorData.Data["businessUnit"].(string)
+						rdata.ProjectName, _= vendorData.Data["projectName"].(string)
+						break
+					}
+				}
 
+			}
 			for _, vendorData := range submissions {
 				vendorName, ok := vendorData.Data["vendorName"].(string)
 				if vendorData.ParentID == element.ParentID && ok && vendorName != "" {
-					rdata.VendorManufacturerNumber, _ = vendorData.Data["manufacturerNumber"].(string)
-					rdata.VendorManucturerName, _ = vendorData.Data["vendorName"].(string)
-					rdata.VendorBU, _= vendorData.Data["businessUnit"].(string)
+					rdata.ExSalesManufacturerNumber, _ = vendorData.Data["manufacturerNumber"].(string)
+					rdata.ExSalesManufacturerName, _ = vendorData.Data["vendorName"].(string)
+					rdata.ExSalesBU, _= vendorData.Data["businessUnit"].(string)
 					rdata.ProjectName, _= vendorData.Data["projectName"].(string)
-					rdata.VendorVODNumber, _= vendorData.Data["debitorNumber"].(string)
+					rdata.ExSalesVODNumber, _= vendorData.Data["debitorNumber"].(string)
 					break
 				}
 			}
 
-			if (rdata.InvoiceRecipientNumber == rdata.VendorVODNumber || rdata.InvoiceRecipientNumber == "00"+rdata.VendorVODNumber){
+			if (rdata.InvoiceRecipientNumber == rdata.ExSalesVODNumber || rdata.InvoiceRecipientNumber == "00"+rdata.ExSalesVODNumber){
 				valid = true
 			}
 			// for _, vendorData := range submissions {

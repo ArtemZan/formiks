@@ -33,7 +33,7 @@ type SubmissionRepo interface {
 }
 
 type ReprotRepo interface {
-	FetchPAreport(ctx context.Context) ([]models.PAreport, error)
+	FetchPAreport(ctx context.Context) ([]models.PAreport2, error)
 }
 
 type UserRepo interface {
