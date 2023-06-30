@@ -1,4 +1,4 @@
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Text, IconButton, Flex } from "@chakra-ui/react";
 import BaseTable, {
   AutoResizer,
   ColumnShape,
@@ -13,6 +13,14 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import {
+  BiPlusMedical,
+  RiFileExcel2Line,
+  RiUserFill,
+  RiGroupFill,
+  IoSave,
+  FaSleigh,
+} from "react-icons/all";
 import { RestAPI } from "../api/rest";
 import EditableTableCell from "../components/EditableTableCell";
 import { NumberWithCommas } from "../utils/Numbers";
@@ -20,6 +28,7 @@ import Select from "react-select";
 import { PAreport } from "../types/submission";
 import { random, reduce } from "lodash";
 import { AiTwotoneFileZip } from "react-icons/ai";
+import * as XLSX from "xlsx";
 
 interface Props {
   history: any;
@@ -35,12 +44,35 @@ export default function ReportsTable(props: Props) {
   const [columns, SetColumns] = useState<any[]>([]);
 
   const RenderCell = (p: any) => {
+    if (
+      p.rowData["id"] === "total" &&
+      (p.columnIndex === 6 || p.columnIndex === 10)
+    ) {
+      return totalAmount.toFixed(2);
+    }
     return (
       <div
         style={{
-          backgroundColor:
-            p.rowData["validation"] === "NOT OK" ? "#F00000" : "#FFFF",
+          backgroundColor: (() => {
+            if (p.rowData["validation"] === "NOT OK" && p.columnIndex === 9) {
+              return "#FF0000";
+            } else if (
+              p.rowData["validation"] === "NOT OK" &&
+              p.columnIndex > 9
+            ) {
+              return "#FF0000";
+            } else if (
+              p.rowData["validation"] === "OK" &&
+              p.columnIndex === 9
+            ) {
+              return "#c0bcbc";
+            } else {
+              return "FFFFFF";
+            }
+          })(),
         }}
+        //   p.rowData["validation"] === "NOT OK" ? "#F00000" : "#z1",
+
         className={"content-preview"}
       >
         {p.cellData}
@@ -64,14 +96,47 @@ export default function ReportsTable(props: Props) {
       // const customStyle = headerIndex === 6 ? { border: "2px solid red" } : {};
       if (headerIndex === 0) {
         return cells.map((cell, index) => {
+          var className = "BaseTable__header-cell";
+          if (index >= 0 && index <= 8) {
+            className = "BaseTable__header-cell blue2";
+          } else if (index === 9) {
+            className = "BaseTable__header-cell grey2";
+          } else if (index > 9 && index <= 14) {
+            className = "BaseTable__header-cell biege2";
+          } else if (index > 14 && index <= 19) {
+            className = "BaseTable__header-cell orange2";
+          }
           return cloneElement(cell as ReactElement, {
-            className: "BaseTable__header-cell",
+            className: className,
             children: (
               <span style={{ fontWeight: 650 }}>
                 {columns[index].header ? columns[index].header : ""}
               </span>
             ),
           });
+        });
+      }
+      if (headerIndex === 1) {
+        return cells.map((cell, index) => {
+          if (index >= 0 && index <= 8) {
+            return cloneElement(cell as ReactElement, {
+              className: "BaseTable__header-cell blue2",
+            });
+          } else if (index === 9) {
+            return cloneElement(cell as ReactElement, {
+              className: "BaseTable__header-cell grey2",
+            });
+          } else if (index > 9 && index <= 14) {
+            return cloneElement(cell as ReactElement, {
+              className: "BaseTable__header-cell biege2",
+            });
+          } else if (index > 14 && index <= 19) {
+            return cloneElement(cell as ReactElement, {
+              className: "BaseTable__header-cell orange2",
+            });
+          } else {
+            return cell;
+          }
         });
       }
       return cells;
@@ -132,28 +197,75 @@ export default function ReportsTable(props: Props) {
         <Text key={"Text1"} mb="8px">
           Period
         </Text>
-        <Select
-          key={"select1"}
-          theme={(theme) => ({
-            ...theme,
-            borderRadius: 6,
-            colors: {
-              ...theme.colors,
-              primary: "#3082CE",
-            },
-          })}
-          classNamePrefix="select"
-          name="color"
-          isClearable={false}
-          options={options}
-          onChange={(value: any) => {
-            var b = allReports.filter((report) => {
-              return report.yearMonth === value.value;
-            });
-            setReports(b);
-          }}
-        />
+        <Flex justifyContent={"space-between"}>
+          <Box width={"50%"}>
+            <Select
+              key={"select1"}
+              theme={(theme) => ({
+                ...theme,
+                borderRadius: 6,
+                colors: {
+                  ...theme.colors,
+                  primary: "#3082CE",
+                },
+              })}
+              classNamePrefix="select"
+              name="color"
+              isClearable={false}
+              options={options}
+              onChange={(value: any) => {
+                var b = allReports.filter((report) => {
+                  return report.yearMonth === value.value;
+                });
+                setReports(b);
+              }}
+            />
+          </Box>
+          <IconButton
+            colorScheme="teal"
+            onClick={() => {
+              const mapKeysToColumnNames = (data: any) => {
+                return reports.map((item) => ({
+                  Identificator: item.id,
+                  "Comapny Code": item.companyCode,
+                  "Year/Month": item.yearMonth,
+                  "Project Number": item.projectNumber,
+                  "Project Name": item.projectName,
+                  "Invoice Number": item.invoiceNumber,
+                  "Income Account": item.incomeAccount,
+                  "Income Amount": item.incomeAmountLCSI,
+                  "Invoice Recipient Name": item.invoiceRecipientName,
+                  "Invoice Recipient`s Account": item.invoiceRecipientNumber,
+                  Validation: item.validation,
+                  "External Sales Value": item.exSalesValue,
+                  "External Sales VOD Number": item.exSalesVODNumber,
+                  "External Sales Manufacturer Number":
+                    item.exSalesManufacturerNumber,
+                  "External Sales Manufacturer Name":
+                    item.exSalesManufacturerName,
+                  "External Sales BU": item.exSalesBU,
+                  "Intercompany Sales Vendor Share": item.intSalesVendorShare,
+                  "Intercompany Sales Vendor Amount": item.intSalesVendorAmount,
+                  "Intercompany Sales Manufacturer Number":
+                    item.intSalesManufacturerNumber,
+                  "Intercompany Sales Manufacturer Name":
+                    item.intSalesManufacturerName,
+                  "Intercompany Sales BU": item.intSalesBU,
+                  // add more mappings as per your needs
+                }));
+              };
+              const formattedData = mapKeysToColumnNames(reports);
+              const ws = XLSX.utils.json_to_sheet(formattedData);
+              const wb = XLSX.utils.book_new();
+              XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+              XLSX.writeFile(wb, "report.xlsx");
+            }}
+            aria-label="export"
+            icon={<RiFileExcel2Line />}
+          ></IconButton>
+        </Flex>
       </Box>
+
       <Box
         w={"100%"}
         key={"123213"}
@@ -210,7 +322,6 @@ export default function ReportsTable(props: Props) {
                   className: "red-border",
                   group: "Data pulled from Sales Invoice Section",
                   title: "Company Code",
-                  style: { borderRight: "2px solid red" },
                   width: 200,
                   resizable: true,
                   align: "center",
@@ -275,12 +386,7 @@ export default function ReportsTable(props: Props) {
                   width: 150,
                   resizable: true,
                   align: "center",
-                  cellRenderer: ({ cellData, column, rowData }) => {
-                    if (rowData.id === "total") {
-                      return totalAmount.toFixed(2);
-                    }
-                    return cellData;
-                  },
+                  cellRenderer: RenderCell,
                 },
                 {
                   key: "invoiceRecipientName",
@@ -297,6 +403,7 @@ export default function ReportsTable(props: Props) {
                   dataKey: "invoiceRecipientNumber",
                   className: "red-border",
                   title: "Invoice Recipient`s Account",
+                  style: { borderRight: "2px solid red" },
                   width: 150,
                   resizable: true,
                   align: "center",
@@ -308,6 +415,7 @@ export default function ReportsTable(props: Props) {
                   className: "red-border",
                   group: "Data",
                   title: "Validation",
+                  style: { borderRight: "2px solid red" },
                   width: 150,
                   resizable: true,
                   align: "center",
@@ -316,23 +424,18 @@ export default function ReportsTable(props: Props) {
                 {
                   key: "value",
                   header: "OK External Sales",
-                  dataKey: "value",
+                  dataKey: "exSalesValue",
                   className: "red-border",
                   group: "Data",
                   title: "Value",
                   width: 150,
                   resizable: true,
                   align: "center",
-                  cellRenderer: ({ cellData, column, rowData }) => {
-                    if (rowData.id === "total") {
-                      return totalAmount.toFixed(2);
-                    }
-                    return cellData;
-                  },
+                  cellRenderer: RenderCell,
                 },
                 {
                   key: "vendorVODNumber",
-                  dataKey: "vendorVODNumber",
+                  dataKey: "exSalesVODNumber",
                   className: "red-border",
                   group: "Data",
                   title: "VOD Number",
@@ -343,7 +446,7 @@ export default function ReportsTable(props: Props) {
                 },
                 {
                   key: "vendorManufacturerNumber",
-                  dataKey: "vendorManufacturerNumber",
+                  dataKey: "exSalesManufacturerNumber",
                   className: "red-border",
                   group: "Data",
                   title: "Manufacturer Number",
@@ -354,7 +457,7 @@ export default function ReportsTable(props: Props) {
                 },
                 {
                   key: "vendorManucturerName",
-                  dataKey: "vendorManucturerName",
+                  dataKey: "exSalesManufacturerName",
                   className: "red-border",
                   group: "Data",
                   title: "Manufacturer Name",
@@ -365,11 +468,12 @@ export default function ReportsTable(props: Props) {
                 },
                 {
                   key: "vendorBU",
-                  dataKey: "vendorBU",
+                  dataKey: "exSalesBU",
                   className: "red-border",
                   group: "Data",
                   title: "Business Unit",
                   width: 150,
+                  style: { borderRight: "2px solid red" },
                   resizable: true,
                   align: "center",
                   cellRenderer: RenderCell,
@@ -377,7 +481,7 @@ export default function ReportsTable(props: Props) {
                 {
                   key: "vendorShare",
                   header: "Intercompany Sales",
-                  dataKey: "vendorShare",
+                  dataKey: "intSalesVendorShare",
                   className: "red-border",
                   group: "Data",
                   title: "Vendor % Share",
@@ -388,7 +492,7 @@ export default function ReportsTable(props: Props) {
                 },
                 {
                   key: "vendorValue",
-                  dataKey: "vendorValue",
+                  dataKey: "intSalesVendorAmount",
                   className: "red-border",
                   group: "Data",
                   title: "Vendor Value",
@@ -399,7 +503,7 @@ export default function ReportsTable(props: Props) {
                 },
                 {
                   key: "vendorManufacturerNumber2",
-                  dataKey: "vendorManufacturerNumber",
+                  dataKey: "intSalesManufacturerNumber",
                   className: "red-border",
                   group: "Data",
                   title: "Manufacturer Number",
@@ -410,7 +514,7 @@ export default function ReportsTable(props: Props) {
                 },
                 {
                   key: "vendorManufacturerName2",
-                  dataKey: "vendorManufacturerName",
+                  dataKey: "intSalesManufacturerName",
                   className: "red-border",
                   group: "Data",
                   title: "Manufacturer Name",
@@ -421,7 +525,7 @@ export default function ReportsTable(props: Props) {
                 },
                 {
                   key: "vendorBU2",
-                  dataKey: "vendorBU",
+                  dataKey: "intSalesBU",
                   className: "red-border",
                   group: "Data",
                   title: "Business Unit",

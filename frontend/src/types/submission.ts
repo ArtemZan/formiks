@@ -29,12 +29,15 @@ export interface PAreport {
   incomeAmountLCSI: string;
   invoiceRecipientName: string;
   invoiceRecipientNumber: string;
-  requestFromVendorNumber: string;
   validation: string;
-  requestFormVendorName: string;
-  bu: string;
-  requestFormVendorShare: string;
-  requestFormVendorAmount: string;
-  notOkRequestFromVendorNumber: string;
-  notOkRequestFormVendorName: string;
+  exSalesValue: string;
+  exSalesVODNumber: string;
+  exSalesManufacturerNumber: string;
+  exSalesManufacturerName: string;
+  exSalesBU: string;
+  intSalesVendorShare: string;
+  intSalesVendorAmount: string;
+  intSalesManufacturerNumber: string;
+  intSalesManufacturerName: string;
+  intSalesBU: string;
 }

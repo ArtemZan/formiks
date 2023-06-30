@@ -246,6 +246,26 @@ button[name="data[submit]"]:hover {
   border-bottom: 3px solid;
   border-color: #296ef1;
 }
+.BaseTable__header-cell.blue2 {
+  background-color: #2596be;
+  color: white;
+}
+
+.BaseTable__header-cell.grey2 {
+  background-color: #c0bcbc;
+  color: rgb(0, 0, 0);
+}
+
+.BaseTable__header-cell.biege2 {
+  background-color: #c8e4b4;
+  color: rgb(0, 0, 0);
+}
+
+.BaseTable__header-cell.orange2 {
+  background-color: #ffbc04;
+  color: rgb(0, 0, 0);
+}
+
 .BaseTable__header-cell.blue-2 {
   border-bottom: 3px solid;
   border-color: #598ef4;
