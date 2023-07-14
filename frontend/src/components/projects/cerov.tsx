@@ -1817,7 +1817,7 @@ export default function Cerov(props: Props) {
           <Text mb="8px">Country Breakdown</Text>
           <Table
             className={`${useColorModeValue("", "dark-table")}`}
-            rowClassName={(rowData) =>
+            rowClassName={(rowData: any) =>
               `${useColorModeValue("", "dark-table-row")}`
             }
             shouldUpdateScroll={false}

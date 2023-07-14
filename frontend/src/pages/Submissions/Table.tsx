@@ -1079,6 +1079,7 @@ export function SubmissionsTable(props: Props) {
               valid = false;
               return;
             }
+            console.log(filter);
             switch (filter.type) {
               case "string":
                 switch (filter.filter) {
@@ -1128,12 +1129,33 @@ export function SubmissionsTable(props: Props) {
                 }
                 break;
               case "dropdown":
+                switch (filter.filter) {
+                  case "exact":
+                    var exists = false;
+                    // eslint-disable-next-line no-loop-func
+                    filter.selectedValues.forEach((filterValue) => {
+                      console.log(value);
+                      if (filterValue.toString() === value) {
+                        exists = true;
+                      }
+                    });
+                    if (!exists) {
+                      valid = false;
+                    }
+                    break;
+                  case "includes":
+                    valid = false;
+                    break;
+                    break;
+                }
+                break;
               case "multiple-dropdown":
                 switch (filter.filter) {
                   case "includes":
                     var exists = false;
                     // eslint-disable-next-line no-loop-func
                     filter.selectedValues.forEach((filterValue) => {
+                      console.log(value);
                       if (filterValue.toString() === value) {
                         exists = true;
                       }
@@ -1203,10 +1225,8 @@ export function SubmissionsTable(props: Props) {
               "Input of Central Marketing Controlling Team"
             )
           ) {
-            console.log("AAAA");
             return;
           }
-          console.log(submission);
           if (
             filter.selectedValues !== null &&
             filter.selectedValues.length > 0
@@ -1479,9 +1499,7 @@ export function SubmissionsTable(props: Props) {
   }
 
   function getColumnName(dataKey: string, group: string) {
-    console.log(tableCells);
     var column = tableCells.find((el) => el.dataKey === dataKey);
-    console.log(column);
     return column ? column.title : "";
   }
 

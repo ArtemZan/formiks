@@ -36,12 +36,12 @@
     "history": "^5.0.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
-    "react": "^17.0.2",
+    "react": "^18.2.0",
     "react-ace": "^9.5.0",
     "react-base-table": "^1.13.0",
     "react-contenteditable": "^3.3.6",
     "react-datepicker": "^4.3.0",
-    "react-dom": "^17.0.2",
+    "react-dom": "^18.2.0",
     "react-fps": "^1.0.4",
     "react-icons": "^4.3.1",
     "react-overlays": "^5.1.1",
@@ -59,8 +59,8 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "export SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
+    "build": "export SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
