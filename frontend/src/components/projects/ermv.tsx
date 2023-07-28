@@ -665,6 +665,12 @@ export default function Ermv(props: Props) {
   return (
     <Box>
       <VStack spacing="20px" mb={"40px"} align="start">
+        <Text mb="8px">
+          By using this form, the requestor confirms that the requested
+          marketing activity is officially approved by the vendor/vendors and
+          that requestor is able to provide such approval for verification if
+          needed
+        </Text>
         <Text as="b">Requestor`s Details</Text>
         <Box w="100%">
           <Text mb="8px">Requestor`s Company Name</Text>

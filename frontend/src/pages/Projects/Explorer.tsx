@@ -18,12 +18,27 @@ export function Explorer(props: Props) {
   const [selectedBookmark, setSelectedBookmark] = useState("");
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [createBookmarkModal, setCreateBookMarkModal] = useState(false);
+  const sortOrder = [
+    "Local One Vendor",
+    "Local Multi Vendor",
+    "European One Vendor",
+    "European Multi Vendor",
+    "Purchase Order Request",
+    "Other",
+  ];
 
   useEffect(() => {
     RestAPI.getBookmarks().then((response) => setBookmarks(response.data));
+    // RestAPI.getProjects().then((response) => {
+    //   setProjects(response.data);
+    //   setFilteredProjects(response.data);
+    // });
     RestAPI.getProjects().then((response) => {
-      setProjects(response.data);
-      setFilteredProjects(response.data);
+      const sortedProjects = response.data.sort(
+        (a, b) => sortOrder.indexOf(a.title) - sortOrder.indexOf(b.title)
+      );
+      setProjects(sortedProjects);
+      setFilteredProjects(sortedProjects);
     });
   }, []);
 

@@ -3197,7 +3197,7 @@ export function SubmissionsTable(props: Props) {
         <EditableTableCell
           type={"text"}
           readonly={true}
-          backgroundColor={mandatoryFieldValidation(props)}
+          backgroundColor="#f5faef"
           onUpdate={handleCellUpdate}
           rowIndex={props.rowIndex}
           columnKey={props.column.dataKey}
@@ -3382,6 +3382,7 @@ export function SubmissionsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
+          readonly={props.rowData.data.projectNumber === ""}
           loadOptions={loadOptions}
           backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
@@ -5387,7 +5388,7 @@ export function SubmissionsTable(props: Props) {
       >
         <Tabs isLazy={false} variant="enclosed">
           <TabList>
-            <Tab>Submissions</Tab>
+            <Tab>Projects</Tab>
             <Tab>Invoicing</Tab>
           </TabList>
           <TabPanels>

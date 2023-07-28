@@ -701,13 +701,13 @@ export default function Cerov(props: Props) {
           author: requestorsName,
           data: {
             status: "Incomplete",
-            projectName: campaignName,
-            additionalInformation: comments,
-            campaignChannel: campaignChannel.label,
+            //projectName: campaignName,
+            //additionalInformation: comments,
+            //campaignChannel: campaignChannel.label,
             parentProjectNumber: projectNumber,
             projectNumber: company.projectNumber,
-            campaignStartDate: startDate === null ? null : startDate.toString(),
-            campaignEndDate: endDate === null ? null : endDate.toString(),
+            //campaignStartDate: startDate === null ? null : startDate.toString(),
+            //campaignEndDate: endDate === null ? null : endDate.toString(),
             budgetSource: budgetSource.label,
             campaignCurrency: exchangeRates.label,
             localCurrency: requestorsCompanyName.value["currency"],
@@ -763,15 +763,15 @@ export default function Cerov(props: Props) {
           author: requestorsName,
           data: {
             status: "",
-            projectName: campaignName,
-            additionalInformation: comments,
-            campaignChannel: campaignChannel.label,
+            //projectName: campaignName,
+            //additionalInformation: comments,
+            //campaignChannel: campaignChannel.label,
             parentProjectNumber: projectNumber,
             projectNumber: projectNumber,
             companyCode: company.companyCode === "6110" ? "6110" : "",
             localProjectNumber: company.projectNumber,
-            campaignStartDate: startDate === null ? null : startDate.toString(),
-            campaignEndDate: endDate === null ? null : endDate.toString(),
+            //campaignStartDate: startDate === null ? null : startDate.toString(),
+            //campaignEndDate: endDate === null ? null : endDate.toString(),
             budgetSource: budgetSource.label,
             campaignCurrency: exchangeRates.label,
             localCurrency: requestorsCompanyName.value["currency"],
@@ -1157,7 +1157,6 @@ export default function Cerov(props: Props) {
     if (inputError !== "") {
       fieldKeys.push("total");
     }
-    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }
@@ -1165,6 +1164,12 @@ export default function Cerov(props: Props) {
   return (
     <Box>
       <VStack spacing="20px" mb={"40px"} align="start">
+        <Text mb="8px">
+          By using this form, the requestor confirms that the requested
+          marketing activity is officially approved by the vendor/vendors and
+          that requestor is able to provide such approval for verification if
+          needed
+        </Text>
         <Text as="b">Requestor`s Details</Text>
         <Box w="100%">
           <Text mb="8px">Requestor`s Company Name</Text>

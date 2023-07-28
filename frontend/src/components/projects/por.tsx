@@ -593,6 +593,7 @@ export default function Elov(props: Props) {
                 }
               });
               // setServiceLC(ler);
+              setLocalExchangeRate(value.value.currency);
               setRequestorsCompanyName(value);
             }}
             classNamePrefix="select"
@@ -745,7 +746,7 @@ export default function Elov(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Service Provider</Text>
+          <Text mb="8px">Supplier Name</Text>
           <Input
             value={serviceProvider}
             isInvalid={inputErrors.includes("serviceProvider")}
@@ -755,7 +756,7 @@ export default function Elov(props: Props) {
           />
         </Box>
         <Box w="100%">
-          <Text mb="8px">Service Type</Text>
+          <Text mb="8px">Service/Goods Type</Text>
           <Textarea
             value={serviceType}
             isInvalid={inputErrors.includes("serviceType")}
@@ -781,6 +782,7 @@ export default function Elov(props: Props) {
           <Box w="100%">
             <Text mb="8px">Local Currency</Text>
             <Select
+              isDisabled={true}
               menuPortalTarget={document.body}
               styles={DefaultSelectStyles(
                 useColorModeValue,
@@ -894,7 +896,7 @@ export default function Elov(props: Props) {
         </HStack>
         <HStack w="100%">
           <Box w="100%">
-            <Text mb="8px">Name of Person Ordering the Service (ALSO)</Text>
+            <Text mb="8px">Name of Person Ordering (ALSO)</Text>
             <Input
               value={serviceOrderingPerson}
               isInvalid={inputErrors.includes("serviceOrderingPerson")}
@@ -920,7 +922,7 @@ export default function Elov(props: Props) {
         </HStack>
         <HStack w="100%">
           <Box w="100%">
-            <Text mb="8px">Contact Person from Service Provider Side</Text>
+            <Text mb="8px">Name of Person from Supplier Side</Text>
             <Input
               value={serviceContactPerson}
               isInvalid={inputErrors.includes("serviceContactPerson")}
@@ -930,10 +932,7 @@ export default function Elov(props: Props) {
             />
           </Box>
           <Box w="100%">
-            <Text mb="8px">
-              Contact Details of Person from Service Provider Side (e-mail,
-              phone)
-            </Text>
+            <Text mb="8px">Contact Details to Supplier (e-mail, phone)</Text>
             <Input
               value={serviceContactDetails}
               isInvalid={inputErrors.includes("serviceContactDetails")}
