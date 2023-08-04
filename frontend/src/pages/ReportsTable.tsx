@@ -151,6 +151,7 @@ export default function ReportsTable(props: Props) {
         sum += parseFloat(report.incomeAmountLCSI);
       });
       setTotalAmount(sum);
+      console.log(response.data);
       setAllReports(response.data);
       setReports(response.data);
     });
@@ -382,7 +383,7 @@ export default function ReportsTable(props: Props) {
                   dataKey: "incomeAmountLCSI",
                   className: "red-border",
                   group: "Data pulled from Sales Invoice Section",
-                  title: "Income Amount",
+                  title: "Income Amoun (LC)ç",
                   width: 150,
                   resizable: true,
                   align: "center",

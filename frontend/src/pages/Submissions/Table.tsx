@@ -1079,7 +1079,6 @@ export function SubmissionsTable(props: Props) {
               valid = false;
               return;
             }
-            console.log(filter);
             switch (filter.type) {
               case "string":
                 switch (filter.filter) {
@@ -1134,7 +1133,6 @@ export function SubmissionsTable(props: Props) {
                     var exists = false;
                     // eslint-disable-next-line no-loop-func
                     filter.selectedValues.forEach((filterValue) => {
-                      console.log(value);
                       if (filterValue.toString() === value) {
                         exists = true;
                       }
@@ -1155,7 +1153,6 @@ export function SubmissionsTable(props: Props) {
                     var exists = false;
                     // eslint-disable-next-line no-loop-func
                     filter.selectedValues.forEach((filterValue) => {
-                      console.log(value);
                       if (filterValue.toString() === value) {
                         exists = true;
                       }
@@ -1171,6 +1168,12 @@ export function SubmissionsTable(props: Props) {
                 break;
               case "date":
                 var v = new Date(value).setHours(0, 0, 0, 0);
+                var filterDate = new Date(filter.selectedValues[0]).setHours(
+                  0,
+                  0,
+                  0,
+                  0
+                );
                 if (
                   v !== null &&
                   filter.filter === "range" &&
@@ -1178,16 +1181,17 @@ export function SubmissionsTable(props: Props) {
                   filter.selectedValues[0] !== null &&
                   filter.selectedValues[1] !== null
                 ) {
-                  valid =
-                    v >= filter.selectedValues[0].setHours(0, 0, 0, 0) &&
-                    v <= filter.selectedValues[1].setHours(0, 0, 0, 0);
+                  var filterEndDate = new Date(
+                    filter.selectedValues[1]
+                  ).setHours(0, 0, 0, 0);
+                  valid = v >= filterDate && v <= filterEndDate;
                 } else if (
                   v !== null &&
                   filter.selectedValues[0] !== null &&
                   filter.filter === "exact" &&
                   filter.selectedValues.length === 1
                 ) {
-                  valid = v === filter.selectedValues[0].setHours(0, 0, 0, 0);
+                  valid = v === filterDate;
                 }
                 break;
             }
@@ -2259,7 +2263,21 @@ export function SubmissionsTable(props: Props) {
       frozen: Column.FrozenDirection.LEFT,
       resizable: false,
       cellRenderer: (props: any) => {
-        return "";
+        if (props.rowData.parentId !== null) {
+          return (
+            <div
+              style={{
+                marginTop: 0,
+                marginLeft: 0,
+                position: "absolute",
+              }}
+            >
+              <RiUserFill />
+            </div>
+          );
+        }
+
+        return <div></div>;
       },
       className: "expand",
     },
