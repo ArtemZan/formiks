@@ -8145,6 +8145,7 @@ export function SubmissionsTable(props: Props) {
                         }}
                         onChange={(value) => {
                           var temp = [...filters];
+
                           temp[index].selectedValues = value;
                           setFilters(temp);
                         }}

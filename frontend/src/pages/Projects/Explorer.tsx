@@ -33,10 +33,12 @@ export function Explorer(props: Props) {
     //   setProjects(response.data);
     //   setFilteredProjects(response.data);
     // });
+
     RestAPI.getProjects().then((response) => {
       const sortedProjects = response.data.sort(
         (a, b) => sortOrder.indexOf(a.title) - sortOrder.indexOf(b.title)
       );
+
       setProjects(sortedProjects);
       setFilteredProjects(sortedProjects);
     });

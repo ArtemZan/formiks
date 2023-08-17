@@ -489,6 +489,11 @@ const NAV_ITEMS: Array<NavItem> = [
         href: "/projects/create",
         isAdmin: true,
       },
+      {
+        label: "Drafts",
+        subLabel: "Explore unpublished projects",
+        href: "/drafts",
+      },
     ],
   },
 
@@ -504,11 +509,6 @@ const NAV_ITEMS: Array<NavItem> = [
         label: "Marketing PA Allocation report",
         subLabel: "Explore all reports",
         href: "/reports",
-      },
-      {
-        label: "Drafts",
-        subLabel: "Explore unpublished projects",
-        href: "/drafts",
       },
     ],
   },
