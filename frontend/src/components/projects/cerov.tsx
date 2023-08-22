@@ -1065,7 +1065,6 @@ export default function Cerov(props: Props) {
     }
 
     var countries = submission.children.filter((el) => el.group === "country");
-    console.log(countries);
     countries.forEach((country: any) => {
       Object.keys(country.data).forEach((key: any) => {
         if (!nonMandatoryFields.includes(key)) {

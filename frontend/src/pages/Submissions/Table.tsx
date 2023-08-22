@@ -1133,7 +1133,7 @@ export function SubmissionsTable(props: Props) {
                     var exists = false;
                     // eslint-disable-next-line no-loop-func
                     filter.selectedValues.forEach((filterValue) => {
-                      if (filterValue.toString() === value) {
+                      if (filterValue === value) {
                         exists = true;
                       }
                     });
@@ -1143,7 +1143,6 @@ export function SubmissionsTable(props: Props) {
                     break;
                   case "includes":
                     valid = false;
-                    break;
                     break;
                 }
                 break;

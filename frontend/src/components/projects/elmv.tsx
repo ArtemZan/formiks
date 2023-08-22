@@ -571,7 +571,6 @@ export default function Elmv(props: Props) {
       children,
       local: null,
     };
-    console.log(draft);
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
@@ -596,7 +595,6 @@ export default function Elmv(props: Props) {
           return;
         }
         RestAPI.deleteDraft(props.submission.id).then(() => {
-          console.log(props.submission.id);
           RestAPI.createSubmissionWithChildren(submission).then((response) => {
             if (response.data.hasChanged) {
               toast(
@@ -1060,8 +1058,6 @@ export default function Elmv(props: Props) {
         localExchangeRate;
       totalVendorBudgetInEUR +=
         parseFloat(row.budgetAmount) / row.budgetCurrency.value;
-
-      console.log(row);
       totalVendorShare += (parseFloat(row.eurBudget) / totalBudgetEur) * 100;
       totalEstimatedIncomeInCC += parseFloat(row.estimatedIncomeCC);
       totalEstimatedCostsInCC += parseFloat(row.estimatedCostsCC);

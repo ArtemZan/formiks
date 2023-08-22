@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/http"
 	"strconv"
 	"time"
@@ -65,6 +66,16 @@ func (r *Submission) Fetch(c *gin.Context) {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
+	for _, submission := range submissions {
+        for key, value := range submission.Data {
+            if v, ok := value.(float64); ok {
+                if math.IsInf(v, 1) || math.IsInf(v, -1) {
+                    submission.Data[key] = nil // Replace with nil or any default value you prefer
+                }
+            }
+        }
+    }
+
 	c.JSON(http.StatusOK, submissions)
 }
 

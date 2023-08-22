@@ -151,7 +151,6 @@ export default function ReportsTable(props: Props) {
         sum += parseFloat(report.incomeAmountLCSI);
       });
       setTotalAmount(sum);
-      console.log(response.data);
       setAllReports(response.data);
       setReports(response.data);
     });
@@ -165,7 +164,20 @@ export default function ReportsTable(props: Props) {
       value: yearMonth,
       label: yearMonth,
     }));
-    setOptions(optionsData);
+    const sortedData = optionsData.sort((a, b) => {
+      const [yearA, monthA] = a.label
+        .split("/")
+        .map((str) => parseInt(str, 10));
+      const [yearB, monthB] = b.label
+        .split("/")
+        .map((str) => parseInt(str, 10));
+
+      if (yearA !== yearB) {
+        return yearB - yearA;
+      }
+      return monthB - monthA;
+    });
+    setOptions(sortedData);
   }, [allReports]);
 
   useEffect(() => {
@@ -238,7 +250,9 @@ export default function ReportsTable(props: Props) {
                   "Invoice Recipient Name": item.invoiceRecipientName,
                   "Invoice Recipient`s Account": item.invoiceRecipientNumber,
                   Validation: item.validation,
-                  "External Sales Value": item.exSalesValue,
+                  "External Sales Value": isNaN(parseFloat(item.exSalesValue))
+                    ? ""
+                    : parseFloat(item.exSalesValue),
                   "External Sales VOD Number": item.exSalesVODNumber,
                   "External Sales Manufacturer Number":
                     item.exSalesManufacturerNumber,
@@ -246,7 +260,12 @@ export default function ReportsTable(props: Props) {
                     item.exSalesManufacturerName,
                   "External Sales BU": item.exSalesBU,
                   "Intercompany Sales Vendor Share": item.intSalesVendorShare,
-                  "Intercompany Sales Vendor Amount": item.intSalesVendorAmount,
+                  "Intercompany Sales Vendor Amount": isNaN(
+                    parseFloat(item.intSalesVendorAmount)
+                  )
+                    ? ""
+                    : parseFloat(item.intSalesVendorAmount),
+
                   "Intercompany Sales Manufacturer Number":
                     item.intSalesManufacturerNumber,
                   "Intercompany Sales Manufacturer Name":
@@ -259,12 +278,15 @@ export default function ReportsTable(props: Props) {
               const ws = XLSX.utils.json_to_sheet(formattedData);
               const wb = XLSX.utils.book_new();
               XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-              XLSX.writeFile(wb, "report.xlsx");
+              XLSX.writeFile(wb, "Marketing Income PA Allocation Report.xlsx");
             }}
             aria-label="export"
             icon={<RiFileExcel2Line />}
           ></IconButton>
         </Flex>
+        <Text textAlign="center" fontWeight="bold" fontSize="xl" mt="auto">
+          Marketing Income PA Allocation Report
+        </Text>
       </Box>
 
       <Box
@@ -383,7 +405,7 @@ export default function ReportsTable(props: Props) {
                   dataKey: "incomeAmountLCSI",
                   className: "red-border",
                   group: "Data pulled from Sales Invoice Section",
-                  title: "Income Amoun (LC)ç",
+                  title: "Income Amoun (LC)",
                   width: 150,
                   resizable: true,
                   align: "center",
@@ -428,7 +450,7 @@ export default function ReportsTable(props: Props) {
                   dataKey: "exSalesValue",
                   className: "red-border",
                   group: "Data",
-                  title: "Value",
+                  title: "Value (LC)",
                   width: 150,
                   resizable: true,
                   align: "center",
@@ -496,7 +518,7 @@ export default function ReportsTable(props: Props) {
                   dataKey: "intSalesVendorAmount",
                   className: "red-border",
                   group: "Data",
-                  title: "Vendor Value",
+                  title: "Vendor Value (LC)",
                   width: 150,
                   resizable: true,
                   align: "center",
