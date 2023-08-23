@@ -246,7 +246,9 @@ export default function ReportsTable(props: Props) {
                   "Project Name": item.projectName,
                   "Invoice Number": item.invoiceNumber,
                   "Income Account": item.incomeAccount,
-                  "Income Amount": item.incomeAmountLCSI,
+                  "Income Amount": isNaN(parseFloat(item.incomeAmountLCSI))
+                    ? ""
+                    : parseFloat(item.incomeAmountLCSI),
                   "Invoice Recipient Name": item.invoiceRecipientName,
                   "Invoice Recipient`s Account": item.invoiceRecipientNumber,
                   Validation: item.validation,

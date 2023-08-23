@@ -665,7 +665,6 @@ export default function Elov(props: Props) {
                       sub.parentId === null &&
                       sub.data.projectNumber === event.target.value
                     ) {
-                      console.log(sub.data);
                       setProjectNumberCheck(sub.data.projectNumber);
                       var children: any[] = [];
                       var vendorNew: any[] = [];
