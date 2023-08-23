@@ -405,7 +405,7 @@ export default function ReportsTable(props: Props) {
                   dataKey: "incomeAmountLCSI",
                   className: "red-border",
                   group: "Data pulled from Sales Invoice Section",
-                  title: "Income Amount (LC)",
+                  title: "Income Amountc (LC)",
                   width: 150,
                   resizable: true,
                   align: "center",
