@@ -3399,7 +3399,7 @@ export function SubmissionsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          readonly={props.rowData.data.projectNumber === ""}
+          readonly={props.rowData.data.projectType !== "Purchase Order"}
           loadOptions={loadOptions}
           backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
