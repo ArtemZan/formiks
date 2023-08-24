@@ -1043,7 +1043,7 @@ export function SubmissionsTable(props: Props) {
     var filteredCommunication: Submission[] = [];
 
     var f: FilterField[] = JSON.parse(JSON.stringify(filters));
-
+    console.log(f.length);
     if (onlyMine) {
       f.push({
         columnValue: "author",
@@ -1329,6 +1329,7 @@ export function SubmissionsTable(props: Props) {
       cFilteredMap.forEach((value) => {
         if (value.parentId !== null) {
           if (!cFilteredMap.has(value.parentId)) {
+            value.data.temp = value.parentId;
             value.parentId = null;
           }
         }
@@ -1337,6 +1338,7 @@ export function SubmissionsTable(props: Props) {
       filteredMap.forEach((value) => {
         if (value.parentId !== null) {
           if (!filteredMap.has(value.parentId)) {
+            value.data.temp = value.parentId;
             value.parentId = null;
           }
         }
@@ -1346,6 +1348,22 @@ export function SubmissionsTable(props: Props) {
       setFilteredCommunicationSubmissions(filteredCommunication);
       setFilteredSubmissions(filtered);
     } else {
+      communicationSubmissions.forEach((value) => {
+        console.log(value.parentId, value.data.temp);
+        if (value.data.temp !== undefined) {
+          value.parentId = value.data.temp;
+          value.data.temp = undefined;
+        }
+        filteredCommunication.push(value);
+      });
+      submissions.forEach((value) => {
+        console.log(value.parentId, value.data.temp);
+        if (value.data.temp !== undefined) {
+          value.parentId = value.data.temp;
+          value.data.temp = undefined;
+        }
+        filtered.push(value);
+      });
       setFilteredSubmissions(submissions);
       setFilteredCommunicationSubmissions(communicationSubmissions);
     }

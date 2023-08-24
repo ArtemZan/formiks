@@ -248,13 +248,13 @@ export default function ReportsTable(props: Props) {
                   "Income Account": item.incomeAccount,
                   "Income Amount": isNaN(parseFloat(item.incomeAmountLCSI))
                     ? ""
-                    : parseFloat(item.incomeAmountLCSI),
+                    : parseFloat(item.incomeAmountLCSI).toFixed(2),
                   "Invoice Recipient Name": item.invoiceRecipientName,
                   "Invoice Recipient`s Account": item.invoiceRecipientNumber,
                   Validation: item.validation,
                   "External Sales Value": isNaN(parseFloat(item.exSalesValue))
                     ? ""
-                    : parseFloat(item.exSalesValue),
+                    : parseFloat(item.exSalesValue).toFixed(2),
                   "External Sales VOD Number": item.exSalesVODNumber,
                   "External Sales Manufacturer Number":
                     item.exSalesManufacturerNumber,
@@ -266,7 +266,7 @@ export default function ReportsTable(props: Props) {
                     parseFloat(item.intSalesVendorAmount)
                   )
                     ? ""
-                    : parseFloat(item.intSalesVendorAmount),
+                    : parseFloat(item.intSalesVendorAmount).toFixed(2),
 
                   "Intercompany Sales Manufacturer Number":
                     item.intSalesManufacturerNumber,
