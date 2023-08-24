@@ -1043,7 +1043,7 @@ export function SubmissionsTable(props: Props) {
     var filteredCommunication: Submission[] = [];
 
     var f: FilterField[] = JSON.parse(JSON.stringify(filters));
-    console.log(f.length);
+
     if (onlyMine) {
       f.push({
         columnValue: "author",
@@ -1349,7 +1349,6 @@ export function SubmissionsTable(props: Props) {
       setFilteredSubmissions(filtered);
     } else {
       communicationSubmissions.forEach((value) => {
-        console.log(value.parentId, value.data.temp);
         if (value.data.temp !== undefined) {
           value.parentId = value.data.temp;
           value.data.temp = undefined;
@@ -1357,7 +1356,6 @@ export function SubmissionsTable(props: Props) {
         filteredCommunication.push(value);
       });
       submissions.forEach((value) => {
-        console.log(value.parentId, value.data.temp);
         if (value.data.temp !== undefined) {
           value.parentId = value.data.temp;
           value.data.temp = undefined;
@@ -8302,7 +8300,6 @@ export function SubmissionsTable(props: Props) {
                               // options={tableCells
                               //   .filter((cell: any) => cell.dataKey[0] !== "_")
                               //   .map((cell: any) => {
-                              //     console.log(cell.cellRenderer.arguments[0]);
                               //     return {
                               //       label: `${cell.title} (${cell.group})`,
                               //       value: cell.dataKey,
