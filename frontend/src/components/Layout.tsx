@@ -14,6 +14,7 @@ import {
   useBreakpointValue,
   useDisclosure,
   Link,
+  Image,
   Avatar,
   Menu,
   MenuButton,
@@ -43,6 +44,7 @@ import {
   useMsal,
 } from "@azure/msal-react";
 import { FiChevronDown } from "react-icons/all";
+import logo from "../logo.png";
 import CookiePreference from "./AllowCookies";
 import { msalInstance } from "../index";
 import { RestAPI } from "../api/rest";
@@ -108,21 +110,17 @@ function Layout(props: any) {
             />
           </Flex>
           <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-            <Text
+            <Image
               mt={"2px"}
               ml={{ base: "0", md: "10px" }}
-              textAlign={useBreakpointValue({ base: "center", md: "left" })}
-              fontFamily={"heading"}
-              fontWeight="bold"
-              color={useColorModeValue("gray.800", "#ABB2BF")}
+              width="20%"
+              src={logo} // Specify the path to your logo
+              alt="Formiks Logo"
               cursor="pointer"
               onClick={() => {
                 history.push("/projects");
               }}
-              fontSize="lg"
-            >
-              Formiks
-            </Text>
+            />
 
             <Flex display={{ base: "none", md: "flex" }} ml={10}>
               <DesktopNav />
