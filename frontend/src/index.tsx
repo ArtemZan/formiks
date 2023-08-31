@@ -71,7 +71,7 @@ ReactDOM.render(
       styles: {
         global: (props: any) => ({
           body: {
-            bg: mode("#f7fafc", "#282C34")(props),
+            bg: mode("#f7fafc", "#b2b2b2")(props),
             color: mode("gray.800", "#ABB2BF")(props),
           },
         }),
