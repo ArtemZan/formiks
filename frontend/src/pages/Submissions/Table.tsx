@@ -946,6 +946,10 @@ export function SubmissionsTable(props: Props) {
   const [totalIncomeInTool, setTotalIncomeInTool] = useState(0);
   const [totalCostsInToolEUR, setTotalCostsInToolEUR] = useState(0);
   const [totalIncomeInToolEUR, setTotalIncomeInToolEUR] = useState(0);
+  const [totalLossInToolEUR, setTotalLossInToolEUR] = useState(0);
+  const [totalLossInToolLC, setTotalLossInToolLC] = useState(0);
+  const [totalProfitInToolEUR, setTotalProfitInToolEUR] = useState(0);
+  const [totalProfitInToolLC, setTotalProfitInToolLC] = useState(0);
   // const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -1005,6 +1009,12 @@ export function SubmissionsTable(props: Props) {
     let tcalcgl = 0;
     let tialigl = 0;
     let tiaigl = 0;
+    let tcalit = 0;
+    let tcaeit = 0;
+    let tpit = 0;
+    let tlit = 0;
+    let tpite = 0;
+    let tlite = 0;
     filteredSubmissions.forEach((subm) => {
       if (subm.parentId === null) {
         tca += subm.data.costAmountEUR || 0;
@@ -1015,8 +1025,26 @@ export function SubmissionsTable(props: Props) {
         tcalcgl += subm.data.costAmountLCCostGL || 0;
         tialigl += subm.data.incomeAmountLCIncomeGL || 0;
         tiaigl += subm.data.incomeAmountEurIncomeGL || 0;
+        let sumLC =
+          (subm.data.incomeAmountLCSI + subm.data.incomeAmountLCIncomeGL) * -1 -
+          (subm.data.costAmountLC + subm.data.costAmountLCCostGL);
+        if (sumLC < 0) {
+          tlit += sumLC;
+        } else {
+          tpit += sumLC;
+        }
+        let sumEUR =
+          (subm.data.incomeAmountEURSI + subm.data.incomeAmountEurIncomeGL) *
+            -1 -
+          (subm.data.costAmountEUR + subm.data.costAmountEURCostGL);
+        if (sumEUR < 0) {
+          tlite += sumEUR;
+        } else {
+          tpite += sumEUR;
+        }
       }
     });
+    console.log(tcalit, tcaeit);
     tcit = -(tcal + tcalcgl);
     tiit = -(tial + tialigl);
     tcite = -(tca + tcacgl);
@@ -1033,6 +1061,10 @@ export function SubmissionsTable(props: Props) {
     setTotalIncomeInTool(tiit);
     setTotalCostsInToolEUR(tcite);
     setTotalIncomeInToolEUR(tiite);
+    setTotalProfitInToolLC(tpit);
+    setTotalProfitInToolEUR(tpite);
+    setTotalLossInToolLC(tlit);
+    setTotalLossInToolEUR(tlite);
     forceUpdate();
   }, [filteredSubmissions]);
 
@@ -1773,21 +1805,26 @@ export function SubmissionsTable(props: Props) {
                 cs.data.incomeAmountLCIncomeGL || 0;
               sub.data.incomeAmountEurIncomeGL +=
                 cs.data.incomeAmountEurIncomeGL || 0;
-              sub.data.totalIncomeLC += -(
-                cs.data.incomeAmountLCSI ||
-                0 + cs.data.incomeAmountLCIncomeGL ||
-                0
-              );
+              if (
+                cs.data.projectNumber === "6110CH226205" ||
+                cs.data.projectNumber === "6110CH226205"
+              ) {
+                console.log(
+                  cs.data.incomeAmountLCSI,
+                  cs.data.incomeAmountLCIncomeGL
+                );
+              }
+              let incomeLC = cs.data.incomeAmountLCSI || 0;
+              let incomeLCGL = cs.data.incomeAmountLCIncomeGL || 0;
+              sub.data.totalIncomeLC += -(incomeLC + incomeLCGL);
               sub.data.totalCostsLC += -(
                 cs.data.costAmountLC ||
                 0 + cs.data.costAmountLCCostGL ||
                 0
               );
-              sub.data.totalIncomeEUR += -(
-                cs.data.incomeAmountEURSI ||
-                0 + cs.data.incomeAmountEURIncomeGL ||
-                0
-              );
+              let incomeEUR = cs.data.incomeAmountEURSI || 0;
+              let incomeEURGL = cs.data.incomeAmountEurIncomeGL || 0;
+              sub.data.totalIncomeEUR += -(incomeEUR + incomeEURGL);
               sub.data.totalCostsEUR += -(
                 cs.data.costAmountEUR ||
                 0 + cs.data.costAmountEURCostGL ||
@@ -4702,13 +4739,13 @@ export function SubmissionsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInTool + totalCostsInTool >= 0
-              ? props.rowData.id === "total"
-                ? `TOTAL: ${NumberWithCommas(
-                    totalIncomeInTool + totalCostsInTool
-                  )}`
-                : props.rowData.data.totalIncomeLC +
-                  props.rowData.data.totalCostsLC
+            props.rowData.id === "total"
+              ? `TOTAL: ${NumberWithCommas(totalProfitInToolLC)}`
+              : props.rowData.data.totalIncomeLC +
+                  props.rowData.data.totalCostsLC >=
+                0
+              ? props.rowData.data.totalIncomeLC +
+                props.rowData.data.totalCostsLC
               : ""
           }
         />
@@ -4734,14 +4771,14 @@ export function SubmissionsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInTool + totalCostsInTool < 0
-              ? props.rowData.id === "total"
-                ? `TOTAL: ${NumberWithCommas(
-                    (totalIncomeInTool + totalCostsInTool) * -1
-                  )}`
-                : (props.rowData.data.totalIncomeLC +
-                    props.rowData.data.totalCostsLC) *
-                  -1
+            props.rowData.id === "total"
+              ? `TOTAL: ${NumberWithCommas(totalLossInToolLC * -1)}`
+              : props.rowData.data.totalIncomeLC +
+                  props.rowData.data.totalCostsLC <
+                0
+              ? (props.rowData.data.totalIncomeLC +
+                  props.rowData.data.totalCostsLC) *
+                -1
               : ""
           }
         />
@@ -4824,11 +4861,13 @@ export function SubmissionsTable(props: Props) {
           initialValue={
             totalIncomeInToolEUR + totalCostsInToolEUR >= 0
               ? props.rowData.id === "total"
-                ? `TOTAL: ${NumberWithCommas(
-                    totalIncomeInToolEUR + totalCostsInToolEUR
-                  )}`
+                ? `TOTAL: ${NumberWithCommas(totalProfitInToolEUR)}`
                 : props.rowData.data.totalIncomeEUR +
+                    props.rowData.data.totalCostsEUR >=
+                  0
+                ? props.rowData.data.totalIncomeEUR +
                   props.rowData.data.totalCostsEUR
+                : ""
               : ""
           }
         />
@@ -4854,14 +4893,14 @@ export function SubmissionsTable(props: Props) {
           columnKey={props.column.dataKey}
           rowData={props.rowData}
           initialValue={
-            totalIncomeInToolEUR + totalCostsInToolEUR < 0
-              ? props.rowData.id === "total"
-                ? `TOTAL: ${NumberWithCommas(
-                    (totalIncomeInToolEUR + totalCostsInToolEUR) * -1
-                  )}`
-                : (props.rowData.data.totalIncomeEUR +
-                    props.rowData.data.totalCostsEUR) *
-                  -1
+            props.rowData.id === "total"
+              ? `TOTAL: ${NumberWithCommas(totalLossInToolEUR * -1)}`
+              : props.rowData.data.totalIncomeEUR +
+                  props.rowData.data.totalCostsEUR <
+                0
+              ? (props.rowData.data.totalIncomeEUR +
+                  props.rowData.data.totalCostsEUR) *
+                -1
               : ""
           }
         />
@@ -5401,7 +5440,7 @@ export function SubmissionsTable(props: Props) {
             const data = new Blob([excelBuffer], {
               type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
             });
-            FileSaver.saveAs(data, "exported_submissions" + ".xlsx");
+            FileSaver.saveAs(data, "Projects" + ".xlsx");
           }}
           colorScheme="teal"
           aria-label="export"

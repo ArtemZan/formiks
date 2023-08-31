@@ -12,6 +12,7 @@ import {
   PopoverContent,
   useColorModeValue,
   useBreakpointValue,
+  AspectRatio,
   useDisclosure,
   Link,
   Image,
@@ -113,9 +114,11 @@ function Layout(props: any) {
             <Image
               mt={"2px"}
               ml={{ base: "0", md: "10px" }}
-              width="20%"
-              src={logo} // Specify the path to your logo
+              src={logo}
               alt="Formiks Logo"
+              width={["50%", "40%", "30%"]} // Responsive widths based on breakpoints
+              minWidth="70px" // Set a minimum width so it doesn't get too small
+              maxWidth="300px" // Set a maximum width so it doesn't get too large
               cursor="pointer"
               onClick={() => {
                 history.push("/projects");
