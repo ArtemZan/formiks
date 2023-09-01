@@ -207,6 +207,10 @@ button[name="data[submit]"]:hover {
   font-weight: 600;
   background-color: white;
 }
+.header-cells.dark {
+  background-color: #21252a;
+  color: white;
+}
 
 .BaseTable__header-cell.white {
   border-bottom: 3px solid;

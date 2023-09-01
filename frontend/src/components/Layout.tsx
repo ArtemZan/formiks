@@ -82,14 +82,14 @@ function Layout(props: any) {
 
       <Box>
         <Flex
-          bg={useColorModeValue("white", "#21252A")}
-          color={useColorModeValue("gray.600", "#ABB2BF")}
+          bg={useColorModeValue("white", "#4b4b4b")}
+          color={useColorModeValue("gray.600", "#9b9b9b")}
           minH={"60px"}
           py={{ base: 2 }}
           px={{ base: 4 }}
           borderBottom={1}
           borderStyle={"solid"}
-          borderColor={useColorModeValue("gray.200", "#21252A")}
+          borderColor={useColorModeValue("gray.200", "#9b9b9b")}
           align={"center"}
         >
           <Flex

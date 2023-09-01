@@ -33,6 +33,7 @@ import {
 import { MdEmail } from "react-icons/md";
 import styled from "styled-components";
 import EditableTableCell from "../../components/EditableTableCell";
+import ThemedEditableTableCell from "../../components/ThemedEditableTableCell";
 import Creatable from "react-select/creatable";
 import { keyframes } from "styled-components";
 import CreateModal from "../../components/RejectModal";
@@ -933,6 +934,7 @@ export function SubmissionsTable(props: Props) {
   const [filters, setFilters] = useState<FilterField[]>([]);
   const [displayedColumns, setDisplayedColumns] =
     useState<string[]>(defaultColumns);
+  const [tabIndex, setTabIndex] = useState(0);
   const [totalCostAmount, setTotalCostAmount] = useState(0);
   const [totalCostAmountCostGL, setTotalCostAmountCostGL] = useState(0);
   const [totalCostAmountLC, setTotalCostAmountLC] = useState(0);
@@ -1044,7 +1046,6 @@ export function SubmissionsTable(props: Props) {
         }
       }
     });
-    console.log(tcalit, tcaeit);
     tcit = -(tcal + tcalcgl);
     tiit = -(tial + tialigl);
     tcite = -(tca + tcacgl);
@@ -1805,15 +1806,7 @@ export function SubmissionsTable(props: Props) {
                 cs.data.incomeAmountLCIncomeGL || 0;
               sub.data.incomeAmountEurIncomeGL +=
                 cs.data.incomeAmountEurIncomeGL || 0;
-              if (
-                cs.data.projectNumber === "6110CH226205" ||
-                cs.data.projectNumber === "6110CH226205"
-              ) {
-                console.log(
-                  cs.data.incomeAmountLCSI,
-                  cs.data.incomeAmountLCIncomeGL
-                );
-              }
+
               let incomeLC = cs.data.incomeAmountLCSI || 0;
               let incomeLCGL = cs.data.incomeAmountLCIncomeGL || 0;
               sub.data.totalIncomeLC += -(incomeLC + incomeLCGL);
@@ -5336,111 +5329,166 @@ export function SubmissionsTable(props: Props) {
                 Author: "",
               },
             ];
-            formattedData = filteredSubmissions.map((s) => {
-              let doc: FD = {
-                ID: s.id || "unknown",
-                Parent: s.parentId === null,
-                Group: s.group,
-                Created: s.created,
-                Title: s.title,
-                Author: s.author,
-              };
-              DisplayedColumnsList.forEach((group: any) => {
-                if (group.value === "CMCT" || group.value === "LMD") {
-                  return;
-                }
-                group.children.map((column: any, index: number) => {
-                  doc[column.value] = _.get(s, column.value);
-                  if (column.type === "number") {
-                    doc[column.value] = NumberWithCommas(doc[column.value]);
+            if (tabIndex === 0) {
+              console.log(displayedColumns);
+              formattedData = filteredSubmissions.map((s) => {
+                let doc: FD = {
+                  ID: s.id || "unknown",
+                  Parent: s.parentId === null,
+                  Group: s.group,
+                  Created: s.created,
+                  Title: s.title,
+                  Author: s.author,
+                };
+                DisplayedColumnsList.forEach((group: any) => {
+                  if (group.value === "CMCT" || group.value === "LMD") {
+                    return;
                   }
-                  if (!init) {
-                    header[0][column.value] = index === 0 ? group.label : "";
-                    header[1][column.value] = `${column.label}`;
+                  group.children.map((column: any, index: number) => {
+                    if (
+                      displayedColumns.includes(column.value) ||
+                      displayedColumns.includes(group.value)
+                    ) {
+                      doc[column.value] = _.get(s, column.value);
+                      if (column.type === "number") {
+                        doc[column.value] = NumberWithCommas(doc[column.value]);
+                      }
+                      if (!init) {
+                        header[0][column.value] =
+                          index === 0 ? group.label : "";
+                        header[1][column.value] = `${column.label}`;
+                      }
+                    }
+                  });
+                });
+                init = true;
+                return doc;
+              });
+              header[2] = {
+                "data.costAmountLC": `TOTAL: ${NumberWithCommas(
+                  totalCostAmountLC
+                )}`,
+                "data.costAmountEUR": `TOTAL: ${NumberWithCommas(
+                  totalCostAmount
+                )}`,
+                "data.incomeAmountLCSI": `TOTAL: ${NumberWithCommas(
+                  totalIncomeAmountLC
+                )}`,
+                "data.incomeAmountEURSI": `TOTAL: ${NumberWithCommas(
+                  totalIncomeAmount
+                )}`,
+                "data.costAmountLCCostGL": `TOTAL: ${NumberWithCommas(
+                  totalCostAmountLCCostGL
+                )}`,
+                "data.costAmountEURCostGL": `TOTAL: ${NumberWithCommas(
+                  totalCostAmountCostGL
+                )}`,
+                "data.incomeAmountLCIncomeGL": `TOTAL: ${NumberWithCommas(
+                  totalIncomeAmountLCIncomeGL
+                )}`,
+                "data.incomeAmountEurIncomeGL": `TOTAL: ${NumberWithCommas(
+                  totalIncomeAmountIncomeGL
+                )}`,
+                "data.totalIncomeLC": `TOTAL: ${NumberWithCommas(
+                  totalIncomeInTool
+                )}`,
+                "data.totalCostsLC": `TOTAL: ${NumberWithCommas(
+                  totalCostsInTool
+                )}`,
+                "data.totalProfitLC": `TOTAL: ${NumberWithCommas(
+                  totalProfitInToolLC
+                )}`,
+                "data.totalLossLC": `TOTAL: ${NumberWithCommas(
+                  totalLossInToolLC
+                )}`,
+                "data.totalIncomeEUR": `TOTAL: ${NumberWithCommas(
+                  totalIncomeInToolEUR
+                )}`,
+                "data.totalCostsEUR": `TOTAL: ${NumberWithCommas(
+                  totalCostsInToolEUR
+                )}`,
+                "data.totalProfitEUR": `TOTAL: ${NumberWithCommas(
+                  totalProfitInToolEUR
+                )}`,
+                "data.totalLossEUR": `TOTAL: ${NumberWithCommas(
+                  totalLossInToolEUR
+                )}`,
+                "data.totalCostsTool": `TOTAL: ${NumberWithCommas(
+                  totalCostAmountLC + totalCostAmountLCCostGL
+                )}`,
+                "data.totalCostsSAP": `TOTAL: ${NumberWithCommas(
+                  totalCostAmountLC + totalCostAmountLCCostGL
+                )}`,
+                "data.totalIncomeTool": `TOTAL: ${NumberWithCommas(
+                  totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
+                )}`,
+                "data.totalIncomeSAP": `TOTAL: ${NumberWithCommas(
+                  totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
+                )}`,
+              };
+              formattedData.unshift(...header);
+              const ws = XLSX.utils.json_to_sheet(formattedData, {
+                skipHeader: true,
+              });
+              ws["!cols"] = Object.keys(formattedData[0]).map(() => {
+                return { wch: 30 };
+              });
+              const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+              const excelBuffer = XLSX.write(wb, {
+                bookType: "xlsx",
+                type: "array",
+              });
+              const data = new Blob([excelBuffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+              });
+              FileSaver.saveAs(data, "Projects" + ".xlsx");
+            } else if (tabIndex === 1) {
+              formattedData = filteredCommunicationSubmissions.map((s) => {
+                let doc: FD = {
+                  ID: s.id || "unknown",
+                  Parent: s.parentId === null,
+                  Group: s.group,
+                  Created: s.created,
+                  Title: s.title,
+                  Author: s.author,
+                };
+                DisplayedColumnsList.forEach((group: any) => {
+                  if (group.value === "CMCT" || group.value === "LMD") {
+                    group.children.map((column: any, index: number) => {
+                      doc[column.value] = _.get(s, column.value);
+                      if (column.type === "number") {
+                        doc[column.value] = NumberWithCommas(doc[column.value]);
+                      }
+                      if (!init) {
+                        header[0][column.value] =
+                          index === 0 ? group.label : "";
+                        header[1][column.value] = `${column.label}`;
+                      }
+                    });
+                  } else {
+                    return;
                   }
                 });
+                init = true;
+                return doc;
               });
-              init = true;
-              return doc;
-            });
-            header[2] = {
-              "data.costAmountLC": `TOTAL: ${NumberWithCommas(
-                totalCostAmountLC
-              )}`,
-              "data.costAmountEUR": `TOTAL: ${NumberWithCommas(
-                totalCostAmount
-              )}`,
-              "data.incomeAmountLCSI": `TOTAL: ${NumberWithCommas(
-                totalIncomeAmountLC
-              )}`,
-              "data.incomeAmountEURSI": `TOTAL: ${NumberWithCommas(
-                totalIncomeAmount
-              )}`,
-              "data.costAmountLCCostGL": `TOTAL: ${NumberWithCommas(
-                totalCostAmountLCCostGL
-              )}`,
-              "data.costAmountEURCostGL": `TOTAL: ${NumberWithCommas(
-                totalCostAmountCostGL
-              )}`,
-              "data.incomeAmountLCIncomeGL": `TOTAL: ${NumberWithCommas(
-                totalIncomeAmountLCIncomeGL
-              )}`,
-              "data.incomeAmountEurIncomeGL": `TOTAL: ${NumberWithCommas(
-                totalIncomeAmountIncomeGL
-              )}`,
-              "data.totalIncomeLC": `TOTAL: ${NumberWithCommas(
-                totalIncomeInTool
-              )}`,
-              "data.totalCostsLC": `TOTAL: ${NumberWithCommas(
-                totalCostsInTool
-              )}`,
-              "data.totalProfitLC": `TOTAL: ${NumberWithCommas(
-                totalIncomeInTool + totalCostsInTool
-              )}`,
-              "data.totalLossLC": `TOTAL: ${NumberWithCommas(
-                (totalIncomeInTool + totalCostsInTool) * -1
-              )}`,
-              "data.totalIncomeEUR": `TOTAL: ${NumberWithCommas(
-                totalIncomeInToolEUR
-              )}`,
-              "data.totalCostsEUR": `TOTAL: ${NumberWithCommas(
-                totalCostsInToolEUR
-              )}`,
-              "data.totalProfitEUR": `TOTAL: ${NumberWithCommas(
-                totalIncomeInToolEUR + totalCostsInToolEUR
-              )}`,
-              "data.totalLossEUR": `TOTAL: ${NumberWithCommas(
-                (totalIncomeInToolEUR + totalCostsInToolEUR) * -1
-              )}`,
-              "data.totalCostsTool": `TOTAL: ${NumberWithCommas(
-                totalCostAmountLC + totalCostAmountLCCostGL
-              )}`,
-              "data.totalCostsSAP": `TOTAL: ${NumberWithCommas(
-                totalCostAmountLC + totalCostAmountLCCostGL
-              )}`,
-              "data.totalIncomeTool": `TOTAL: ${NumberWithCommas(
-                totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
-              )}`,
-              "data.totalIncomeSAP": `TOTAL: ${NumberWithCommas(
-                totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
-              )}`,
-            };
-            formattedData.unshift(...header);
-            const ws = XLSX.utils.json_to_sheet(formattedData, {
-              skipHeader: true,
-            });
-            ws["!cols"] = Object.keys(formattedData[0]).map(() => {
-              return { wch: 30 };
-            });
-            const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-            const excelBuffer = XLSX.write(wb, {
-              bookType: "xlsx",
-              type: "array",
-            });
-            const data = new Blob([excelBuffer], {
-              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
-            });
-            FileSaver.saveAs(data, "Projects" + ".xlsx");
+              formattedData.unshift(...header);
+              const ws = XLSX.utils.json_to_sheet(formattedData, {
+                skipHeader: true,
+              });
+              ws["!cols"] = Object.keys(formattedData[0]).map(() => {
+                return { wch: 30 };
+              });
+              const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+              const excelBuffer = XLSX.write(wb, {
+                bookType: "xlsx",
+                type: "array",
+              });
+              const data = new Blob([excelBuffer], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+              });
+              FileSaver.saveAs(data, "Invoicing" + ".xlsx");
+            }
           }}
           colorScheme="teal"
           aria-label="export"
@@ -5450,7 +5498,7 @@ export function SubmissionsTable(props: Props) {
 
       <Box
         w={"100%"}
-        bg={useColorModeValue("white", "#21252A")}
+        bg={useColorModeValue("white", "#5b5b5b")}
         minH={"80vh"}
         mb={5}
         mt={"-20px"}
@@ -5458,7 +5506,7 @@ export function SubmissionsTable(props: Props) {
         rounded="md"
         borderColor="gray.100"
       >
-        <Tabs isLazy={false} variant="enclosed">
+        <Tabs isLazy={false} onChange={setTabIndex} variant="enclosed">
           <TabList>
             <Tab>Projects</Tab>
             <Tab>Invoicing</Tab>
@@ -5513,150 +5561,6 @@ export function SubmissionsTable(props: Props) {
                     rowKey="id"
                     headerHeight={[50, 50]}
                     rowHeight={55}
-                    // overlayRenderer={
-                    //   <div>
-                    //     <DebugOverlay hidden={debugOverlayHidden}>
-                    //       <Box h="40px" w="100%">
-                    //         <CloseButton
-                    //           onClick={() => {
-                    //             hideDebugOverlay(true);
-                    //           }}
-                    //           mr="-10px"
-                    //           float="right"
-                    //         />
-                    //       </Box>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           Requested Heap Size:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           {heapInfo.total > 0
-                    //             ? bytesToSize(heapInfo.total)
-                    //             : "none"}
-                    //         </Text>
-                    //       </HStack>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           Allocated Heap Size:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           {heapInfo.total > 0
-                    //             ? bytesToSize(heapInfo.allocated)
-                    //             : "none"}
-                    //         </Text>
-                    //       </HStack>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           Active Heap Size:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           {heapInfo.total > 0
-                    //             ? bytesToSize(heapInfo.current)
-                    //             : "none"}
-                    //         </Text>
-                    //       </HStack>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           DOM Elements:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           {heapInfo.domSize}
-                    //         </Text>
-                    //       </HStack>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           Virtualization:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           partial
-                    //         </Text>
-                    //       </HStack>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           Table Mode:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           editable
-                    //         </Text>
-                    //       </HStack>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           Avg FPS:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           {avgFps}
-                    //         </Text>
-                    //       </HStack>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           FPS:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           {fps[fps.length - 1]}
-                    //         </Text>
-                    //       </HStack>
-                    //       <Divider mt={"10px"} />
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           Active Sessions:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           1
-                    //         </Text>
-                    //       </HStack>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           Total Requests:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           {totalRequests}
-                    //         </Text>
-                    //       </HStack>
-                    //       <HStack spacing={0}>
-                    //         <Text w="120%" float="left">
-                    //           Sync Protocol:
-                    //         </Text>
-                    //         <Text w="80%" textAlign="right">
-                    //           HTTP
-                    //         </Text>
-                    //       </HStack>
-                    //       <VStack align="end" mt="10px">
-                    //         <Button
-                    //           float="right"
-                    //           onClick={() => {
-                    //             RestAPI.updateVendorTableDefaultConfig(
-                    //               JSON.parse(
-                    //                 localStorage.getItem(
-                    //                   "vendors.displayedColumns"
-                    //                 ) || "[]"
-                    //               ),
-                    //               JSON.parse(
-                    //                 localStorage.getItem("vendors.columns") ||
-                    //                   "{}"
-                    //               )
-                    //             );
-                    //           }}
-                    //           colorScheme="blue"
-                    //         >
-                    //           update preset
-                    //         </Button>
-                    //         <Button
-                    //           float="left"
-                    //           onClick={() => {
-                    //             localStorage.removeItem(
-                    //               "vendors.displayedColumns"
-                    //             );
-                    //             localStorage.removeItem("vendors.columns");
-                    //             window.location.reload();
-                    //           }}
-                    //           colorScheme="red"
-                    //         >
-                    //           clear cache
-                    //         </Button>
-                    //       </VStack>
-                    //     </DebugOverlay>
-                    //   </div>
-                    // }
                   ></BaseTable>
                 )}
               </AutoResizer>
@@ -7964,7 +7868,7 @@ export function SubmissionsTable(props: Props) {
       </Box>
       <Box
         w={"100%"}
-        bg={useColorModeValue("white", "#21252A")}
+        bg={useColorModeValue("white", "#5b5b5b")}
         p={4}
         mb={5}
         border="1px"
