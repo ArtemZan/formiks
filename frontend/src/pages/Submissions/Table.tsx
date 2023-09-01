@@ -5399,7 +5399,7 @@ export function SubmissionsTable(props: Props) {
                   totalProfitInToolLC
                 )}`,
                 "data.totalLossLC": `TOTAL: ${NumberWithCommas(
-                  totalLossInToolLC
+                  totalLossInToolLC * -1
                 )}`,
                 "data.totalIncomeEUR": `TOTAL: ${NumberWithCommas(
                   totalIncomeInToolEUR
@@ -5411,7 +5411,7 @@ export function SubmissionsTable(props: Props) {
                   totalProfitInToolEUR
                 )}`,
                 "data.totalLossEUR": `TOTAL: ${NumberWithCommas(
-                  totalLossInToolEUR
+                  totalLossInToolEUR * -1
                 )}`,
                 "data.totalCostsTool": `TOTAL: ${NumberWithCommas(
                   totalCostAmountLC + totalCostAmountLCCostGL
