@@ -248,13 +248,13 @@ export default function ReportsTable(props: Props) {
                   "Income Account": item.incomeAccount,
                   "Income Amount": isNaN(parseFloat(item.incomeAmountLCSI))
                     ? ""
-                    : parseFloat(item.incomeAmountLCSI).toFixed(2),
+                    : parseFloat(item.incomeAmountLCSI),
                   "Invoice Recipient Name": item.invoiceRecipientName,
                   "Invoice Recipient`s Account": item.invoiceRecipientNumber,
                   Validation: item.validation,
                   "External Sales Value": isNaN(parseFloat(item.exSalesValue))
                     ? ""
-                    : parseFloat(item.exSalesValue).toFixed(2),
+                    : parseFloat(item.exSalesValue),
                   "External Sales VOD Number": item.exSalesVODNumber,
                   "External Sales Manufacturer Number":
                     item.exSalesManufacturerNumber,
@@ -266,7 +266,7 @@ export default function ReportsTable(props: Props) {
                     parseFloat(item.intSalesVendorAmount)
                   )
                     ? ""
-                    : parseFloat(item.intSalesVendorAmount).toFixed(2),
+                    : parseFloat(item.intSalesVendorAmount),
 
                   "Intercompany Sales Manufacturer Number":
                     item.intSalesManufacturerNumber,
@@ -278,6 +278,20 @@ export default function ReportsTable(props: Props) {
               };
               const formattedData = mapKeysToColumnNames(reports);
               const ws = XLSX.utils.json_to_sheet(formattedData);
+
+              // Loop through each row for column H and set the format and type
+              const columnsToFormat = ["H", "L"]; // Add more columns as needed
+
+              for (let i = 2; i <= formattedData.length; i++) {
+                columnsToFormat.forEach((column) => {
+                  let cellAddress = column + i;
+                  if (ws[cellAddress]) {
+                    ws[cellAddress].z = "0.00"; // Number format
+                    ws[cellAddress].t = "n"; // Cell type as number
+                  }
+                });
+              }
+
               const wb = XLSX.utils.book_new();
               XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
               XLSX.writeFile(wb, "Marketing Income PA Allocation Report.xlsx");

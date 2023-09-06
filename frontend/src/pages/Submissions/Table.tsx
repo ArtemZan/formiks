@@ -1107,7 +1107,8 @@ export function SubmissionsTable(props: Props) {
             filter.selectedValues !== null &&
             filter.selectedValues.length > 0
           ) {
-            var value = _.get(submission, filter.columnValue);
+            var value = _.get(submission, filter.columnValue, filter);
+
             if (value === undefined) {
               valid = false;
               return;
@@ -1165,11 +1166,28 @@ export function SubmissionsTable(props: Props) {
                   case "exact":
                     var exists = false;
                     // eslint-disable-next-line no-loop-func
+                    const options = loadOptions(filter.columnValue);
                     filter.selectedValues.forEach((filterValue) => {
+                      const tmp = options.find((option) => {
+                        return (
+                          option.value.debitorischer ===
+                          filterValue.debitorischer
+                        );
+                      });
+                      let selectedOption = "";
+                      if (tmp) {
+                        selectedOption = tmp.label;
+                      }
+
+                      // const selectedLabel = selectedOption
+                      //   ? selectedOption.label
+                      //   : null;
+                      // console.log(selectedLabel);
                       if (filterValue === value) {
                         exists = true;
                       }
                     });
+
                     if (!exists) {
                       valid = false;
                     }
@@ -5340,6 +5358,7 @@ export function SubmissionsTable(props: Props) {
                   Title: s.title,
                   Author: s.author,
                 };
+
                 DisplayedColumnsList.forEach((group: any) => {
                   if (group.value === "CMCT" || group.value === "LMD") {
                     return;
@@ -5350,8 +5369,9 @@ export function SubmissionsTable(props: Props) {
                       displayedColumns.includes(group.value)
                     ) {
                       doc[column.value] = _.get(s, column.value);
+                      console.log(column.name, column.type);
                       if (column.type === "number") {
-                        doc[column.value] = NumberWithCommas(doc[column.value]);
+                        //doc[column.value] = NumberWithCommas(doc[column.value]);
                       }
                       if (!init) {
                         header[0][column.value] =
@@ -5430,6 +5450,57 @@ export function SubmissionsTable(props: Props) {
               const ws = XLSX.utils.json_to_sheet(formattedData, {
                 skipHeader: true,
               });
+              const columnsToFormat = [
+                "T",
+                "U",
+                "AA",
+                "AC",
+                "AD",
+                "AE",
+                "AF",
+                "AG",
+                "AS",
+                "AW",
+                "AH",
+                "BG",
+                "BH",
+                "BJ",
+                "CS",
+                "CT",
+                "BT",
+                "BU",
+                "BW",
+                "CH",
+                "CI",
+                "CK",
+                "CR",
+                "CS",
+                "CV",
+                "CT",
+                "CW",
+                "CX",
+                "CY",
+                "CZ",
+                "DA",
+                "DB",
+                "DC",
+                "DD",
+                "DE",
+                "DF",
+                "DH",
+                "DG",
+              ]; // Add more columns as needed
+
+              for (let i = 4; i <= formattedData.length; i++) {
+                columnsToFormat.forEach((column) => {
+                  let cellAddress = column + i;
+                  if (ws[cellAddress] && !isNaN(ws[cellAddress].v)) {
+                    ws[cellAddress].z = "0.00"; // Number format
+                    ws[cellAddress].t = "n"; // Cell type as number
+                  }
+                });
+              }
+
               ws["!cols"] = Object.keys(formattedData[0]).map(() => {
                 return { wch: 30 };
               });
@@ -5457,7 +5528,7 @@ export function SubmissionsTable(props: Props) {
                     group.children.map((column: any, index: number) => {
                       doc[column.value] = _.get(s, column.value);
                       if (column.type === "number") {
-                        doc[column.value] = NumberWithCommas(doc[column.value]);
+                        // doc[column.value] = NumberWithCommas(doc[column.value]);
                       }
                       if (!init) {
                         header[0][column.value] =
@@ -5476,6 +5547,16 @@ export function SubmissionsTable(props: Props) {
               const ws = XLSX.utils.json_to_sheet(formattedData, {
                 skipHeader: true,
               });
+              const columnsToFormat = ["Y"]; // Add more columns as needed
+              for (let i = 3; i <= formattedData.length; i++) {
+                columnsToFormat.forEach((column) => {
+                  let cellAddress = column + i;
+                  if (ws[cellAddress]) {
+                    ws[cellAddress].z = "0.00"; // Number format
+                    ws[cellAddress].t = "n"; // Cell type as number
+                  }
+                });
+              }
               ws["!cols"] = Object.keys(formattedData[0]).map(() => {
                 return { wch: 30 };
               });
