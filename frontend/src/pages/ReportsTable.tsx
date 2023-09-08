@@ -282,7 +282,7 @@ export default function ReportsTable(props: Props) {
               // Loop through each row for column H and set the format and type
               const columnsToFormat = ["H", "L"]; // Add more columns as needed
 
-              for (let i = 2; i <= formattedData.length; i++) {
+              for (let i = 2; i <= formattedData.length + 1; i++) {
                 columnsToFormat.forEach((column) => {
                   let cellAddress = column + i;
                   if (ws[cellAddress]) {

@@ -65,6 +65,10 @@ function Layout(props: any) {
     RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    colorMode === "dark" ? toggleColorMode() : console.log("A");
+  }, []);
+
   const { children } = props;
   const { isOpen, onToggle } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
@@ -89,7 +93,7 @@ function Layout(props: any) {
           px={{ base: 4 }}
           borderBottom={1}
           borderStyle={"solid"}
-          borderColor={useColorModeValue("gray.200", "#9b9b9b")}
+          borderColor={useColorModeValue("gray.200", "#000000")}
           align={"center"}
         >
           <Flex
@@ -136,13 +140,6 @@ function Layout(props: any) {
             direction={"row"}
             spacing={6}
           >
-            <Button
-              display={{ base: "none", md: "flex" }}
-              variant="ghost"
-              onClick={toggleColorMode}
-            >
-              {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-            </Button>
             <AuthenticatedTemplate>
               <Menu>
                 <MenuButton>

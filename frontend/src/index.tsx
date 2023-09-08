@@ -71,13 +71,13 @@ ReactDOM.render(
       styles: {
         global: (props: any) => ({
           body: {
-            bg: mode("#f7fafc", "#b2b2b2")(props),
+            bg: mode("#ffffff", "#b2b2b2")(props),
             color: mode("gray.800", "#ABB2BF")(props),
           },
         }),
       },
       config: {
-        initialColorMode: "light",
+        initialColorMode: "dark",
       },
     })}
   >

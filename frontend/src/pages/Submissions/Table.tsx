@@ -79,6 +79,9 @@ interface Props {
   history: any;
 }
 
+const allValue = "all";
+const noneValue = "none";
+
 var ProjectType: any[] = [];
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -313,7 +316,22 @@ const expandIconProps = ({ rowData }: { rowData: any }) => ({
   expanding: !rowData.children || rowData.children.length === 0,
 });
 
+const hasAllColumns = (values: string[]): boolean => {
+  return (
+    values.includes("all") &&
+    defaultColumns.every((col) => values.includes(col))
+  );
+};
+
 const DisplayedColumnsList = [
+  {
+    label: "All",
+    value: "all",
+  },
+  {
+    label: "None",
+    value: "none",
+  },
   {
     label: "General Information",
     value: "generalInformation",
@@ -908,15 +926,22 @@ const DisplayedColumnsList = [
   },
 ];
 
-const DisplayedColumnsListOptions = DisplayedColumnsList.map((group: any) => {
-  return group.children.map((column: any) => {
-    return {
-      label: `${column.label} (${group.label})`,
-      value: column.value,
-      type: column.type,
-    };
-  });
-}).flat(1);
+const DisplayedColumnsListOptions = DisplayedColumnsList.flatMap(
+  (group: any) => {
+    // Check if group has a children property and that it's an array
+    if (Array.isArray(group.children)) {
+      return group.children.map((column: any) => {
+        return {
+          label: `${column.label} (${group.label})`,
+          value: column.value,
+          type: column.type,
+        };
+      });
+    }
+    // Return an empty array if the group doesn't have children
+    return [];
+  }
+);
 
 export function SubmissionsTable(props: Props) {
   const [rejectedSubmission, setRejectedSubmission] = useState<
@@ -931,6 +956,7 @@ export function SubmissionsTable(props: Props) {
   const [sourceSubmissions, setSourceSubmissions] = useState(new Map());
   const [currentUser, setCurrentUser] = useState({ displayName: "unknown" });
   const [debugOverlayHidden, hideDebugOverlay] = useState(true);
+  const [previousValues, setPreviousValues] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterField[]>([]);
   const [displayedColumns, setDisplayedColumns] =
     useState<string[]>(defaultColumns);
@@ -5151,7 +5177,7 @@ export function SubmissionsTable(props: Props) {
       key: "__actions.reject",
       dataKey: "__actions.reject",
       title: "Reject",
-      width: columnWidth("__actions.reject", 60),
+      width: columnWidth("__actions.reject", 65),
       resizable: true,
       className: "red-border",
       cellRenderer: (props: any) =>
@@ -5491,7 +5517,7 @@ export function SubmissionsTable(props: Props) {
                 "DG",
               ]; // Add more columns as needed
 
-              for (let i = 4; i <= formattedData.length; i++) {
+              for (let i = 4; i <= formattedData.length + 1; i++) {
                 columnsToFormat.forEach((column) => {
                   let cellAddress = column + i;
                   if (ws[cellAddress] && !isNaN(ws[cellAddress].v)) {
@@ -5548,7 +5574,7 @@ export function SubmissionsTable(props: Props) {
                 skipHeader: true,
               });
               const columnsToFormat = ["Y"]; // Add more columns as needed
-              for (let i = 3; i <= formattedData.length; i++) {
+              for (let i = 3; i <= formattedData.length + 1; i++) {
                 columnsToFormat.forEach((column) => {
                   let cellAddress = column + i;
                   if (ws[cellAddress]) {
@@ -7965,14 +7991,43 @@ export function SubmissionsTable(props: Props) {
             block
             onChange={(value) => {
               var values: string[] = [];
-              if (value.length < 1) {
+              // Check if the "All" option is selected
+              if (
+                !previousValues.includes(noneValue) &&
+                value.includes(noneValue)
+              ) {
+                values = ["data.projectNumber"];
+                values.push(noneValue);
+              }
+              // If "all" was the last clicked
+              else if (
+                !previousValues.includes(allValue) &&
+                value.includes(allValue)
+              ) {
                 values = defaultColumns;
+                values.push(allValue);
               } else {
                 value.forEach((v) => {
                   values.push(v.toString());
                 });
               }
+              const hasOnlyProjectNumber =
+                values.length === 2 && values[0] === "data.projectNumber";
+              console.log(values);
+              if (!hasAllColumns(values)) {
+                const index = values.indexOf(allValue);
+                if (index > -1) {
+                  values.splice(index, 1);
+                }
+              }
 
+              if (values.length !== 0 && !hasOnlyProjectNumber) {
+                const index = values.indexOf(noneValue);
+                if (index > -1) {
+                  values.splice(index, 1);
+                }
+              }
+              setPreviousValues(values);
               if (selectedTemplate === "local") {
                 localStorage.setItem(
                   "vendors.displayedColumns",
