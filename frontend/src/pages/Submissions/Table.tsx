@@ -52,7 +52,7 @@ import BaseTable, {
 import "react-base-table/styles.css";
 import { RestAPI } from "../../api/rest";
 import React from "react";
-import _ from "lodash";
+import _, { has } from "lodash";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import {
   BiPlusMedical,
@@ -317,10 +317,7 @@ const expandIconProps = ({ rowData }: { rowData: any }) => ({
 });
 
 const hasAllColumns = (values: string[]): boolean => {
-  return (
-    values.includes("all") &&
-    defaultColumns.every((col) => values.includes(col))
-  );
+  return defaultColumns.every((col) => values.includes(col));
 };
 
 const DisplayedColumnsList = [
@@ -2518,7 +2515,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.projectType",
       dataKey: "data.projectType",
-      title: "Project Type",
+      title: "Project Type/Purchase Order",
       group: "General Information",
 
       width: columnWidth("data.projectType", 250),
@@ -5374,7 +5371,6 @@ export function SubmissionsTable(props: Props) {
               },
             ];
             if (tabIndex === 0) {
-              console.log(displayedColumns);
               formattedData = filteredSubmissions.map((s) => {
                 let doc: FD = {
                   ID: s.id || "unknown",
@@ -5395,7 +5391,6 @@ export function SubmissionsTable(props: Props) {
                       displayedColumns.includes(group.value)
                     ) {
                       doc[column.value] = _.get(s, column.value);
-                      console.log(column.name, column.type);
                       if (column.type === "number") {
                         //doc[column.value] = NumberWithCommas(doc[column.value]);
                       }
@@ -5736,7 +5731,9 @@ export function SubmissionsTable(props: Props) {
                         key: "__actions.rejectComm",
                         dataKey: "__actions.rejectComm",
                         title: "Reject",
-                        width: columnWidth("__actions.rejectComm", 100),
+                        group: "Input of Central Marketing Controlling Team",
+                        header: "Input of Central Marketing Controlling Team",
+                        width: columnWidth("__actions.rejectComm", 200),
                         resizable: true,
                         className: "red-border",
                         cellRenderer: (props: any) =>
@@ -5773,9 +5770,7 @@ export function SubmissionsTable(props: Props) {
                         key: "data.documentNumberCMCT",
                         dataKey: "data.documentNumberCMCT",
                         title: "SAP Document Number",
-                        group: "Input of Central Marketing Controlling Team",
-                        header: "Input of Central Marketing Controlling Team",
-                        width: columnWidth("data.documentNumberCMCT", 300),
+                        width: columnWidth("data.documentNumberCMCT", 200),
                         resizable: true,
                         hidden: visibilityController(
                           "CMCT",
@@ -7991,33 +7986,41 @@ export function SubmissionsTable(props: Props) {
             block
             onChange={(value) => {
               var values: string[] = [];
-              // Check if the "All" option is selected
+
               if (
                 !previousValues.includes(noneValue) &&
                 value.includes(noneValue)
               ) {
-                values = ["data.projectNumber"];
-                values.push(noneValue);
-              }
-              // If "all" was the last clicked
-              else if (
+                if (!values.includes(noneValue)) {
+                  values.push(noneValue);
+                }
+                values.push("data.projectNumber");
+              } else if (
                 !previousValues.includes(allValue) &&
                 value.includes(allValue)
               ) {
-                values = defaultColumns;
-                values.push(allValue);
+                if (!values.includes(allValue)) {
+                  values.push(allValue);
+                }
+                defaultColumns.forEach((c) => {
+                  values.push(c);
+                });
               } else {
                 value.forEach((v) => {
                   values.push(v.toString());
                 });
               }
               const hasOnlyProjectNumber =
-                values.length === 2 && values[0] === "data.projectNumber";
-              console.log(values);
+                values.length <= 2 && values.includes("data.projectNumber");
               if (!hasAllColumns(values)) {
+                // console.log(values.indexOf(allValue));
                 const index = values.indexOf(allValue);
                 if (index > -1) {
                   values.splice(index, 1);
+                }
+              } else {
+                if (!values.includes(allValue)) {
+                  values.push(allValue);
                 }
               }
 
@@ -8026,6 +8029,8 @@ export function SubmissionsTable(props: Props) {
                 if (index > -1) {
                   values.splice(index, 1);
                 }
+              } else {
+                values.push(noneValue);
               }
               setPreviousValues(values);
               if (selectedTemplate === "local") {

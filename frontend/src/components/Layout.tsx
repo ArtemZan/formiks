@@ -503,8 +503,13 @@ const NAV_ITEMS: Array<NavItem> = [
         subLabel: "Explore all active projects",
         href: "/submissions",
       },
+    ],
+  },
+  {
+    label: "Reports",
+    children: [
       {
-        label: "Marketing PA Allocation report",
+        label: "Marketing Income PA Allocation Report",
         subLabel: "Explore all reports",
         href: "/reports",
       },
