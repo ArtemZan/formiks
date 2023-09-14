@@ -811,7 +811,7 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
-        label: "Rejected reason",
+        label: "Rejection reason",
         value: "data.rejectReasonLMD",
         type: "string",
       },
