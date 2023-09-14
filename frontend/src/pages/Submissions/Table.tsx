@@ -61,6 +61,8 @@ import {
   RiGroupFill,
   IoSave,
   FaSleigh,
+  RiAlbumFill,
+  RiAlbumLine,
 } from "react-icons/all";
 import { toast } from "react-toastify";
 import { CheckTreePicker, TagPicker } from "rsuite";
@@ -317,7 +319,12 @@ const expandIconProps = ({ rowData }: { rowData: any }) => ({
 });
 
 const hasAllColumns = (values: string[]): boolean => {
-  return defaultColumns.every((col) => values.includes(col));
+  const exceptions = ["CTCM", "LDM", "CMCT", "LMD"];
+  const filteredDefaultColumns = defaultColumns.filter(
+    (col) => !exceptions.includes(col)
+  );
+
+  return filteredDefaultColumns.every((col) => values.includes(col));
 };
 
 const DisplayedColumnsList = [
@@ -803,17 +810,17 @@ const DisplayedColumnsList = [
         value: "data.operatorCMCT",
         type: "string",
       },
+      {
+        label: "Rejected reason",
+        value: "data.rejectReasonLMD",
+        type: "string",
+      },
     ],
   },
   {
     label: "Input of Local Marketing Department",
     value: "LMD",
     children: [
-      {
-        label: "Rejected reason",
-        value: "data.rejectReasonLMD",
-        type: "string",
-      },
       {
         label: "Status",
         value: "data.statusLMD",
@@ -923,6 +930,26 @@ const DisplayedColumnsList = [
   },
 ];
 
+const DisplayedColumnsListProjects = DisplayedColumnsList.filter((option) =>
+  [
+    "all",
+    "none",
+    "generalInformation",
+    "projectInformation",
+    "purchaseOrder",
+    "costInvoices",
+    "salesInvoices",
+    "costGlPostings",
+    "incomeGlPostings",
+    "projectResults",
+    "controlChecks",
+  ].includes(option.value)
+);
+
+const DisplayedColumnsListCommunication = DisplayedColumnsList.filter(
+  (option) => ["all", "none", "CMCT", "LMD"].includes(option.value)
+);
+
 const DisplayedColumnsListOptions = DisplayedColumnsList.flatMap(
   (group: any) => {
     // Check if group has a children property and that it's an array
@@ -953,7 +980,11 @@ export function SubmissionsTable(props: Props) {
   const [sourceSubmissions, setSourceSubmissions] = useState(new Map());
   const [currentUser, setCurrentUser] = useState({ displayName: "unknown" });
   const [debugOverlayHidden, hideDebugOverlay] = useState(true);
-  const [previousValues, setPreviousValues] = useState<string[]>([]);
+  // const [previousValues, setPreviousValues] = useState<string[]>([]);
+  const [previousValuesProject, setPreviousValuesProject] = useState<string[]>(
+    []
+  );
+  const [previousValuesComm, setPreviousValuesComm] = useState<string[]>([]);
   const [filters, setFilters] = useState<FilterField[]>([]);
   const [displayedColumns, setDisplayedColumns] =
     useState<string[]>(defaultColumns);
@@ -981,6 +1012,7 @@ export function SubmissionsTable(props: Props) {
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
     []
   );
+  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
   const [
     filteredCommunicationSubmissions,
     setFilteredCommunicationSubmissions,
@@ -989,6 +1021,7 @@ export function SubmissionsTable(props: Props) {
     Submission[]
   >([]);
   const [onlyMine, setOnlyMine] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [scrollLeft, setScrollLeft] = React.useState(0);
   const [defaultColumnsWidth, setDefaultColumnsWidth] = useState({});
   const onScroll = React.useCallback(
@@ -1532,6 +1565,46 @@ export function SubmissionsTable(props: Props) {
     [scrollLeft]
   );
 
+  const getFilteredColumns = (tabIndex: number) => {
+    if (tabIndex === 0) {
+      return DisplayedColumnsList.slice(0, 11);
+    }
+    return DisplayedColumnsList.slice(-2);
+  };
+
+  const handleTabsChange = (index: any) => {
+    setTabIndex(index); // update the state
+
+    if (index === 0) {
+      if (previousValuesProject.length === 0) {
+        setDisplayedColumns(defaultColumns);
+        let columns = [
+          "all",
+          "generalInformation",
+          "projectInformation",
+          "purchaseOrder",
+          "costInvoices",
+          "salesInvoices",
+          "costGlPostings",
+          "incomeGlPostings",
+          "projectResults",
+          "controlChecks",
+        ];
+        setDisplayedColumns(columns);
+      } else {
+        setDisplayedColumns(previousValuesProject);
+      }
+    } else if (index === 1) {
+      if (previousValuesComm.length === 0) {
+        let columns = ["CMCT", "LMD"];
+
+        setDisplayedColumns(columns);
+      } else {
+        setDisplayedColumns(previousValuesComm);
+      }
+    }
+  };
+
   async function partialUpdate(submission: string, path: string, value: any) {
     setTotalRequests(totalRequests + 1);
     if (path.includes("[")) {
@@ -1619,6 +1692,28 @@ export function SubmissionsTable(props: Props) {
       }
     }
   }
+  const toggleRowExpansion = (rowKey: string) => {
+    setExpandedRowKeys((prevKeys) => {
+      if (prevKeys.includes(rowKey)) {
+        return prevKeys.filter((key) => key !== rowKey);
+      } else {
+        return [...prevKeys, rowKey];
+      }
+    });
+  };
+
+  const expandAllRows = () => {
+    const allRowKeys = submissions
+      .map((row) => row.id?.toString())
+      .filter((id): id is string => id !== undefined);
+
+    setExpandedRowKeys(allRowKeys);
+  };
+
+  const handleRowClick = (event: any) => {
+    console.log(event);
+    toggleRowExpansion(event.rowData.id);
+  };
 
   function fieldBackColor(props: any) {
     if (
@@ -5338,6 +5433,22 @@ export function SubmissionsTable(props: Props) {
           mr="10px"
         />
         <IconButton
+          icon={expanded ? <RiAlbumFill /> : <RiAlbumLine />}
+          onClick={() => {
+            if (!expanded) {
+              expandAllRows();
+              setExpanded(true);
+            } else {
+              setExpandedRowKeys([]);
+              setExpanded(false);
+            }
+          }}
+          // isDisabled={currentUser.displayName === "unknown"}
+          aria-label="filter"
+          colorScheme="blue"
+          mr="10px"
+        />
+        <IconButton
           onClick={async () => {
             interface FD {
               [key: string]: any;
@@ -5608,7 +5719,12 @@ export function SubmissionsTable(props: Props) {
         rounded="md"
         borderColor="gray.100"
       >
-        <Tabs isLazy={false} onChange={setTabIndex} variant="enclosed">
+        <Tabs
+          isLazy={false}
+          onChange={handleTabsChange}
+          index={tabIndex}
+          variant="enclosed"
+        >
           <TabList>
             <Tab>Projects</Tab>
             <Tab>Invoicing</Tab>
@@ -5642,6 +5758,8 @@ export function SubmissionsTable(props: Props) {
                     }}
                     rowRenderer={rowRenderer}
                     overscanRowCount={10}
+                    expandedRowKeys={expandedRowKeys}
+                    onRowExpand={handleRowClick}
                     ignoreFunctionInColumnCompare={false}
                     expandColumnKey={"__expand"}
                     width={width}
@@ -5952,8 +6070,8 @@ export function SubmissionsTable(props: Props) {
                         dataKey: "data.rejectReasonLMD",
                         title: "Rejection reason",
                         width: columnWidth("data.rejectReasonLMD", 200),
-                        resizable: true,
                         group: "Input of Central Marketing Controlling Team",
+                        resizable: true,
 
                         hidden: visibilityController(
                           "LMD",
@@ -7986,7 +8104,12 @@ export function SubmissionsTable(props: Props) {
             block
             onChange={(value) => {
               var values: string[] = [];
-
+              let previousValues: string[] = [];
+              if (tabIndex === 0) {
+                previousValues = previousValuesProject;
+              } else if (tabIndex === 1) {
+                previousValues = previousValuesComm;
+              }
               if (
                 !previousValues.includes(noneValue) &&
                 value.includes(noneValue)
@@ -8032,17 +8155,23 @@ export function SubmissionsTable(props: Props) {
               } else {
                 values.push(noneValue);
               }
-              setPreviousValues(values);
+
               if (selectedTemplate === "local") {
                 localStorage.setItem(
                   "vendors.displayedColumns",
                   JSON.stringify(values)
                 );
               }
+              if (tabIndex === 0) {
+                setPreviousValuesProject(values);
+              } else if (tabIndex === 1) {
+                setPreviousValuesComm(values);
+              }
               setDisplayedColumns(values);
             }}
             value={displayedColumns}
-            data={DisplayedColumnsList}
+            data={getFilteredColumns(tabIndex)}
+            // data={DisplayedColumnsList}
             placeholder="Groups"
             size="lg"
           />
@@ -8380,16 +8509,16 @@ export function SubmissionsTable(props: Props) {
                               classNamePrefix="select"
                               isClearable={false}
                               name="color"
-                              options={DisplayedColumnsListOptions}
-                              // options={tableCells
-                              //   .filter((cell: any) => cell.dataKey[0] !== "_")
-                              //   .map((cell: any) => {
-                              //     return {
-                              //       label: `${cell.title} (${cell.group})`,
-                              //       value: cell.dataKey,
-                              //       type: cell.type ? cell.type : "text",
-                              //     };
-                              //   })}
+                              // options={displayedColumns}
+                              options={tableCells
+                                .filter((cell: any) => cell.dataKey[0] !== "_")
+                                .map((cell: any) => {
+                                  return {
+                                    label: `${cell.title} (${cell.group})`,
+                                    value: cell.dataKey,
+                                    type: cell.type ? cell.type : "text",
+                                  };
+                                })}
                             />
                           </Box>
                           <Box w="100%">
