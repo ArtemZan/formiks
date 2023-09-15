@@ -5423,7 +5423,7 @@ export function SubmissionsTable(props: Props) {
           mr="10px"
         />
         <IconButton
-          icon={onlyMine ? <RiUserFill /> : <RiGroupFill />}
+          icon={onlyMine ? <RiAlbumFill /> : <RiAlbumLine />}
           onClick={() => {
             setOnlyMine(!onlyMine);
           }}
@@ -5433,7 +5433,7 @@ export function SubmissionsTable(props: Props) {
           mr="10px"
         />
         <IconButton
-          icon={expanded ? <RiAlbumFill /> : <RiAlbumLine />}
+          icon={expanded ? <RiUserFill /> : <RiGroupFill />}
           onClick={() => {
             if (!expanded) {
               expandAllRows();
