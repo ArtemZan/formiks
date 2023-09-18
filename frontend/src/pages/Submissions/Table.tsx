@@ -1170,6 +1170,7 @@ export function SubmissionsTable(props: Props) {
               return;
             }
             switch (filter.type) {
+              case "text":
               case "string":
                 switch (filter.filter) {
                   case "exact":
@@ -1350,6 +1351,7 @@ export function SubmissionsTable(props: Props) {
               return;
             }
             switch (filter.type) {
+              case "text":
               case "string":
                 switch (filter.filter) {
                   case "exact":
@@ -8282,8 +8284,20 @@ export function SubmissionsTable(props: Props) {
             <Box w={"100%"}>
               {filters.map((filter, index) => {
                 var valuesField: JSX.Element = <div></div>;
-
                 switch (filter.type) {
+                  case "text":
+                    valuesField = (
+                      <Input
+                        onChange={(event) => {
+                          var temp = [...filters];
+                          console.log(filters);
+                          temp[index].selectedValues[0] = event.target.value;
+                          setFilters(temp);
+                        }}
+                        value={filter.selectedValues[0]}
+                      />
+                    );
+                    break;
                   case "string":
                     valuesField = (
                       <Input
