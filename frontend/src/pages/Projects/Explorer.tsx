@@ -16,6 +16,7 @@ export function Explorer(props: Props) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [selectedBookmark, setSelectedBookmark] = useState("");
+  const [isAdmin, setAdminRole] = useState(false);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [createBookmarkModal, setCreateBookMarkModal] = useState(false);
   const sortOrder = [
@@ -42,6 +43,10 @@ export function Explorer(props: Props) {
       setProjects(sortedProjects);
       setFilteredProjects(sortedProjects);
     });
+
+    RestAPI.getRoles().then((response) =>
+      setAdminRole(response.data.includes("administrator"))
+    );
   }, []);
 
   return (
@@ -122,11 +127,14 @@ export function Explorer(props: Props) {
         mx={{ base: 0, "2xl": "300px" }}
       >
         {filteredProjects.map((project) => {
-          return (
-            <WrapItem key={`wrap-${project.id}`}>
-              <ProjectCard history={props.history} project={project} />
-            </WrapItem>
-          );
+          if (!isAdmin && project.id === "619515b754e61c8dd33daa52") {
+            return null;
+          } else
+            return (
+              <WrapItem key={`wrap-${project.id}`}>
+                <ProjectCard history={props.history} project={project} />
+              </WrapItem>
+            );
         })}
       </Wrap>
     </div>
