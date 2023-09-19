@@ -400,11 +400,6 @@ const DisplayedColumnsList = [
         value: "data.debitorNumber",
         type: "string",
       },
-      // {
-      //   label: "SAP Creditor Number",
-      //   value: "data.creditorNumber",
-      //   type: "string",
-      // },
       { label: "Budget Source", value: "data.budgetSource", type: "dropdown" },
       {
         label: "Vendor Budget Currency",
