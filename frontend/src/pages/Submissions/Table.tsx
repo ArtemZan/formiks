@@ -827,7 +827,7 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
-        label: "Date of Invoicing",
+        label: "Date of document",
         value: "data.invoicingDateLMD",
         type: "string",
       },
