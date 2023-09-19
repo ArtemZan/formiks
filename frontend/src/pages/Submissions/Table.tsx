@@ -1713,7 +1713,6 @@ export function SubmissionsTable(props: Props) {
   };
 
   const handleRowClick = (event: any) => {
-    console.log(event);
     toggleRowExpansion(event.rowData.id);
   };
 
@@ -1970,12 +1969,52 @@ export function SubmissionsTable(props: Props) {
             });
         }
       });
+      let sortedSubs: Submission[] = [];
+      sortedSubs = vSubs.sort((a, b) => {
+        if (a.parentId === null && b.parentId === null) {
+          if (a.created > b.created) return -1;
+          if (a.created < b.created) return 1;
+        }
+        if (a.parentId === null && b.parentId !== null) return -1;
+        if (a.parentId !== null && b.parentId === null) return 1;
+
+        if (a.parentId !== null && b.parentId !== null) {
+          const projectTypeA = a.data["projectType"];
+          const projectTypeB = b.data["projectType"];
+
+          // Anything but Purchase Order and not undefined first
+          if (
+            projectTypeA !== "Purchase Order" &&
+            projectTypeA !== undefined &&
+            (projectTypeB === "Purchase Order" || projectTypeB === undefined)
+          )
+            return -1;
+          if (
+            projectTypeB !== "Purchase Order" &&
+            projectTypeB !== undefined &&
+            (projectTypeA === "Purchase Order" || projectTypeA === undefined)
+          )
+            return 1;
+
+          // Undefined ones next
+          if (projectTypeA === undefined && projectTypeB !== undefined)
+            return -1;
+          if (projectTypeB === undefined && projectTypeA !== undefined)
+            return 1;
+
+          // Purchase Order last
+          if (projectTypeA === "Purchase Order") return 1;
+          if (projectTypeB === "Purchase Order") return -1;
+        }
+
+        return 0;
+      });
 
       setCommunicationSubmissions(cSubs);
       setFilteredCommunicationSubmissions(cSubs);
       setSourceSubmissions(ss);
-      setSubmissions(vSubs);
-      setFilteredSubmissions(vSubs);
+      setSubmissions(sortedSubs);
+      setFilteredSubmissions(sortedSubs);
     });
   }, []);
   useEffect(() => {
@@ -8138,7 +8177,6 @@ export function SubmissionsTable(props: Props) {
               const hasOnlyProjectNumber =
                 values.length <= 2 && values.includes("data.projectNumber");
               if (!hasAllColumns(values)) {
-                // console.log(values.indexOf(allValue));
                 const index = values.indexOf(allValue);
                 if (index > -1) {
                   values.splice(index, 1);
@@ -8290,7 +8328,6 @@ export function SubmissionsTable(props: Props) {
                       <Input
                         onChange={(event) => {
                           var temp = [...filters];
-                          console.log(filters);
                           temp[index].selectedValues[0] = event.target.value;
                           setFilters(temp);
                         }}
