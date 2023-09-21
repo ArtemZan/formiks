@@ -832,6 +832,21 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
+        label: "Type of document",
+        value: "data.invoiceTypeLMD",
+        type: "string",
+      },
+      {
+        label: "Document number to be cancelled",
+        value: "data.cancellationInfoLMD",
+        type: "string",
+      },
+      {
+        label: "ALSO Marketing Project Number",
+        value: "data.alsoMarketingProjectNumberLMD",
+        type: "string",
+      },
+      {
         label: "Vendor",
         value: "data.vendorLMD",
         type: "dropdown",
@@ -847,28 +862,8 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
-        label: "Request Date",
-        value: "data.requestDateLMD",
-        type: "string",
-      },
-      {
-        label: "Invoice Type",
-        value: "data.invoiceTypeLMD",
-        type: "string",
-      },
-      {
-        label: "Document number to be cancelled",
-        value: "data.cancellationInfoLMD",
-        type: "string",
-      },
-      {
-        label: "ALSO Marketing Project Number",
-        value: "data.alsoMarketingProjectNumberLMD",
-        type: "string",
-      },
-      {
-        label: "Document Currency",
-        value: "data.documentCurrencyLMD",
+        label: "Entry Date",
+        value: "data.entryDateLMD",
         type: "string",
       },
       {
@@ -882,9 +877,24 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
-        label: "Text",
-        value: "data.textLMD",
+        label: "Reason Code",
+        value: "data.reasonCodeLMD",
         type: "string",
+      },
+
+      {
+        label: "Invoice Text",
+        value: "data.invoiceTextLMD",
+        type: "string",
+      },
+      {
+        label: "Reference Number From Vendor",
+        value: "data.referenceNumberFromVendor",
+        type: "string",
+      },
+      {
+        label: "Activity ID for Portal Vendors",
+        value: "data.activityIdForPortalVendors",
       },
       {
         label: "Amount",
@@ -892,13 +902,8 @@ const DisplayedColumnsList = [
         type: "number",
       },
       {
-        label: "Additional Information",
-        value: "data.infoCMCT",
-        type: "string",
-      },
-      {
-        label: "Dunning Stop?",
-        value: "data.dunningStopLMD",
+        label: "Document Currency",
+        value: "data.documentCurrencyLMD",
         type: "string",
       },
       {
@@ -907,8 +912,18 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
+        label: "Dunning Stop?",
+        value: "data.dunningStopLMD",
+        type: "string",
+      },
+      {
         label: "Deposit Number/Central CN Number",
         value: "data.depositNumberLMD",
+        type: "string",
+      },
+      {
+        label: "Additional Information",
+        value: "data.additionalInformationLMD",
         type: "string",
       },
       {
@@ -917,9 +932,13 @@ const DisplayedColumnsList = [
         type: "string",
       },
       {
-        label: "Additional Comment",
-        value: "data.additionalCommentLMD",
+        label: "Date of service rendered",
+        value: "data.dateOfServiceRenderedLMD",
         type: "string",
+      },
+      {
+        label: "Link to proof",
+        value: "data.linkToProofsLMD",
       },
     ],
   },
@@ -2056,6 +2075,7 @@ export function SubmissionsTable(props: Props) {
       });
 
       setCommunicationSubmissions(cSubs);
+      console.log(cSubs);
       setFilteredCommunicationSubmissions(cSubs);
       setSourceSubmissions(ss);
       setSubmissions(sortedSubs);
