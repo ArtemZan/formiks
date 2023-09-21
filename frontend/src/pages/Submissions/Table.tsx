@@ -1481,7 +1481,7 @@ export function SubmissionsTable(props: Props) {
         });
         ///
       }
-      cFilteredMap.forEach((value) => {
+      communicationSubmissions.forEach((value) => {
         if (value.parentId !== null) {
           if (!cFilteredMap.has(value.parentId)) {
             value.data.temp = value.parentId;
