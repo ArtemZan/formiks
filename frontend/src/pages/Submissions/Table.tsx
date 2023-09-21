@@ -1004,6 +1004,7 @@ export function SubmissionsTable(props: Props) {
   // const { fps, avgFps } = useFps(20);
   const [tableWidth, setTableWidth] = useState(1000);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [financialYear, setFinancialYear] = useState<string>("");
   const [filteredSubmissions, setFilteredSubmissions] = useState<Submission[]>(
     []
   );
@@ -1125,7 +1126,6 @@ export function SubmissionsTable(props: Props) {
     var filtered: Submission[] = [];
     var cFilteredMap = new Map();
     var filteredCommunication: Submission[] = [];
-
     var f: FilterField[] = JSON.parse(JSON.stringify(filters));
 
     if (onlyMine) {
@@ -1138,298 +1138,349 @@ export function SubmissionsTable(props: Props) {
         selectedValues: [currentUser.displayName],
       } as FilterField);
     }
-    if (f.length > 0 && submissions.length > 0) {
+
+    if (financialYear !== "") {
+      const fullYear = `20${financialYear}`;
       submissions.forEach((submission) => {
-        var valid = true;
+        let valid = true;
+        let validCost = true;
+        let validIncome = true;
+        let validCostGL = true;
+        let validIncomeGL = true;
 
-        for (let filter of f) {
-          if (
-            filter.columnLabel.includes(
-              "Input of Local Marketing Department"
-            ) ||
-            filter.columnLabel.includes(
-              "Input of Central Marketing Controlling Team"
-            )
-          ) {
-            return;
-          }
-
-          if (
-            filter.selectedValues !== null &&
-            filter.selectedValues.length > 0
-          ) {
-            var value = _.get(submission, filter.columnValue, filter);
-
-            if (value === undefined) {
-              valid = false;
-              return;
-            }
-            switch (filter.type) {
-              case "text":
-              case "string":
-                switch (filter.filter) {
-                  case "exact":
-                    if (
-                      filter.columnValue === "data.documentNumber" ||
-                      filter.columnValue === "data.costAccount" ||
-                      filter.columnValue === "data.documentNumberSI" ||
-                      filter.columnValue === "data.incomeAccountSI" ||
-                      filter.columnValue === "data.documentNumberCostGL" ||
-                      filter.columnValue === "data.costAccountCostGL" ||
-                      filter.columnValue === "data.documentNumberIncomeGL" ||
-                      filter.columnValue === "data.incomeAccountIncomeGL"
-                    ) {
-                      valid = value
-                        .toString()
-                        .endsWith(filter.selectedValues[0].toString());
-                    } else {
-                      valid =
-                        filter.selectedValues[0].toString() ===
-                        value.toString();
-                    }
-                    break;
-                  case "includes":
-                    if (
-                      !value
-                        .toString()
-                        .includes(filter.selectedValues[0].toString())
-                    ) {
-                      valid = false;
-                    }
-                    break;
-                }
-                break;
-              case "number":
-                switch (filter.filter) {
-                  case "exact":
-                    valid = filter.selectedValues[0] === value;
-                    break;
-                  case "range":
-                    if (filter.selectedValues.length === 2) {
-                      valid =
-                        value >= filter.selectedValues[0] &&
-                        value <= filter.selectedValues[1];
-                    }
-                    break;
-                }
-                break;
-              case "dropdown":
-                switch (filter.filter) {
-                  case "exact":
-                    var exists = false;
-                    // eslint-disable-next-line no-loop-func
-                    const options = loadOptions(filter.columnValue);
-                    filter.selectedValues.forEach((filterValue) => {
-                      const tmp = options.find((option) => {
-                        return (
-                          option.value.debitorischer ===
-                          filterValue.debitorischer
-                        );
-                      });
-                      let selectedOption = "";
-                      if (tmp) {
-                        selectedOption = tmp.label;
-                      }
-
-                      // const selectedLabel = selectedOption
-                      //   ? selectedOption.label
-                      //   : null;
-                      // console.log(selectedLabel);
-                      if (filterValue === value) {
-                        exists = true;
-                      }
-                    });
-
-                    if (!exists) {
-                      valid = false;
-                    }
-                    break;
-                  case "includes":
-                    valid = false;
-                    break;
-                }
-                break;
-              case "multiple-dropdown":
-                switch (filter.filter) {
-                  case "includes":
-                    var exists = false;
-                    // eslint-disable-next-line no-loop-func
-                    filter.selectedValues.forEach((filterValue) => {
-                      if (filterValue.toString() === value) {
-                        exists = true;
-                      }
-                    });
-                    if (!exists) {
-                      valid = false;
-                    }
-                    break;
-                  case "exact":
-                    valid = false;
-                    break;
-                }
-                break;
-              case "date":
-                var v = new Date(value).setHours(0, 0, 0, 0);
-                var filterDate = new Date(filter.selectedValues[0]).setHours(
-                  0,
-                  0,
-                  0,
-                  0
-                );
-                if (
-                  v !== null &&
-                  filter.filter === "range" &&
-                  filter.selectedValues.length === 2 &&
-                  filter.selectedValues[0] !== null &&
-                  filter.selectedValues[1] !== null
-                ) {
-                  var filterEndDate = new Date(
-                    filter.selectedValues[1]
-                  ).setHours(0, 0, 0, 0);
-                  valid = v >= filterDate && v <= filterEndDate;
-                } else if (
-                  v !== null &&
-                  filter.selectedValues[0] !== null &&
-                  filter.filter === "exact" &&
-                  filter.selectedValues.length === 1
-                ) {
-                  valid = v === filterDate;
-                }
-                break;
-            }
-          }
-          if (!valid) {
-            return;
-          }
-        }
+        validCost = submission.data.yearMonth
+          ? submission.data.yearMonth.includes(fullYear)
+          : false;
+        validIncome = submission.data.yearMonthSI
+          ? submission.data.yearMonthSI.includes(fullYear)
+          : false;
+        validCostGL = submission.data.yearMonthCostGL
+          ? submission.data.yearMonthCostGL.includes(fullYear)
+          : false;
+        validIncomeGL = submission.data.yearMonthIncomeGL
+          ? submission.data.yearMonthIncomeGL.includes(fullYear)
+          : false;
+        valid = validCost || validIncome || validCostGL || validIncomeGL;
 
         if (valid) {
-          // submission.parentId = null;
-          // if (submission.parentId !== null) {
-          //   var parent = sourceSubmissions.get(submission.parentId);
-          //   if (parent !== undefined && parent.id !== undefined) {
-          //     filteredMap.set(parent.id, parent);
-          //   }
-          //   submissions.forEach((s) => {
-          //     if (s.parentId === submission.parentId) {
-          //       filteredMap.set(s.id, s);
-          //     }
-          //   });
-          // }
           filteredMap.set(submission.id, submission);
         }
       });
-      ///
-      communicationSubmissions.forEach((submission) => {
-        var valid = true;
-        filters.forEach((filter) => {
-          if (
-            !filter.columnLabel.includes(
-              "Input of Local Marketing Department"
-            ) &&
-            !filter.columnLabel.includes(
-              "Input of Central Marketing Controlling Team"
-            )
-          ) {
-            return;
-          }
-          if (
-            filter.selectedValues !== null &&
-            filter.selectedValues.length > 0
-          ) {
-            var value = _.get(submission, filter.columnValue);
-            if (value === undefined || value === null) {
-              value = "";
-            }
-            if (value === undefined) {
-              valid = false;
+      f.push({
+        columnValue: "data.yearMonth",
+        columnLabel: "Year Month",
+        type: "string",
+        filter: "includes",
+        values: [],
+        selectedValues: [fullYear],
+      } as FilterField);
+    }
+    //   const selectedValues = Array.from(
+    //     { length: 12 },
+    //     (_, i) => `${fullYear}/${i + 1}`
+    //   );
+    //   f.push({
+    //     columnValue: "data.yearMonth",
+    //     columnLabel: "Year Month",
+    //     type: "string",
+    //     filter: "includes",
+    //     values: [],
+    //     selectedValues: [selectedValues],
+    //   } as FilterField);
+    // }
+    if (f.length > 0 && submissions.length > 0) {
+      if (financialYear === "") {
+        submissions.forEach((submission) => {
+          var valid = true;
+          for (let filter of f) {
+            if (
+              filter.columnLabel.includes(
+                "Input of Local Marketing Department"
+              ) ||
+              filter.columnLabel.includes(
+                "Input of Central Marketing Controlling Team"
+              )
+            ) {
               return;
             }
-            switch (filter.type) {
-              case "text":
-              case "string":
-                switch (filter.filter) {
-                  case "exact":
-                    valid =
-                      filter.selectedValues[0].toString() === value.toString();
-                    break;
-                  case "includes":
-                    valid = value
-                      .toString()
-                      .includes(filter.selectedValues[0].toString());
-                    break;
-                }
-                break;
-              case "number":
-                switch (filter.filter) {
-                  case "exact":
-                    valid = filter.selectedValues[0] === value;
-                    break;
-                  case "range":
-                    if (filter.selectedValues.length === 2) {
-                      valid =
-                        value >= filter.selectedValues[0] &&
-                        value <= filter.selectedValues[1];
-                    }
-                    break;
-                }
-                break;
-              case "dropdown":
-              case "multiple-dropdown":
-                switch (filter.filter) {
-                  case "includes":
-                    var exists = false;
-                    filter.selectedValues.forEach((filterValue) => {
-                      if (filterValue.toString() === value) {
-                        exists = true;
+
+            if (
+              filter.selectedValues !== null &&
+              filter.selectedValues.length > 0
+            ) {
+              var value = _.get(submission, filter.columnValue, filter);
+
+              if (value === undefined) {
+                valid = false;
+                return;
+              }
+              switch (filter.type) {
+                case "text":
+                case "string":
+                  switch (filter.filter) {
+                    case "exact":
+                      if (
+                        filter.columnValue === "data.documentNumber" ||
+                        filter.columnValue === "data.costAccount" ||
+                        filter.columnValue === "data.documentNumberSI" ||
+                        filter.columnValue === "data.incomeAccountSI" ||
+                        filter.columnValue === "data.documentNumberCostGL" ||
+                        filter.columnValue === "data.costAccountCostGL" ||
+                        filter.columnValue === "data.documentNumberIncomeGL" ||
+                        filter.columnValue === "data.incomeAccountIncomeGL"
+                      ) {
+                        valid = value
+                          .toString()
+                          .endsWith(filter.selectedValues[0].toString());
+                      } else {
+                        valid =
+                          filter.selectedValues[0].toString() ===
+                          value.toString();
                       }
-                    });
-                    if (!exists) {
+                      break;
+                    case "includes":
+                      if (
+                        !value
+                          .toString()
+                          .includes(filter.selectedValues[0].toString())
+                      ) {
+                        valid = false;
+                      }
+                      break;
+                  }
+                  break;
+                case "number":
+                  switch (filter.filter) {
+                    case "exact":
+                      valid = filter.selectedValues[0] === value;
+                      break;
+                    case "range":
+                      if (filter.selectedValues.length === 2) {
+                        valid =
+                          value >= filter.selectedValues[0] &&
+                          value <= filter.selectedValues[1];
+                      }
+                      break;
+                  }
+                  break;
+                case "dropdown":
+                  switch (filter.filter) {
+                    case "exact":
+                      var exists = false;
+                      // eslint-disable-next-line no-loop-func
+                      const options = loadOptions(filter.columnValue);
+                      filter.selectedValues.forEach((filterValue) => {
+                        const tmp = options.find((option) => {
+                          return (
+                            option.value.debitorischer ===
+                            filterValue.debitorischer
+                          );
+                        });
+                        let selectedOption = "";
+                        if (tmp) {
+                          selectedOption = tmp.label;
+                        }
+
+                        // const selectedLabel = selectedOption
+                        //   ? selectedOption.label
+                        //   : null;
+                        // console.log(selectedLabel);
+                        if (filterValue === value) {
+                          exists = true;
+                        }
+                      });
+
+                      if (!exists) {
+                        valid = false;
+                      }
+                      break;
+                    case "includes":
                       valid = false;
-                    }
-                    break;
-                  case "exact":
-                    valid = false;
-                    break;
-                }
-                break;
-              case "date":
-                var v = new Date(value).setHours(0, 0, 0, 0);
-                if (
-                  v !== null &&
-                  filter.filter === "range" &&
-                  filter.selectedValues.length === 2 &&
-                  filter.selectedValues[0] !== null &&
-                  filter.selectedValues[1] !== null
-                ) {
-                  valid =
-                    v >= filter.selectedValues[0].setHours(0, 0, 0, 0) &&
-                    v <= filter.selectedValues[1].setHours(0, 0, 0, 0);
-                } else if (
-                  v !== null &&
-                  filter.selectedValues[0] !== null &&
-                  filter.filter === "exact" &&
-                  filter.selectedValues.length === 1
-                ) {
-                  valid = v === filter.selectedValues[0].setHours(0, 0, 0, 0);
-                }
-                break;
+                      break;
+                  }
+                  break;
+                case "multiple-dropdown":
+                  switch (filter.filter) {
+                    case "includes":
+                      var exists = false;
+                      // eslint-disable-next-line no-loop-func
+                      filter.selectedValues.forEach((filterValue) => {
+                        if (filterValue.toString() === value) {
+                          exists = true;
+                        }
+                      });
+                      if (!exists) {
+                        valid = false;
+                      }
+                      break;
+                    case "exact":
+                      valid = false;
+                      break;
+                  }
+                  break;
+                case "date":
+                  var v = new Date(value).setHours(0, 0, 0, 0);
+                  var filterDate = new Date(filter.selectedValues[0]).setHours(
+                    0,
+                    0,
+                    0,
+                    0
+                  );
+                  if (
+                    v !== null &&
+                    filter.filter === "range" &&
+                    filter.selectedValues.length === 2 &&
+                    filter.selectedValues[0] !== null &&
+                    filter.selectedValues[1] !== null
+                  ) {
+                    var filterEndDate = new Date(
+                      filter.selectedValues[1]
+                    ).setHours(0, 0, 0, 0);
+                    valid = v >= filterDate && v <= filterEndDate;
+                  } else if (
+                    v !== null &&
+                    filter.selectedValues[0] !== null &&
+                    filter.filter === "exact" &&
+                    filter.selectedValues.length === 1
+                  ) {
+                    valid = v === filterDate;
+                  }
+                  break;
+              }
+            }
+            if (!valid) {
+              return;
             }
           }
-        });
-        if (valid) {
-          // submission.parentId = null;
-          // if (submission.parentId !== null) {
-          //   var parent = sourceSubmissions.get(submission.parentId);
-          //   if (parent !== undefined && parent.id !== undefined) {
-          //     cFilteredMap.set(parent.id, parent);
-          //   }
-          // }
-          cFilteredMap.set(submission.id, submission);
-        }
-      });
-      ///
 
+          if (valid) {
+            // submission.parentId = null;
+            // if (submission.parentId !== null) {
+            //   var parent = sourceSubmissions.get(submission.parentId);
+            //   if (parent !== undefined && parent.id !== undefined) {
+            //     filteredMap.set(parent.id, parent);
+            //   }
+            //   submissions.forEach((s) => {
+            //     if (s.parentId === submission.parentId) {
+            //       filteredMap.set(s.id, s);
+            //     }
+            //   });
+            // }
+            filteredMap.set(submission.id, submission);
+          }
+        });
+        ///
+        communicationSubmissions.forEach((submission) => {
+          var valid = true;
+          filters.forEach((filter) => {
+            if (
+              !filter.columnLabel.includes(
+                "Input of Local Marketing Department"
+              ) &&
+              !filter.columnLabel.includes(
+                "Input of Central Marketing Controlling Team"
+              )
+            ) {
+              return;
+            }
+            if (
+              filter.selectedValues !== null &&
+              filter.selectedValues.length > 0
+            ) {
+              var value = _.get(submission, filter.columnValue);
+              if (value === undefined || value === null) {
+                value = "";
+              }
+              if (value === undefined) {
+                valid = false;
+                return;
+              }
+              switch (filter.type) {
+                case "text":
+                case "string":
+                  switch (filter.filter) {
+                    case "exact":
+                      valid =
+                        filter.selectedValues[0].toString() ===
+                        value.toString();
+                      break;
+                    case "includes":
+                      valid = value
+                        .toString()
+                        .includes(filter.selectedValues[0].toString());
+                      break;
+                  }
+                  break;
+                case "number":
+                  switch (filter.filter) {
+                    case "exact":
+                      valid = filter.selectedValues[0] === value;
+                      break;
+                    case "range":
+                      if (filter.selectedValues.length === 2) {
+                        valid =
+                          value >= filter.selectedValues[0] &&
+                          value <= filter.selectedValues[1];
+                      }
+                      break;
+                  }
+                  break;
+                case "dropdown":
+                case "multiple-dropdown":
+                  switch (filter.filter) {
+                    case "includes":
+                      var exists = false;
+                      filter.selectedValues.forEach((filterValue) => {
+                        if (filterValue.toString() === value) {
+                          exists = true;
+                        }
+                      });
+                      if (!exists) {
+                        valid = false;
+                      }
+                      break;
+                    case "exact":
+                      valid = false;
+                      break;
+                  }
+                  break;
+                case "date":
+                  var v = new Date(value).setHours(0, 0, 0, 0);
+                  if (
+                    v !== null &&
+                    filter.filter === "range" &&
+                    filter.selectedValues.length === 2 &&
+                    filter.selectedValues[0] !== null &&
+                    filter.selectedValues[1] !== null
+                  ) {
+                    valid =
+                      v >= filter.selectedValues[0].setHours(0, 0, 0, 0) &&
+                      v <= filter.selectedValues[1].setHours(0, 0, 0, 0);
+                  } else if (
+                    v !== null &&
+                    filter.selectedValues[0] !== null &&
+                    filter.filter === "exact" &&
+                    filter.selectedValues.length === 1
+                  ) {
+                    valid = v === filter.selectedValues[0].setHours(0, 0, 0, 0);
+                  }
+                  break;
+              }
+            }
+          });
+          if (valid) {
+            // submission.parentId = null;
+            // if (submission.parentId !== null) {
+            //   var parent = sourceSubmissions.get(submission.parentId);
+            //   if (parent !== undefined && parent.id !== undefined) {
+            //     cFilteredMap.set(parent.id, parent);
+            //   }
+            // }
+            cFilteredMap.set(submission.id, submission);
+          }
+        });
+        ///
+      }
       cFilteredMap.forEach((value) => {
         if (value.parentId !== null) {
           if (!cFilteredMap.has(value.parentId)) {
@@ -1448,7 +1499,6 @@ export function SubmissionsTable(props: Props) {
         }
         filtered.push(value);
       });
-
       setFilteredCommunicationSubmissions(filteredCommunication);
       setFilteredSubmissions(filtered);
     } else {
@@ -1469,7 +1519,7 @@ export function SubmissionsTable(props: Props) {
       setFilteredSubmissions(submissions);
       setFilteredCommunicationSubmissions(communicationSubmissions);
     }
-  }, [filters, submissions, communicationSubmissions, onlyMine]);
+  }, [filters, submissions, communicationSubmissions, onlyMine, financialYear]);
 
   // const getHeapInfo = () => {
   //   var memory = (window.performance as any).memory;
@@ -3679,7 +3729,7 @@ export function SubmissionsTable(props: Props) {
       title: "Posting Date",
       width: columnWidth("data.postingDate", 200),
       group: "Cost Invoices",
-
+      type: "date",
       resizable: true,
       hidden: visibilityController("costInvoices", "data.postingDate"),
       cellRenderer: (props: any) => (
@@ -3700,7 +3750,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.documentDate",
       title: "Document Date",
       group: "Cost Invoices",
-
+      type: "date",
       width: columnWidth("data.documentDate", 200),
       resizable: true,
       hidden: visibilityController("costInvoices", "data.documentDate"),
@@ -3724,7 +3774,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.documentNumber", 200),
       resizable: true,
       group: "Cost Invoices",
-
+      type: "text",
       hidden: visibilityController("costInvoices", "data.documentNumber"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3745,7 +3795,7 @@ export function SubmissionsTable(props: Props) {
       title: "Invoice Number",
       width: columnWidth("data.invoiceNumber", 200),
       group: "Cost Invoices",
-
+      type: "text",
       resizable: true,
       hidden: visibilityController("costInvoices", "data.invoiceNumber"),
       cellRenderer: (props: any) => (
@@ -3768,7 +3818,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.costAccount", 200),
       resizable: true,
       group: "Cost Invoices",
-
+      type: "text",
       hidden: visibilityController("costInvoices", "data.costAccount"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3789,7 +3839,7 @@ export function SubmissionsTable(props: Props) {
       title: "Invoice Supplier",
       width: columnWidth("data.name1", 200),
       group: "Cost Invoices",
-
+      type: "text",
       resizable: true,
       hidden: visibilityController("costInvoices", "data.name1"),
       cellRenderer: (props: any) => (
@@ -3811,7 +3861,7 @@ export function SubmissionsTable(props: Props) {
       title: "Cost Amount (LC)",
       width: columnWidth("data.costAmountLC", 200),
       group: "Cost Invoices",
-
+      type: "number",
       resizable: true,
       hidden: visibilityController("costInvoices", "data.costAmountLC"),
       cellRenderer: (props: any) => (
@@ -3837,7 +3887,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.costAmountDC",
       title: "Cost Amount (DC)",
       group: "Cost Invoices",
-
+      type: "number",
       width: columnWidth("data.costAmountDC", 200),
       resizable: true,
       hidden: visibilityController("costInvoices", "data.costAmountDC"),
@@ -3861,7 +3911,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.dc", 200),
       resizable: true,
       group: "Cost Invoices",
-
+      type: "text",
       hidden: visibilityController("costInvoices", "data.dc"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3883,7 +3933,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.costAmountEUR", 200),
       resizable: true,
       group: "Cost Invoices",
-
+      type: "number",
       hidden: visibilityController("costInvoices", "data.costAmountEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3910,7 +3960,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.costStatus", 200),
       resizable: true,
       group: "Cost Invoices",
-
+      type: "dropdown",
       hidden: visibilityController("costInvoices", "data.costStatus"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3931,7 +3981,7 @@ export function SubmissionsTable(props: Props) {
       title: "Year / Month",
       width: columnWidth("data.yearMonthSI", 200),
       group: "Sales Invoices",
-
+      type: "text",
       header: "Sales Invoices",
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.yearMonthSI"),
@@ -3954,7 +4004,7 @@ export function SubmissionsTable(props: Props) {
       title: "Document Type",
       width: columnWidth("data.documentTypeSI", 200),
       group: "Sales Invoices",
-
+      type: "text",
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.documentTypeSI"),
       cellRenderer: (props: any) => (
@@ -3976,7 +4026,7 @@ export function SubmissionsTable(props: Props) {
       title: "Posting Date",
       width: columnWidth("data.postingDateSI", 200),
       group: "Sales Invoices",
-
+      type: "date",
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.postingDateSI"),
       cellRenderer: (props: any) => (
@@ -3997,7 +4047,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.documentDateSI",
       title: "Document Date",
       group: "Sales Invoices",
-
+      type: "date",
       width: columnWidth("data.documentDateSI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.documentDateSI"),
@@ -4017,7 +4067,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.documentNumberSI",
       group: "Sales Invoices",
-
+      type: "date",
       dataKey: "data.documentNumberSI",
       title: "Document Number",
       width: columnWidth("data.documentNumberSI", 200),
@@ -4040,7 +4090,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.invoiceNumberSI",
       dataKey: "data.invoiceNumberSI",
       group: "Sales Invoices",
-
+      type: "date",
       title: "Invoice Number",
       width: columnWidth("data.invoiceNumberSI", 200),
       resizable: true,
@@ -4064,7 +4114,7 @@ export function SubmissionsTable(props: Props) {
       title: "Income Account",
       width: columnWidth("data.incomeAccountSI", 200),
       group: "Sales Invoices",
-
+      type: "text",
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.incomeAccountSI"),
       cellRenderer: (props: any) => (
@@ -4085,7 +4135,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.name1SI",
       title: "Invoice Recipient",
       group: "Sales Invoices",
-
+      type: "text",
       width: columnWidth("data.name1SI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.name1SI"),
@@ -4107,7 +4157,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.sapNumberSI",
       title: "Invoice Recipient Number",
       group: "Sales Invoices",
-
+      type: "text",
       width: columnWidth("data.sapNumberSI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.sapNumberSI"),
@@ -4130,7 +4180,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.incomeAmountLCSI",
       title: "Income Amount (LC)",
       group: "Sales Invoices",
-
+      type: "number",
       width: columnWidth("data.incomeAmountLCSI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.incomeAmountLCSI"),
@@ -4157,7 +4207,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.incomeAmountDCSI",
       title: "Income Amount (DC)",
       group: "Sales Invoices",
-
+      type: "number",
       width: columnWidth("data.incomeAmountDCSI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.incomeAmountDCSI"),
@@ -4181,7 +4231,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.dcSI", 200),
       resizable: true,
       group: "Sales Invoices",
-
+      type: "text",
       hidden: visibilityController("salesInvoices", "data.dcSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -4229,7 +4279,7 @@ export function SubmissionsTable(props: Props) {
       title: "Invoice Status (Paid/Not Paid)",
       width: columnWidth("data.invoiceStatusSI", 200),
       group: "Sales Invoices",
-
+      type: "dropdown",
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.invoiceStatusSI"),
       cellRenderer: (props: any) => (
@@ -4252,6 +4302,7 @@ export function SubmissionsTable(props: Props) {
       title: "Activity ID for Portal Vendors",
       width: columnWidth("data.activityIdSI", 200),
       resizable: true,
+      type: "text",
       hidden: visibilityController("salesInvoices", "data.activityIdSI"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -4271,6 +4322,7 @@ export function SubmissionsTable(props: Props) {
       group: "Sales Invoices",
       dataKey: "data.additionalMarketingInformation",
       title: "Additional Marketing Information",
+      type: "text",
       width: columnWidth("data.additionalMarketingInformation", 200),
       resizable: true,
       hidden: visibilityController(
@@ -4296,7 +4348,7 @@ export function SubmissionsTable(props: Props) {
       title: "Year / Month",
       header: "Cost GL Postings",
       group: "Cost GL Postings",
-
+      type: "text",
       width: columnWidth("data.yearMonthCostGL", 200),
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.yearMonthCostGL"),
@@ -4317,7 +4369,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.documentTypeCostGL",
       dataKey: "data.documentTypeCostGL",
       group: "Cost GL Postings",
-
+      type: "text",
       title: "Document Type",
       width: columnWidth("data.documentTypeCostGL", 200),
       resizable: true,
@@ -4338,7 +4390,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.postingDateCostGL",
       group: "Cost GL Postings",
-
+      type: "date",
       dataKey: "data.postingDateCostGL",
       title: "Posting Date",
       width: columnWidth("data.postingDateCostGL", 200),
@@ -4363,7 +4415,7 @@ export function SubmissionsTable(props: Props) {
       title: "Document Date",
       width: columnWidth("data.documentDateCostGL", 200),
       group: "Cost GL Postings",
-
+      type: "date",
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.documentDateCostGL"),
       cellRenderer: (props: any) => (
@@ -4385,7 +4437,7 @@ export function SubmissionsTable(props: Props) {
       title: "Document Number",
       width: columnWidth("data.documentNumberCostGL", 200),
       group: "Cost GL Postings",
-
+      type: "text",
       resizable: true,
       hidden: visibilityController(
         "costGlPostings",
@@ -4410,7 +4462,7 @@ export function SubmissionsTable(props: Props) {
       title: "Text",
       width: columnWidth("data.textCostGL", 200),
       group: "Cost GL Postings",
-
+      type: "text",
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.textCostGL"),
       cellRenderer: (props: any) => (
@@ -4431,7 +4483,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.costAccountCostGL",
       title: "Cost Account",
       group: "Cost GL Postings",
-
+      type: "text",
       width: columnWidth("data.costAccountCostGL", 200),
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.costAccountCostGL"),
@@ -4454,7 +4506,7 @@ export function SubmissionsTable(props: Props) {
       title: "Cost Amount (LC)",
       width: columnWidth("data.costAmountLCCostGL", 200),
       group: "Cost GL Postings",
-
+      type: "number",
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.costAmountLCCostGL"),
       cellRenderer: (props: any) => (
@@ -4481,7 +4533,7 @@ export function SubmissionsTable(props: Props) {
       title: "Cost Amount (DC)",
       width: columnWidth("data.costAmountDCCostGL", 200),
       group: "Cost GL Postings",
-
+      type: "number",
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.costAmountDCCostGL"),
       cellRenderer: (props: any) => (
@@ -4502,7 +4554,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.dcCostGL",
       title: "DC",
       group: "Cost GL Postings",
-
+      type: "text",
       width: columnWidth("data.dcCostGL", 200),
       resizable: true,
       hidden: visibilityController("costGlPostings", "data.dcCostGL"),
@@ -4525,6 +4577,7 @@ export function SubmissionsTable(props: Props) {
       title: "Cost Amount (EUR)",
       width: columnWidth("data.costAmountEURCostGL", 200),
       group: "Cost GL Postings",
+      type: "number",
       resizable: true,
       hidden: visibilityController(
         "costGlPostings",
@@ -4554,7 +4607,7 @@ export function SubmissionsTable(props: Props) {
       title: "Year / Month",
       width: columnWidth("data.yearMonthIncomeGL", 200),
       group: "Income GL Postings",
-
+      type: "text",
       header: "Income GL Postings",
       resizable: true,
       hidden: visibilityController(
@@ -4579,7 +4632,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.documentTypeIncomeGL",
       title: "Document Type",
       group: "Income GL Postings",
-
+      type: "text",
       width: columnWidth("data.documentTypeIncomeGL", 200),
       resizable: true,
       hidden: visibilityController(
@@ -4604,7 +4657,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.postingDateIncomeGL",
       title: "Posting Date",
       group: "Income GL Postings",
-
+      type: "date",
       width: columnWidth("data.postingDateIncomeGL", 200),
       resizable: true,
       hidden: visibilityController(
@@ -4629,7 +4682,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.documentDateIncomeGL",
       title: "Document Date",
       group: "Income GL Postings",
-
+      type: "date",
       width: columnWidth("data.documentDateIncomeGL", 200),
       resizable: true,
       hidden: visibilityController(
@@ -4653,7 +4706,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.documentNumberIncomeGL",
       dataKey: "data.documentNumberIncomeGL",
       group: "Income GL Postings",
-
+      type: "text",
       title: "Document Number",
       width: columnWidth("data.documentNumberIncomeGL", 200),
       resizable: true,
@@ -4678,7 +4731,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.textIncomeGL",
       dataKey: "data.textIncomeGL",
       group: "Income GL Postings",
-
+      type: "text",
       title: "Text",
       width: columnWidth("data.textIncomeGL", 200),
       resizable: true,
@@ -4700,7 +4753,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.incomeAccountIncomeGL",
       dataKey: "data.incomeAccountIncomeGL",
       group: "Income GL Postings",
-
+      type: "text",
       title: "Income Account",
       width: columnWidth("data.incomeAccountIncomeGL", 200),
       resizable: true,
@@ -4728,7 +4781,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.incomeAmountLCIncomeGL", 200),
       resizable: true,
       group: "Income GL Postings",
-
+      type: "number",
       hidden: visibilityController(
         "incomeGlPostings",
         "data.incomeAmountLCIncomeGL"
@@ -4756,7 +4809,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.incomeAmountDCIncomeGL",
       title: "Income Amount (DC)",
       group: "Income GL Postings",
-
+      type: "number",
       width: columnWidth("data.incomeAmountDCIncomeGL", 200),
       resizable: true,
       hidden: visibilityController(
@@ -4781,7 +4834,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.dcIncomeGL",
       title: "DC",
       group: "Income GL Postings",
-
+      type: "text",
       width: columnWidth("data.dcIncomeGL", 200),
       resizable: true,
       hidden: visibilityController("incomeGlPostings", "data.dcIncomeGL"),
@@ -4802,7 +4855,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.incomeAmountEurIncomeGL",
       dataKey: "data.incomeAmountEurIncomeGL",
       group: "Income GL Postings",
-
+      type: "number",
       title: "Income Amount (EUR)",
       width: columnWidth("data.incomeAmountEurIncomeGL", 200),
       resizable: true,
@@ -4837,7 +4890,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalIncomeLC", 200),
       resizable: true,
       group: "Project Results",
-
+      type: "number",
       hidden: visibilityController("projectResults", "data.totalIncomeLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -4864,7 +4917,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalCostsLC", 200),
       resizable: true,
       group: "Project Results",
-
+      type: "number",
       hidden: visibilityController("projectResults", "data.totalCostsLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -4891,7 +4944,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalProfitLC", 200),
       resizable: true,
       group: "Project Results",
-
+      type: "number",
       hidden: visibilityController("projectResults", "data.totalProfitLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -4923,7 +4976,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalLossLC", 200),
       resizable: true,
       group: "Project Results",
-
+      type: "number",
       hidden: visibilityController("projectResults", "data.totalLossLC"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -4957,7 +5010,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalIncomeEUR", 200),
       resizable: true,
       group: "Project Results",
-
+      type: "number",
       hidden: visibilityController("projectResults", "data.totalIncomeEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -4984,7 +5037,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalCostsEUR", 200),
       resizable: true,
       group: "Project Results",
-
+      type: "number",
       hidden: visibilityController("projectResults", "data.totalCostsEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -5011,7 +5064,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalProfitEUR", 200),
       resizable: true,
       group: "Project Results",
-
+      type: "number",
       hidden: visibilityController("projectResults", "data.totalProfitEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -5045,7 +5098,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalLossEUR", 200),
       resizable: true,
       group: "Project Results",
-
+      type: "number",
       hidden: visibilityController("projectResults", "data.totalLossEUR"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -5081,7 +5134,7 @@ export function SubmissionsTable(props: Props) {
       resizable: true,
       header: "Control Checks",
       group: "Control Checks",
-
+      type: "number",
       hidden: visibilityController("controlChecks", "data.totalCostsTool"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -5110,7 +5163,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalCostsSAP", 200),
       resizable: true,
       group: "Control Checks",
-
+      type: "number",
       hidden: visibilityController("controlChecks", "data.totalCostsSAP"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -5139,7 +5192,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalIncomeTool", 200),
       resizable: true,
       group: "Control Checks",
-
+      type: "number",
       hidden: visibilityController("controlChecks", "data.totalIncomeTool"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -5168,7 +5221,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.totalIncomeSAP", 200),
       resizable: true,
       group: "Control Checks",
-
+      type: "number",
       hidden: visibilityController("controlChecks", "data.totalIncomeSAP"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -5425,6 +5478,29 @@ export function SubmissionsTable(props: Props) {
           }
         }}
       />
+      <Text key={"Text1"} mb="8px">
+        Financial year
+      </Text>
+      <Box width={"50%"}>
+        <Select
+          key={"select1"}
+          theme={(theme) => ({
+            ...theme,
+            borderRadius: 6,
+            colors: {
+              ...theme.colors,
+              primary: "#3082CE",
+            },
+          })}
+          classNamePrefix="select"
+          name="color"
+          isClearable={false}
+          options={[...Year, { label: "ALL", value: "" }]}
+          onChange={(value: any) => {
+            setFinancialYear(value.value);
+          }}
+        />
+      </Box>
       <Box h="70px" textAlign={"end"}>
         <IconButton
           icon={<IoSave />}
@@ -8548,6 +8624,12 @@ export function SubmissionsTable(props: Props) {
                                       tv = [0, 0];
                                     }
                                     break;
+                                  case "date":
+                                    if (temp[index].filter === "exact") {
+                                      tv = [new Date()];
+                                    } else {
+                                      tv = [new Date(), new Date()];
+                                    }
                                 }
                                 temp[index].selectedValues = tv;
                                 setFilters(temp);
