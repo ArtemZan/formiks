@@ -58,9 +58,11 @@ func (r *Submission) UpsertVendorTablePreset(c *gin.Context) {
 func (r *Submission) Fetch(c *gin.Context) {
 	filter := bson.M{}
 	if len(c.Query("project")) > 0 {
-		filter = bson.M{"project": c.Query("project")}
+		filter = bson.M{"data.projectNumber": c.Query("project")}
 	}
+	
 	submissions, err := r.repo.Fetch(c.Request.Context(), filter)
+	fmt.Println(submissions)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to fetch submissions", err)
 		c.Status(http.StatusInternalServerError)
@@ -301,7 +303,6 @@ func (r *Submission) Delete(c *gin.Context) {
 	}
 	response, err := r.repo.FetchByIDWithChildren(context.Background(), id)
 	for _, row := range response.Children {
-		fmt.Println(row.ID)
 		err = r.repo.Delete(c.Request.Context(), row.ID, true)
 	}
 	err = r.repo.Delete(c.Request.Context(), id, true)

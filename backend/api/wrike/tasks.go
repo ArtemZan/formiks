@@ -40,7 +40,6 @@ func updateTask(id, description, customFields, importance string, dates ProjectS
 	// client := &http.Client{}
 	client := network.Client
 	form := url.Values{}
-	fmt.Println(customFields)
 	form.Add("customFields", customFields)
 	form.Add("description", description)
 	if len(importance) > 0 {
