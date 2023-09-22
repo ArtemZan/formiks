@@ -5,7 +5,7 @@ import {
   Input,
   Text,
   useColorModeValue,
-  Icon,
+  // Icon,
   IconButton,
   Stack,
   VStack,
@@ -30,16 +30,16 @@ import {
   useReducer,
   useState,
 } from "react";
-import { MdEmail } from "react-icons/md";
-import styled from "styled-components";
+// import { MdEmail } from "react-icons/md";
+// import styled from "styled-components";
 import EditableTableCell from "../../components/EditableTableCell";
-import ThemedEditableTableCell from "../../components/ThemedEditableTableCell";
+// import ThemedEditableTableCell from "../../components/ThemedEditableTableCell";
 import Creatable from "react-select/creatable";
-import { keyframes } from "styled-components";
-import CreateModal from "../../components/RejectModal";
+// import { keyframes } from "styled-components";
+// import CreateModal from "../../components/RejectModal";
 import Select from "react-select";
 import { Submission } from "../../types/submission";
-import { FaChevronRight, FaChevronDown } from "react-icons/fa";
+// import { FaChevronRight, FaChevronDown } from "react-icons/fa";
 import Toast, { ToastType } from "../../components/Toast";
 import { getAccountInfo } from "../../utils/MsGraphApiCall";
 
@@ -60,7 +60,7 @@ import {
   RiUserFill,
   RiGroupFill,
   IoSave,
-  FaSleigh,
+  // FaSleigh,
   RiAlbumFill,
   RiAlbumLine,
 } from "react-icons/all";
@@ -73,9 +73,9 @@ import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
 import { FilterField, Template } from "../../types/template";
 import RejectModal from "../../components/RejectModal";
-import { types } from "util";
-import { modalPropTypes } from "rsuite/esm/Overlay/Modal";
-import { table } from "console";
+// import { types } from "util";
+// import { modalPropTypes } from "rsuite/esm/Overlay/Modal";
+// import { table } from "console";
 
 interface Props {
   history: any;
@@ -101,11 +101,11 @@ var SapStatus: any[] = [
   { label: "Created", value: "created" },
   { label: "None", value: "none" },
 ];
-var CostStatuses: any[] = [
-  { label: "Cost Invoiced", value: "Cost Invoiced" },
-  { label: "Cost Not Invoiced", value: "Cost Not Invoiced" },
-  { label: "Not Relevant", value: "Not Relevant" },
-];
+// var CostStatuses: any[] = [
+//   { label: "Cost Invoiced", value: "Cost Invoiced" },
+//   { label: "Cost Not Invoiced", value: "Cost Not Invoiced" },
+//   { label: "Not Relevant", value: "Not Relevant" },
+// ];
 var submissionData: any;
 
 var defaultColumns = [
@@ -944,42 +944,42 @@ const DisplayedColumnsList = [
   },
 ];
 
-const DisplayedColumnsListProjects = DisplayedColumnsList.filter((option) =>
-  [
-    "all",
-    "none",
-    "generalInformation",
-    "projectInformation",
-    "purchaseOrder",
-    "costInvoices",
-    "salesInvoices",
-    "costGlPostings",
-    "incomeGlPostings",
-    "projectResults",
-    "controlChecks",
-  ].includes(option.value)
-);
+// const DisplayedColumnsListProjects = DisplayedColumnsList.filter((option) =>
+//   [
+//     "all",
+//     "none",
+//     "generalInformation",
+//     "projectInformation",
+//     "purchaseOrder",
+//     "costInvoices",
+//     "salesInvoices",
+//     "costGlPostings",
+//     "incomeGlPostings",
+//     "projectResults",
+//     "controlChecks",
+//   ].includes(option.value)
+// );
 
-const DisplayedColumnsListCommunication = DisplayedColumnsList.filter(
-  (option) => ["all", "none", "CMCT", "LMD"].includes(option.value)
-);
+// const DisplayedColumnsListCommunication = DisplayedColumnsList.filter(
+//   (option) => ["all", "none", "CMCT", "LMD"].includes(option.value)
+// );
 
-const DisplayedColumnsListOptions = DisplayedColumnsList.flatMap(
-  (group: any) => {
-    // Check if group has a children property and that it's an array
-    if (Array.isArray(group.children)) {
-      return group.children.map((column: any) => {
-        return {
-          label: `${column.label} (${group.label})`,
-          value: column.value,
-          type: column.type,
-        };
-      });
-    }
-    // Return an empty array if the group doesn't have children
-    return [];
-  }
-);
+// const DisplayedColumnsListOptions = DisplayedColumnsList.flatMap(
+//   (group: any) => {
+//     // Check if group has a children property and that it's an array
+//     if (Array.isArray(group.children)) {
+//       return group.children.map((column: any) => {
+//         return {
+//           label: `${column.label} (${group.label})`,
+//           value: column.value,
+//           type: column.type,
+//         };
+//       });
+//     }
+//     // Return an empty array if the group doesn't have children
+//     return [];
+//   }
+// );
 
 export function SubmissionsTable(props: Props) {
   const [rejectedSubmission, setRejectedSubmission] = useState<
@@ -6045,7 +6045,7 @@ export function SubmissionsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              if (value.length != 12) {
+                              if (value.length !== 12) {
                                 toast(
                                   <Toast
                                     title={
@@ -6218,7 +6218,7 @@ export function SubmissionsTable(props: Props) {
                             rowIndex={props.rowIndex}
                             columnKey={props.column.dataKey}
                             rowData={
-                              props.rowData != undefined ? props.rowData : ""
+                              props.rowData !== undefined ? props.rowData : ""
                             }
                             initialValue={props.cellData}
                           />
@@ -6621,7 +6621,7 @@ export function SubmissionsTable(props: Props) {
                               path: string,
                               value: any
                             ) => {
-                              if (value.length != 12) {
+                              if (value.length !== 12) {
                                 toast(
                                   <Toast
                                     title={
@@ -6733,7 +6733,7 @@ export function SubmissionsTable(props: Props) {
                                   vs.forEach((s) => {
                                     if (s.data.vendorName !== undefined) {
                                       var vendor: string = "";
-                                      var vendorBU: string = "";
+                                      // var vendorBU: string = "";
                                       if (currentVendor.includes("BU")) {
                                         currentVendor = currentVendor
                                           .toString()
@@ -6750,13 +6750,13 @@ export function SubmissionsTable(props: Props) {
                                             s.data.vendorName.toString()
                                               .length - 7
                                           );
-                                        vendorBU = s.data.vendorName
-                                          .toString()
-                                          .substring(
-                                            s.data.vendorName.toString()
-                                              .length - 3,
-                                            s.data.vendorName.toString().length
-                                          );
+                                        // vendorBU = s.data.vendorName
+                                        //   .toString()
+                                        //   .substring(
+                                        //     s.data.vendorName.toString()
+                                        //       .length - 3,
+                                        //     s.data.vendorName.toString().length
+                                        //   );
                                       } else {
                                         vendor = s.data.vendorName;
                                       }
@@ -6830,7 +6830,7 @@ export function SubmissionsTable(props: Props) {
                                     break;
                                   case "Local Multi Vendor" ||
                                     "European Multi Vendor":
-                                    vs.map((s) => {
+                                    vs.forEach((s) => {
                                       if (!isNaN(s.data.vendorBudgetAmount)) {
                                         amount += Number(
                                           s.data.vendorBudgetAmount
@@ -8381,7 +8381,7 @@ export function SubmissionsTable(props: Props) {
                   return;
                 }
                 setSelectedTemplate(name.label);
-                var template = templates.find((t) => t.name == name.label);
+                var template = templates.find((t) => t.name === name.label);
                 if (template) {
                   setDisplayedColumns(template.columns);
                   setFilters(template.filters);

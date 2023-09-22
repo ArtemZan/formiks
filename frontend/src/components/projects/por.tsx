@@ -546,6 +546,7 @@ export default function Elov(props: Props) {
       });
     }
   }, [props.submission]);
+
   return (
     <Box>
       <VStack spacing="20px" mb={"40px"} align="start">
@@ -638,7 +639,6 @@ export default function Elov(props: Props) {
             Schweiz AG')
           </AlertDescription>
         </Alert>
-
         <Box w="100%">
           <Text mb="8px">Project Number</Text>
           <Input
@@ -651,47 +651,64 @@ export default function Elov(props: Props) {
                 setProjectNumber(event.target.value);
                 if (event.target.value.length === 12) {
                   var allSubs: any[] = [];
-                  if (submissions.length === 0) {
-                    RestAPI.getSubmissions().then((response) => {
+                  const fetchData = async () => {
+                    try {
+                      const response = await RestAPI.getSubmissions(
+                        event.target.value
+                      );
                       setSubmissions(response.data);
                       allSubs = response.data;
-                    });
-                  } else {
-                    allSubs = submissions;
-                  }
-                  setProjectNumberCheck("-");
-                  for (let sub of allSubs) {
-                    if (
-                      sub.parentId === null &&
-                      sub.data.projectNumber === event.target.value
-                    ) {
-                      setProjectNumberCheck(sub.data.projectNumber);
-                      var children: any[] = [];
-                      var vendorNew: any[] = [];
-                      for (let child of submissions) {
-                        if (child.parentId === sub.id) {
-                          children.push(child);
+                      setProjectNumberCheck("-");
+                      for (let sub of allSubs) {
+                        if (
+                          sub.parentId === null &&
+                          sub.data.projectNumber === event.target.value
+                        ) {
+                          console.log("check");
+                          setProjectNumberCheck(sub.data.projectNumber);
+                          var children: any[] = [];
+                          var vendorNew: any[] = [];
+                          for (let child of submissions) {
+                            if (child.parentId === sub.id) {
+                              children.push(child);
 
-                          if (child.group === "vendor") {
-                            vendorNew.push({
-                              label: child.data.vendorName ?? "",
-                              value: child.data.vendorName ?? "",
-                            });
+                              if (child.group === "vendor") {
+                                vendorNew.push({
+                                  label: child.data.vendorName ?? "",
+                                  value: child.data.vendorName ?? "",
+                                });
+                              }
+                            }
                           }
+                          setVendorsDD(VendorsNames);
+                          setVendorsNames([]);
+                          VendorsNames = vendorNew;
+                          sub.children = children;
+                          setSub(sub);
+                          setProjectName(sub.data.projectName || "");
+                        } else {
+                          // setProjectNumberCheck("-");
+                          // setProjectName("");
+                          // setVendorsNames([]);
                         }
                       }
-                      setVendorsDD(VendorsNames);
-                      setVendorsNames([]);
-                      VendorsNames = vendorNew;
-                      sub.children = children;
-                      setSub(sub);
-                      setProjectName(sub.data.projectName || "");
-                    } else {
-                      // setProjectNumberCheck("-");
-                      // setProjectName("");
-                      // setVendorsNames([]);
+                    } catch (error) {
+                      console.error("Error during fetching submissions", error);
                     }
-                  }
+                  };
+                  fetchData();
+                  // if (submissions.length === 0) {
+                  // RestAPI.getSubmissions(event.target.value).then(
+                  //   (response) => {
+                  //     console.log(response.data);
+                  //     setSubmissions(response.data);
+                  //     allSubs = response.data;
+                  //   }
+                  // );
+                  // console.log(allSubs);
+                  // } else {
+                  //   allSubs = submissions;
+                  // }
                 } else {
                   setProjectNumberCheck("-");
                   setProjectName("");
