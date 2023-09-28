@@ -43,7 +43,6 @@ export function Explorer(props: Props) {
       setProjects(sortedProjects);
       setFilteredProjects(sortedProjects);
     });
-
     RestAPI.getRoles().then((response) =>
       setAdminRole(response.data.includes("administrator"))
     );
