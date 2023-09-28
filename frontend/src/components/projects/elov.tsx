@@ -532,7 +532,6 @@ export default function Elov(props: Props) {
       "status",
       "PH1",
     ];
-    console.log(submission);
     var sub = submission.submission;
     var vendor = submission.children.filter((el) => el.group === "vendor")[0];
     Object.keys(sub.data).forEach((key: any) => {
@@ -583,7 +582,6 @@ export default function Elov(props: Props) {
         }
       }
     });
-    console.log(fieldKeys);
     setInputErrors(fieldKeys);
     return fieldKeys;
   }

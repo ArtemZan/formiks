@@ -653,18 +653,23 @@ export default function Elov(props: Props) {
                   var allSubs: any[] = [];
                   const fetchData = async () => {
                     try {
-                      const response = await RestAPI.getSubmissions(
-                        event.target.value
-                      );
-                      setSubmissions(response.data);
-                      allSubs = response.data;
+                      if (submissions.length === 0) {
+                        const response = await RestAPI.getSubmissions(
+                          event.target.value
+                        );
+
+                        setSubmissions(response.data);
+                        allSubs = response.data;
+                      } else {
+                        allSubs = submissions;
+                      }
+
                       setProjectNumberCheck("-");
                       for (let sub of allSubs) {
                         if (
                           sub.parentId === null &&
                           sub.data.projectNumber === event.target.value
                         ) {
-                          console.log("check");
                           setProjectNumberCheck(sub.data.projectNumber);
                           var children: any[] = [];
                           var vendorNew: any[] = [];

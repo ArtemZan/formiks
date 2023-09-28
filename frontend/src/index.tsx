@@ -8,6 +8,7 @@ import {
   ColorModeProvider,
   extendTheme,
 } from "@chakra-ui/react";
+import { RestAPI } from "./api/rest";
 import { mode } from "@chakra-ui/theme-tools";
 import "focus-visible/dist/focus-visible";
 import { Global, css } from "@emotion/react";
@@ -16,6 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "rsuite/dist/rsuite.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
+import { GroupProvider } from "./utils/GroupContext";
 
 // MSAL imports
 import {
@@ -53,17 +55,10 @@ msalInstance.addEventCallback((event: EventMessage) => {
   }
 });
 
-axios.interceptors.request.use(async (config: any) => {
-  const account = msalInstance.getActiveAccount();
-  if (account) {
-    const response = await msalInstance.acquireTokenSilent({
-      ...loginRequest,
-      account: account,
-    });
-    config.headers.Authorization = `Bearer ${response.idToken}`;
-  }
-  return config;
-});
+// axios.interceptors.request.use(async (config: any) => {
+//   const account = msalInstance.getActiveAccount();
+//   RestAPI.getRolesAD(account ? await account.idTokenClaims : null);
+// });
 
 ReactDOM.render(
   <ChakraProvider
@@ -83,7 +78,9 @@ ReactDOM.render(
   >
     <Global styles={GlobalStyles} />
     <Router>
-      <App pca={msalInstance} />
+      <GroupProvider pca={msalInstance}>
+        <App pca={msalInstance} />
+      </GroupProvider>
     </Router>
   </ChakraProvider>,
   document.getElementById("root")

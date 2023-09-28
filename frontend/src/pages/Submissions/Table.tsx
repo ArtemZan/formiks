@@ -2075,7 +2075,6 @@ export function SubmissionsTable(props: Props) {
       });
 
       setCommunicationSubmissions(cSubs);
-      console.log(cSubs);
       setFilteredCommunicationSubmissions(cSubs);
       setSourceSubmissions(ss);
       setSubmissions(sortedSubs);
@@ -2577,7 +2576,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.companyCode", 150),
       resizable: true,
       hidden: visibilityController("generalInformation", "data.companyCode"),
-      type: "number",
+      type: "string",
       // className: "dark-green-3-border",
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -3516,7 +3515,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.purchaseOrderServiceProvider",
       title: "Purchase Order Service Provider",
       group: "Purchase Order",
-
+      type: "text",
       header: "Purchase Order",
       width: columnWidth("data.purchaseOrderServiceProvider", 200),
       resizable: true,
@@ -3680,7 +3679,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.purchaseOrderStatus",
       title: "Purchase Order Status",
       group: "Purchase Order",
-
+      type: "dropdown",
       width: columnWidth("data.purchaseOrderStatus", 200),
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.purchaseOrderStatus"),
@@ -3727,7 +3726,7 @@ export function SubmissionsTable(props: Props) {
       title: "Document Type",
       width: columnWidth("data.documentType", 200),
       group: "Cost Invoices",
-
+      type: "text",
       resizable: true,
       hidden: visibilityController("costInvoices", "data.documentType"),
       cellRenderer: (props: any) => (
@@ -4087,9 +4086,9 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.documentNumberSI",
       group: "Sales Invoices",
-      type: "date",
       dataKey: "data.documentNumberSI",
       title: "Document Number",
+      type: "text",
       width: columnWidth("data.documentNumberSI", 200),
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.documentNumberSI"),
@@ -4110,7 +4109,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.invoiceNumberSI",
       dataKey: "data.invoiceNumberSI",
       group: "Sales Invoices",
-      type: "date",
+      type: "text",
       title: "Invoice Number",
       width: columnWidth("data.invoiceNumberSI", 200),
       resizable: true,
@@ -5498,7 +5497,7 @@ export function SubmissionsTable(props: Props) {
           }
         }}
       />
-      <Text key={"Text1"} mb="8px">
+      <Text key={"Text2"} mb="8px">
         Financial year
       </Text>
       <Box width={"50%"}>

@@ -15,7 +15,6 @@ import (
 
 	"github.com/doublegrey/formiks/backend/network"
 	"github.com/doublegrey/formiks/backend/repositories"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -101,9 +100,9 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	var roles []string
 	var name string
 	var email string
+
 	split := strings.Split(token, " ")
 	token = split[len(split)-1]
-
 	if token == "" || len(strings.Split(token, ".")) < 3 {
 		return name, email, roles
 	}
@@ -115,6 +114,9 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	if err := json.Unmarshal(payloadBytes, &payload); err != nil {
 		return name, email, roles
 	}
+	//roles check
+fmt.Println(ctx)
+	//roles check
 	email = payload.Email
 	name = payload.Name
 	headerBytes, err := base64.RawStdEncoding.DecodeString(strings.Split(token, ".")[0])
@@ -129,7 +131,7 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	if !validToken(token, header.Kid) || len(email) < 1 || payload.tokenExpired() {
 		return name, email, roles
 	}
-
+fmt.Println(email)
 	user, _ := UserRepo.FetchByEmail(ctx, strings.ToLower(email))
 	if len(user.Roles) > 0 {
 		roles = user.Roles

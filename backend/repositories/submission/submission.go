@@ -47,6 +47,7 @@ func (r *submissionRepo) UpsertVendorTablePreset(ctx context.Context, data model
 
 func (r *submissionRepo) Fetch(ctx context.Context, filter interface{}) ([]models.Submission, error) {
 	cacheID := "fetch"
+	
 	if f, ok := filter.(bson.M)["project"]; ok {
 		cacheID = fmt.Sprintf("%s.%v", cacheID, f)
 	}

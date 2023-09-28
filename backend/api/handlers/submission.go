@@ -62,7 +62,6 @@ func (r *Submission) Fetch(c *gin.Context) {
 	}
 	
 	submissions, err := r.repo.Fetch(c.Request.Context(), filter)
-	fmt.Println(submissions)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to fetch submissions", err)
 		c.Status(http.StatusInternalServerError)

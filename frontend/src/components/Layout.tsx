@@ -62,6 +62,8 @@ function Layout(props: any) {
     if (localStorage.getItem("cookieConsent") === "allowed") {
       setCookieConsent(true);
     }
+    RestAPI.getRoles().then((response) => console.log(response.data.sort()));
+
     RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
   }, [isAuthenticated]);
 

@@ -31,12 +31,19 @@ function App({ pca }: AppProps) {
   const history = useHistory();
   const navigationClient = new CustomNavigationClient(history);
   const [isAdmin, setAdminRole] = useState(false);
+  const [isMarketing, setMarketingRole] = useState(false);
+  const [roles, setRoles] = useState<string[]>([]);
+
   pca.setNavigationClient(navigationClient);
 
   useEffect(() => {
     RestAPI.getRoles().then((response) =>
       setAdminRole(response.data.includes("administrator"))
     );
+    // RestAPI.getRoles().then((response) => {
+    //   setRoles(response.data);
+    // });
+    // console.log(roles);
   }, []);
 
   return (

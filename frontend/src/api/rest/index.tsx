@@ -24,6 +24,10 @@ export class API {
   public draftsUrl = `${this.baseUrl}/drafts/`;
   public viewsUrl = `${this.baseUrl}/views/`;
 
+  getRolesAD(account: any): Promise<AxiosResponse<string[]>> {
+    return axios.get(`${this.usersUrl}rolesAD`);
+  }
+
   getRoles(): Promise<AxiosResponse<string[]>> {
     return axios.get(`${this.usersUrl}roles`);
   }
