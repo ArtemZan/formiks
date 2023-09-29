@@ -265,7 +265,7 @@ export function Editor(props: Props) {
                 }));
               }}
               options={[
-                { label: "administrator", value: "administrator" },
+                { label: "Administrator", value: "Administrator" },
                 { label: "user", value: "user" },
                 { label: "guest", value: "guest" },
               ]}

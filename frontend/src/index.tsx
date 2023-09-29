@@ -55,6 +55,18 @@ msalInstance.addEventCallback((event: EventMessage) => {
   }
 });
 
+axios.interceptors.request.use(async (config: any) => {
+  const account = msalInstance.getActiveAccount();
+  if (account) {
+    const response = await msalInstance.acquireTokenSilent({
+      ...loginRequest,
+      account: account,
+    });
+    config.headers.Authorization = `Bearer ${response.idToken}`;
+  }
+  return config;
+});
+
 // axios.interceptors.request.use(async (config: any) => {
 //   const account = msalInstance.getActiveAccount();
 //   RestAPI.getRolesAD(account ? await account.idTokenClaims : null);

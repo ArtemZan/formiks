@@ -79,6 +79,7 @@ import RejectModal from "../../components/RejectModal";
 
 interface Props {
   history: any;
+  roles: string[];
 }
 
 const allValue = "all";
@@ -1038,6 +1039,7 @@ export function SubmissionsTable(props: Props) {
   const [onlyMine, setOnlyMine] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [scrollLeft, setScrollLeft] = React.useState(0);
+  const [userRoles, setUserRoles] = useState<string[]>(props.roles);
   const [defaultColumnsWidth, setDefaultColumnsWidth] = useState({});
   const onScroll = React.useCallback(
     (args) => {
@@ -1068,6 +1070,10 @@ export function SubmissionsTable(props: Props) {
 
   //   return () => clearInterval(interval);
   // }, []);
+
+  useEffect(() => {
+    setUserRoles(props.roles);
+  }, [props.roles]);
 
   useEffect(() => {
     let tca = 0;
@@ -2962,7 +2968,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.manufacturerNumber",
       title: "Manufacturer Number",
       group: "Project Information",
-
+      type: "text",
       width: columnWidth("data.manufacturerNumber", 200),
       resizable: true,
       hidden: visibilityController(
@@ -2972,7 +2978,13 @@ export function SubmissionsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"value-dropdown"}
-          readonly={projectColumnEdit(props.rowData)}
+          readonly={
+            projectColumnEdit(props.rowData) ||
+            !(
+              userRoles.includes("Administrator") ||
+              userRoles.includes("Accounting")
+            )
+          }
           // readonly={true}
           loadOptions={() => {
             return props.rowData.data.companyCode === "1550"
@@ -3038,7 +3050,13 @@ export function SubmissionsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"text"}
-          readonly={props.rowData.data.status !== "Incomplete"}
+          readonly={
+            props.rowData.data.status !== "Incomplete" ||
+            !(
+              userRoles.includes("Administrator") ||
+              userRoles.includes("Accounting")
+            )
+          }
           backgroundColor={
             props.rowData.data.status === "Incomplete"
               ? props.cellData && props.cellData.length > 0
@@ -3686,7 +3704,11 @@ export function SubmissionsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
-          readonly={props.rowData.data.projectType !== "Purchase Order"}
+          readonly={
+            props.rowData.data.projectType !== "Purchase Order" &&
+            (!userRoles.includes("Accounting") ||
+              !userRoles.includes("Administrator"))
+          }
           loadOptions={loadOptions}
           backgroundColor="#fff7f1"
           onUpdate={handleCellUpdate}
@@ -4304,6 +4326,7 @@ export function SubmissionsTable(props: Props) {
       cellRenderer: (props: any) => (
         <EditableTableCell
           type={"dropdown"}
+          readonly={userRoles.includes("Administrator") ? false : true}
           loadOptions={loadOptions}
           backgroundColor="#fff7f8"
           onUpdate={handleCellUpdate}
@@ -5279,6 +5302,12 @@ export function SubmissionsTable(props: Props) {
         props.rowData.id !== "total" ? (
           <EditableTableCell
             type={"button"}
+            readonly={
+              !(
+                userRoles.includes("Accounting") ||
+                userRoles.includes("Administrator")
+              )
+            }
             backgroundColor="#fef9fa"
             textColor={"green"}
             onUpdate={callSap}
@@ -5389,6 +5418,12 @@ export function SubmissionsTable(props: Props) {
           <EditableTableCell
             type={"button"}
             textColor={"red"}
+            readonly={
+              !(
+                userRoles.includes("Accounting") ||
+                userRoles.includes("Administrator")
+              )
+            }
             backgroundColor="#fef9fa"
             onUpdate={() => {
               setRejectedSubmission(props.rowData);
@@ -5993,10 +6028,15 @@ export function SubmissionsTable(props: Props) {
                               type={"button"}
                               textColor={"red"}
                               backgroundColor="#fef9fa"
-                              invoiced={
-                                props.rowData.data.statusLMD !==
-                                "OK FOR INVOICING"
-                              }
+                              invoiced={(() => {
+                                const isInvoiced = !(
+                                  props.rowData.data.statusLMD ===
+                                    "OK FOR INVOICING" &&
+                                  (userRoles.includes("Accounting") ||
+                                    userRoles.includes("Administrator"))
+                                );
+                                return isInvoiced;
+                              })()}
                               onUpdate={(submissionId: string) => {
                                 setRejectedSubmissionComm(props.rowData);
                               }}
@@ -6029,12 +6069,17 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             type={"text"}
                             readonly={
-                              (props.rowData.data.statusLMD !==
-                                "FUTURE INVOICE" &&
-                                props.rowData.data.statusLMD !==
-                                  "OK FOR INVOICING" &&
-                                props.rowData.data.statusLMD !== "INVOICED") ||
-                              props.rowData.parentId !== null
+                              !(
+                                (userRoles.includes("Accounting") ||
+                                  userRoles.includes("Administrator")) &&
+                                (props.rowData.data.statusLMD ===
+                                  "FUTURE INVOICE" ||
+                                  props.rowData.data.statusLMD ===
+                                    "OK FOR INVOICING" ||
+                                  props.rowData.data.statusLMD ===
+                                    "INVOICED") &&
+                                props.rowData.parentId === null
+                              )
                             }
                             invoiced={
                               props.rowData.data.statusLMD === "INVOICED"
@@ -6266,7 +6311,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"date"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             readonly={
                               props.rowData.parentId !== null ||
                               cellReadonly(props)
@@ -6310,7 +6361,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             backgroundColor="#F5FAEF"
                             readonly={cellReadonly(props)}
                             onUpdate={handleCommunicationCellUpdate}
@@ -6337,7 +6394,13 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             type={"dropdown"}
                             readonly={cellReadonly(props)}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             loadOptions={() => {
                               return [
                                 {
@@ -6613,7 +6676,13 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             type={"text"}
-                            readonly={cellReadonly(props)}
+                            readonly={
+                              cellReadonly(props) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             backgroundColor={cellColor(props)}
                             onUpdate={(
                               submission: string,
@@ -6670,7 +6739,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             maxLength={12}
                             readonly={cellReadonly(props)}
                             backgroundColor={cellColor(props)}
@@ -6888,7 +6963,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            readonly={cellReadonly(props)}
+                            readonly={
+                              cellReadonly(props) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             invoiced={lmdColumnEdit(props.rowData.data)}
                             loadOptions={() => {
                               if (
@@ -7103,7 +7184,13 @@ export function SubmissionsTable(props: Props) {
                         hidden: visibilityController("LMD", "data.vodLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             type={"text"}
                             backgroundColor={cellColor(props)}
                             readonly={
@@ -7134,7 +7221,13 @@ export function SubmissionsTable(props: Props) {
                               return BUs;
                             }}
                             readonly={cellReadonly(props)}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             backgroundColor={cellColor(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             rowIndex={props.rowIndex}
@@ -7159,7 +7252,13 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             type={"date"}
                             readonly={cellReadonly(props)}
                             backgroundColor="#F5FAEF"
@@ -7186,7 +7285,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             readonly={cellReadonly(props)}
                             backgroundColor={cellColor(props)}
                             onUpdate={handleCommunicationCellUpdate}
@@ -7217,7 +7322,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             readonly={cellReadonly(props)}
                             loadOptions={() => {
                               return [
@@ -7261,7 +7372,13 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             type={"text"}
                             backgroundColor={cellColor(props)}
                             readonly={cellReadonly(props)}
@@ -7287,7 +7404,13 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             type={"text"}
                             backgroundColor={mandatoryFieldValidation(props)}
                             readonly={cellReadonly(props)}
@@ -7317,7 +7440,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             readonly={cellReadonly(props)}
                             backgroundColor="#F5FAEF"
                             onUpdate={handleCommunicationCellUpdate}
@@ -7344,7 +7473,13 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             type={"text"}
                             backgroundColor={cellColor(props)}
                             readonly={cellReadonly(props)}
@@ -7368,7 +7503,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"number"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             backgroundColor={cellColor(props)}
                             onUpdate={handleCommunicationCellUpdate}
                             readonly={cellReadonly(props)}
@@ -7420,7 +7561,13 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             type={"dropdown"}
                             readonly={cellReadonly(props)}
                             loadOptions={() => {
@@ -7451,7 +7598,13 @@ export function SubmissionsTable(props: Props) {
                           <EditableTableCell
                             type={"dropdown"}
                             readonly={cellReadonly(props)}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             loadOptions={() => {
                               var res = [];
                               if (
@@ -7583,7 +7736,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"dropdown"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             readonly={
                               (props.rowData.data.invoiceTypeLMD ===
                                 "Internal Invoice" &&
@@ -7624,7 +7783,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             // readonly={
                             //   !(
                             //     props.rowData.data.paymentMethodLMD ===
@@ -7674,7 +7839,13 @@ export function SubmissionsTable(props: Props) {
                         cellRenderer: (props: any) => (
                           <EditableTableCell
                             type={"text"}
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             readonly={cellReadonly(props)}
                             backgroundColor={mandatoryFieldValidation(props)}
                             onUpdate={handleCommunicationCellUpdate}
@@ -7696,7 +7867,13 @@ export function SubmissionsTable(props: Props) {
                         hidden: visibilityController("LMD", "data.sendToLMD"),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             type={"text"}
                             backgroundColor={cellColor(props)}
                             readonly={cellReadonly(props)}
@@ -7725,7 +7902,13 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             type={"text"}
                             backgroundColor={"#F5FAEF"}
                             readonly={cellReadonly(props)}
@@ -7751,7 +7934,13 @@ export function SubmissionsTable(props: Props) {
                         ),
                         cellRenderer: (props: any) => (
                           <EditableTableCell
-                            invoiced={lmdColumnEdit(props.rowData.data)}
+                            invoiced={
+                              lmdColumnEdit(props.rowData.data) ||
+                              !(
+                                userRoles.includes("Marketing") ||
+                                userRoles.includes("Administrator")
+                              )
+                            }
                             type={"text"}
                             backgroundColor={cellColor(props)}
                             readonly={cellReadonly(props)}
@@ -7775,7 +7964,13 @@ export function SubmissionsTable(props: Props) {
                           props.rowData.parentId === null &&
                           props.rowData.data.statusLMD !== "INVOICED" ? (
                             <EditableTableCell
-                              invoiced={lmdColumnEdit(props.rowData.data)}
+                              invoiced={
+                                lmdColumnEdit(props.rowData.data) ||
+                                !(
+                                  userRoles.includes("Marketing") ||
+                                  userRoles.includes("Administrator")
+                                )
+                              }
                               type={"button"}
                               backgroundColor="#fef9fa"
                               textColor={"green"}
@@ -8005,7 +8200,11 @@ export function SubmissionsTable(props: Props) {
                                 props.rowData.data.statusLMD ===
                                   "OK FOR INVOICING" ||
                                 props.rowData.data.invoiceTypeLMD ===
-                                  "Cancellation"
+                                  "Cancellation" ||
+                                !(
+                                  userRoles.includes("Marketing") ||
+                                  userRoles.includes("Administrator")
+                                )
                               }
                               backgroundColor="#fef9fa"
                               textColor={"blue"}
@@ -8105,7 +8304,13 @@ export function SubmissionsTable(props: Props) {
                           props.rowData.data &&
                           props.rowData.data.statusLMD !== "INVOICED" ? (
                             <EditableTableCell
-                              invoiced={lmdColumnEdit(props.rowData.data)}
+                              invoiced={
+                                lmdColumnEdit(props.rowData.data) ||
+                                !(
+                                  userRoles.includes("Marketing") ||
+                                  userRoles.includes("Administrator")
+                                )
+                              }
                               type={"button"}
                               textColor={"red"}
                               backgroundColor="#fef9fa"
@@ -8168,6 +8373,12 @@ export function SubmissionsTable(props: Props) {
                         }}
                       >
                         <Button
+                          disabled={
+                            !(
+                              userRoles.includes("Administrator") ||
+                              userRoles.includes("Marketing")
+                            )
+                          }
                           onClick={() => {
                             var submission: Submission = {
                               // FIXME
@@ -8297,6 +8508,7 @@ export function SubmissionsTable(props: Props) {
               } else if (tabIndex === 1) {
                 setPreviousValuesComm(values);
               }
+              console.log("dropdown");
               setDisplayedColumns(values);
             }}
             value={displayedColumns}

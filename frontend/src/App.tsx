@@ -31,19 +31,17 @@ function App({ pca }: AppProps) {
   const history = useHistory();
   const navigationClient = new CustomNavigationClient(history);
   const [isAdmin, setAdminRole] = useState(false);
-  const [isMarketing, setMarketingRole] = useState(false);
   const [roles, setRoles] = useState<string[]>([]);
 
   pca.setNavigationClient(navigationClient);
 
   useEffect(() => {
     RestAPI.getRoles().then((response) =>
-      setAdminRole(response.data.includes("administrator"))
+      setAdminRole(response.data.includes("Administrator"))
     );
-    // RestAPI.getRoles().then((response) => {
-    //   setRoles(response.data);
-    // });
-    // console.log(roles);
+    RestAPI.getRoles().then((response) => {
+      setRoles(response.data);
+    });
   }, []);
 
   return (
@@ -72,23 +70,17 @@ function App({ pca }: AppProps) {
             <Route
               exact
               path="/"
-              render={(props) => (
-                <ProjectExplorer isAdmin={isAdmin} {...props} />
-              )}
+              render={(props) => <ProjectExplorer roles={roles} {...props} />}
             />
             <Route
               exact
               path="/explorer"
-              render={(props) => (
-                <ProjectExplorer isAdmin={isAdmin} {...props} />
-              )}
+              render={(props) => <ProjectExplorer roles={roles} {...props} />}
             />
             <Route
               exact
               path="/projects"
-              render={(props) => (
-                <ProjectExplorer isAdmin={isAdmin} {...props} />
-              )}
+              render={(props) => <ProjectExplorer roles={roles} {...props} />}
             />
             <Route
               path="/projects/create"
@@ -129,7 +121,7 @@ function App({ pca }: AppProps) {
             <Route
               exact
               path="/submissions"
-              render={(props) => <SubmissionsTable {...props} />}
+              render={(props) => <SubmissionsTable {...props} roles={roles} />}
             />
             <Route
               exact

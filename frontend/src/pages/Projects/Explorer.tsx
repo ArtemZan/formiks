@@ -9,7 +9,7 @@ import Project from "../../types/project";
 
 interface Props {
   history: any;
-  isAdmin: boolean;
+  roles: string[];
 }
 
 export function Explorer(props: Props) {
@@ -44,7 +44,7 @@ export function Explorer(props: Props) {
       setFilteredProjects(sortedProjects);
     });
     RestAPI.getRoles().then((response) =>
-      setAdminRole(response.data.includes("administrator"))
+      setAdminRole(response.data.includes("Administrator"))
     );
   }, []);
 
@@ -106,7 +106,9 @@ export function Explorer(props: Props) {
               })
             : null}
 
-          <WrapItem display={props.isAdmin ? "grid" : "none"}>
+          <WrapItem
+            display={props.roles.includes("Administrator") ? "grid" : "none"}
+          >
             <Tag
               onClick={() => {
                 setCreateBookMarkModal(true);

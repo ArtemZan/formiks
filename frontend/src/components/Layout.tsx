@@ -49,6 +49,8 @@ import logo from "../logo.png";
 import CookiePreference from "./AllowCookies";
 import { msalInstance } from "../index";
 import { RestAPI } from "../api/rest";
+import NavItem from "rsuite/esm/Nav/NavItem";
+let navItemsCurrent: Array<NavItem> = [];
 
 function Layout(props: any) {
   const { instance } = useMsal();
@@ -62,14 +64,28 @@ function Layout(props: any) {
     if (localStorage.getItem("cookieConsent") === "allowed") {
       setCookieConsent(true);
     }
-    RestAPI.getRoles().then((response) => console.log(response.data.sort()));
-
-    RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
   }, [isAuthenticated]);
 
   useEffect(() => {
+    RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
     colorMode === "dark" ? toggleColorMode() : console.log("A");
   }, []);
+
+  useEffect(() => {
+    if (roles.includes("Administrator")) {
+      navItemsCurrent = NAV_ITEMS;
+    } else if (roles.includes("Marketing")) {
+      navItemsCurrent = NAV_ITEMS;
+    } else if (roles.includes("Accounting")) {
+      navItemsCurrent = NAV_ITEMS.filter(
+        (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
+      );
+    } else if (roles.includes("Management")) {
+      navItemsCurrent = NAV_ITEMS.filter(
+        (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
+      );
+    }
+  }, [roles]);
 
   const { children } = props;
   const { isOpen, onToggle } = useDisclosure();
@@ -264,7 +280,7 @@ const DesktopNav = () => {
 
   return (
     <Stack direction={"row"} spacing={4}>
-      {NAV_ITEMS.map((navItem) => {
+      {navItemsCurrent.map((navItem) => {
         return (
           <Box key={navItem.label}>
             <Popover trigger={"hover"} placement={"bottom-start"}>
@@ -387,7 +403,7 @@ const MobileNav = (props: any) => {
       p={4}
       display={{ md: "none" }}
     >
-      {NAV_ITEMS.map((navItem) => (
+      {navItemsCurrent.map((navItem) => (
         <MobileNavItem
           closeMenu={props.closeMenu}
           key={navItem.label}
@@ -487,7 +503,6 @@ const NAV_ITEMS: Array<NavItem> = [
         label: "New Request Form",
         subLabel: "Create new request form",
         href: "/projects/create",
-        isAdmin: true,
       },
       {
         label: "Drafts",
