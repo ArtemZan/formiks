@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -39,7 +38,6 @@ func (u *User) Roles(c *gin.Context) {
 	roles, exists := c.Get("Roles")
 	// email, exists := c.Get("Email")
 	// user, err := u.repo.FetchByEmail(c.Request.Context(), email.(string))
-fmt.Println(c)
 	if !exists {
 		roles = []string{"guest"}
 	}

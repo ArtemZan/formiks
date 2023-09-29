@@ -79,6 +79,7 @@ func Admin() gin.HandlerFunc {
 
 func SetRoles() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// fmt.Println(c.Request.Header.Get("Authorization"))
 		name, email, roles := getRolesIfValid(c.Request.Context(), c.Request.Header.Get("Authorization"))
 		if len(roles) < 1 {
 			// return 401 if ENABLE_GUESTS is not set
