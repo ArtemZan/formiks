@@ -47,6 +47,30 @@ const GlobalStyles = css`
 
 export const msalInstance = new PublicClientApplication(msalConfig);
 
+function checkUserGroupMembership() {
+  axios
+    .get("https://graph.microsoft.com/v1.0/me/memberOf", {
+      headers: {
+        // The Authorization header will be automatically added by the interceptor
+      },
+    })
+    .then((response) => {
+      const groups = response.data.value;
+      console.log(response.data.value);
+      const isMember = groups.some(
+        (group: any) => group.id === "YOUR_GROUP_ID"
+      );
+      if (isMember) {
+        console.log("User is a member of the group");
+      } else {
+        console.log("User is not a member of the group");
+      }
+    })
+    .catch((error) => {
+      console.error("Error getting user groups", error);
+    });
+}
+
 msalInstance.addEventCallback((event: EventMessage) => {
   if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
     const payload = event.payload as AuthenticationResult;
@@ -57,15 +81,19 @@ msalInstance.addEventCallback((event: EventMessage) => {
 
 axios.interceptors.request.use(async (config: any) => {
   const account = msalInstance.getActiveAccount();
+
   if (account) {
     const response = await msalInstance.acquireTokenSilent({
       ...loginRequest,
       account: account,
     });
-    config.headers.Authorization = `Bearer ${response.idToken}`;
+
+    config.headers.Authorization = `${response.accessToken}`;
   }
   return config;
 });
+
+// checkUserGroupMembership();
 
 // axios.interceptors.request.use(async (config: any) => {
 //   const account = msalInstance.getActiveAccount();
