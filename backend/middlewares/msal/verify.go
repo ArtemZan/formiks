@@ -187,7 +187,7 @@ func getUserEmail(token string) (string, error) {
 
 
 func getRolesIfValid(ctx context.Context, token string) (string, string, []string) {
-	fmt.Println("Get roles if valid")
+	fmt.Println("Get roles if valid", token)
 	var roles []string
 	var name string
 	var email string
