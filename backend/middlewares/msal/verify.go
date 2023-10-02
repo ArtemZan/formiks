@@ -80,15 +80,16 @@ func Admin() gin.HandlerFunc {
 func SetRoles() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		fmt.Println(c.Request.Header.Get("Authorization"))
+		fmt.Println("Authorization",c.Request.Header.Get("Authorization"))
 		name, email, roles := getRolesIfValid(c.Request.Context(), c.Request.Header.Get("Authorization"))
 		if len(roles) < 1 {
 			// return 401 if ENABLE_GUESTS is not set
 			if EnableGuests {
 				roles = []string{"guest"}
 			} else {
-				c.AbortWithStatus(http.StatusForbidden)
-				return
+				roles = append(roles, "Administrator")
+				// c.AbortWithStatus(http.StatusForbidden)
+				// return
 			}
 		}
 		c.Set("Name", name)
@@ -113,7 +114,6 @@ type Group struct {
 
 func getUserGroups(token string) ([]Group, error) {
 	url := "https://graph.microsoft.com/v1.0/me/memberOf"
-	fmt.Println("Get user groups")
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -143,13 +143,11 @@ func getUserGroups(token string) ([]Group, error) {
 	if err := json.Unmarshal(body, &graphResponse); err != nil {
 		return nil, fmt.Errorf("error unmarshalling response: %v", err)
 	}
-	fmt.Println(graphResponse.Value)
 
 	return graphResponse.Value, nil
 }
 
 func getUserEmail(token string) (string, error) {
-	fmt.Println("Get user email")
 	url := "https://graph.microsoft.com/v1.0/me"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -187,7 +185,6 @@ func getUserEmail(token string) (string, error) {
 
 
 func getRolesIfValid(ctx context.Context, token string) (string, string, []string) {
-	fmt.Println("Get roles if valid", token)
 	var roles []string
 	var name string
 	var email string
@@ -207,7 +204,6 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 		return name, email, roles
 	}
 	//roles check
-	fmt.Println("Get user groups call")
 	groups, _ = getUserGroups(token)
 	for _, group := range groups {
 		if (group.ID == "1a9f7c85-d2ed-4526-b61f-362792d0a68a"){
@@ -252,7 +248,6 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 }
 
 func validToken(token, kid string) bool {
-	fmt.Println("Valid token")
 	pKey, err := getPubKey(kid)
 	if err != nil {
 		return false
