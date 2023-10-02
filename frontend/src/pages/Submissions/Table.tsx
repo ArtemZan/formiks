@@ -5845,7 +5845,7 @@ export function SubmissionsTable(props: Props) {
               const ws = XLSX.utils.json_to_sheet(formattedData, {
                 skipHeader: true,
               });
-              const columnsToFormat = ["Y"]; // Add more columns as needed
+              const columnsToFormat = ["AA"]; // Add more columns as needed
               for (let i = 3; i <= formattedData.length + 1; i++) {
                 columnsToFormat.forEach((column) => {
                   let cellAddress = column + i;
