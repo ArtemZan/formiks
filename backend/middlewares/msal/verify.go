@@ -79,7 +79,8 @@ func Admin() gin.HandlerFunc {
 
 func SetRoles() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// fmt.Println(c.Request.Header.Get("Authorization"))
+
+		fmt.Println(c.Request.Header.Get("Authorization"))
 		name, email, roles := getRolesIfValid(c.Request.Context(), c.Request.Header.Get("Authorization"))
 		if len(roles) < 1 {
 			// return 401 if ENABLE_GUESTS is not set
@@ -112,6 +113,7 @@ type Group struct {
 
 func getUserGroups(token string) ([]Group, error) {
 	url := "https://graph.microsoft.com/v1.0/me/memberOf"
+	fmt.Println("Get user groups")
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -147,6 +149,7 @@ func getUserGroups(token string) ([]Group, error) {
 }
 
 func getUserEmail(token string) (string, error) {
+	fmt.Println("Get user email")
 	url := "https://graph.microsoft.com/v1.0/me"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -184,6 +187,7 @@ func getUserEmail(token string) (string, error) {
 
 
 func getRolesIfValid(ctx context.Context, token string) (string, string, []string) {
+	fmt.Println("Get roles if valid")
 	var roles []string
 	var name string
 	var email string
@@ -247,6 +251,7 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 }
 
 func validToken(token, kid string) bool {
+	fmt.Println("Valid token")
 	pKey, err := getPubKey(kid)
 	if err != nil {
 		return false
