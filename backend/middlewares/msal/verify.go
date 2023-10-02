@@ -207,6 +207,7 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 		return name, email, roles
 	}
 	//roles check
+	fmt.Println("Get user groups call")
 	groups, _ = getUserGroups(token)
 	for _, group := range groups {
 		if (group.ID == "1a9f7c85-d2ed-4526-b61f-362792d0a68a"){
