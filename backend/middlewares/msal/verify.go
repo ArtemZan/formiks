@@ -141,6 +141,7 @@ func getUserGroups(token string) ([]Group, error) {
 	if err := json.Unmarshal(body, &graphResponse); err != nil {
 		return nil, fmt.Errorf("error unmarshalling response: %v", err)
 	}
+	fmt.Println(graphResponse.Value)
 
 	return graphResponse.Value, nil
 }
