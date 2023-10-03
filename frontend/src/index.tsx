@@ -87,9 +87,6 @@ axios.interceptors.request.use(async (config: any) => {
       ...loginRequest,
       account: account,
     });
-    console.log(
-      "Access" + response.accessToken + "Id Token" + response.idToken
-    );
     config.headers.Authorization = `${response.accessToken}`;
   }
   return config;

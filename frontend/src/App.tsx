@@ -39,6 +39,7 @@ function App({ pca }: AppProps) {
     RestAPI.getRoles().then((response) =>
       setAdminRole(response.data.includes("Administrator"))
     );
+
     RestAPI.getRoles().then((response) => {
       setRoles(response.data);
     });

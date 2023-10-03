@@ -50,7 +50,6 @@ import CookiePreference from "./AllowCookies";
 import { msalInstance } from "../index";
 import { RestAPI } from "../api/rest";
 import NavItem from "rsuite/esm/Nav/NavItem";
-let navItemsCurrent: Array<NavItem> = [];
 
 function Layout(props: any) {
   const { instance } = useMsal();
@@ -59,7 +58,7 @@ function Layout(props: any) {
   const [roles, setRoles] = useState<string[]>([]);
   const isAuthenticated = useIsAuthenticated();
   const history = useHistory();
-
+  const [navItemsCurrent, setNavItemsCurrent] = useState<NavItem[]>([]);
   useEffect(() => {
     if (localStorage.getItem("cookieConsent") === "allowed") {
       setCookieConsent(true);
@@ -67,25 +66,54 @@ function Layout(props: any) {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
-    colorMode === "dark" ? toggleColorMode() : console.log("A");
-  }, []);
-
-  useEffect(() => {
-    if (roles.includes("Administrator")) {
-      navItemsCurrent = NAV_ITEMS;
-    } else if (roles.includes("Marketing")) {
-      navItemsCurrent = NAV_ITEMS;
-    } else if (roles.includes("Accounting")) {
-      navItemsCurrent = NAV_ITEMS.filter(
-        (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
-      );
-    } else if (roles.includes("Management")) {
-      navItemsCurrent = NAV_ITEMS.filter(
-        (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
-      );
+    async function fetchRolesAndSetNavItems() {
+      const response = await RestAPI.getRoles();
+      const sortedRoles = response.data.sort();
+      setRoles(sortedRoles);
+      let newNavItemsCurrent: NavItem[] = [];
+      console.log(sortedRoles);
+      if (sortedRoles.includes("Administrator")) {
+        newNavItemsCurrent = NAV_ITEMS;
+      } else if (sortedRoles.includes("Marketing")) {
+        newNavItemsCurrent = NAV_ITEMS;
+      } else if (sortedRoles.includes("Accounting")) {
+        newNavItemsCurrent = NAV_ITEMS.filter(
+          (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
+        );
+      } else if (sortedRoles.includes("Management")) {
+        newNavItemsCurrent = NAV_ITEMS.filter(
+          (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
+        );
+      } else {
+        newNavItemsCurrent = []; // or some default value
+      }
+      console.log(newNavItemsCurrent);
+      setNavItemsCurrent(newNavItemsCurrent);
     }
-  }, [roles]);
+
+    fetchRolesAndSetNavItems();
+  }, []);
+  // useEffect(() => {
+  //   RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
+  //   colorMode === "dark" ? toggleColorMode() : console.log("A");
+  // }, []);
+
+  // useEffect(() => {
+  //   if (roles.includes("Administrator")) {
+  //     navItemsCurrent = NAV_ITEMS;
+  //   } else if (roles.includes("Marketing")) {
+  //     navItemsCurrent = NAV_ITEMS;
+  //   } else if (roles.includes("Accounting")) {
+  //     navItemsCurrent = NAV_ITEMS.filter(
+  //       (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
+  //     );
+  //   } else if (roles.includes("Management")) {
+  //     navItemsCurrent = NAV_ITEMS.filter(
+  //       (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
+  //     );
+  //   }
+  //   console.log(navItemsCurrent);
+  // }, [roles]);
 
   const { children } = props;
   const { isOpen, onToggle } = useDisclosure();
@@ -148,7 +176,7 @@ function Layout(props: any) {
             />
 
             <Flex display={{ base: "none", md: "flex" }} ml={10}>
-              <DesktopNav />
+              <DesktopNav navItemsCurrent={navItemsCurrent} />
             </Flex>
           </Flex>
 
@@ -262,7 +290,7 @@ function Layout(props: any) {
         </Flex>
 
         <Collapse in={isOpen} animateOpacity>
-          <MobileNav closeMenu={onToggle} />
+          <MobileNav closeMenu={onToggle} navItemsCurrent={navItemsCurrent} />
         </Collapse>
       </Box>
       <Box m={{ base: "1em", xl: "5em" }} mt={{ base: "3em", xl: "5em" }}>
@@ -272,7 +300,7 @@ function Layout(props: any) {
   );
 }
 
-const DesktopNav = () => {
+const DesktopNav = ({ navItemsCurrent }: { navItemsCurrent: NavItem[] }) => {
   const history = useHistory();
   const linkColor = useColorModeValue("gray.600", "#ABB2BF");
   const linkHoverColor = useColorModeValue("gray.800", "white");
@@ -280,7 +308,7 @@ const DesktopNav = () => {
 
   return (
     <Stack direction={"row"} spacing={4}>
-      {navItemsCurrent.map((navItem) => {
+      {navItemsCurrent.map((navItem: NavItem) => {
         return (
           <Box key={navItem.label}>
             <Popover trigger={"hover"} placement={"bottom-start"}>
@@ -403,7 +431,7 @@ const MobileNav = (props: any) => {
       p={4}
       display={{ md: "none" }}
     >
-      {navItemsCurrent.map((navItem) => (
+      {NAV_ITEMS.map((navItem) => (
         <MobileNavItem
           closeMenu={props.closeMenu}
           key={navItem.label}
