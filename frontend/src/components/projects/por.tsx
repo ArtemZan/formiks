@@ -673,6 +673,12 @@ export default function Elov(props: Props) {
                           setProjectNumberCheck(sub.data.projectNumber);
                           var children: any[] = [];
                           var vendorNew: any[] = [];
+                          if (sub.group === "country") {
+                            vendorNew.push({
+                              label: sub.data.vendorName ?? "",
+                              value: sub.data.vendorName ?? "",
+                            });
+                          }
                           for (let child of submissions) {
                             if (child.parentId === sub.id) {
                               children.push(child);
