@@ -196,9 +196,10 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 
 	if submissionWithChildren.Local != nil {
 		var targetSubmission models.Submission
-
+		
 		for _, child := range submissionWithChildren.Children {
 			if child.Group == "country" && child.Data["companyCode"] == *submissionWithChildren.Local {
+				fmt.Println(child)
 				targetSubmission = child
 				targetSubmission.Data["projectNumber"] = child.Data["localProjectNumber"]
 				targetSubmission.Data["localProjectNumber"] = ""
