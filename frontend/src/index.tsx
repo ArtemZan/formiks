@@ -56,7 +56,6 @@ function checkUserGroupMembership() {
     })
     .then((response) => {
       const groups = response.data.value;
-      console.log(response.data.value);
       const isMember = groups.some(
         (group: any) => group.id === "YOUR_GROUP_ID"
       );

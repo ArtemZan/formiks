@@ -71,7 +71,6 @@ function Layout(props: any) {
       const sortedRoles = response.data.sort();
       setRoles(sortedRoles);
       let newNavItemsCurrent: NavItem[] = [];
-      console.log(sortedRoles);
       if (sortedRoles.includes("Administrator")) {
         newNavItemsCurrent = NAV_ITEMS;
       } else if (sortedRoles.includes("Marketing")) {

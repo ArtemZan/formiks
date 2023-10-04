@@ -825,7 +825,7 @@ const DisplayedColumnsList = [
       {
         label: "Date of document",
         value: "data.invoicingDateLMD",
-        type: "string",
+        type: "date",
       },
       {
         label: "Requestor",
@@ -865,7 +865,7 @@ const DisplayedColumnsList = [
       {
         label: "Entry Date",
         value: "data.entryDateLMD",
-        type: "string",
+        type: "date",
       },
       {
         label: "Material Number",
@@ -940,6 +940,7 @@ const DisplayedColumnsList = [
       {
         label: "Link to proof",
         value: "data.linkToProofsLMD",
+        type: "string",
       },
     ],
   },
@@ -1636,7 +1637,9 @@ export function SubmissionsTable(props: Props) {
     },
     [scrollLeft]
   );
-
+  const addHoursToDate = (date: Date, hoursToAdd: number): Date => {
+    return new Date(date.getTime() + hoursToAdd * 60 * 60 * 1000);
+  };
   const getFilteredColumns = (tabIndex: number) => {
     if (tabIndex === 0) {
       return DisplayedColumnsList.slice(0, 11);
@@ -1772,6 +1775,20 @@ export function SubmissionsTable(props: Props) {
         return [...prevKeys, rowKey];
       }
     });
+  };
+
+  const formatDate = (dateInput: string | Date): string => {
+    const date = new Date(dateInput);
+
+    if (!dateInput || isNaN(date.getTime())) {
+      return "";
+    }
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed in JavaScript
+    const year = date.getFullYear();
+
+    return `${day}.${month}.${year}`;
   };
 
   const expandAllRows = () => {
@@ -2979,7 +2996,7 @@ export function SubmissionsTable(props: Props) {
         <EditableTableCell
           type={"value-dropdown"}
           readonly={
-            projectColumnEdit(props.rowData) ||
+            projectColumnEdit(props.rowData) &&
             !(
               userRoles.includes("Administrator") ||
               userRoles.includes("Accounting")
@@ -5657,17 +5674,25 @@ export function SubmissionsTable(props: Props) {
                   Title: s.title,
                   Author: s.author,
                 };
-
                 DisplayedColumnsList.forEach((group: any) => {
-                  if (group.value === "CMCT" || group.value === "LMD") {
+                  if (
+                    group.value === "CMCT" ||
+                    group.value === "LMD" ||
+                    group.value === "all" ||
+                    group.value === "none"
+                  ) {
                     return;
                   }
+
                   group.children.map((column: any, index: number) => {
                     if (
                       displayedColumns.includes(column.value) ||
                       displayedColumns.includes(group.value)
                     ) {
                       doc[column.value] = _.get(s, column.value);
+                      if (column.type === "date") {
+                        doc[column.value] = formatDate(doc[column.value]);
+                      }
                       if (column.type === "number") {
                         //doc[column.value] = NumberWithCommas(doc[column.value]);
                       }
@@ -5827,6 +5852,9 @@ export function SubmissionsTable(props: Props) {
                       doc[column.value] = _.get(s, column.value);
                       if (column.type === "number") {
                         // doc[column.value] = NumberWithCommas(doc[column.value]);
+                      }
+                      if (column.type === "date") {
+                        doc[column.value] = formatDate(doc[column.value]);
                       }
                       if (!init) {
                         header[0][column.value] =
@@ -6303,7 +6331,7 @@ export function SubmissionsTable(props: Props) {
                         width: columnWidth("data.invoicingDateLMD", 200),
                         resizable: true,
                         group: "Input of Local Marketing Department",
-
+                        type: "date",
                         hidden: visibilityController(
                           "LMD",
                           "data.invoicingDateLMD"
@@ -6333,10 +6361,24 @@ export function SubmissionsTable(props: Props) {
                                 "data.requestorLMD",
                                 currentUser.displayName
                               );
+                              let updatedDateValue = value;
+                              if (value instanceof Date) {
+                                updatedDateValue = addHoursToDate(value, 12);
+                              } else if (typeof value === "string") {
+                                // Create a Date object if `value` is a string, and then add 12 hours
+                                const dateObj = new Date(value);
+                                if (!isNaN(dateObj.getTime())) {
+                                  // Check if date is valid
+                                  updatedDateValue = addHoursToDate(
+                                    dateObj,
+                                    12
+                                  );
+                                }
+                              }
                               handleCommunicationCellUpdate(
                                 submission,
                                 path,
-                                value
+                                updatedDateValue
                               );
                             }}
                             rowIndex={props.rowIndex}
@@ -7243,7 +7285,7 @@ export function SubmissionsTable(props: Props) {
                         dataKey: "data.entryDateLMD",
                         title: "Entry Date",
                         group: "Input of Local Marketing Department",
-
+                        type: "date",
                         width: columnWidth("data.entryDateLMD", 200),
                         resizable: true,
                         hidden: visibilityController(
@@ -8508,7 +8550,6 @@ export function SubmissionsTable(props: Props) {
               } else if (tabIndex === 1) {
                 setPreviousValuesComm(values);
               }
-              console.log("dropdown");
               setDisplayedColumns(values);
             }}
             value={displayedColumns}

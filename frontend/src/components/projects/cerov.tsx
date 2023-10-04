@@ -701,13 +701,13 @@ export default function Cerov(props: Props) {
           author: requestorsName,
           data: {
             status: "Incomplete",
-            //projectName: campaignName,
-            //additionalInformation: comments,
-            //campaignChannel: campaignChannel.label,
+            projectName: campaignName,
+            additionalInformation: comments,
+            campaignChannel: campaignChannel.label,
             parentProjectNumber: projectNumber,
             projectNumber: company.projectNumber,
-            //campaignStartDate: startDate === null ? null : startDate.toString(),
-            //campaignEndDate: endDate === null ? null : endDate.toString(),
+            campaignStartDate: startDate === null ? null : startDate.toString(),
+            campaignEndDate: endDate === null ? null : endDate.toString(),
             budgetSource: budgetSource.label,
             campaignCurrency: exchangeRates.label,
             localCurrency: requestorsCompanyName.value["currency"],
@@ -821,7 +821,6 @@ export default function Cerov(props: Props) {
       children,
       local: local,
     };
-
     if (props.isDraft) {
       if (draft) {
         submission.submission.id = props.submission.id;
