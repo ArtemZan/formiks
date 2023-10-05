@@ -5573,9 +5573,15 @@ export function SubmissionsTable(props: Props) {
       <Text key={"Text2"} mb="8px">
         Financial year
       </Text>
-      <Box width={"50%"}>
+      <Box width={"50%"} display="flex" alignItems="center">
         <Select
           key={"select1"}
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              width: "200px", // or any specific pixel value you'd prefer
+            }),
+          }}
           theme={(theme) => ({
             ...theme,
             borderRadius: 6,
@@ -5588,15 +5594,37 @@ export function SubmissionsTable(props: Props) {
           name="color"
           isClearable={false}
           options={[
+            { label: " ", value: "" },
             { label: "2021", value: "21" },
             ...Year,
-            { label: "ALL", value: "" },
           ]}
           onChange={(value: any) => {
+            console.log();
             setFinancialYear(value.value);
           }}
+          value={
+            financialYear === ""
+              ? { label: " ", value: "" }
+              : { label: "20" + financialYear, value: financialYear }
+          }
         />
+        <Button
+          float="right"
+          height="38px"
+          ml="18px"
+          color={"white"}
+          _hover={{
+            bg: useColorModeValue("blue.300", "#377bbf"),
+          }}
+          bg={useColorModeValue("blue.400", "#4D97E2")}
+          onClick={() => {
+            setFinancialYear("");
+          }}
+        >
+          Clear
+        </Button>
       </Box>
+
       <Box h="70px" textAlign={"end"}>
         <IconButton
           icon={<IoSave />}
@@ -5690,6 +5718,7 @@ export function SubmissionsTable(props: Props) {
               },
             ];
             if (tabIndex === 0) {
+              console.log(filteredSubmissions);
               formattedData = filteredSubmissions.map((s) => {
                 let doc: FD = {
                   ID: s.id || "unknown",
