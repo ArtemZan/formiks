@@ -3017,8 +3017,29 @@ export function SubmissionsTable(props: Props) {
           }
           onUpdate={(id: string, path: string, value: any) => {
             if (typeof value === "object") {
+              console.log(value);
               handleCellUpdate(id, "data.status", "New");
               handleCellUpdate(id, path, value.hersteller);
+              toast(
+                <Toast
+                  title={"Vendor name was changed!"}
+                  message={
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          "Vendor name was changed from <b>" +
+                          props.rowData.data.vendorName +
+                          "</b> to <b>" +
+                          value.manufacturerName +
+                          "</b> Please check the vendor number and the vendor name.",
+                      }}
+                    />
+                  }
+                  type={"warning"}
+                />
+              );
+              handleCellUpdate(id, "data.vendorName", value.manufacturerName);
+
               handleCellUpdate(id, "data.debitorNumber", value.debitorischer);
             } else {
               handleCellUpdate(id, path, "");
@@ -5566,7 +5587,11 @@ export function SubmissionsTable(props: Props) {
           classNamePrefix="select"
           name="color"
           isClearable={false}
-          options={[...Year, { label: "ALL", value: "" }]}
+          options={[
+            { label: "2021", value: "21" },
+            ...Year,
+            { label: "ALL", value: "" },
+          ]}
           onChange={(value: any) => {
             setFinancialYear(value.value);
           }}
