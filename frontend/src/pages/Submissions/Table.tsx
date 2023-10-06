@@ -1920,6 +1920,33 @@ export function SubmissionsTable(props: Props) {
     });
   }
 
+  function sortAndStructureData(dataArray: Submission[]): Submission[] {
+    // Separating parent and child items
+    const parentItems = dataArray.filter((item) => item.parentId === null);
+    const childItems = dataArray.filter((item) => item.parentId !== null);
+
+    // Sorting parent items by 'created' date
+    parentItems.sort(
+      (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+    );
+
+    // Structuring sorted array
+    const sortedAndStructuredArray: Submission[] = [];
+
+    parentItems.forEach((parentItem) => {
+      sortedAndStructuredArray.push(parentItem); // Adding parent item
+      // Extracting and sorting child items of the current parent
+      const currentChildItems = childItems.filter(
+        (childItem) => childItem.parentId === parentItem.id
+      );
+      // Optionally: Sort children by some property if needed
+      // currentChildItems.sort((a, b) => someComparingFunction);
+      sortedAndStructuredArray.push(...currentChildItems); // Adding child items
+    });
+
+    return sortedAndStructuredArray;
+  }
+
   function callSap(submissionId: string) {
     RestAPI.callSapSubmission(submissionId)
       .then((response) => {
@@ -5719,7 +5746,9 @@ export function SubmissionsTable(props: Props) {
             ];
             if (tabIndex === 0) {
               console.log(filteredSubmissions);
-              formattedData = filteredSubmissions.map((s) => {
+              let sortedSubmissions: Submission[] =
+                sortAndStructureData(filteredSubmissions);
+              formattedData = sortedSubmissions.map((s) => {
                 let doc: FD = {
                   ID: s.id || "unknown",
                   Parent: s.parentId === null,
