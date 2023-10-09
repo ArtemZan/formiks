@@ -43,6 +43,7 @@ func RegisterRoutes(r *gin.Engine) {
 
 	submissionsGroup.GET("/", submissionHandler.Fetch)                    // get all submissions available to user
 	submissionsGroup.GET("/:id", submissionHandler.FetchByIDWithChildren) // get submission
+	submissionsGroup.GET("/project/:project", submissionHandler.FetchByProjectWithChildren) // get submission by projectNumber
 	submissionsGroup.GET("/:id/sap", submissionHandler.CallSap)
 	submissionsGroup.POST("/", submissionHandler.Create)                     // create submission
 	submissionsGroup.POST("/children", submissionHandler.CreateWithChildren) // create submission with children

@@ -97,6 +97,18 @@ func (r *Submission) FetchByIDWithChildren(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func (r *Submission) FetchByProjectWithChildren(c *gin.Context) {
+	response, err := r.repo.FetchByProjectWithChildren(context.Background(), c.Param("project"))
+	if err != nil {
+		logger.LogHandlerError(c, "Failed to fetch submissions", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+
 func (r *Submission) Create(c *gin.Context) {
 	var submission models.Submission
 	err := c.BindJSON(&submission)

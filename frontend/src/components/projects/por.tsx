@@ -651,56 +651,80 @@ export default function Elov(props: Props) {
                 setProjectNumber(event.target.value);
                 if (event.target.value.length === 12) {
                   var allSubs: any[] = [];
+                  let parent: any;
+                  let children: any[] = [];
+                  var vendorNew: any[] = [];
                   const fetchData = async () => {
                     try {
                       if (submissions.length === 0) {
-                        const response = await RestAPI.getSubmissions(
-                          event.target.value
-                        );
-
-                        setSubmissions(response.data);
-                        allSubs = response.data;
-                      } else {
-                        allSubs = submissions;
-                      }
-
-                      setProjectNumberCheck("-");
-                      for (let sub of allSubs) {
-                        if (
-                          sub.parentId === null &&
-                          sub.data.projectNumber === event.target.value
-                        ) {
-                          setProjectNumberCheck(sub.data.projectNumber);
-                          var children: any[] = [];
-                          var vendorNew: any[] = [];
-                          if (sub.group === "country") {
-                            vendorNew.push({
-                              label: sub.data.vendorName ?? "",
-                              value: sub.data.vendorName ?? "",
-                            });
-                          }
-                          for (let child of submissions) {
-                            if (child.parentId === sub.id) {
-                              children.push(child);
-
-                              if (child.group === "vendor") {
-                                vendorNew.push({
-                                  label: child.data.vendorName ?? "",
-                                  value: child.data.vendorName ?? "",
-                                });
-                              }
+                        const response =
+                          await RestAPI.getSubmissionWithChildrenByProject(
+                            event.target.value
+                          );
+                        children = response.data.children;
+                        parent = response.data.submission;
+                        allSubs = children;
+                        allSubs.push(parent);
+                        setProjectNumberCheck("-");
+                        if (parent) {
+                          setProjectNumberCheck(parent.data.projectNumber);
+                          for (let child of children) {
+                            if (child.group === "vendor") {
+                              vendorNew.push({
+                                label: child.data.vendorName ?? "",
+                                value: child.data.vendorName ?? "",
+                              });
                             }
                           }
-                          setVendorsDD(VendorsNames);
-                          setVendorsNames([]);
-                          VendorsNames = vendorNew;
-                          sub.children = children;
-                          setSub(sub);
-                          setProjectName(sub.data.projectName || "");
-                        } else {
-                          // setProjectNumberCheck("-");
-                          // setProjectName("");
-                          // setVendorsNames([]);
+                          setProjectName(parent.data.projectName || "");
+                          console.log(vendorNew.length);
+                          if (vendorNew.length === 1) {
+                            setVendorsNames(vendorNew);
+                            VendorsNames = vendorNew;
+                          } else {
+                            VendorsNames = vendorNew;
+                          }
+                          parent.children = children;
+                          setSub(parent);
+                        }
+                      } else {
+                        console.log("submissions", submissions);
+                        allSubs = submissions;
+                        for (let sub of allSubs) {
+                          if (
+                            sub.parentId === null &&
+                            sub.data.projectNumber === event.target.value
+                          ) {
+                            setProjectNumberCheck(sub.data.projectNumber);
+                            if (sub.group === "country") {
+                              vendorNew.push({
+                                label: sub.data.vendorName ?? "",
+                                value: sub.data.vendorName ?? "",
+                              });
+                            }
+                            for (let child of submissions) {
+                              if (child.parentId === sub.id) {
+                                children.push(child);
+                                if (child.group === "vendor") {
+                                  vendorNew.push({
+                                    label: child.data.vendorName ?? "",
+                                    value: child.data.vendorName ?? "",
+                                  });
+                                  console.log(vendorNew);
+                                }
+                              }
+                            }
+                            VendorsNames = vendorNew;
+                            setVendorsDD(VendorsNames);
+                            setVendorsNames([]);
+                            sub.children = children;
+                            setSub(sub);
+                            setProjectName(sub.data.projectName || "");
+                          } else {
+                            // setProjectNumberCheck("-");
+                            // setProjectName("");
+                            // setVendorsNames([]);
+                          }
                         }
                       }
                     } catch (error) {
@@ -720,12 +744,12 @@ export default function Elov(props: Props) {
                   // } else {
                   //   allSubs = submissions;
                   // }
-                } else {
-                  setProjectNumberCheck("-");
-                  setProjectName("");
-                  setVendorsNames([]);
-                  VendorsNames = vendorsDD;
                 }
+              } else {
+                setProjectNumberCheck("-");
+                setProjectName("");
+                setVendorsNames([]);
+                VendorsNames = vendorsDD;
               }
             }}
             // disabled

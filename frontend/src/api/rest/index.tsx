@@ -73,6 +73,14 @@ export class API {
     return axios.get<SubmissionWithChildren>(`${this.submissionsUrl}${id}`);
   }
 
+  getSubmissionWithChildrenByProject(
+    number: string
+  ): Promise<AxiosResponse<SubmissionWithChildren>> {
+    return axios.get<SubmissionWithChildren>(
+      `${this.submissionsUrl}project/${number}`
+    );
+  }
+
   getPAreport(): Promise<AxiosResponse<PAreport[]>> {
     return axios.get<PAreport[]>(this.paReport);
   }

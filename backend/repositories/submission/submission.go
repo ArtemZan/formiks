@@ -116,6 +116,40 @@ func (r *submissionRepo) FetchByIDWithChildren(ctx context.Context, id primitive
 	return response, nil
 }
 
+func (r *submissionRepo) FetchByProjectWithChildren(ctx context.Context, number string) (models.SubmissionWithChildren, error) {
+	cacheID := fmt.Sprintf("fetchByProjectWithChildren.%s", number)
+
+	if v, hit := r.Cache.Get(cacheID); hit {
+		if submission, ok := v.(models.SubmissionWithChildren); ok {
+			return submission, nil
+		}
+	}
+
+	var response models.SubmissionWithChildren
+	var parentRecord models.Submission
+	childRecords := make([]models.Submission, 0)
+	err := r.Conn.Collection("submissions").FindOne(ctx, bson.M{"data.projectNumber": number,
+	"parentId":           nil,}).Decode(&parentRecord)
+	fmt.Println(parentRecord.ID)
+	cursorChild, err := r.Conn.Collection("submissions").Find(ctx, bson.M{"parentId": parentRecord.ID.Hex()})
+	if err != nil {
+		return response, err
+	}
+	defer cursorChild.Close(ctx)
+	for cursorChild.Next(ctx) {
+		var child models.Submission	
+		if err := cursorChild.Decode(&child); err != nil {
+			return response, err
+		}
+		childRecords = append(childRecords, child)
+	}
+	response.Submission = parentRecord
+	response.Children = childRecords
+
+	r.Cache.Set(cacheID, response, cache.DefaultExpiration)
+	return response, nil
+}
+
 func (r *submissionRepo) Create(ctx context.Context, submission models.Submission) (models.Submission, error) {
 	r.Cache.Flush()
 
