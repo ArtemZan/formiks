@@ -3043,6 +3043,9 @@ export function SubmissionsTable(props: Props) {
               : "#f5faef"
           }
           onUpdate={(id: string, path: string, value: any) => {
+            if (value === "") {
+              handleCellUpdate(id, "data.status", "Incomplete");
+            }
             if (typeof value === "object") {
               console.log(value);
               handleCellUpdate(id, "data.status", "New");
@@ -5369,8 +5372,9 @@ export function SubmissionsTable(props: Props) {
             type={"button"}
             readonly={
               !(
-                userRoles.includes("Accounting") ||
-                userRoles.includes("Administrator")
+                (userRoles.includes("Accounting") ||
+                  userRoles.includes("Administrator")) &&
+                props.rowData.data.status === "New"
               )
             }
             backgroundColor="#fef9fa"
