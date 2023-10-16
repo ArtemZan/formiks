@@ -220,6 +220,7 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	email = payload.Email
 	name = payload.Name
 	email, err = getUserEmail(token)
+	fmt.Println(email)
 	if err != nil {
 		return name, email, roles
 	}
