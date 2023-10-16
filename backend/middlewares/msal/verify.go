@@ -121,7 +121,7 @@ func getUserGroups(token string) ([]Group, error) {
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Accept", "application/json")
 
-	client := &http.Client{}
+	client := network.Client
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error making request: %v", err)
@@ -204,7 +204,6 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	}
 	//roles check
 	groups, _ = getUserGroups(token)
-	fmt.Println(groups)
 	for _, group := range groups {
 		if (group.ID == "1a9f7c85-d2ed-4526-b61f-362792d0a68a"){
 			roles = append(roles, "Administrator")
@@ -220,7 +219,6 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	email = payload.Email
 	name = payload.Name
 	email, err = getUserEmail(token)
-	fmt.Println(email)
 	if err != nil {
 		return name, email, roles
 	}
