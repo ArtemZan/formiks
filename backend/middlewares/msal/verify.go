@@ -118,7 +118,7 @@ func getUserGroups(token string) ([]Group, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
-	
+	fmt.Println("token", token)
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Accept", "application/json")
 

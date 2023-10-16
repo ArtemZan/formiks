@@ -36,9 +36,10 @@ function App({ pca }: AppProps) {
   pca.setNavigationClient(navigationClient);
 
   useEffect(() => {
-    RestAPI.getRoles().then((response) =>
-      setAdminRole(response.data.includes("Administrator"))
-    );
+    RestAPI.getRoles().then((response) => {
+      setAdminRole(response.data.includes("Administrator"));
+      console.log(response.data);
+    });
 
     RestAPI.getRoles().then((response) => {
       setRoles(response.data);
