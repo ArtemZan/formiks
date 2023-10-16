@@ -1,6 +1,7 @@
 package network
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -11,6 +12,7 @@ var Client *http.Client
 
 func init() {
 	proxyEnv := os.Getenv("HTTP_PROXY")
+	fmt.Println(proxyEnv)
 	//log.Printf("Proxy: %v", proxyEnv)
 	if proxyEnv != "" {
 		proxyURL, err := url.Parse(proxyEnv)
