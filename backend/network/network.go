@@ -33,6 +33,7 @@ func init() {
 func Initialize(){
 	proxyEnv := os.Getenv("HTTP_PROXY")
 	log.Printf("Proxy: %v", proxyEnv)
+	fmt.Println("Proxy",proxyEnv)
 	if proxyEnv != "" {
 		proxyURL, err := url.Parse(proxyEnv)
 		if err != nil {
