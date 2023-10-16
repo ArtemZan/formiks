@@ -293,6 +293,10 @@ function bytesToSize(bytes: number) {
 }
 
 const filterTypes = {
+  text: [
+    { label: "Exact", value: "exact" },
+    { label: "Includes", value: "includes" },
+  ],
   string: [
     { label: "Exact", value: "exact" },
     { label: "Includes", value: "includes" },

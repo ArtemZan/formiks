@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -109,8 +110,8 @@ func (d *Dropdown) Update(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-
-	d.db.Collection("dropdowns").ReplaceOne(c.Request.Context(), bson.M{"_id": dropdown.ID}, dropdown)
+	t, e := d.db.Collection("dropdowns").ReplaceOne(c.Request.Context(), bson.M{"_id": dropdown.ID}, dropdown)
+	fmt.Println(t, e)
 	c.Status(http.StatusOK)
 }
 

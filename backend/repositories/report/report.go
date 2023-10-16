@@ -2,6 +2,7 @@ package report
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -109,5 +110,6 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport2, err
 			}
 		}
 	}
+	fmt.Println(reports)
 	return reports, err
 }

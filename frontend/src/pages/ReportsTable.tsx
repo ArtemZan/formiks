@@ -150,6 +150,7 @@ export default function ReportsTable(props: Props) {
       response.data.forEach((report) => {
         sum += parseFloat(report.incomeAmountLCSI);
       });
+      console.log(response.data);
       setTotalAmount(sum);
       setAllReports(response.data);
       setReports(response.data);

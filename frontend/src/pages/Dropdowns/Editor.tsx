@@ -334,6 +334,7 @@ export function Editor(props: Props) {
                 props.history.push(`/dropdowns/edit/${response.data.id}`);
               }
             } else {
+              console.log(dropdown);
               await RestAPI.updateDropdown(dropdown)
                 .then(() => {
                   toast(
