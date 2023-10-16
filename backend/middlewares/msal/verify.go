@@ -118,7 +118,6 @@ func getUserGroups(token string) ([]Group, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
-	fmt.Println("token", token)
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Accept", "application/json")
 
@@ -128,6 +127,7 @@ func getUserGroups(token string) ([]Group, error) {
 		return nil, fmt.Errorf("error making request: %v", err)
 	}
 	defer resp.Body.Close()
+	fmt.Println("response", resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("error response from Graph API: %s", resp.Status)
