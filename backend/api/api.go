@@ -4,7 +4,6 @@ import (
 	"github.com/doublegrey/formiks/backend/api/handlers"
 	"github.com/doublegrey/formiks/backend/api/wrike"
 	"github.com/doublegrey/formiks/backend/driver"
-	"github.com/doublegrey/formiks/backend/middlewares/msal"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,8 +37,8 @@ func RegisterRoutes(r *gin.Engine) {
 	projectsGroup.DELETE("/:id", projectHandler.Delete) // delete project
 
 	bookmarksGroup.GET("/", bookmarkHandler.Fetch)
-	bookmarksGroup.POST("/", msal.Admin(), bookmarkHandler.Create)
-	bookmarksGroup.DELETE("/:id", msal.Admin(), bookmarkHandler.Delete)
+	bookmarksGroup.POST("/",  bookmarkHandler.Create)
+	bookmarksGroup.DELETE("/:id",  bookmarkHandler.Delete)
 
 	submissionsGroup.GET("/", submissionHandler.Fetch)                    // get all submissions available to user
 	submissionsGroup.GET("/:id", submissionHandler.FetchByIDWithChildren) // get submission

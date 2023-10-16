@@ -86,7 +86,8 @@ func SetRoles() gin.HandlerFunc {
 				roles = []string{"guest"}
 			} else {
 				// roles = append(roles, "Administrator")
-				c.AbortWithStatus(http.StatusForbidden)
+				// c.AbortWithStatus(http.StatusForbidden)
+				fmt.Println("Unauthorized")
 				return
 			}
 		}
@@ -203,6 +204,7 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	}
 	//roles check
 	groups, _ = getUserGroups(token)
+	fmt.Println(groups)
 	for _, group := range groups {
 		if (group.ID == "1a9f7c85-d2ed-4526-b61f-362792d0a68a"){
 			roles = append(roles, "Administrator")
