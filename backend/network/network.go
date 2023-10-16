@@ -12,7 +12,7 @@ var Client *http.Client
 
 func init() {
 	proxyEnv := os.Getenv("HTTP_PROXY")
-	fmt.Println(proxyEnv)
+	fmt.Println("Proxy",proxyEnv)
 	//log.Printf("Proxy: %v", proxyEnv)
 	if proxyEnv != "" {
 		proxyURL, err := url.Parse(proxyEnv)
