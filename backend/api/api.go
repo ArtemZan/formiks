@@ -71,9 +71,9 @@ func RegisterRoutes(r *gin.Engine) {
 	dropdownsGroup.GET("/sync/:id", dropdownHandler.Sync)               // sync custom dropdown
 	dropdownsGroup.GET("/:id", dropdownHandler.FetchByID)               // get custom dropdown
 	dropdownsGroup.GET("/:id/values", dropdownHandler.Values)           // get custom dropdown values
-	dropdownsGroup.POST("/", msal.Admin(), dropdownHandler.Create)      // create custom dropdown
-	dropdownsGroup.PUT("/:id", msal.Admin(), dropdownHandler.Update)    // update custom dropdown
-	dropdownsGroup.DELETE("/:id", msal.Admin(), dropdownHandler.Delete) // delete custom dropdown
+	dropdownsGroup.POST("/", dropdownHandler.Create)      // create custom dropdown
+	dropdownsGroup.PUT("/:id", dropdownHandler.Update)    // update custom dropdown
+	dropdownsGroup.DELETE("/:id", dropdownHandler.Delete) // delete custom dropdown
 
 	reportsGroup.GET("/", reportHandler.FetchPAreport) // get report data
 
