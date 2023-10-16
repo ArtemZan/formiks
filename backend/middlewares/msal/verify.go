@@ -124,6 +124,7 @@ func getUserGroups(token string) ([]Group, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println("error making request: %v", err)
 		return nil, fmt.Errorf("error making request: %v", err)
 	}
 	defer resp.Body.Close()
