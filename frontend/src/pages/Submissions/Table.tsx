@@ -2073,10 +2073,12 @@ export function SubmissionsTable(props: Props) {
               let incomeEUR = cs.data.incomeAmountEURSI || 0;
               let incomeEURGL = cs.data.incomeAmountEurIncomeGL || 0;
               sub.data.totalIncomeEUR += -(incomeEUR + incomeEURGL);
+              if (cs.data.projectNumber === "6110CH223134") {
+                console.log(cs.data.costAmountEUR, cs.data.costAmountEURCostGL);
+              }
               sub.data.totalCostsEUR += -(
-                cs.data.costAmountEUR ||
-                0 + cs.data.costAmountEURCostGL ||
-                0
+                (cs.data.costAmountEUR || 0) +
+                (cs.data.costAmountEURCostGL || 0)
               );
               sub.data.totalCostsTool +=
                 cs.data.costAmountLC || 0 + cs.data.costAmountLCCostGL || 0;
