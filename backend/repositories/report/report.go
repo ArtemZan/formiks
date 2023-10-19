@@ -2,7 +2,6 @@ package report
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -26,6 +25,7 @@ type reportRepo struct {
 	Cache *cache.Cache
 }
 
+
 func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport2, error) {
 	reports := make([]models.PAreport2, 0)
 	submissions := make([]models.Submission, 0)
@@ -35,6 +35,14 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport2, err
 		return reports, err
 	}
 	err = cursor.All(ctx, &submissions)
+	submissionMap := make(map[string]models.Submission)
+	for _, submission := range submissions {
+		if (submission.ParentID == nil){ 
+			submissionMap[submission.ID.Hex()] = submission
+
+			// fmt.Println(submissionMap[submission.ID.Hex()].Data["projectName"].(string))
+		}
+	}
 
 	for _, element := range submissions {
 		if element.Data["incomeAccountSI"] != nil {
@@ -44,10 +52,19 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport2, err
 			rdata.CompanyCode, _ = element.Data["companyCode"].(string)
 			rdata.YearMonth, _ = element.Data["yearMonthSI"].(string)
 			rdata.ProjectNumber, _ = element.Data["projectNumber"].(string)
-			rdata.ProjectName, _ = element.Data["projectName"].(string)
+			parentId, e := element.ParentID.(string)
+			if !e {
+				parentId = ""
+			} 
+			projectName, er := submissionMap[parentId].Data["projectName"].(string)
+			if !er {
+				projectName = ""
+			}
+			rdata.ProjectName = projectName
 			rdata.InvoiceNumber, _ = element.Data["invoiceNumberSI"].(string)
 			rdata.IncomeAccount, _ = element.Data["incomeAccountSI"].(string)
 			rdata.InvoiceRecipientName, _ = element.Data["name1SI"].(string)
+
 			// rdata.IncomeAmountLCSI, _ = element.Data["incomeAmountLCSI"].string()
 			value, ok := element.Data["incomeAmountLCSI"].(float64) // assert type to float64
 			if !ok {
@@ -63,7 +80,7 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport2, err
 						rdata.IntSalesManufacturerNumber, _ = vendorData.Data["manufacturerNumber"].(string)
 						rdata.IntSalesManufacturerName, _ = vendorData.Data["vendorName"].(string)
 						rdata.IntSalesBU, _= vendorData.Data["businessUnit"].(string)
-						rdata.ProjectName, _= vendorData.Data["projectName"].(string)
+						// rdata.ProjectName, _= vendorData.Data["projectName"].(string)
 						break
 					}
 				}
@@ -75,7 +92,7 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport2, err
 					rdata.ExSalesManufacturerNumber, _ = vendorData.Data["manufacturerNumber"].(string)
 					rdata.ExSalesManufacturerName, _ = vendorData.Data["vendorName"].(string)
 					rdata.ExSalesBU, _= vendorData.Data["businessUnit"].(string)
-					rdata.ProjectName, _= vendorData.Data["projectName"].(string)
+					// rdata.ProjectName, _= vendorData.Data["projectName"].(string)
 					rdata.ExSalesVODNumber, _= vendorData.Data["debitorNumber"].(string)
 					break
 				}
@@ -105,11 +122,11 @@ func (r *reportRepo) FetchPAreport(ctx context.Context) ([]models.PAreport2, err
 			} else {
 				rdata.Validation = "OK"
 			}
-			if (rdata.ProjectName != ""){ 
+			
+			// if (rdata.ProjectName != ""){ 
 				reports = append(reports, rdata)
-			}
+			// }
 		}
 	}
-	fmt.Println(reports)
 	return reports, err
 }

@@ -130,7 +130,6 @@ func (r *submissionRepo) FetchByProjectWithChildren(ctx context.Context, number 
 	childRecords := make([]models.Submission, 0)
 	err := r.Conn.Collection("submissions").FindOne(ctx, bson.M{"data.projectNumber": number,
 	"parentId":           nil,}).Decode(&parentRecord)
-	fmt.Println(parentRecord.ID)
 	cursorChild, err := r.Conn.Collection("submissions").Find(ctx, bson.M{"parentId": parentRecord.ID.Hex()})
 	if err != nil {
 		return response, err
