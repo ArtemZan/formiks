@@ -86,7 +86,7 @@ func SetRoles() gin.HandlerFunc {
 				roles = []string{"guest"}
 			} else {
 				roles = append(roles, "Administrator")
-				c.AbortWithStatus(http.StatusForbidden)
+				// c.AbortWithStatus(http.StatusForbidden)
 				fmt.Println("Unauthorized")
 				return
 			}
