@@ -1272,7 +1272,10 @@ export function SubmissionsTable(props: Props) {
                       if (
                         !value
                           .toString()
-                          .includes(filter.selectedValues[0].toString())
+                          .toLowerCase()
+                          .includes(
+                            filter.selectedValues[0].toString().toLowerCase()
+                          )
                       ) {
                         valid = false;
                       }
@@ -1435,6 +1438,7 @@ export function SubmissionsTable(props: Props) {
                         value.toString();
                       break;
                     case "includes":
+                      console.log(value.toString().toLowerCase());
                       valid = value
                         .toString()
                         .toLowerCase()
@@ -3073,7 +3077,6 @@ export function SubmissionsTable(props: Props) {
               handleCellUpdate(id, "data.status", "Incomplete");
             }
             if (typeof value === "object") {
-              console.log(value);
               handleCellUpdate(id, "data.status", "New");
               handleCellUpdate(id, path, value.hersteller);
               toast(
@@ -5656,7 +5659,6 @@ export function SubmissionsTable(props: Props) {
             ...Year,
           ]}
           onChange={(value: any) => {
-            console.log();
             setFinancialYear(value.value);
           }}
           value={
