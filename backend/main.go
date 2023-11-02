@@ -17,6 +17,7 @@ import (
 	"github.com/doublegrey/formiks/backend/driver"
 	"github.com/doublegrey/formiks/backend/middlewares"
 	"github.com/doublegrey/formiks/backend/middlewares/msal"
+	"github.com/doublegrey/formiks/backend/mongoUpdate"
 	"github.com/doublegrey/formiks/backend/network"
 	"github.com/doublegrey/formiks/backend/sap"
 )
@@ -41,9 +42,12 @@ func main() {
 		// fmt.Println("account lines parsed...")
 		// sap.CreateSubmissionsForAccountLines()
 		// os.Exit(0)
+		
 		cron.Every(1).Day().At("03:00").Do(func() {
+			mongoUpdate.Update()
 			sap.FetchAccountLines()
 			sap.CreateSubmissionsForAccountLines()
+
 		})
 	}()
 
