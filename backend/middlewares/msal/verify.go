@@ -124,10 +124,9 @@ func getUserGroups(token string) ([]Group, error) {
 	client := network.Client
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error making request: %v", err)
+		return nil, fmt.Errorf("error making request: %v, Token: %v", err, token)
 	}
 	defer resp.Body.Close()
-	fmt.Println("response", resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("error response from Graph API: %s", resp.Status)
@@ -142,7 +141,6 @@ func getUserGroups(token string) ([]Group, error) {
 	if err := json.Unmarshal(body, &graphResponse); err != nil {
 		return nil, fmt.Errorf("error unmarshalling response: %v", err)
 	}
-
 	return graphResponse.Value, nil
 }
 
@@ -153,12 +151,13 @@ func getUserEmail(token string) (string, error) {
 		return "", fmt.Errorf("error creating request: %v", err)
 	}
 
-	req.Header.Set("Authorization", token)
+	req.Header.Set("Authorization", "Bearer " + token)
 	req.Header.Set("Accept", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Printf("error making request 2: %v", err)
 		return "", fmt.Errorf("error making request: %v", err)
 	}
 	defer resp.Body.Close()
@@ -178,7 +177,6 @@ func getUserEmail(token string) (string, error) {
 	if err := json.Unmarshal(body, &userResponse); err != nil {
 		return "", fmt.Errorf("error unmarshalling response: %v", err)
 	}
-
 	return userResponse.Mail, nil
 }
 
@@ -259,7 +257,7 @@ func validToken(token, kid string) bool {
 	parts := strings.Split(token, ".")
 	err = jwt.SigningMethodRS256.Verify(strings.Join(parts[0:2], "."), parts[2], key)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err, "TOKEN", token)
 	}	
 	return err == nil
 }
