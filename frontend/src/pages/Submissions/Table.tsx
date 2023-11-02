@@ -585,7 +585,7 @@ const DisplayedColumnsList = [
       {
         label: "Income Amount (EUR)",
         value: "data.incomeAmountEURSI",
-        type: "number",
+        type: "string",
       },
       {
         label: "Invoice Status (Paid/Not Paid)",
@@ -653,7 +653,7 @@ const DisplayedColumnsList = [
       {
         label: "Cost Amount (EUR)",
         value: "data.costAmountEURCostGL",
-        type: "number",
+        type: "string",
       },
     ],
   },
@@ -710,7 +710,7 @@ const DisplayedColumnsList = [
       {
         label: "Income Amount (EUR)",
         value: "data.incomeAmountEurIncomeGL",
-        type: "number",
+        type: "string",
       },
     ],
   },
@@ -721,42 +721,42 @@ const DisplayedColumnsList = [
       {
         label: "Total Income (LC)",
         value: "data.totalIncomeLC",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Costs (LC)",
         value: "data.totalCostsLC",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Profit (LC)",
         value: "data.totalProfitLC",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Loss (LC)",
         value: "data.totalLossLC",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Income (EUR)",
         value: "data.totalIncomeEUR",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Costs (EUR)",
         value: "data.totalCostsEUR",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Profit (EUR)",
         value: "data.totalProfitEUR",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Loss (EUR)",
         value: "data.totalLossEUR",
-        type: "number",
+        type: "string",
       },
     ],
   },
@@ -767,22 +767,22 @@ const DisplayedColumnsList = [
       {
         label: "Total Costs In Tool (LC)",
         value: "data.totalCostsTool",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Costs in SAP (LC)",
         value: "data.totalCostsSAP",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Income in Tool (LC)",
         value: "data.totalIncomeTool",
-        type: "number",
+        type: "string",
       },
       {
         label: "Total Income in SAP (LC)",
         value: "data.totalIncomeSAP",
-        type: "number",
+        type: "string",
       },
     ],
   },
@@ -2076,11 +2076,34 @@ export function SubmissionsTable(props: Props) {
                 (cs.data.costAmountEURCostGL || 0)
               );
               sub.data.totalCostsTool +=
+                cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
+              sub.data.totalCostsSAP +=
+                cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
+              sub.data.totalProfitLC +=
                 (cs.data.costAmountLC || 0) + (cs.data.costAmountLCCostGL || 0);
               sub.data.totalIncomeTool +=
                 (cs.data.incomeAmountLCSI || 0) +
                 (cs.data.incomeAmountLCIncomeGL || 0);
             });
+          if (sub.data.totalIncomeLC + sub.data.totalCostsLC >= 0) {
+            sub.data.totalProfitLC =
+              sub.data.totalIncomeLC + sub.data.totalCostsLC;
+          } else {
+            sub.data.totalProfitLC = 0;
+            sub.data.totalLossLC = -(
+              sub.data.totalIncomeLC + sub.data.totalCostsLC
+            );
+          }
+          if (sub.data.totalIncomeEUR + sub.data.totalCostsEUR >= 0) {
+            sub.data.totalProfitEUR =
+              sub.data.totalIncomeEUR + sub.data.totalCostsEUR;
+          } else {
+            sub.data.totalProfitEUR = 0;
+            sub.data.totalLossEUR = -(
+              sub.data.totalIncomeEUR + sub.data.totalCostsEUR
+            );
+          }
+          sub.data.totalCostsSAP = 0;
         }
       });
       let sortedSubs: Submission[] = [];
@@ -5749,7 +5772,6 @@ export function SubmissionsTable(props: Props) {
               },
             ];
             if (tabIndex === 0) {
-              console.log(filteredSubmissions);
               let sortedSubmissions: Submission[] =
                 sortAndStructureData(filteredSubmissions);
               formattedData = sortedSubmissions.map((s) => {
@@ -5780,8 +5802,9 @@ export function SubmissionsTable(props: Props) {
                       if (column.type === "date") {
                         doc[column.value] = formatDate(doc[column.value]);
                       }
+
                       if (column.type === "number") {
-                        //doc[column.value] = NumberWithCommas(doc[column.value]);
+                        doc[column.value] = NumberWithCommas(doc[column.value]);
                       }
                       if (!init) {
                         header[0][column.value] =
@@ -5938,7 +5961,7 @@ export function SubmissionsTable(props: Props) {
                     group.children.map((column: any, index: number) => {
                       doc[column.value] = _.get(s, column.value);
                       if (column.type === "number") {
-                        // doc[column.value] = NumberWithCommas(doc[column.value]);
+                        doc[column.value] = NumberWithCommas(doc[column.value]);
                       }
                       if (column.type === "date") {
                         doc[column.value] = formatDate(doc[column.value]);
