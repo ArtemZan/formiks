@@ -1437,7 +1437,10 @@ export function SubmissionsTable(props: Props) {
                     case "includes":
                       valid = value
                         .toString()
-                        .includes(filter.selectedValues[0].toString());
+                        .toLowerCase()
+                        .includes(
+                          filter.selectedValues[0].toString().toLowerCase()
+                        );
                       break;
                   }
                   break;
