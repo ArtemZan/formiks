@@ -80,7 +80,8 @@ func Update() {
             fmt.Println("Updating document...")
                 fmt.Println(elem.Data.AlsoMarketingProjectNumberLMD, elem.Data.StatusLMD)
             // If date is today or earlier and statusLMD is "FUTURE INVOICE"
-            if t.Before(midnight) && elem.Data.StatusLMD == "FUTURE INVOICE"{
+			endOfDay := midnight.AddDate(0, 0, 1).Add(-time.Second)
+            if t.Before(endOfDay) && elem.Data.StatusLMD == "FUTURE INVOICE"{
                 // Update statusLMD to "OK FOR INVOICING"
                 id := cursor.Current.Lookup("_id")
                 update := bson.D{{Key: "$set", Value: bson.M{"data.statusLMD": "OK FOR INVOICING"}}}
