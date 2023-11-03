@@ -541,7 +541,7 @@ const DisplayedColumnsList = [
       {
         label: "Cost Amount (EUR)",
         value: "data.costAmountEUR",
-        type: "number",
+        type: "string",
       },
       { label: "Cost Status", value: "data.costStatus", type: "string" },
     ],
@@ -2941,7 +2941,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.countryShare", 200),
       resizable: true,
       group: "Project Information",
-
+      type: "number",
       hidden: visibilityController("projectInformation", "data.countryShare"),
       cellRenderer: (props: any) => (
         <EditableTableCell
@@ -2963,7 +2963,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.countryBudgetContributionCC", 250),
       resizable: true,
       group: "Project Information",
-
+      type: "number",
       hidden: visibilityController(
         "projectInformation",
         "data.countryBudgetContributionCC"
@@ -2988,7 +2988,7 @@ export function SubmissionsTable(props: Props) {
       width: columnWidth("data.countryCostEstimationCC", 250),
       resizable: true,
       group: "Project Information",
-
+      type: "number",
       hidden: visibilityController(
         "projectInformation",
         "data.countryCostEstimationCC"
@@ -3252,6 +3252,7 @@ export function SubmissionsTable(props: Props) {
       group: "Project Information",
 
       title: "Vendor Amount",
+      type: "number",
       width: columnWidth("data.vendorAmount", 200),
       resizable: true,
       hidden: visibilityController("projectInformation", "data.vendorAmount"),
@@ -3300,6 +3301,7 @@ export function SubmissionsTable(props: Props) {
 
       dataKey: "data.estimatedIncomeCC",
       title: "Estimated Income (Campaign Currency)",
+      type: "number",
       width: columnWidth("data.estimatedIncomeCC", 200),
       resizable: true,
       hidden: visibilityController(
@@ -3325,6 +3327,7 @@ export function SubmissionsTable(props: Props) {
 
       dataKey: "data.estimatedCostsCC",
       title: "Estimated Costs (Campaign Currency)",
+      type: "number",
       width: columnWidth("data.estimatedCostsCC", 200),
       resizable: true,
       hidden: visibilityController(
@@ -3349,6 +3352,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.estimatedResultCC",
       dataKey: "data.estimatedResultCC",
       title: "Estimated Result (Campaign Currency)",
+      type: "number",
       group: "Project Information",
 
       width: columnWidth("data.estimatedResultCC", 200),
@@ -3375,7 +3379,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.estimatedIncomeEUR",
       title: "Estimated Income EUR",
       group: "Project Information",
-
+      type: "number",
       width: columnWidth("data.estimatedIncomeEUR", 200),
       resizable: true,
       hidden: visibilityController(
@@ -3400,7 +3404,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.estimatedCostsEUR",
       title: "Estimated Costs EUR",
       group: "Project Information",
-
+      type: "number",
       width: columnWidth("data.estimatedCostsEUR", 200),
       resizable: true,
       hidden: visibilityController(
@@ -3426,7 +3430,7 @@ export function SubmissionsTable(props: Props) {
       title: "Estimated Result EUR",
       width: columnWidth("data.estimatedResultEUR", 200),
       group: "Project Information",
-
+      type: "number",
       resizable: true,
       hidden: visibilityController(
         "projectInformation",
@@ -3450,7 +3454,7 @@ export function SubmissionsTable(props: Props) {
       dataKey: "data.vendorShare",
       title: "% Vendor Share",
       group: "Project Information",
-
+      type: "number",
       width: columnWidth("data.vendorShare", 200),
       resizable: true,
       hidden: visibilityController("projectInformation", "data.vendorShare"),
@@ -3471,7 +3475,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.businessUnit",
       dataKey: "data.businessUnit",
       group: "Project Information",
-
+      type: "text",
       title: "Business Unit",
       width: columnWidth("data.businessUnit", 200),
       resizable: true,
@@ -3677,7 +3681,7 @@ export function SubmissionsTable(props: Props) {
       key: "data.netValueOfServiceOrderedLC",
       dataKey: "data.netValueOfServiceOrderedLC",
       group: "Purchase Order",
-
+      type: "number",
       title: "Net Value of Service Ordered (LC)",
       width: columnWidth("data.netValueOfServiceOrderedLC", 200),
       resizable: true,
@@ -3726,7 +3730,7 @@ export function SubmissionsTable(props: Props) {
       title: "Net Value (Purchase Order Currency)",
       width: columnWidth("data.netValuePOC", 200),
       group: "Purchase Order",
-
+      type: "number",
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.netValuePOC"),
       cellRenderer: (props: any) => (
@@ -3773,7 +3777,7 @@ export function SubmissionsTable(props: Props) {
       title: "Net Value (EUR)",
       width: columnWidth("data.netValueEur", 200),
       group: "Purchase Order",
-
+      type: "number",
       resizable: true,
       hidden: visibilityController("purchaseOrder", "data.netValueEur"),
       cellRenderer: (props: any) => (
@@ -4390,7 +4394,7 @@ export function SubmissionsTable(props: Props) {
       title: "Income Amount (EUR)",
       width: columnWidth("data.incomeAmountEURSI", 200),
       group: "Sales Invoices",
-
+      type: "number",
       resizable: true,
       hidden: visibilityController("salesInvoices", "data.incomeAmountEURSI"),
       cellRenderer: (props: any) => (
@@ -8810,19 +8814,22 @@ export function SubmissionsTable(props: Props) {
                       case "exact":
                         valuesField = (
                           <NumberInput
+                            precision={2}
+                            defaultValue={filter.selectedValues[0]}
                             onChange={(_, value) => {
+                              console.log(value);
                               var temp = [...filters];
                               temp[index].selectedValues[0] = value;
                               setFilters(temp);
                             }}
-                            value={filter.selectedValues[0]}
+                            // value={filter.selectedValues[0]}
                             w="100%"
                           >
                             <NumberInputField />
-                            <NumberInputStepper>
+                            {/* <NumberInputStepper>
                               <NumberIncrementStepper />
                               <NumberDecrementStepper />
-                            </NumberInputStepper>
+                            </NumberInputStepper> */}
                           </NumberInput>
                         );
                         break;
@@ -8831,12 +8838,14 @@ export function SubmissionsTable(props: Props) {
                           <Stack direction={{ base: "column", md: "row" }}>
                             <NumberInput
                               w="100%"
+                              precision={2}
+                              defaultValue={filter.selectedValues[0]}
                               onChange={(_, value) => {
                                 var temp = [...filters];
                                 temp[index].selectedValues[0] = value;
                                 setFilters(temp);
                               }}
-                              value={filter.selectedValues[0]}
+                              // value={filter.selectedValues[0]}
                             >
                               <NumberInputField />
                               <NumberInputStepper>
@@ -8853,12 +8862,14 @@ export function SubmissionsTable(props: Props) {
                             </Box>
                             <NumberInput
                               w="100%"
+                              precision={2}
+                              defaultValue={filter.selectedValues[1]}
                               onChange={(_, value) => {
                                 var temp = [...filters];
                                 temp[index].selectedValues[1] = value;
                                 setFilters(temp);
                               }}
-                              value={filter.selectedValues[1]}
+                              // value={filter.selectedValues[1]}
                             >
                               <NumberInputField />
                               <NumberInputStepper>
