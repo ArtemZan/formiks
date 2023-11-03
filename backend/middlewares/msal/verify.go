@@ -202,6 +202,7 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	}
 	//roles check
 	groups, _ = getUserGroups(token)
+	fmt.Println(groups)
 	for _, group := range groups {
 		if (group.ID == "1a9f7c85-d2ed-4526-b61f-362792d0a68a"){
 			roles = append(roles, "Administrator")
