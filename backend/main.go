@@ -43,7 +43,7 @@ func main() {
 		// sap.CreateSubmissionsForAccountLines()
 		// os.Exit(0)
 		
-		cron.Every(1).Day().At("11:00").Do(func() {
+		cron.Every(1).Day().At("03:00").Do(func() {
 			mongoUpdate.Update()
 			sap.FetchAccountLines()
 			sap.CreateSubmissionsForAccountLines()
