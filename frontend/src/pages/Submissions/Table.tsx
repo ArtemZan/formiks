@@ -1285,13 +1285,24 @@ export function SubmissionsTable(props: Props) {
                 case "number":
                   switch (filter.filter) {
                     case "exact":
-                      valid = filter.selectedValues[0] === value;
+                      if (!isNaN(value)) {
+                        valid =
+                          filter.selectedValues[0] === Number(value.toFixed(2));
+                      } else {
+                        valid = false;
+                      }
                       break;
                     case "range":
                       if (filter.selectedValues.length === 2) {
-                        valid =
-                          value >= filter.selectedValues[0] &&
-                          value <= filter.selectedValues[1];
+                        if (!isNaN(value)) {
+                          valid =
+                            Number(value.toFixed(2)) >=
+                              filter.selectedValues[0] &&
+                            Number(value.toFixed(2)) <=
+                              filter.selectedValues[1];
+                        } else {
+                          valid = false;
+                        }
                       }
                       break;
                   }
@@ -1438,7 +1449,6 @@ export function SubmissionsTable(props: Props) {
                         value.toString();
                       break;
                     case "includes":
-                      console.log(value.toString().toLowerCase());
                       valid = value
                         .toString()
                         .toLowerCase()
@@ -1451,7 +1461,9 @@ export function SubmissionsTable(props: Props) {
                 case "number":
                   switch (filter.filter) {
                     case "exact":
-                      valid = filter.selectedValues[0] === value;
+                      valid =
+                        filter.selectedValues[0].toFixed(2) ===
+                        value.toFixed(2);
                       break;
                     case "range":
                       if (filter.selectedValues.length === 2) {
@@ -4070,7 +4082,7 @@ export function SubmissionsTable(props: Props) {
     },
     {
       key: "data.costAmountEUR",
-      dataKey: "data.costAmountEUR",
+      dataKey: "data.cosTotal Loss (EUR)AmountEUR",
       title: "Cost Amount (EUR)",
       width: columnWidth("data.costAmountEUR", 200),
       resizable: true,
@@ -8817,7 +8829,6 @@ export function SubmissionsTable(props: Props) {
                             precision={2}
                             defaultValue={filter.selectedValues[0]}
                             onChange={(_, value) => {
-                              console.log(value);
                               var temp = [...filters];
                               temp[index].selectedValues[0] = value;
                               setFilters(temp);
