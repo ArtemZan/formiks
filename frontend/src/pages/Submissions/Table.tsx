@@ -1287,7 +1287,8 @@ export function SubmissionsTable(props: Props) {
                     case "exact":
                       if (!isNaN(value)) {
                         valid =
-                          filter.selectedValues[0] === Number(value.toFixed(2));
+                          Number(filter.selectedValues[0]) ===
+                          Math.round(value * 100) / 100;
                       } else {
                         valid = false;
                       }
@@ -1295,11 +1296,19 @@ export function SubmissionsTable(props: Props) {
                     case "range":
                       if (filter.selectedValues.length === 2) {
                         if (!isNaN(value)) {
-                          valid =
-                            Number(value.toFixed(2)) >=
-                              filter.selectedValues[0] &&
-                            Number(value.toFixed(2)) <=
-                              filter.selectedValues[1];
+                          let roundValue = Math.round(value * 100) / 100;
+                          if (
+                            Number(filter.selectedValues[0]) >
+                            Number(filter.selectedValues[1])
+                          ) {
+                            valid =
+                              roundValue <= Number(filter.selectedValues[0]) &&
+                              roundValue >= Number(filter.selectedValues[1]);
+                          } else {
+                            valid =
+                              roundValue >= Number(filter.selectedValues[0]) &&
+                              roundValue <= Number(filter.selectedValues[1]);
+                          }
                         } else {
                           valid = false;
                         }
@@ -8802,6 +8811,7 @@ export function SubmissionsTable(props: Props) {
                       <Input
                         onChange={(event) => {
                           var temp = [...filters];
+
                           temp[index].selectedValues[0] = event.target.value;
                           setFilters(temp);
                         }}
@@ -8825,16 +8835,31 @@ export function SubmissionsTable(props: Props) {
                     switch (filter.filter) {
                       case "exact":
                         valuesField = (
+                          // <NumberInput
+                          //   precision={2}
+                          //   //defaultValue={filter.selectedValues[0]}
+                          //   onChange={(_, value) => {
+                          //     console.log(value);
+                          //     var temp = [...filters];
+                          //     temp[index].selectedValues[0] = value;
+                          //     setFilters(temp);
+                          //   }}
+                          //   value={Number(filter.selectedValues[0].toFixed(2))}
+                          //   w="100%"
+                          // >
+                          //   <NumberInputField />
+                          //   {/* <NumberInputStepper>
+                          //     <NumberIncrementStepper />
+                          //     <NumberDecrementStepper />
+                          //   </NumberInputStepper> */}
+                          // </NumberInput>
                           <NumberInput
-                            precision={2}
-                            defaultValue={filter.selectedValues[0]}
-                            onChange={(_, value) => {
+                            onChange={(strValue: string, value: number) => {
                               var temp = [...filters];
-                              temp[index].selectedValues[0] = value;
+                              temp[index].selectedValues[0] = strValue;
                               setFilters(temp);
                             }}
-                            // value={filter.selectedValues[0]}
-                            w="100%"
+                            value={filter.selectedValues[0]}
                           >
                             <NumberInputField />
                             {/* <NumberInputStepper>
@@ -8849,20 +8874,18 @@ export function SubmissionsTable(props: Props) {
                           <Stack direction={{ base: "column", md: "row" }}>
                             <NumberInput
                               w="100%"
-                              precision={2}
-                              defaultValue={filter.selectedValues[0]}
-                              onChange={(_, value) => {
+                              onChange={(strValue, value) => {
                                 var temp = [...filters];
-                                temp[index].selectedValues[0] = value;
+                                temp[index].selectedValues[0] = strValue;
                                 setFilters(temp);
                               }}
-                              // value={filter.selectedValues[0]}
+                              value={filter.selectedValues[0]}
                             >
                               <NumberInputField />
-                              <NumberInputStepper>
+                              {/* <NumberInputStepper>
                                 <NumberIncrementStepper />
                                 <NumberDecrementStepper />
-                              </NumberInputStepper>
+                              </NumberInputStepper> */}
                             </NumberInput>
                             <Box textAlign="center" w="20px">
                               <ArrowForwardIcon
@@ -8873,20 +8896,18 @@ export function SubmissionsTable(props: Props) {
                             </Box>
                             <NumberInput
                               w="100%"
-                              precision={2}
-                              defaultValue={filter.selectedValues[1]}
-                              onChange={(_, value) => {
+                              onChange={(strValue, value) => {
                                 var temp = [...filters];
-                                temp[index].selectedValues[1] = value;
+                                temp[index].selectedValues[1] = strValue;
                                 setFilters(temp);
                               }}
-                              // value={filter.selectedValues[1]}
+                              value={filter.selectedValues[1]}
                             >
                               <NumberInputField />
-                              <NumberInputStepper>
+                              {/* <NumberInputStepper>
                                 <NumberIncrementStepper />
                                 <NumberDecrementStepper />
-                              </NumberInputStepper>
+                              </NumberInputStepper> */}
                             </NumberInput>
                           </Stack>
                         );
