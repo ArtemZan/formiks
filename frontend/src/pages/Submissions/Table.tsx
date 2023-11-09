@@ -1286,6 +1286,9 @@ export function SubmissionsTable(props: Props) {
                   switch (filter.filter) {
                     case "exact":
                       if (!isNaN(value)) {
+                        if (submission.data.projectNumber === "6110CH239404") {
+                          console.log(value);
+                        }
                         valid =
                           Number(filter.selectedValues[0]) ===
                           Math.round(value * 100) / 100;
@@ -2131,7 +2134,7 @@ export function SubmissionsTable(props: Props) {
               sub.data.totalIncomeEUR + sub.data.totalCostsEUR
             );
           }
-          sub.data.totalCostsSAP = 0;
+          sub.data.totalCostsSAP = sub.data.totalCostsTool;
         }
       });
       let sortedSubs: Submission[] = [];
