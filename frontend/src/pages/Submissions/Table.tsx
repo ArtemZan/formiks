@@ -2102,12 +2102,13 @@ export function SubmissionsTable(props: Props) {
               let incomeEUR = cs.data.incomeAmountEURSI || 0;
               let incomeEURGL = cs.data.incomeAmountEurIncomeGL || 0;
               sub.data.totalIncomeEUR += -(incomeEUR + incomeEURGL);
+
               sub.data.totalCostsEUR += -(
                 (cs.data.costAmountEUR || 0) +
                 (cs.data.costAmountEURCostGL || 0)
               );
               sub.data.totalCostsTool +=
-                cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
+                cs.data.costAmountLC || 0 + cs.data.costAmountLCCostGL || 0;
               sub.data.totalCostsSAP +=
                 cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
               sub.data.totalProfitLC +=
