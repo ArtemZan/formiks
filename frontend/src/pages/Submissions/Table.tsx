@@ -2079,6 +2079,8 @@ export function SubmissionsTable(props: Props) {
           sub.data.totalCostsEUR = 0;
           sub.data.totalCostsTool = 0;
           sub.data.totalIncomeTool = 0;
+          sub.data.totalIncomeSAP = 0;
+          sub.data.totalCostsSAP = 0;
           vSubs
             .filter((s) => s.parentId === sub.id)
             .forEach((cs) => {
@@ -2108,7 +2110,7 @@ export function SubmissionsTable(props: Props) {
                 (cs.data.costAmountEURCostGL || 0)
               );
               sub.data.totalCostsTool +=
-                cs.data.costAmountLC || 0 + cs.data.costAmountLCCostGL || 0;
+                cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
               sub.data.totalCostsSAP +=
                 cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
               sub.data.totalProfitLC +=
@@ -2116,6 +2118,19 @@ export function SubmissionsTable(props: Props) {
               sub.data.totalIncomeTool +=
                 (cs.data.incomeAmountLCSI || 0) +
                 (cs.data.incomeAmountLCIncomeGL || 0);
+
+              sub.data.totalIncomeSAP +=
+                (cs.data.incomeAmountLCSI || 0) +
+                (cs.data.incomeAmountLCIncomeGL || 0);
+              if (sub.data.projectNumber === "6110CH230406") {
+                console.log(
+                  sub.data.totalIncomeSAP,
+                  (cs.data.incomeAmountLCSI || 0) +
+                    (cs.data.incomeAmountLCIncomeGL || 0),
+                  cs.data.incomeAmountLCSI || 0,
+                  cs.data.incomeAmountLCIncomeGL || 0
+                );
+              }
             });
           if (sub.data.totalIncomeLC + sub.data.totalCostsLC >= 0) {
             sub.data.totalProfitLC =
