@@ -363,7 +363,11 @@ const DisplayedColumnsList = [
         value: "data.campaignEndDate",
         type: "date",
       },
-      { label: "Project Type", value: "data.projectType", type: "dropdown" },
+      {
+        label: "Project Type/Purchase Order",
+        value: "data.projectType",
+        type: "dropdown",
+      },
       { label: "Author", value: "author", type: "string" },
       { label: "Status", value: "data.status", type: "string" },
     ],
@@ -385,12 +389,12 @@ const DisplayedColumnsList = [
       },
       { label: "% Country Share", value: "data.countryShare", type: "number" },
       {
-        label: "Country Budget Contribution (Campaign Currency)",
+        label: "Country Budget Contribution (CC)",
         value: "data.countryBudgetContributionCC",
         type: "number",
       },
       {
-        label: "Country Cost Estimation (Campaign Currency)",
+        label: "Country Cost Estimation (CC)",
         value: "data.countryCostEstimationCC",
         type: "number",
       },
@@ -422,58 +426,58 @@ const DisplayedColumnsList = [
         type: "dropdown",
       },
       {
-        label: "Estimated Income (Campaign Currency)",
+        label: "Estimated Income (CC)",
         value: "data.estimatedIncomeCC",
         type: "number",
       },
       {
-        label: "Estimated Costs (Campaign Currency)",
+        label: "Estimated Costs (CC)",
         value: "data.estimatedCostsCC",
         type: "number",
       },
       {
-        label: "Estimated Result (Campaign Currency)",
+        label: "Estimated Result (CC)",
         value: "data.estimatedResultCC",
         type: "number",
       },
       {
-        label: "Estimated Income EUR",
+        label: "Estimated Income (EUR)",
         value: "data.estimatedIncomeEUR",
         type: "number",
       },
       {
-        label: "Estimated Costs EUR",
+        label: "Estimated Costs (EUR)",
         value: "data.estimatedCostsEUR",
         type: "number",
       },
       {
-        label: "Estimated Result EUR",
+        label: "Estimated Result (EUR)",
         value: "data.estimatedResultEUR",
         type: "number",
       },
       { label: "% Vendor Share", value: "data.vendorShare", type: "number" },
       { label: "Business Unit", value: "data.businessUnit", type: "string" },
-      { label: "PH1", value: "data.PH1", type: "string" },
+      // { label: "PH1", value: "data.PH1", type: "string" },
       {
         label: "Campaign Channel",
         value: "data.campaignChannel",
         type: "dropdown",
       },
-      {
-        label: "Target Audience",
-        value: "data.targetAudience",
-        type: "dropdown",
-      },
-      {
-        label: "Marketing Responsible",
-        value: "data.marketingResponsible",
-        type: "string",
-      },
-      {
-        label: "Project Approver",
-        value: "data.projectApprover",
-        type: "string",
-      },
+      // {
+      //   label: "Target Audience",
+      //   value: "data.targetAudience",
+      //   type: "dropdown",
+      // },
+      // {
+      //   label: "Marketing Responsible",
+      //   value: "data.marketingResponsible",
+      //   type: "string",
+      // },
+      // {
+      //   label: "Project Approver",
+      //   value: "data.projectApprover",
+      //   type: "string",
+      // },
       {
         label: "Additional Information",
         value: "data.additionalInformation",
@@ -500,7 +504,11 @@ const DisplayedColumnsList = [
         value: "data.netValueOfServiceOrderedLC",
         type: "string",
       },
-      { label: "Local Currency", value: "data.localCurrency", type: "string" },
+      {
+        label: "Local Currency (LC)",
+        value: "data.localCurrency",
+        type: "string",
+      },
       {
         label: "Net Value (Purchase Order Currency)",
         value: "data.netValuePOC",
@@ -537,7 +545,7 @@ const DisplayedColumnsList = [
       { label: "Invoice Supplier", value: "data.name1", type: "string" },
       { label: "Cost Amount (LC)", value: "data.costAmountLC", type: "string" },
       { label: "Cost Amount (DC)", value: "data.costAmountDC", type: "string" },
-      { label: "DC", value: "data.dc", type: "string" },
+      { label: "Document Currency (DC)", value: "data.dc", type: "string" },
       {
         label: "Cost Amount (EUR)",
         value: "data.costAmountEUR",
@@ -572,6 +580,11 @@ const DisplayedColumnsList = [
       },
       { label: "Invoice Recipient", value: "data.name1SI", type: "string" },
       {
+        label: "Invoice Recipient Number",
+        value: "data.sapNumberSI",
+        type: "string",
+      },
+      {
         label: "Income Amount (LC)",
         value: "data.incomeAmountLCSI",
         type: "string",
@@ -581,7 +594,7 @@ const DisplayedColumnsList = [
         value: "data.incomeAmountDCSI",
         type: "string",
       },
-      { label: "DC", value: "data.dcSI", type: "string" },
+      { label: "Document Currency (DC)", value: "data.dcSI", type: "string" },
       {
         label: "Income Amount (EUR)",
         value: "data.incomeAmountEURSI",
@@ -649,7 +662,11 @@ const DisplayedColumnsList = [
         value: "data.costAmountDCCostGL",
         type: "string",
       },
-      { label: "DC", value: "data.dcCostGL", type: "string" },
+      {
+        label: "Document Currency (DC)",
+        value: "data.dcCostGL",
+        type: "string",
+      },
       {
         label: "Cost Amount (EUR)",
         value: "data.costAmountEURCostGL",
@@ -706,7 +723,11 @@ const DisplayedColumnsList = [
         value: "data.incomeAmountDCIncomeGL",
         type: "string",
       },
-      { label: "DC", value: "data.dcIncomeGL", type: "string" },
+      {
+        label: "Document Currency (DC)",
+        value: "data.dcIncomeGL",
+        type: "string",
+      },
       {
         label: "Income Amount (EUR)",
         value: "data.incomeAmountEurIncomeGL",
@@ -907,7 +928,7 @@ const DisplayedColumnsList = [
         type: "number",
       },
       {
-        label: "Document Currency",
+        label: "Document Currency (DC)",
         value: "data.documentCurrencyLMD",
         type: "string",
       },
@@ -3340,7 +3361,7 @@ export function SubmissionsTable(props: Props) {
       group: "Project Information",
 
       dataKey: "data.estimatedIncomeCC",
-      title: "Estimated Income (Campaign Currency)",
+      title: "Estimated Income (CC)",
       type: "number",
       width: columnWidth("data.estimatedIncomeCC", 200),
       resizable: true,
@@ -3366,7 +3387,7 @@ export function SubmissionsTable(props: Props) {
       group: "Project Information",
 
       dataKey: "data.estimatedCostsCC",
-      title: "Estimated Costs (Campaign Currency)",
+      title: "Estimated Costs (CC)",
       type: "number",
       width: columnWidth("data.estimatedCostsCC", 200),
       resizable: true,
@@ -3391,7 +3412,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.estimatedResultCC",
       dataKey: "data.estimatedResultCC",
-      title: "Estimated Result (Campaign Currency)",
+      title: "Estimated Result (CC)",
       type: "number",
       group: "Project Information",
 
@@ -3417,7 +3438,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.estimatedIncomeEUR",
       dataKey: "data.estimatedIncomeEUR",
-      title: "Estimated Income EUR",
+      title: "Estimated Income (EUR)",
       group: "Project Information",
       type: "number",
       width: columnWidth("data.estimatedIncomeEUR", 200),
@@ -3442,7 +3463,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.estimatedCostsEUR",
       dataKey: "data.estimatedCostsEUR",
-      title: "Estimated Costs EUR",
+      title: "Estimated Costs (EUR)",
       group: "Project Information",
       type: "number",
       width: columnWidth("data.estimatedCostsEUR", 200),
@@ -3467,7 +3488,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.estimatedResultEUR",
       dataKey: "data.estimatedResultEUR",
-      title: "Estimated Result EUR",
+      title: "Estimated Result (EUR)",
       width: columnWidth("data.estimatedResultEUR", 200),
       group: "Project Information",
       type: "number",
@@ -3745,7 +3766,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.localCurrency",
       dataKey: "data.localCurrency",
-      title: "Local Currency",
+      title: "Local Currency (LC)",
       group: "Purchase Order",
 
       width: columnWidth("data.localCurrency", 200),
@@ -4089,7 +4110,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.dc",
       dataKey: "data.dc",
-      title: "DC",
+      title: "Document Currency (DC)",
       width: columnWidth("data.dc", 200),
       resizable: true,
       group: "Cost Invoices",
@@ -4409,7 +4430,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.dcSI",
       dataKey: "data.dcSI",
-      title: "DC",
+      title: "Document Currency (DC)",
       width: columnWidth("data.dcSI", 200),
       resizable: true,
       group: "Sales Invoices",
@@ -4735,7 +4756,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.dcCostGL",
       dataKey: "data.dcCostGL",
-      title: "DC",
+      title: "Document Currency (DC)",
       group: "Cost GL Postings",
       type: "text",
       width: columnWidth("data.dcCostGL", 200),
@@ -5015,7 +5036,7 @@ export function SubmissionsTable(props: Props) {
     {
       key: "data.dcIncomeGL",
       dataKey: "data.dcIncomeGL",
-      title: "DC",
+      title: "Document Currency (DC)",
       group: "Income GL Postings",
       type: "text",
       width: columnWidth("data.dcIncomeGL", 200),
@@ -5933,6 +5954,7 @@ export function SubmissionsTable(props: Props) {
                 skipHeader: true,
               });
               const columnsToFormat = [
+                "S",
                 "T",
                 "U",
                 "AA",
@@ -5941,24 +5963,26 @@ export function SubmissionsTable(props: Props) {
                 "AE",
                 "AF",
                 "AG",
-                "AS",
-                "AW",
                 "AH",
-                "BG",
-                "BH",
-                "BJ",
-                "CS",
-                "CT",
+                "AI",
+                "AO",
+                "AQ",
+                "AS",
+                "BC",
+                "BD",
+                "BF",
+                "BQ",
+                "BR",
                 "BT",
-                "BU",
-                "BW",
+                "CE",
+                "CF",
                 "CH",
-                "CI",
-                "CK",
-                "CR",
+                "CP",
+                "CQ",
                 "CS",
-                "CV",
                 "CT",
+                "CU",
+                "CV",
                 "CW",
                 "CX",
                 "CY",
@@ -5968,17 +5992,31 @@ export function SubmissionsTable(props: Props) {
                 "DC",
                 "DD",
                 "DE",
-                "DF",
-                "DH",
-                "DG",
               ]; // Add more columns as needed
 
               for (let i = 4; i <= formattedData.length + 1; i++) {
                 columnsToFormat.forEach((column) => {
                   let cellAddress = column + i;
-                  if (ws[cellAddress] && !isNaN(ws[cellAddress].v)) {
-                    ws[cellAddress].z = "0.00"; // Number format
-                    ws[cellAddress].t = "n"; // Cell type as number
+                  if (ws[cellAddress]) {
+                    if (!isNaN(ws[cellAddress].v)) {
+                      ws[cellAddress].z = "0.00"; // Number format
+                      ws[cellAddress].t = "n"; // Cell type as number
+                    }
+                    if (ws[cellAddress].v !== undefined) {
+                      if (ws[cellAddress].v.toString().includes(",")) {
+                        ws[cellAddress].v = ws[cellAddress].v
+                          .toString()
+                          .replace(",", "");
+                      }
+                      ws[cellAddress].v = Number.isNaN(
+                        parseFloat(ws[cellAddress].v)
+                      )
+                        ? ws[cellAddress].v
+                        : parseFloat(ws[cellAddress].v);
+                      ws[cellAddress].z = "0.00"; // Number format
+                      ws[cellAddress].t = "n"; // Cell type as number
+                      // console.log(parseFloat(ws[cellAddress].v));
+                    }
                   }
                 });
               }
@@ -7751,7 +7789,7 @@ export function SubmissionsTable(props: Props) {
                       {
                         key: "data.documentCurrencyLMD",
                         dataKey: "data.documentCurrencyLMD",
-                        title: "Document Currency",
+                        title: "Document Currency (DC)",
                         group: "Input of Local Marketing Department",
 
                         width: columnWidth("data.documentCurrencyLMD", 200),
