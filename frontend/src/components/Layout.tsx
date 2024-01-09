@@ -86,7 +86,6 @@ function Layout(props: any) {
       } else {
         newNavItemsCurrent = []; // or some default value
       }
-      console.log(newNavItemsCurrent);
       setNavItemsCurrent(newNavItemsCurrent);
     }
 
@@ -170,7 +169,7 @@ function Layout(props: any) {
               maxWidth="300px" // Set a maximum width so it doesn't get too large
               cursor="pointer"
               onClick={() => {
-                history.push("/projects");
+                history.push("/submissions");
               }}
             />
 

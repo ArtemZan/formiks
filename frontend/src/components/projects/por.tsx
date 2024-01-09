@@ -677,7 +677,7 @@ export default function Elov(props: Props) {
                             }
                           }
                           setProjectName(parent.data.projectName || "");
-                          console.log(vendorNew.length);
+
                           if (vendorNew.length === 1) {
                             setVendorsNames(vendorNew);
                             VendorsNames = vendorNew;
@@ -710,7 +710,6 @@ export default function Elov(props: Props) {
                                     label: child.data.vendorName ?? "",
                                     value: child.data.vendorName ?? "",
                                   });
-                                  console.log(vendorNew);
                                 }
                               }
                             }

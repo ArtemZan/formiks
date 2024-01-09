@@ -1099,6 +1099,7 @@ export function SubmissionsTable(props: Props) {
 
   useEffect(() => {
     setUserRoles(props.roles);
+    console.log(props.roles);
   }, [props.roles]);
 
   useEffect(() => {
@@ -1307,9 +1308,6 @@ export function SubmissionsTable(props: Props) {
                   switch (filter.filter) {
                     case "exact":
                       if (!isNaN(value)) {
-                        if (submission.data.projectNumber === "6110CH239404") {
-                          console.log(value);
-                        }
                         valid =
                           Number(filter.selectedValues[0]) ===
                           Math.round(value * 100) / 100;
@@ -2143,15 +2141,6 @@ export function SubmissionsTable(props: Props) {
               sub.data.totalIncomeSAP +=
                 (cs.data.incomeAmountLCSI || 0) +
                 (cs.data.incomeAmountLCIncomeGL || 0);
-              if (sub.data.projectNumber === "6110CH230406") {
-                console.log(
-                  sub.data.totalIncomeSAP,
-                  (cs.data.incomeAmountLCSI || 0) +
-                    (cs.data.incomeAmountLCIncomeGL || 0),
-                  cs.data.incomeAmountLCSI || 0,
-                  cs.data.incomeAmountLCIncomeGL || 0
-                );
-              }
             });
           if (sub.data.totalIncomeLC + sub.data.totalCostsLC >= 0) {
             sub.data.totalProfitLC =
@@ -8615,7 +8604,7 @@ export function SubmissionsTable(props: Props) {
                           disabled={
                             !(
                               userRoles.includes("Administrator") ||
-                              userRoles.includes("Marketing")
+                              userRoles.includes("Accounting")
                             )
                           }
                           onClick={() => {

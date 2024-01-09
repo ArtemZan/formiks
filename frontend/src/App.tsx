@@ -38,7 +38,6 @@ function App({ pca }: AppProps) {
   useEffect(() => {
     RestAPI.getRoles().then((response) => {
       setAdminRole(response.data.includes("Administrator"));
-      console.log(response.data);
     });
 
     RestAPI.getRoles().then((response) => {
@@ -72,7 +71,7 @@ function App({ pca }: AppProps) {
             <Route
               exact
               path="/"
-              render={(props) => <ProjectExplorer roles={roles} {...props} />}
+              render={(props) => <SubmissionsTable roles={roles} {...props} />}
             />
             <Route
               exact
