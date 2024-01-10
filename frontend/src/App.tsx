@@ -43,6 +43,7 @@ function App({ pca }: AppProps) {
     RestAPI.getRoles().then((response) => {
       setRoles(response.data);
     });
+    console.log(roles);
   }, []);
 
   return (

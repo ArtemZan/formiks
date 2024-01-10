@@ -8604,7 +8604,7 @@ export function SubmissionsTable(props: Props) {
                           disabled={
                             !(
                               userRoles.includes("Administrator") ||
-                              userRoles.includes("Accounting")
+                              userRoles.includes("Marketing")
                             )
                           }
                           onClick={() => {
