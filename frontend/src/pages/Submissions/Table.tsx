@@ -1098,9 +1098,7 @@ export function SubmissionsTable(props: Props) {
   // }, []);
 
   useEffect(() => {
-    setUserRoles(["Marketing"]);
-    // setUserRoles(props.roles);
-    console.log(props.roles);
+    setUserRoles(props.roles);
   }, [props.roles]);
 
   useEffect(() => {

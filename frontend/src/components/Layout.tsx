@@ -169,7 +169,6 @@ function Layout(props: any) {
               maxWidth="300px" // Set a maximum width so it doesn't get too large
               cursor="pointer"
               onClick={() => {
-                console.log(props.roles);
                 history.push("/submissions");
               }}
             />
