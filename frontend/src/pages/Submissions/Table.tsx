@@ -1098,7 +1098,8 @@ export function SubmissionsTable(props: Props) {
   // }, []);
 
   useEffect(() => {
-    setUserRoles(props.roles);
+    setUserRoles(["Marketing"]);
+    // setUserRoles(props.roles);
     console.log(props.roles);
   }, [props.roles]);
 
@@ -3103,7 +3104,7 @@ export function SubmissionsTable(props: Props) {
         <EditableTableCell
           type={"value-dropdown"}
           readonly={
-            projectColumnEdit(props.rowData) &&
+            projectColumnEdit(props.rowData) ||
             !(
               userRoles.includes("Administrator") ||
               userRoles.includes("Accounting")
