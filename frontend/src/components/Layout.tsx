@@ -51,7 +51,12 @@ import { msalInstance } from "../index";
 import { RestAPI } from "../api/rest";
 import NavItem from "rsuite/esm/Nav/NavItem";
 
-function Layout(props: any) {
+interface LayoutProps {
+  onRolesChange: (roles: string[]) => void;
+  children: React.ReactNode;
+}
+
+function Layout(props: LayoutProps) {
   const { instance } = useMsal();
 
   const [cookieConsent, setCookieConsent] = useState(false);
@@ -68,6 +73,7 @@ function Layout(props: any) {
   useEffect(() => {
     async function fetchRolesAndSetNavItems() {
       const response = await RestAPI.getRoles();
+      props.onRolesChange(response.data);
       const sortedRoles = response.data.sort();
       setRoles(sortedRoles);
       let newNavItemsCurrent: NavItem[] = [];
@@ -91,27 +97,6 @@ function Layout(props: any) {
 
     fetchRolesAndSetNavItems();
   }, []);
-  // useEffect(() => {
-  //   RestAPI.getRoles().then((response) => setRoles(response.data.sort()));
-  //   colorMode === "dark" ? toggleColorMode() : console.log("A");
-  // }, []);
-
-  // useEffect(() => {
-  //   if (roles.includes("Administrator")) {
-  //     navItemsCurrent = NAV_ITEMS;
-  //   } else if (roles.includes("Marketing")) {
-  //     navItemsCurrent = NAV_ITEMS;
-  //   } else if (roles.includes("Accounting")) {
-  //     navItemsCurrent = NAV_ITEMS.filter(
-  //       (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
-  //     );
-  //   } else if (roles.includes("Management")) {
-  //     navItemsCurrent = NAV_ITEMS.filter(
-  //       (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
-  //     );
-  //   }
-  //   console.log(navItemsCurrent);
-  // }, [roles]);
 
   const { children } = props;
   const { isOpen, onToggle } = useDisclosure();

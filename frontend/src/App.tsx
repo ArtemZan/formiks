@@ -36,14 +36,18 @@ function App({ pca }: AppProps) {
   pca.setNavigationClient(navigationClient);
 
   useEffect(() => {
-    RestAPI.getRoles().then((response) => {
-      setAdminRole(response.data.includes("Administrator"));
-    });
-
+    // RestAPI.getRoles().then((response) => {
+    //   setAdminRole(response.data.includes("Administrator"));
+    // });
     RestAPI.getRoles().then((response) => {
       setRoles(response.data);
     });
   }, []);
+
+  const handleRolesChange = (newData: any) => {
+    setRoles(newData); // Callback to update the state
+    console.log(newData);
+  };
 
   return (
     <MsalProvider instance={pca}>
@@ -66,7 +70,7 @@ function App({ pca }: AppProps) {
           transition={Slide}
         />
         <Switch>
-          <Layout>
+          <Layout onRolesChange={handleRolesChange}>
             {/* <Route exact path="/" component={Dashboard} /> */}
             <Route
               exact
