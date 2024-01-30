@@ -688,7 +688,6 @@ export default function Elov(props: Props) {
                           setSub(parent);
                         }
                       } else {
-                        console.log("submissions", submissions);
                         allSubs = submissions;
                         for (let sub of allSubs) {
                           if (

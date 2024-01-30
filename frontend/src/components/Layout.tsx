@@ -101,6 +101,9 @@ function Layout(props: LayoutProps) {
   const { children } = props;
   const { isOpen, onToggle } = useDisclosure();
   const { colorMode, toggleColorMode } = useColorMode();
+  if (colorMode == "dark") {
+    toggleColorMode();
+  }
 
   return (
     <Box minH="100vh">
@@ -223,7 +226,7 @@ function Layout(props: LayoutProps) {
                     <MenuItem
                       onClick={() => {
                         window.open(
-                          `mailto:sk@innovatio.lv,sp@innovatio.lv?subject=Formiks Bug Report&body=Hello! I found the bug while using: ${window.location.href}`,
+                          `mailto:sp@innovatio.lv?subject=Formiks Bug Report&body=Hello! I found the bug while using: ${window.location.href}`,
                           "_blank",
                           "noopener,noreferrer"
                         );
@@ -288,7 +291,6 @@ const DesktopNav = ({ navItemsCurrent }: { navItemsCurrent: NavItem[] }) => {
   const linkColor = useColorModeValue("gray.600", "#ABB2BF");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const popoverContentBgColor = useColorModeValue("white", "#21252A");
-
   return (
     <Stack direction={"row"} spacing={4}>
       {navItemsCurrent.map((navItem: NavItem) => {

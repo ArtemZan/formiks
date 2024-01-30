@@ -18,6 +18,7 @@ import "rsuite/dist/rsuite.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import { GroupProvider } from "./utils/GroupContext";
+import { Button, useColorMode } from "@chakra-ui/react";
 
 // MSAL imports
 import {
@@ -110,7 +111,8 @@ ReactDOM.render(
         }),
       },
       config: {
-        initialColorMode: "dark",
+        initialColorMode: "light", // Set the initial color mode to light
+        useSystemColorMode: false, // Optional: set to `false` to prevent automatically using the system color mode
       },
     })}
   >
