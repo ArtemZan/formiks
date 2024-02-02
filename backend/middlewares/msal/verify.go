@@ -80,6 +80,8 @@ func Admin() gin.HandlerFunc {
 func SetRoles() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name, email, roles := getRolesIfValid(c.Request.Context(), c.Request.Header.Get("Authorization"))
+
+		fmt.Println("ROOOOOOOLEEEEES", roles, c)
 		if len(roles) < 1 {
 			// return 401 if ENABLE_GUESTS is not set
 			if EnableGuests {
@@ -98,7 +100,6 @@ func SetRoles() gin.HandlerFunc {
 	}
 }
 
-
 // GraphResponse represents the response from Microsoft Graph API
 type GraphResponse struct {
 	Value []Group `json:"value"`
@@ -106,7 +107,7 @@ type GraphResponse struct {
 
 // Group represents a group object in Microsoft Graph API
 type Group struct {
-	ID   string `json:"id"`
+	ID          string `json:"id"`
 	DisplayName string `json:"displayName"`
 	// Add other necessary fields as per your requirement
 }
@@ -151,7 +152,7 @@ func getUserEmail(token string) (string, error) {
 		return "", fmt.Errorf("error creating request: %v", err)
 	}
 
-	req.Header.Set("Authorization", "Bearer " + token)
+	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Accept", "application/json")
 
 	client := &http.Client{}
@@ -180,7 +181,6 @@ func getUserEmail(token string) (string, error) {
 	return userResponse.Mail, nil
 }
 
-
 func getRolesIfValid(ctx context.Context, token string) (string, string, []string) {
 	var roles []string
 	var name string
@@ -202,15 +202,14 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	}
 	//roles check
 	groups, _ = getUserGroups(token)
-	fmt.Println(groups)
 	for _, group := range groups {
-		if (group.ID == "1a9f7c85-d2ed-4526-b61f-362792d0a68a"){
+		if group.ID == "1a9f7c85-d2ed-4526-b61f-362792d0a68a" {
 			roles = append(roles, "Administrator")
-		} else if (group.ID == "437f2b23-6fe4-4237-8c90-3adcbb71d62d"){
+		} else if group.ID == "437f2b23-6fe4-4237-8c90-3adcbb71d62d" {
 			roles = append(roles, "Accounting")
-		} else if (group.ID == "5305c7f1-8cee-448c-a184-46cee385235b"){
+		} else if group.ID == "5305c7f1-8cee-448c-a184-46cee385235b" {
 			roles = append(roles, "Management")
-		} else if (group.ID == "e09b9790-044a-42a9-953b-973e0a3c4bdf"){
+		} else if group.ID == "e09b9790-044a-42a9-953b-973e0a3c4bdf" {
 			roles = append(roles, "Marketing")
 		}
 	}
@@ -225,7 +224,6 @@ func getRolesIfValid(ctx context.Context, token string) (string, string, []strin
 	// if len(user.Roles) > 0 {
 	// 	roles = user.Roles
 	// }
-
 
 	headerBytes, err := base64.RawStdEncoding.DecodeString(strings.Split(token, ".")[0])
 	if err != nil {
@@ -250,7 +248,7 @@ func validToken(token, kid string) bool {
 	if err != nil {
 		return false
 	}
-	
+
 	key, err := jwt.ParseRSAPublicKeyFromPEM(pKey)
 	if err != nil {
 		return false
@@ -259,7 +257,7 @@ func validToken(token, kid string) bool {
 	err = jwt.SigningMethodRS256.Verify(strings.Join(parts[0:2], "."), parts[2], key)
 	if err != nil {
 		fmt.Println(err, "TOKEN", token)
-	}	
+	}
 	return err == nil
 }
 
