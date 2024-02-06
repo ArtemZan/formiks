@@ -1165,10 +1165,11 @@ export function SubmissionsTable(props: Props) {
     setTotalIncomeInTool(tiit);
     setTotalCostsInToolEUR(tcite);
     setTotalIncomeInToolEUR(tiite);
-    setTotalProfitInToolLC(tpit);
-    setTotalProfitInToolEUR(tpite);
-    setTotalLossInToolLC(tlit);
-    setTotalLossInToolEUR(tlite);
+    // console.log(tpit, tlit, tpite, tlite);
+    setTotalProfitInToolLC(tiit + tcite > 0 ? tiit + tcite : 0);
+    setTotalProfitInToolEUR(tiite + tcite > 0 ? tiite + tcite : 0);
+    setTotalLossInToolLC(tiit + tcite < 0 ? tiit + tcite : 0);
+    setTotalLossInToolEUR(tiite + tcite < 0 ? tiite + tcite : 0);
     forceUpdate();
   }, [filteredSubmissions]);
 
