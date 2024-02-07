@@ -90,7 +90,7 @@ func FetchAccountLines() error {
 	payload := strings.NewReader(`{
     "GetGLAccountLines": {
         "areaKey": "MKT",
-        "year": "2024",
+        "year": "2023",
         "bukrs": "6110"
     }
 	}`)
