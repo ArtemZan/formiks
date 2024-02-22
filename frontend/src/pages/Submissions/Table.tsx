@@ -5842,6 +5842,7 @@ export function SubmissionsTable(props: Props) {
                   Title: s.title,
                   Author: s.author,
                 };
+
                 DisplayedColumnsList.forEach((group: any) => {
                   if (
                     group.value === "CMCT" ||
@@ -5876,113 +5877,188 @@ export function SubmissionsTable(props: Props) {
                 init = true;
                 return doc;
               });
-              header[2] = {
-                "data.costAmountLC": `TOTAL: ${NumberWithCommas(
-                  totalCostAmountLC
-                )}`,
-                "data.costAmountEUR": `TOTAL: ${NumberWithCommas(
-                  totalCostAmount
-                )}`,
-                "data.incomeAmountLCSI": `TOTAL: ${NumberWithCommas(
-                  totalIncomeAmountLC
-                )}`,
-                "data.incomeAmountEURSI": `TOTAL: ${NumberWithCommas(
-                  totalIncomeAmount
-                )}`,
-                "data.costAmountLCCostGL": `TOTAL: ${NumberWithCommas(
-                  totalCostAmountLCCostGL
-                )}`,
-                "data.costAmountEURCostGL": `TOTAL: ${NumberWithCommas(
-                  totalCostAmountCostGL
-                )}`,
-                "data.incomeAmountLCIncomeGL": `TOTAL: ${NumberWithCommas(
-                  totalIncomeAmountLCIncomeGL
-                )}`,
-                "data.incomeAmountEurIncomeGL": `TOTAL: ${NumberWithCommas(
-                  totalIncomeAmountIncomeGL
-                )}`,
-                "data.totalIncomeLC": `TOTAL: ${NumberWithCommas(
-                  totalIncomeInTool
-                )}`,
-                "data.totalCostsLC": `TOTAL: ${NumberWithCommas(
-                  totalCostsInTool
-                )}`,
-                "data.totalProfitLC": `TOTAL: ${NumberWithCommas(
-                  totalProfitInToolLC
-                )}`,
-                "data.totalLossLC": `TOTAL: ${NumberWithCommas(
-                  totalLossInToolLC * -1
-                )}`,
-                "data.totalIncomeEUR": `TOTAL: ${NumberWithCommas(
-                  totalIncomeInToolEUR
-                )}`,
-                "data.totalCostsEUR": `TOTAL: ${NumberWithCommas(
-                  totalCostsInToolEUR
-                )}`,
-                "data.totalProfitEUR": `TOTAL: ${NumberWithCommas(
-                  totalProfitInToolEUR
-                )}`,
-                "data.totalLossEUR": `TOTAL: ${NumberWithCommas(
-                  totalLossInToolEUR * -1
-                )}`,
-                "data.totalCostsTool": `TOTAL: ${NumberWithCommas(
-                  totalCostAmountLC + totalCostAmountLCCostGL
-                )}`,
-                "data.totalCostsSAP": `TOTAL: ${NumberWithCommas(
-                  totalCostAmountLC + totalCostAmountLCCostGL
-                )}`,
-                "data.totalIncomeTool": `TOTAL: ${NumberWithCommas(
-                  totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
-                )}`,
-                "data.totalIncomeSAP": `TOTAL: ${NumberWithCommas(
-                  totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
-                )}`,
-              };
+              // Initialize header[2] as an empty object
+              // header[2] = {};
+              if (displayedColumns.includes("projectResults")) {
+                console.log("projectResults");
+                header[2] = {
+                  ...header[2],
+                  "data.totalIncomeLC": `TOTAL: ${NumberWithCommas(
+                    totalIncomeInTool
+                  )}`,
+                  "data.totalCostsLC": `TOTAL: ${NumberWithCommas(
+                    totalCostsInTool
+                  )}`,
+                  "data.totalProfitLC": `TOTAL: ${NumberWithCommas(
+                    totalProfitInToolLC
+                  )}`,
+                  "data.totalLossLC": `TOTAL: ${NumberWithCommas(
+                    totalLossInToolLC * -1
+                  )}`,
+                  "data.totalIncomeEUR": `TOTAL: ${NumberWithCommas(
+                    totalIncomeInToolEUR
+                  )}`,
+                  "data.totalCostsEUR": `TOTAL: ${NumberWithCommas(
+                    totalCostsInToolEUR
+                  )}`,
+                  "data.totalProfitEUR": `TOTAL: ${NumberWithCommas(
+                    totalProfitInToolEUR
+                  )}`,
+                  "data.totalLossEUR": `TOTAL: ${NumberWithCommas(
+                    totalLossInToolEUR * -1
+                  )}`,
+                };
+              }
+              if (displayedColumns.includes("controlChecks")) {
+                console.log("controlChecks");
+                header[2] = {
+                  ...header[2],
+                  "data.totalCostsTool": `TOTAL: ${NumberWithCommas(
+                    totalCostAmountLC + totalCostAmountLCCostGL
+                  )}`,
+                  "data.totalCostsSAP": `TOTAL: ${NumberWithCommas(
+                    totalCostAmountLC + totalCostAmountLCCostGL
+                  )}`,
+                  "data.totalIncomeTool": `TOTAL: ${NumberWithCommas(
+                    totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
+                  )}`,
+                  "data.totalIncomeSAP": `TOTAL: ${NumberWithCommas(
+                    totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
+                  )}`,
+                };
+              }
+              if (displayedColumns.includes("incomeGlPostings")) {
+                console.log("incomeGlPostings");
+                header[2] = {
+                  ...header[2],
+                  "data.incomeAmountLCIncomeGL": `TOTAL: ${NumberWithCommas(
+                    totalIncomeAmountLCIncomeGL
+                  )}`,
+                  "data.incomeAmountEurIncomeGL": `TOTAL: ${NumberWithCommas(
+                    totalIncomeAmountIncomeGL
+                  )}`,
+                };
+              }
+              if (displayedColumns.includes("costGlPostings")) {
+                console.log("costGlPostings");
+                header[2] = {
+                  ...header[2],
+                  "data.costAmountLCCostGL": `TOTAL: ${NumberWithCommas(
+                    totalCostAmountLCCostGL
+                  )}`,
+                  "data.costAmountEURCostGL": `TOTAL: ${NumberWithCommas(
+                    totalCostAmountCostGL
+                  )}`,
+                };
+              }
+              if (displayedColumns.includes("salesInvoices")) {
+                console.log("salesInvoices");
+                header[2] = {
+                  ...header[2],
+                  "data.incomeAmountLCSI": `TOTAL: ${NumberWithCommas(
+                    totalIncomeAmountLC
+                  )}`,
+                  "data.incomeAmountEURSI": `TOTAL: ${NumberWithCommas(
+                    totalIncomeAmount
+                  )}`,
+                };
+              }
+              if (displayedColumns.includes("costInvoices")) {
+                console.log("costInvoices");
+                header[2] = {
+                  ...header[2],
+                  "data.costAmountLC": `TOTAL: ${NumberWithCommas(
+                    totalCostAmountLC
+                  )}`,
+                  "data.costAmountEUR": `TOTAL: ${NumberWithCommas(
+                    totalCostAmount
+                  )}`,
+                };
+              }
+              console.log(header);
               formattedData.unshift(...header);
               const ws = XLSX.utils.json_to_sheet(formattedData, {
                 skipHeader: true,
               });
-              const columnsToFormat = [
-                "S",
-                "T",
-                "U",
-                "AA",
-                "AC",
-                "AD",
-                "AE",
-                "AF",
-                "AG",
-                "AH",
-                "AI",
-                "AO",
-                "AQ",
-                "AS",
-                "BC",
-                "BD",
-                "BF",
-                "BQ",
-                "BR",
-                "BT",
-                "CE",
-                "CF",
-                "CH",
-                "CP",
-                "CQ",
-                "CS",
-                "CT",
-                "CU",
-                "CV",
-                "CW",
-                "CX",
-                "CY",
-                "CZ",
-                "DA",
-                "DB",
-                "DC",
-                "DD",
-                "DE",
-              ]; // Add more columns as needed
+              const columnsToFormat: string[] = [];
+              const columnNames: Set<string> = new Set([
+                "% Country Share",
+                "Country Budget Contribution (CC)",
+                "Country Cost Estimation (CC)",
+                "Vendor Amount",
+                "Estimated Income (CC)",
+                "Estimated Costs (CC)",
+                "Estimated Result (CC)",
+                "Estimated Income (EUR)",
+                "Estimated Costs (EUR)",
+                "Estimated Result (EUR)",
+                "% Vendor Share",
+                "Net Value of Service Ordered (LC)",
+                "Net Value (Purchase Order Currency)",
+                "Net Value (EUR)",
+                "Cost Amount (LC)",
+                "Cost Amount (DC)",
+                "Cost Amount (EUR)",
+                "Income Amount (LC)",
+                "Income Amount (DC)",
+                "Income Amount (EUR)",
+                "Cost Amount (LC)",
+                "Cost Amount (DC)",
+                "Cost Amount (EUR)",
+                "Income Amount (LC)",
+                "Income Amount (DC)",
+                "Income Amount (EUR)",
+                "Total Income (LC)",
+                "Total Costs (LC)",
+                "Total Profit (LC)",
+                "Total Loss (LC)",
+                "Total Income (EUR)",
+                "Total Costs (EUR)",
+                "Total Profit (EUR)",
+                "Total Loss (EUR)",
+                "Total Costs In Tool (LC)",
+                "Total Costs in SAP (LC)",
+                "Total Income in Tool (LC)",
+                "Total Income in SAP (LC)",
+              ]);
+              //tmp
+              // Find the correct column
+              let targetColumn = "";
 
+              const secondRowNumber = 2; // Since the row index starts at 1 in xlsx
+
+              // Get the range of the second row
+              // Check if '!ref' is defined and is a string
+              if (typeof ws["!ref"] === "string") {
+                // Get the range of the second row
+                const range = XLSX.utils.decode_range(ws["!ref"]);
+                const secondRowStart = XLSX.utils.encode_cell({
+                  c: range.s.c,
+                  r: secondRowNumber - 1,
+                });
+                const secondRowEnd = XLSX.utils.encode_cell({
+                  c: range.e.c,
+                  r: secondRowNumber - 1,
+                });
+
+                // Iterate over all cells in the second row
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                  const cellAddress = XLSX.utils.encode_cell({
+                    c: C,
+                    r: secondRowNumber - 1,
+                  });
+                  const cell = ws[cellAddress];
+
+                  // Check if the cell exists and its value is in the set of column names
+                  if (cell && columnNames.has(cell.v)) {
+                    // If the value is one of the column names, store the column letter
+                    columnsToFormat.push(XLSX.utils.encode_col(C));
+                  }
+                }
+              } else {
+                console.error("The worksheet does not have a reference range.");
+              }
+              //tmp
               for (let i = 4; i <= formattedData.length + 1; i++) {
                 columnsToFormat.forEach((column) => {
                   let cellAddress = column + i;
