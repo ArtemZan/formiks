@@ -70,7 +70,8 @@ import { DateRangeInput, DateSingleInput } from "../../components/DatePicker";
 import { NumberWithCommas } from "../../utils/Numbers";
 
 import * as FileSaver from "file-saver";
-import * as XLSX from "xlsx";
+// import * as XLSX from "xlsx";
+import * as XLSX from "sheetjs-style";
 import { FilterField, Template } from "../../types/template";
 import RejectModal from "../../components/RejectModal";
 // import { types } from "util";
@@ -5880,102 +5881,59 @@ export function SubmissionsTable(props: Props) {
               // Initialize header[2] as an empty object
               // header[2] = {};
               if (displayedColumns.includes("projectResults")) {
-                console.log("projectResults");
                 header[2] = {
                   ...header[2],
-                  "data.totalIncomeLC": `TOTAL: ${NumberWithCommas(
-                    totalIncomeInTool
-                  )}`,
-                  "data.totalCostsLC": `TOTAL: ${NumberWithCommas(
-                    totalCostsInTool
-                  )}`,
-                  "data.totalProfitLC": `TOTAL: ${NumberWithCommas(
-                    totalProfitInToolLC
-                  )}`,
-                  "data.totalLossLC": `TOTAL: ${NumberWithCommas(
-                    totalLossInToolLC * -1
-                  )}`,
-                  "data.totalIncomeEUR": `TOTAL: ${NumberWithCommas(
-                    totalIncomeInToolEUR
-                  )}`,
-                  "data.totalCostsEUR": `TOTAL: ${NumberWithCommas(
-                    totalCostsInToolEUR
-                  )}`,
-                  "data.totalProfitEUR": `TOTAL: ${NumberWithCommas(
-                    totalProfitInToolEUR
-                  )}`,
-                  "data.totalLossEUR": `TOTAL: ${NumberWithCommas(
-                    totalLossInToolEUR * -1
-                  )}`,
+                  "data.totalIncomeLC": totalIncomeInTool,
+                  "data.totalCostsLC": totalCostsInTool,
+                  "data.totalProfitLC": totalProfitInToolLC,
+                  "data.totalLossLC": totalLossInToolLC * -1,
+                  "data.totalIncomeEUR": totalIncomeInToolEUR,
+                  "data.totalCostsEUR": totalCostsInToolEUR,
+                  "data.totalProfitEUR": totalProfitInToolEUR,
+                  "data.totalLossEUR": totalLossInToolEUR * -1,
                 };
               }
               if (displayedColumns.includes("controlChecks")) {
-                console.log("controlChecks");
                 header[2] = {
                   ...header[2],
-                  "data.totalCostsTool": `TOTAL: ${NumberWithCommas(
-                    totalCostAmountLC + totalCostAmountLCCostGL
-                  )}`,
-                  "data.totalCostsSAP": `TOTAL: ${NumberWithCommas(
-                    totalCostAmountLC + totalCostAmountLCCostGL
-                  )}`,
-                  "data.totalIncomeTool": `TOTAL: ${NumberWithCommas(
-                    totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
-                  )}`,
-                  "data.totalIncomeSAP": `TOTAL: ${NumberWithCommas(
-                    totalIncomeAmountLC + totalIncomeAmountLCIncomeGL
-                  )}`,
+                  "data.totalCostsTool":
+                    totalCostAmountLC + totalCostAmountLCCostGL,
+                  "data.totalCostsSAP":
+                    totalCostAmountLC + totalCostAmountLCCostGL,
+                  "data.totalIncomeTool":
+                    totalIncomeAmountLC + totalIncomeAmountLCIncomeGL,
+                  "data.totalIncomeSAP":
+                    totalIncomeAmountLC + totalIncomeAmountLCIncomeGL,
                 };
               }
               if (displayedColumns.includes("incomeGlPostings")) {
-                console.log("incomeGlPostings");
                 header[2] = {
                   ...header[2],
-                  "data.incomeAmountLCIncomeGL": `TOTAL: ${NumberWithCommas(
-                    totalIncomeAmountLCIncomeGL
-                  )}`,
-                  "data.incomeAmountEurIncomeGL": `TOTAL: ${NumberWithCommas(
-                    totalIncomeAmountIncomeGL
-                  )}`,
+                  "data.incomeAmountLCIncomeGL": totalIncomeAmountLCIncomeGL,
+                  "data.incomeAmountEurIncomeGL": totalIncomeAmountIncomeGL,
                 };
               }
               if (displayedColumns.includes("costGlPostings")) {
-                console.log("costGlPostings");
                 header[2] = {
                   ...header[2],
-                  "data.costAmountLCCostGL": `TOTAL: ${NumberWithCommas(
-                    totalCostAmountLCCostGL
-                  )}`,
-                  "data.costAmountEURCostGL": `TOTAL: ${NumberWithCommas(
-                    totalCostAmountCostGL
-                  )}`,
+                  "data.costAmountLCCostGL": totalCostAmountLCCostGL,
+                  "data.costAmountEURCostGL": totalCostAmountCostGL,
                 };
               }
               if (displayedColumns.includes("salesInvoices")) {
-                console.log("salesInvoices");
                 header[2] = {
                   ...header[2],
-                  "data.incomeAmountLCSI": `TOTAL: ${NumberWithCommas(
-                    totalIncomeAmountLC
-                  )}`,
-                  "data.incomeAmountEURSI": `TOTAL: ${NumberWithCommas(
-                    totalIncomeAmount
-                  )}`,
+                  "data.incomeAmountLCSI": totalIncomeAmountLC,
+                  "data.incomeAmountEURSI": totalIncomeAmount,
                 };
               }
               if (displayedColumns.includes("costInvoices")) {
-                console.log("costInvoices");
                 header[2] = {
                   ...header[2],
-                  "data.costAmountLC": `TOTAL: ${NumberWithCommas(
-                    totalCostAmountLC
-                  )}`,
-                  "data.costAmountEUR": `TOTAL: ${NumberWithCommas(
-                    totalCostAmount
-                  )}`,
+                  "data.costAmountLC": totalCostAmountLC,
+                  "data.costAmountEUR": totalCostAmount,
                 };
               }
-              console.log(header);
               formattedData.unshift(...header);
               const ws = XLSX.utils.json_to_sheet(formattedData, {
                 skipHeader: true,
@@ -6089,10 +6047,38 @@ export function SubmissionsTable(props: Props) {
               ws["!cols"] = Object.keys(formattedData[0]).map(() => {
                 return { wch: 30 };
               });
+              const thirdRow = 3; // Since the row index starts at 1 in xlsx
+              const cols = Object.keys(formattedData[0]); // Get all column keys from your data
+              // Define the bold style
+              const boldStyle = {
+                font: {
+                  name: "arial",
+                  bold: true,
+                },
+              };
+              // Apply the bold style to each cell in the third row
+              cols.forEach((colKey, index) => {
+                const cellRef = XLSX.utils.encode_cell({
+                  r: thirdRow - 1,
+                  c: index,
+                }); // Encode cell ref for third row
+                ws[cellRef] = ws[cellRef] || { t: "s", v: "" }; // If cell doesn't exist, create a stub cell
+                // ws[cellRef].s = boldStyle; // Apply the bold style
+                ws[cellRef].s = {
+                  ...ws[cellRef].s,
+                  font: { bold: true },
+                };
+              });
+              // Update the worksheet reference to include any new cells
+              ws["!ref"] = XLSX.utils.encode_range({
+                s: { c: 0, r: 0 }, // Start at the first cell
+                e: { c: cols.length - 1, r: formattedData.length + 1 }, // End at the last cell (plus header)
+              });
               const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
               const excelBuffer = XLSX.write(wb, {
                 bookType: "xlsx",
                 type: "array",
+                cellStyles: true,
               });
               const data = new Blob([excelBuffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
@@ -6148,10 +6134,35 @@ export function SubmissionsTable(props: Props) {
               ws["!cols"] = Object.keys(formattedData[0]).map(() => {
                 return { wch: 30 };
               });
+
+              // Ensure the cells in the third row exist and apply the bold style
+              const thirdRow = 5; // Since the row index starts at 1 in xlsx
+              const cols = Object.keys(formattedData[0]); // Get all column keys from your data
+              // Define the bold style
+              const boldStyle = { font: { bold: true } };
+
+              // Apply the bold style to each cell in the third row
+              cols.forEach((colKey, index) => {
+                const cellRef = XLSX.utils.encode_cell({
+                  r: thirdRow - 1,
+                  c: index,
+                }); // Encode cell ref for third row
+                ws[cellRef] = ws[cellRef] || { t: "s", v: "" }; // If cell doesn't exist, create a stub cell
+                ws[cellRef].s = boldStyle; // Apply the bold style
+              });
+
+              // Update the worksheet reference to include any new cells
+              ws["!ref"] = XLSX.utils.encode_range({
+                s: { c: 0, r: 0 }, // Start at the first cell
+                e: { c: cols.length - 1, r: formattedData.length + 1 }, // End at the last cell (plus header)
+              });
+
+              // Continue with the rest of your code to save the file
               const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
               const excelBuffer = XLSX.write(wb, {
                 bookType: "xlsx",
                 type: "array",
+                cellStyles: true,
               });
               const data = new Blob([excelBuffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
