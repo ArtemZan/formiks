@@ -552,7 +552,7 @@ const DisplayedColumnsList = [
         value: "data.costAmountEUR",
         type: "string",
       },
-      { label: "Cost Status", value: "data.costStatus", type: "string" },
+      //{ label: "Cost Status", value: "data.costStatus", type: "string" },
     ],
   },
   {
@@ -601,21 +601,21 @@ const DisplayedColumnsList = [
         value: "data.incomeAmountEURSI",
         type: "string",
       },
-      {
-        label: "Invoice Status (Paid/Not Paid)",
-        value: "data.invoiceStatusSI",
-        type: "string",
-      },
-      {
-        label: "Activity ID for Portal Vendors",
-        value: "data.activityIdSI",
-        type: "string",
-      },
-      {
-        label: "Additional Marketing Information",
-        value: "data.additionalMarketingInformation",
-        type: "string",
-      },
+      // {
+      //   label: "Invoice Status (Paid/Not Paid)",
+      //   value: "data.invoiceStatusSI",
+      //   type: "string",
+      // },
+      // {
+      //   label: "Activity ID for Portal Vendors",
+      //   value: "data.activityIdSI",
+      //   type: "string",
+      // },
+      // {
+      //   label: "Additional Marketing Information",
+      //   value: "data.additionalMarketingInformation",
+      //   type: "string",
+      // },
     ],
   },
   {
@@ -4146,28 +4146,28 @@ export function SubmissionsTable(props: Props) {
         />
       ),
     },
-    {
-      key: "data.costStatus",
-      dataKey: "data.costStatus",
-      title: "Cost Status",
-      width: columnWidth("data.costStatus", 200),
-      resizable: true,
-      group: "Cost Invoices",
-      type: "dropdown",
-      hidden: visibilityController("costInvoices", "data.costStatus"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          loadOptions={loadOptions}
-          backgroundColor="#f2fcfc"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
+    // {
+    //   key: "data.costStatus",
+    //   dataKey: "data.costStatus",
+    //   title: "Cost Status",
+    //   width: columnWidth("data.costStatus", 200),
+    //   resizable: true,
+    //   group: "Cost Invoices",
+    //   type: "dropdown",
+    //   hidden: visibilityController("costInvoices", "data.costStatus"),
+    //   cellRenderer: (props: any) => (
+    //     <EditableTableCell
+    //       type={"dropdown"}
+    //       loadOptions={loadOptions}
+    //       backgroundColor="#f2fcfc"
+    //       onUpdate={handleCellUpdate}
+    //       rowIndex={props.rowIndex}
+    //       columnKey={props.column.dataKey}
+    //       rowData={props.rowData}
+    //       initialValue={props.cellData}
+    //     />
+    //   ),
+    // },
     {
       key: "data.yearMonthSI",
       dataKey: "data.yearMonthSI",
@@ -4466,76 +4466,76 @@ export function SubmissionsTable(props: Props) {
         />
       ),
     },
-    {
-      key: "data.invoiceStatusSI",
-      dataKey: "data.invoiceStatusSI",
-      title: "Invoice Status (Paid/Not Paid)",
-      width: columnWidth("data.invoiceStatusSI", 200),
-      group: "Sales Invoices",
-      type: "dropdown",
-      resizable: true,
-      hidden: visibilityController("salesInvoices", "data.invoiceStatusSI"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"dropdown"}
-          readonly={userRoles.includes("Administrator") ? false : true}
-          loadOptions={loadOptions}
-          backgroundColor="#fff7f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.activityIdSI",
-      group: "Sales Invoices",
-      dataKey: "data.activityIdSI",
-      title: "Activity ID for Portal Vendors",
-      width: columnWidth("data.activityIdSI", 200),
-      resizable: true,
-      type: "text",
-      hidden: visibilityController("salesInvoices", "data.activityIdSI"),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          readonly={true}
-          backgroundColor="#fff7f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
-    {
-      key: "data.additionalMarketingInformation",
-      group: "Sales Invoices",
-      dataKey: "data.additionalMarketingInformation",
-      title: "Additional Marketing Information",
-      type: "text",
-      width: columnWidth("data.additionalMarketingInformation", 200),
-      resizable: true,
-      hidden: visibilityController(
-        "salesInvoices",
-        "data.additionalMarketingInformation"
-      ),
-      cellRenderer: (props: any) => (
-        <EditableTableCell
-          type={"text"}
-          readonly={true}
-          backgroundColor="#fff7f8"
-          onUpdate={handleCellUpdate}
-          rowIndex={props.rowIndex}
-          columnKey={props.column.dataKey}
-          rowData={props.rowData}
-          initialValue={props.cellData}
-        />
-      ),
-    },
+    // {
+    //   key: "data.invoiceStatusSI",
+    //   dataKey: "data.invoiceStatusSI",
+    //   title: "Invoice Status (Paid/Not Paid)",
+    //   width: columnWidth("data.invoiceStatusSI", 200),
+    //   group: "Sales Invoices",
+    //   type: "dropdown",
+    //   resizable: true,
+    //   hidden: visibilityController("salesInvoices", "data.invoiceStatusSI"),
+    //   cellRenderer: (props: any) => (
+    //     <EditableTableCell
+    //       type={"dropdown"}
+    //       readonly={userRoles.includes("Administrator") ? false : true}
+    //       loadOptions={loadOptions}
+    //       backgroundColor="#fff7f8"
+    //       onUpdate={handleCellUpdate}
+    //       rowIndex={props.rowIndex}
+    //       columnKey={props.column.dataKey}
+    //       rowData={props.rowData}
+    //       initialValue={props.cellData}
+    //     />
+    //   ),
+    // },
+    // {
+    //   key: "data.activityIdSI",
+    //   group: "Sales Invoices",
+    //   dataKey: "data.activityIdSI",
+    //   title: "Activity ID for Portal Vendors",
+    //   width: columnWidth("data.activityIdSI", 200),
+    //   resizable: true,
+    //   type: "text",
+    //   hidden: visibilityController("salesInvoices", "data.activityIdSI"),
+    //   cellRenderer: (props: any) => (
+    //     <EditableTableCell
+    //       type={"text"}
+    //       readonly={true}
+    //       backgroundColor="#fff7f8"
+    //       onUpdate={handleCellUpdate}
+    //       rowIndex={props.rowIndex}
+    //       columnKey={props.column.dataKey}
+    //       rowData={props.rowData}
+    //       initialValue={props.cellData}
+    //     />
+    //   ),
+    // },
+    // {
+    //   key: "data.additionalMarketingInformation",
+    //   group: "Sales Invoices",
+    //   dataKey: "data.additionalMarketingInformation",
+    //   title: "Additional Marketing Information",
+    //   type: "text",
+    //   width: columnWidth("data.additionalMarketingInformation", 200),
+    //   resizable: true,
+    //   hidden: visibilityController(
+    //     "salesInvoices",
+    //     "data.additionalMarketingInformation"
+    //   ),
+    //   cellRenderer: (props: any) => (
+    //     <EditableTableCell
+    //       type={"text"}
+    //       readonly={true}
+    //       backgroundColor="#fff7f8"
+    //       onUpdate={handleCellUpdate}
+    //       rowIndex={props.rowIndex}
+    //       columnKey={props.column.dataKey}
+    //       rowData={props.rowData}
+    //       initialValue={props.cellData}
+    //     />
+    //   ),
+    // },
     {
       key: "data.yearMonthCostGL",
       dataKey: "data.yearMonthCostGL",
