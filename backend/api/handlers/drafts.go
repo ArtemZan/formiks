@@ -44,11 +44,15 @@ func (d *Draft) Fetch(c *gin.Context) {
 		rolesSlice = append(rolesSlice, rolesReflectValue.Index(i).String())
 	}
 
-	marketingRoleIndex := slices.IndexFunc((rolesSlice), func(role string) bool {
+	marketingRoleFound := slices.ContainsFunc((rolesSlice), func(role string) bool {
 		return role == "Marketing"
 	})
 
-	if !roleExists || marketingRoleIndex == -1 {
+	adminRoleFound := slices.ContainsFunc((rolesSlice), func(role string) bool {
+		return role == "Administrator"
+	})
+
+	if !roleExists || !(marketingRoleFound || adminRoleFound) {
 		c.Status(http.StatusForbidden)
 		return
 	}
