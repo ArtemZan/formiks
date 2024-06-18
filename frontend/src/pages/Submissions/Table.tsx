@@ -2071,6 +2071,7 @@ export function SubmissionsTable(props: Props) {
     RestAPI.getSubmissions().then((response) => {
       var vSubs: Submission[] = [];
       var subs = response.data;
+      console.log(subs)
       var ss = new Map();
       var cSubs: Submission[] = [];
 

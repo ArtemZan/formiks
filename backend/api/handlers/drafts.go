@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/doublegrey/formiks/backend/driver"
@@ -12,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/exp/slices"
 )
 
 func NewDraftHandler(db *driver.DB) *Draft {
@@ -26,12 +29,30 @@ type Draft struct {
 
 func (d *Draft) Fetch(c *gin.Context) {
 	drafts := make([]models.Submission, 0)
-	name, existName := c.Get("Name")
-	if !existName {
+	roles, roleExists := c.Get("Roles")
+
+	defer func() {
+		if error := recover(); error != nil {
+			fmt.Printf("Failed to retreive roles: %+v\n", error)
+			c.Status(http.StatusForbidden)
+		}
+	}()
+
+	rolesReflectValue := reflect.ValueOf(roles)
+	var rolesSlice []string
+	for i := 0; i < rolesReflectValue.Len(); i++ {
+		rolesSlice = append(rolesSlice, rolesReflectValue.Index(i).String())
+	}
+
+	marketingRoleIndex := slices.IndexFunc((rolesSlice), func(role string) bool {
+		return role == "Marketing"
+	})
+
+	if !roleExists || marketingRoleIndex == -1 {
 		c.Status(http.StatusForbidden)
 		return
 	}
-	cursor, err := d.db.Collection("drafts").Find(c.Request.Context(), bson.M{"parentId": nil, "author": name})
+	cursor, err := d.db.Collection("drafts").Find(c.Request.Context(), bson.M{"parentId": nil})
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
 		return
