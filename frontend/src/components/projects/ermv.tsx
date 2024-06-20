@@ -662,6 +662,9 @@ export default function Ermv(props: Props) {
     budgetSource,
   ]);
 
+console.log('VendorsNames', VendorsNames);
+
+
   return (
     <Box>
       <VStack spacing="20px" mb={"40px"} align="start">
@@ -1779,6 +1782,8 @@ export default function Ermv(props: Props) {
           />
         </Box>
       </VStack>
+      <VStack align={'end'} direction="row" spacing="">
+
       <Button
         float="right"
         mb={"80px"}
@@ -2007,6 +2012,8 @@ export default function Ermv(props: Props) {
       >
         Submit
       </Button>
+      </VStack>
+
     </Box>
   );
 }

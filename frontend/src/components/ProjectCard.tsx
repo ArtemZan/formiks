@@ -28,7 +28,7 @@ export default function ProjectCard(props: Props) {
       cursor={"pointer"}
       _hover={{ boxShadow: "2xl" }}
       w={"350px"}
-      h={"433px"}
+      // h={"433px"}
       bg={useColorModeValue("white", "#21252A")}
       boxShadow={"xl"}
       rounded={"md"}
@@ -69,7 +69,7 @@ export default function ProjectCard(props: Props) {
         </Tooltip>
       </Stack>
 
-      <Stack mt={6} direction={"row"} spacing={4} align={"center"}>
+      {/* <Stack mt={6} direction={"row"} spacing={4} align={"center"}>
         <Avatar name={props.project.author} alt={"Author"} />
         <Stack direction={"column"} spacing={0} fontSize={"sm"}>
           <Text fontWeight={600}>{props.project.author}</Text>
@@ -85,7 +85,7 @@ export default function ProjectCard(props: Props) {
             </Text>
           </Tooltip>
         </Stack>
-      </Stack>
+      </Stack> */}
       <Wrap
         display="flex"
         justifyContent="center"

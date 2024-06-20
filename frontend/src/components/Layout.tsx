@@ -72,27 +72,32 @@ function Layout(props: LayoutProps) {
 
   useEffect(() => {
     async function fetchRolesAndSetNavItems() {
-      const response = await RestAPI.getRoles();
-      props.onRolesChange(response.data);
-      const sortedRoles = response.data.sort();
-      setRoles(sortedRoles);
-      let newNavItemsCurrent: NavItem[] = [];
-      if (sortedRoles.includes("Administrator")) {
-        newNavItemsCurrent = NAV_ITEMS;
-      } else if (sortedRoles.includes("Marketing")) {
-        newNavItemsCurrent = NAV_ITEMS;
-      } else if (sortedRoles.includes("Accounting")) {
-        newNavItemsCurrent = NAV_ITEMS.filter(
-          (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
-        );
-      } else if (sortedRoles.includes("Management")) {
-        newNavItemsCurrent = NAV_ITEMS.filter(
-          (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
-        );
-      } else {
-        newNavItemsCurrent = []; // or some default value
+      try {        
+        const response = await RestAPI.getRoles();
+        props.onRolesChange(response.data);
+        const sortedRoles = response.data.sort();
+        setRoles(sortedRoles);
+        let newNavItemsCurrent: NavItem[] = [];
+        if (sortedRoles.includes("Administrator")) {
+          newNavItemsCurrent = NAV_ITEMS;
+        } else if (sortedRoles.includes("Marketing")) {
+          newNavItemsCurrent = NAV_ITEMS;
+        } else if (sortedRoles.includes("Accounting")) {
+          newNavItemsCurrent = NAV_ITEMS.filter(
+            (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
+          );
+        } else if (sortedRoles.includes("Management")) {
+          newNavItemsCurrent = NAV_ITEMS.filter(
+            (item) => item.label !== "Request Forms" && item.label !== "Dropdowns"
+          );
+        } else {
+          newNavItemsCurrent = []; // or some default value
+        }
+        setNavItemsCurrent(newNavItemsCurrent);
+      } catch (err) {
+        console.log(err);
+        
       }
-      setNavItemsCurrent(newNavItemsCurrent);
     }
 
     fetchRolesAndSetNavItems();

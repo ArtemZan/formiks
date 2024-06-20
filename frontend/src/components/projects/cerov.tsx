@@ -364,26 +364,34 @@ export default function Cerov(props: Props) {
       "619b66defe27d06ad17d75ac",
       "619b6754fe27d06ad17d75ad",
       "619b6799fe27d06ad17d75ae",
-      "633e93ed5a7691ac30c977fc",
+      // "633e93ed5a7691ac30c977fc",
+      "63295a2ef26db37a14557092",
       "636abbd43927f9c7703b19c4",
     ];
-    var responses = await Promise.all(
-      dropdownsIds.map((di) => {
-        return RestAPI.getDropdownValues(di);
-      })
-    );
-    // PH1 = responses[0].data;
-    Companies = responses[1].data;
-    VendorsNames = responses[2].data;
-    CampaignChannel = responses[3].data;
-    TargetAudience = responses[4].data;
-    Budget = responses[5].data;
-    ExchangeRates = responses[6].data;
-    FiscalQuarter = responses[7].data;
-    Year = responses[8].data;
-    ProjectStartQuarter = responses[9].data;
-    BUs = responses[10].data;
-    AlsoInternationalVendorsNames = responses[11].data;
+
+    try {
+      var responses = await Promise.all(
+        dropdownsIds.map((di) => {
+          return RestAPI.getDropdownValues(di);
+        })
+      );
+      // PH1 = responses[0].data;
+      Companies = responses[1].data;
+      VendorsNames = responses[2].data;
+      CampaignChannel = responses[3].data;
+      TargetAudience = responses[4].data;
+      Budget = responses[5].data;
+      ExchangeRates = responses[6].data;
+      FiscalQuarter = responses[7].data;
+      Year = responses[8].data;
+      ProjectStartQuarter = responses[9].data;
+      BUs = responses[10].data;
+      AlsoInternationalVendorsNames = responses[11].data;
+      
+    } catch (err) {
+      console.log(err);
+      
+    }
   }
 
   useEffect(() => {
@@ -570,7 +578,7 @@ export default function Cerov(props: Props) {
     requestorsCompanyName,
   ]);
 
-  function createSubmission(draft: boolean, local: string | null) {
+  async function createSubmission(draft: boolean, local: string | null) {
     var projectId = "629dfb3f55d209262194a3e6";
     var parent: Submission = {
       project: projectId,
@@ -825,7 +833,8 @@ export default function Cerov(props: Props) {
       if (draft) {
         submission.submission.id = props.submission.id;
 
-        RestAPI.updateDraft(submission).then((response) => {
+        try {
+          await  RestAPI.updateDraft(submission)
           toast(
             <Toast
               title={"Draft save"}
@@ -833,7 +842,9 @@ export default function Cerov(props: Props) {
               type={"info"}
             />
           );
-        });
+        } catch (err) {
+          
+        }        
       } else {
         if (submissionValidation(submission).length !== 0) {
           toast(

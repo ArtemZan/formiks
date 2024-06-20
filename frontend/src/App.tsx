@@ -35,13 +35,23 @@ function App({ pca }: AppProps) {
 
   pca.setNavigationClient(navigationClient);
 
+  const fetchRoles = async () => { 
+    try {
+      const rolesRes = await RestAPI.getRoles();
+      setRoles(rolesRes.data);
+    } catch (err) {
+      console.log(err);
+      
+    }
+  }
+
   useEffect(() => {
+
+    //TODO test
+    fetchRoles();
     // RestAPI.getRoles().then((response) => {
-    //   setAdminRole(response.data.includes("Administrator"));
+    //   setRoles(response.data);
     // });
-    RestAPI.getRoles().then((response) => {
-      setRoles(response.data);
-    });
   }, []);
 
   const handleRolesChange = (newData: any) => {

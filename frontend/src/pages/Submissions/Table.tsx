@@ -211,27 +211,34 @@ async function fetchDropdowns() {
     "619b6799fe27d06ad17d75ae",
     "619b7b9efe27d06ad17d75af",
     "619b7b9efe27d06ad17d75af",
-    "633e93ed5a7691ac30c977fc",
+    // "633e93ed5a7691ac30c977fc",
+    "63295a2ef26db37a14557092",
     "636abbd43927f9c7703b19c4",
   ];
-  var responses = await Promise.all(
-    dropdownsIds.map((di) => {
-      return RestAPI.getDropdownValues(di);
-    })
-  );
-  PH1 = responses[0].data;
-  Companies = responses[1].data;
-  VendorsNames = responses[2].data;
-  CampaignChannel = responses[3].data;
-  TargetAudience = responses[4].data;
-  Budget = responses[5].data;
-  ExchangeRates = responses[6].data;
-  FiscalQuarter = responses[7].data;
-  Year = responses[8].data;
-  ProjectStartQuarter = responses[9].data;
-  ProjectType = responses[10].data;
-  BUs = responses[12].data;
-  InternationalVendorsNames = responses[13].data;
+  try {
+    const responses = await Promise.all(
+      dropdownsIds.map((di) => {
+        return RestAPI.getDropdownValues(di);
+      })
+    );
+    PH1 = responses[0].data;
+    Companies = responses[1].data;
+    VendorsNames = responses[2].data;
+    CampaignChannel = responses[3].data;
+    TargetAudience = responses[4].data;
+    Budget = responses[5].data;
+    ExchangeRates = responses[6].data;
+    FiscalQuarter = responses[7].data;
+    Year = responses[8].data;
+    ProjectStartQuarter = responses[9].data;
+    ProjectType = responses[10].data;
+    BUs = responses[12].data;
+    InternationalVendorsNames = responses[13].data;
+    
+  } catch (err) {
+    console.log(err)
+  }
+
 }
 
 const loadOptions = (identifier: string) => {
@@ -2066,103 +2073,106 @@ export function SubmissionsTable(props: Props) {
     localStorage.setItem("template", selectedTemplate);
   }, [selectedTemplate]);
 
-  useEffect(() => {
-    RestAPI.getTemplates().then((response) => setTemplates(response.data));
-    RestAPI.getSubmissions().then((response) => {
+  const fetchData = async() => {
+    try {
+      const templatesRes = await RestAPI.getTemplates()
+      setTemplates(templatesRes.data)
+    
+      const submissionsRes = await RestAPI.getSubmissions()
       var vSubs: Submission[] = [];
-      var subs = response.data;
+      var subs = submissionsRes.data;
       var ss = new Map();
       var cSubs: Submission[] = [];
 
       subs.forEach((sub) => {
-        if (sub.group === "communication") {
-          cSubs.push(sub);
-        } else {
-          vSubs.push(sub);
-        }
-        ss.set(sub.id, sub);
+      if (sub.group === "communication") {
+        cSubs.push(sub);
+      } else {
+        vSubs.push(sub);
+      }
+      ss.set(sub.id, sub);
       });
 
       vSubs.map((sub) => {
-        if (sub.parentId === null) {
-          sub.data.costAmountLC = 0;
-          sub.data.costAmountEUR = 0;
-          sub.data.incomeAmountLCSI = 0;
-          sub.data.incomeAmountEURSI = 0;
-          sub.data.costAmountLCCostGL = 0;
-          sub.data.costAmountEURCostGL = 0;
-          sub.data.incomeAmountLCIncomeGL = 0;
-          sub.data.incomeAmountEurIncomeGL = 0;
-          sub.data.totalIncomeLC = 0;
-          sub.data.totalCostsLC = 0;
-          sub.data.totalIncomeEUR = 0;
-          sub.data.totalCostsEUR = 0;
-          sub.data.totalCostsTool = 0;
-          sub.data.totalIncomeTool = 0;
-          sub.data.totalIncomeSAP = 0;
-          sub.data.totalCostsSAP = 0;
-          vSubs
-            .filter((s) => s.parentId === sub.id)
-            .forEach((cs) => {
-              sub.data.costAmountLC += cs.data.costAmountLC || 0;
-              sub.data.costAmountEUR += cs.data.costAmountEUR || 0;
-              sub.data.incomeAmountLCSI += cs.data.incomeAmountLCSI || 0;
-              sub.data.incomeAmountEURSI += cs.data.incomeAmountEURSI || 0;
-              sub.data.costAmountLCCostGL += cs.data.costAmountLCCostGL || 0;
-              sub.data.costAmountEURCostGL += cs.data.costAmountEURCostGL || 0;
-              sub.data.incomeAmountLCIncomeGL +=
-                cs.data.incomeAmountLCIncomeGL || 0;
-              sub.data.incomeAmountEurIncomeGL +=
-                cs.data.incomeAmountEurIncomeGL || 0;
+      if (sub.parentId === null) {
+        sub.data.costAmountLC = 0;
+        sub.data.costAmountEUR = 0;
+        sub.data.incomeAmountLCSI = 0;
+        sub.data.incomeAmountEURSI = 0;
+        sub.data.costAmountLCCostGL = 0;
+        sub.data.costAmountEURCostGL = 0;
+        sub.data.incomeAmountLCIncomeGL = 0;
+        sub.data.incomeAmountEurIncomeGL = 0;
+        sub.data.totalIncomeLC = 0;
+        sub.data.totalCostsLC = 0;
+        sub.data.totalIncomeEUR = 0;
+        sub.data.totalCostsEUR = 0;
+        sub.data.totalCostsTool = 0;
+        sub.data.totalIncomeTool = 0;
+        sub.data.totalIncomeSAP = 0;
+        sub.data.totalCostsSAP = 0;
+        vSubs
+          .filter((s) => s.parentId === sub.id)
+          .forEach((cs) => {
+            sub.data.costAmountLC += cs.data.costAmountLC || 0;
+            sub.data.costAmountEUR += cs.data.costAmountEUR || 0;
+            sub.data.incomeAmountLCSI += cs.data.incomeAmountLCSI || 0;
+            sub.data.incomeAmountEURSI += cs.data.incomeAmountEURSI || 0;
+            sub.data.costAmountLCCostGL += cs.data.costAmountLCCostGL || 0;
+            sub.data.costAmountEURCostGL += cs.data.costAmountEURCostGL || 0;
+            sub.data.incomeAmountLCIncomeGL +=
+              cs.data.incomeAmountLCIncomeGL || 0;
+            sub.data.incomeAmountEurIncomeGL +=
+              cs.data.incomeAmountEurIncomeGL || 0;
 
-              let incomeLC = cs.data.incomeAmountLCSI || 0;
-              let incomeLCGL = cs.data.incomeAmountLCIncomeGL || 0;
-              sub.data.totalIncomeLC += -(incomeLC + incomeLCGL);
-              sub.data.totalCostsLC += -(
-                (cs.data.costAmountLC || 0) + (cs.data.costAmountLCCostGL || 0)
-              );
-              let incomeEUR = cs.data.incomeAmountEURSI || 0;
-              let incomeEURGL = cs.data.incomeAmountEurIncomeGL || 0;
-              sub.data.totalIncomeEUR += -(incomeEUR + incomeEURGL);
-
-              sub.data.totalCostsEUR += -(
-                (cs.data.costAmountEUR || 0) +
-                (cs.data.costAmountEURCostGL || 0)
-              );
-              sub.data.totalCostsTool +=
-                cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
-              sub.data.totalCostsSAP +=
-                cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
-              sub.data.totalProfitLC +=
-                (cs.data.costAmountLC || 0) + (cs.data.costAmountLCCostGL || 0);
-              sub.data.totalIncomeTool +=
-                (cs.data.incomeAmountLCSI || 0) +
-                (cs.data.incomeAmountLCIncomeGL || 0);
-
-              sub.data.totalIncomeSAP +=
-                (cs.data.incomeAmountLCSI || 0) +
-                (cs.data.incomeAmountLCIncomeGL || 0);
-            });
-          if (sub.data.totalIncomeLC + sub.data.totalCostsLC >= 0) {
-            sub.data.totalProfitLC =
-              sub.data.totalIncomeLC + sub.data.totalCostsLC;
-          } else {
-            sub.data.totalProfitLC = 0;
-            sub.data.totalLossLC = -(
-              sub.data.totalIncomeLC + sub.data.totalCostsLC
+            let incomeLC = cs.data.incomeAmountLCSI || 0;
+            let incomeLCGL = cs.data.incomeAmountLCIncomeGL || 0;
+            sub.data.totalIncomeLC += -(incomeLC + incomeLCGL);
+            sub.data.totalCostsLC += -(
+              (cs.data.costAmountLC || 0) + (cs.data.costAmountLCCostGL || 0)
             );
-          }
-          if (sub.data.totalIncomeEUR + sub.data.totalCostsEUR >= 0) {
-            sub.data.totalProfitEUR =
-              sub.data.totalIncomeEUR + sub.data.totalCostsEUR;
-          } else {
-            sub.data.totalProfitEUR = 0;
-            sub.data.totalLossEUR = -(
-              sub.data.totalIncomeEUR + sub.data.totalCostsEUR
+            let incomeEUR = cs.data.incomeAmountEURSI || 0;
+            let incomeEURGL = cs.data.incomeAmountEurIncomeGL || 0;
+            sub.data.totalIncomeEUR += -(incomeEUR + incomeEURGL);
+
+            sub.data.totalCostsEUR += -(
+              (cs.data.costAmountEUR || 0) +
+              (cs.data.costAmountEURCostGL || 0)
             );
-          }
-          sub.data.totalCostsSAP = sub.data.totalCostsTool;
+            sub.data.totalCostsTool +=
+              cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
+            sub.data.totalCostsSAP +=
+              cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
+            sub.data.totalProfitLC +=
+              (cs.data.costAmountLC || 0) + (cs.data.costAmountLCCostGL || 0);
+            sub.data.totalIncomeTool +=
+              (cs.data.incomeAmountLCSI || 0) +
+              (cs.data.incomeAmountLCIncomeGL || 0);
+
+            sub.data.totalIncomeSAP +=
+              (cs.data.incomeAmountLCSI || 0) +
+              (cs.data.incomeAmountLCIncomeGL || 0);
+          });
+        if (sub.data.totalIncomeLC + sub.data.totalCostsLC >= 0) {
+          sub.data.totalProfitLC =
+            sub.data.totalIncomeLC + sub.data.totalCostsLC;
+        } else {
+          sub.data.totalProfitLC = 0;
+          sub.data.totalLossLC = -(
+            sub.data.totalIncomeLC + sub.data.totalCostsLC
+          );
         }
+        if (sub.data.totalIncomeEUR + sub.data.totalCostsEUR >= 0) {
+          sub.data.totalProfitEUR =
+            sub.data.totalIncomeEUR + sub.data.totalCostsEUR;
+        } else {
+          sub.data.totalProfitEUR = 0;
+          sub.data.totalLossEUR = -(
+            sub.data.totalIncomeEUR + sub.data.totalCostsEUR
+          );
+        }
+        sub.data.totalCostsSAP = sub.data.totalCostsTool;
+      }
       });
       let sortedSubs: Submission[] = [];
       sortedSubs = vSubs.sort((a, b) => {
@@ -2210,7 +2220,160 @@ export function SubmissionsTable(props: Props) {
       setSourceSubmissions(ss);
       setSubmissions(sortedSubs);
       setFilteredSubmissions(sortedSubs);
-    });
+    } catch (err) {
+      console.log(err)
+    }
+  
+  }
+
+  useEffect(() => {
+
+    //TODO test 
+    fetchData();
+    // RestAPI.getTemplates().then((response) => setTemplates(response.data))
+    // RestAPI.getSubmissions().then((response) => {
+    //   var vSubs: Submission[] = [];
+    //   var subs = response.data;
+    //   var ss = new Map();
+    //   var cSubs: Submission[] = [];
+
+    //   subs.forEach((sub) => {
+    //     if (sub.group === "communication") {
+    //       cSubs.push(sub);
+    //     } else {
+    //       vSubs.push(sub);
+    //     }
+    //     ss.set(sub.id, sub);
+    //   });
+
+    //   vSubs.map((sub) => {
+    //     if (sub.parentId === null) {
+    //       sub.data.costAmountLC = 0;
+    //       sub.data.costAmountEUR = 0;
+    //       sub.data.incomeAmountLCSI = 0;
+    //       sub.data.incomeAmountEURSI = 0;
+    //       sub.data.costAmountLCCostGL = 0;
+    //       sub.data.costAmountEURCostGL = 0;
+    //       sub.data.incomeAmountLCIncomeGL = 0;
+    //       sub.data.incomeAmountEurIncomeGL = 0;
+    //       sub.data.totalIncomeLC = 0;
+    //       sub.data.totalCostsLC = 0;
+    //       sub.data.totalIncomeEUR = 0;
+    //       sub.data.totalCostsEUR = 0;
+    //       sub.data.totalCostsTool = 0;
+    //       sub.data.totalIncomeTool = 0;
+    //       sub.data.totalIncomeSAP = 0;
+    //       sub.data.totalCostsSAP = 0;
+    //       vSubs
+    //         .filter((s) => s.parentId === sub.id)
+    //         .forEach((cs) => {
+    //           sub.data.costAmountLC += cs.data.costAmountLC || 0;
+    //           sub.data.costAmountEUR += cs.data.costAmountEUR || 0;
+    //           sub.data.incomeAmountLCSI += cs.data.incomeAmountLCSI || 0;
+    //           sub.data.incomeAmountEURSI += cs.data.incomeAmountEURSI || 0;
+    //           sub.data.costAmountLCCostGL += cs.data.costAmountLCCostGL || 0;
+    //           sub.data.costAmountEURCostGL += cs.data.costAmountEURCostGL || 0;
+    //           sub.data.incomeAmountLCIncomeGL +=
+    //             cs.data.incomeAmountLCIncomeGL || 0;
+    //           sub.data.incomeAmountEurIncomeGL +=
+    //             cs.data.incomeAmountEurIncomeGL || 0;
+
+    //           let incomeLC = cs.data.incomeAmountLCSI || 0;
+    //           let incomeLCGL = cs.data.incomeAmountLCIncomeGL || 0;
+    //           sub.data.totalIncomeLC += -(incomeLC + incomeLCGL);
+    //           sub.data.totalCostsLC += -(
+    //             (cs.data.costAmountLC || 0) + (cs.data.costAmountLCCostGL || 0)
+    //           );
+    //           let incomeEUR = cs.data.incomeAmountEURSI || 0;
+    //           let incomeEURGL = cs.data.incomeAmountEurIncomeGL || 0;
+    //           sub.data.totalIncomeEUR += -(incomeEUR + incomeEURGL);
+
+    //           sub.data.totalCostsEUR += -(
+    //             (cs.data.costAmountEUR || 0) +
+    //             (cs.data.costAmountEURCostGL || 0)
+    //           );
+    //           sub.data.totalCostsTool +=
+    //             cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
+    //           sub.data.totalCostsSAP +=
+    //             cs.data.costAmountLC || 0 + cs.data.costAmountLCCostG || 0;
+    //           sub.data.totalProfitLC +=
+    //             (cs.data.costAmountLC || 0) + (cs.data.costAmountLCCostGL || 0);
+    //           sub.data.totalIncomeTool +=
+    //             (cs.data.incomeAmountLCSI || 0) +
+    //             (cs.data.incomeAmountLCIncomeGL || 0);
+
+    //           sub.data.totalIncomeSAP +=
+    //             (cs.data.incomeAmountLCSI || 0) +
+    //             (cs.data.incomeAmountLCIncomeGL || 0);
+    //         });
+    //       if (sub.data.totalIncomeLC + sub.data.totalCostsLC >= 0) {
+    //         sub.data.totalProfitLC =
+    //           sub.data.totalIncomeLC + sub.data.totalCostsLC;
+    //       } else {
+    //         sub.data.totalProfitLC = 0;
+    //         sub.data.totalLossLC = -(
+    //           sub.data.totalIncomeLC + sub.data.totalCostsLC
+    //         );
+    //       }
+    //       if (sub.data.totalIncomeEUR + sub.data.totalCostsEUR >= 0) {
+    //         sub.data.totalProfitEUR =
+    //           sub.data.totalIncomeEUR + sub.data.totalCostsEUR;
+    //       } else {
+    //         sub.data.totalProfitEUR = 0;
+    //         sub.data.totalLossEUR = -(
+    //           sub.data.totalIncomeEUR + sub.data.totalCostsEUR
+    //         );
+    //       }
+    //       sub.data.totalCostsSAP = sub.data.totalCostsTool;
+    //     }
+    //   });
+    //   let sortedSubs: Submission[] = [];
+    //   sortedSubs = vSubs.sort((a, b) => {
+    //     if (a.parentId === null && b.parentId === null) {
+    //       if (a.created > b.created) return -1;
+    //       if (a.created < b.created) return 1;
+    //     }
+    //     if (a.parentId === null && b.parentId !== null) return -1;
+    //     if (a.parentId !== null && b.parentId === null) return 1;
+
+    //     if (a.parentId !== null && b.parentId !== null) {
+    //       const projectTypeA = a.data["projectType"];
+    //       const projectTypeB = b.data["projectType"];
+
+    //       // Anything but Purchase Order and not undefined first
+    //       if (
+    //         projectTypeA !== "Purchase Order" &&
+    //         projectTypeA !== undefined &&
+    //         (projectTypeB === "Purchase Order" || projectTypeB === undefined)
+    //       )
+    //         return -1;
+    //       if (
+    //         projectTypeB !== "Purchase Order" &&
+    //         projectTypeB !== undefined &&
+    //         (projectTypeA === "Purchase Order" || projectTypeA === undefined)
+    //       )
+    //         return 1;
+
+    //       // Undefined ones next
+    //       if (projectTypeA === undefined && projectTypeB !== undefined)
+    //         return -1;
+    //       if (projectTypeB === undefined && projectTypeA !== undefined)
+    //         return 1;
+
+    //       // Purchase Order last
+    //       if (projectTypeA === "Purchase Order") return 1;
+    //       if (projectTypeB === "Purchase Order") return -1;
+    //     }
+
+    //     return 0;
+    //   });
+
+    //   setCommunicationSubmissions(cSubs);
+    //   setFilteredCommunicationSubmissions(cSubs);
+    //   setSourceSubmissions(ss);
+    //   setSubmissions(sortedSubs);
+    //   setFilteredSubmissions(sortedSubs);
+    // });
   }, []);
   useEffect(() => {
     getAccountInfo().then((response) => {
