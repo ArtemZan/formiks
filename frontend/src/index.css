@@ -372,3 +372,7 @@ button[name="data[submit]"]:hover {
 .dark-table .rs-table-column-resize-spanner {
   border-color: #565f70;
 }
+
+.submit-btn-ermv {
+  margin-top: 0 !important;
+}
