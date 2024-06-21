@@ -373,6 +373,10 @@ button[name="data[submit]"]:hover {
   border-color: #565f70;
 }
 
-.submit-btn-ermv {
+.btn-ermv {
   margin-top: 0 !important;
+}
+
+.export-btn-ermv {
+  margin-right: 15px !important;
 }
