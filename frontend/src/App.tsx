@@ -14,7 +14,7 @@ import DraftExplorer from "./pages/Drafts/Explorer";
 
 import SubmissionViewer from "./pages/Submissions/Viewer";
 
-import SubmissionsTable from "./pages/Submissions/Table";
+import SubmissionsTable from "./pages/Submissions/Table/Table";
 
 import DropdownExplorer from "./pages/Dropdowns/Explorer";
 import DropdownEditor from "./pages/Dropdowns/Editor";
