@@ -80,11 +80,12 @@ import RejectModal from '../../../components/RejectModal';
 import {
     cancellationMandatoryFields,
     defaultColumns,
-    getTableCells,
     invoiceMandatoryFields,
     DisplayedColumnsList,
-} from './utils';
+} from './vars';
 import moment from 'moment';
+import { alsoProjectNumberUpdate } from './cellUpdateFunctions';
+import { isReadonlyCell, getTableCells } from './functions';
 // import { types } from "util";
 // import { modalPropTypes } from "rsuite/esm/Overlay/Modal";
 // import { table } from "console";
@@ -354,7 +355,14 @@ export function SubmissionsTable(props: Props) {
     const [totalProfitInToolLC, setTotalProfitInToolLC] = useState(0);
     // const { fps, avgFps } = useFps(20);
     const [tableWidth, setTableWidth] = useState(1000);
+
+    //Projects submissions
     const [submissions, setSubmissions] = useState<Submission[]>([]);
+    //Invoicing submissions
+    const [communicationSubmissions, setCommunicationSubmissions] = useState<
+        Submission[]
+    >([]);
+
     const [financialYear, setFinancialYear] = useState<string>('');
     const [filteredSubmissions, setFilteredSubmissions] = useState<
         Submission[]
@@ -364,9 +372,6 @@ export function SubmissionsTable(props: Props) {
         filteredCommunicationSubmissions,
         setFilteredCommunicationSubmissions,
     ] = useState<Submission[]>([]);
-    const [communicationSubmissions, setCommunicationSubmissions] = useState<
-        Submission[]
-    >([]);
     const [onlyMine, setOnlyMine] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [scrollLeft, setScrollLeft] = React.useState(0);
@@ -386,6 +391,7 @@ export function SubmissionsTable(props: Props) {
     //   current: 0,
     //   domSize: 0,
     // });
+
     const [totalRequests, setTotalRequests] = useState(1);
 
     useEffect(() => {
@@ -1197,7 +1203,7 @@ export function SubmissionsTable(props: Props) {
         // Check if paymentMethodLMD is "Money in House" and depositNumberLMD is present and not empty
         if (
             (ts.data.paymentMethodLMD === 'Money in House' ||
-                ts.data.paymentMethodLMD === 'Central CN') &&
+                ts.data.paymentMethodLMD === 'Intercompany') &&
             (!ts.data.depositNumberLMD || ts.data.depositNumberLMD.length === 0)
         ) {
             return false;
@@ -1254,6 +1260,7 @@ export function SubmissionsTable(props: Props) {
         path: string,
         value: any
     ) {
+        //TODO Error handling
         var submissionIndex = communicationSubmissions.findIndex(
             (s) => s.id === submission
         );
@@ -1359,13 +1366,24 @@ export function SubmissionsTable(props: Props) {
             return '#f7cdd6';
         }
 
+        if (props.column.key === 'data.selfInvoiceNumber') {
+            if (
+                props.rowData.data.invoiceTypeLMD === 'Internal Invoice' &&
+                props.rowData.data.statusLMD === 'OK FOR INVOICING'
+            ) {
+                return '#f7cdd6';
+            } else {
+                return '#f9f9ff';
+            }
+        }
+
         switch (props.rowData.data.invoiceTypeLMD) {
             case 'Invoice':
                 mandatoryFields = invoiceMandatoryFields;
                 break;
-            case 'Pre-Invoice':
-                mandatoryFields = preInvoiceMandatoryFields;
-                break;
+            // case 'Pre-Invoice':
+            //     mandatoryFields = preInvoiceMandatoryFields;
+            //     break;
             case 'Internal Invoice':
                 mandatoryFields = internalInvoiceMandatoryFields;
                 break;
@@ -1384,7 +1402,8 @@ export function SubmissionsTable(props: Props) {
             if (props.column.key === 'data.depositNumberLMD') {
                 if (
                     (props.rowData.data.paymentMethodLMD === 'Money in House' ||
-                        props.rowData.data.paymentMethodLMD === 'Central CN') &&
+                        props.rowData.data.paymentMethodLMD ===
+                            'Intercompany') &&
                     props.cellData === ''
                 ) {
                     return '#f7cdd6';
@@ -1719,7 +1738,7 @@ export function SubmissionsTable(props: Props) {
                     if (
                         props.rowData.data.paymentMethodLMD ===
                             'Money in House' ||
-                        props.rowData.data.paymentMethodLMD === 'Central CN'
+                        props.rowData.data.paymentMethodLMD === 'Intercompany'
                     ) {
                         return '#f7cdd6';
                     } else {
@@ -1770,7 +1789,7 @@ export function SubmissionsTable(props: Props) {
                     if (
                         props.rowData.data.paymentMethodLMD ===
                             'Money in House' ||
-                        props.rowData.data.paymentMethodLMD === 'Central CN'
+                        props.rowData.data.paymentMethodLMD === 'Intercompany'
                     ) {
                         return '#f7cdd6';
                     } else {
@@ -1822,7 +1841,7 @@ export function SubmissionsTable(props: Props) {
                         (props.rowData.data.paymentMethodLMD ===
                             'Money in House' ||
                             props.rowData.data.paymentMethodLMD ===
-                                'Central CN') &&
+                                'Intercompany') &&
                         props.cellData === ''
                     ) {
                         return '#f7cdd6';
@@ -1928,11 +1947,24 @@ export function SubmissionsTable(props: Props) {
         }
     }
 
-    function cellReadonly(props: any, logProps: any) {
-        if (logProps) {
-            console.log('props', props);
-        }
+    // console.log('Companies', Companies)
 
+    const checkCountryPrefixEqual = (projectNum: String) => {
+        let equal = true;
+        const prefix = projectNum.substring(0, 4);
+        const country = projectNum.substring(4, 6);
+        let code = null;
+        // console.log('projectNum', projectNum)
+        Companies.forEach((company) => {
+            if (company.value.country === country) {
+                equal = company.value.code === prefix;
+                code = company.value.code;
+            }
+        });
+        return { equal, country, code };
+    };
+
+    function cellReadonly(props: any) {
         let invoiceReadonlyFields: string[] = [
             'data.cancellationInfoLMD',
             'data.reasonLMD',
@@ -1957,32 +1989,6 @@ export function SubmissionsTable(props: Props) {
             'data.invoiceTypeLMD',
             'data.requestorLMD',
             'data.entryDateLMD',
-        ];
-        let preInvoiceReadonlyFields: string[] = [
-            'data.cancellationInfoLMD',
-            'data.reasonLMD',
-            'data.reasonCodeLMD',
-            'data.vodLMD',
-            'data.alsoMarketingProjectNumberLMD',
-            'data.entryDateLMD',
-            'data.reasonLMD',
-            'data.reasonCodeLMD',
-            'data.materialNumberLMD',
-            'data.requestorLMD',
-        ];
-
-        let preInvoiceSubLineReadonlyFields: string[] = [
-            'data.cancellationInfoLMD',
-            'data.reasonLMD',
-            'data.reasonCodeLMD',
-            'data.vodLMD',
-            'data.alsoMarketingProjectNumberLMD',
-            'data.entryDateLMD',
-            'data.invoiceTypeLMD',
-            'data.reasonLMD',
-            'data.reasonCodeLMD',
-            'data.materialNumberLMD',
-            'data.requestorLMD',
         ];
 
         let internalInvoiceReadonlyFields: string[] = [
@@ -2031,13 +2037,32 @@ export function SubmissionsTable(props: Props) {
         if (props === undefined) {
             return false;
         }
+
+        // console.log('props.column.key', props.column.key)
+
+        const projectNum = props.rowData.data.alsoMarketingProjectNumberLMD;
+
+        if (!!projectNum) {
+            const { equal: countryPrefixEqual } =
+                checkCountryPrefixEqual(projectNum);
+
+            if (!countryPrefixEqual) {
+                if (
+                    props.column.key === 'data.vendorLMD' ||
+                    props.column.key === 'data.buLMD'
+                ) {
+                    return true;
+                }
+            }
+        }
+
         switch (props.rowData.data.invoiceTypeLMD) {
             case 'Invoice':
                 if (props.column.key === 'data.depositNumberLMD') {
                     if (
                         props.rowData.data.paymentMethodLMD ===
                             'Money in House' ||
-                        props.rowData.data.paymentMethodLMD === 'Central CN'
+                        props.rowData.data.paymentMethodLMD === 'Intercompany'
                     ) {
                         return false;
                     } else {
@@ -2065,45 +2090,13 @@ export function SubmissionsTable(props: Props) {
                         return false;
                     }
                 }
-            // case 'Pre-Invoice':
-            //     if (props.column.key === 'data.depositNumberLMD') {
-            //         if (
-            //             props.rowData.data.paymentMethodLMD ===
-            //                 'Money in House' ||
-            //             props.rowData.data.paymentMethodLMD === 'Central CN'
-            //         ) {
-            //             return false;
-            //         } else {
-            //             return true;
-            //         }
-            //     }
-            //     if (props.rowData.parentId) {
-            //         if (
-            //             preInvoiceReadonlyFields.findIndex(
-            //                 (element) => element === props.column.key
-            //             ) > -1
-            //         ) {
-            //             return true;
-            //         } else {
-            //             return false;
-            //         }
-            //     } else {
-            //         if (
-            //             preInvoiceSubLineReadonlyFields.findIndex(
-            //                 (element) => element === props.column.key
-            //             ) > -1
-            //         ) {
-            //             return true;
-            //         } else {
-            //             return false;
-            //         }
-            //     }
+
             case 'Internal Invoice':
                 if (props.column.key === 'data.depositNumberLMD') {
                     if (
                         props.rowData.data.paymentMethodLMD ===
                             'Money in House' ||
-                        props.rowData.data.paymentMethodLMD === 'Central CN'
+                        props.rowData.data.paymentMethodLMD === 'Intercompany'
                     ) {
                         return false;
                     } else {
@@ -2179,7 +2172,7 @@ export function SubmissionsTable(props: Props) {
     // }
 
     // console.log('displayedColumns', displayedColumns);
-    console.log('submissionData', submissionData);
+    // console.log('submission 1', submissions && submissions[0]);
 
     return (
         <div>
@@ -3067,6 +3060,69 @@ export function SubmissionsTable(props: Props) {
                                                     ),
                                             },
                                             {
+                                                key: 'data.selfInvoiceNumber',
+                                                dataKey:
+                                                    'data.selfInvoiceNumber',
+                                                title: 'Self-Invoice number',
+                                                width: columnWidth(
+                                                    'data.selfInvoiceNumber',
+                                                    200
+                                                ),
+                                                resizable: true,
+                                                hidden: visibilityController(
+                                                    'CMCT',
+                                                    'data.selfInvoiceNumber'
+                                                ),
+                                                cellRenderer: (props: any) => (
+                                                    <EditableTableCell
+                                                        type={'text'}
+                                                        readonly={
+                                                            !(
+                                                                (
+                                                                    (userRoles.includes(
+                                                                        'Accounting'
+                                                                    ) ||
+                                                                        userRoles.includes(
+                                                                            'Administrator'
+                                                                        )) &&
+                                                                    props
+                                                                        .rowData
+                                                                        .data
+                                                                        .invoiceTypeLMD ===
+                                                                        'Internal Invoice'
+                                                                )
+                                                            )
+                                                        }
+                                                        invoiced={
+                                                            props.rowData.data
+                                                                .statusLMD ===
+                                                            'INVOICED'
+                                                        }
+                                                        onUpdate={(
+                                                            submission: string,
+                                                            path: string,
+                                                            value: any
+                                                        ) => {
+                                                            //TODO send value to BE
+
+                                                        }}
+                                                        backgroundColor={cellColor(
+                                                            props
+                                                        )}
+                                                        rowIndex={
+                                                            props.rowIndex
+                                                        }
+                                                        columnKey={
+                                                            props.column.dataKey
+                                                        }
+                                                        rowData={props.rowData}
+                                                        initialValue={
+                                                            props.cellData
+                                                        }
+                                                    />
+                                                ),
+                                            },
+                                            {
                                                 key: 'data.documentNumberCMCT',
                                                 dataKey:
                                                     'data.documentNumberCMCT',
@@ -3083,33 +3139,7 @@ export function SubmissionsTable(props: Props) {
                                                 cellRenderer: (props: any) => (
                                                     <EditableTableCell
                                                         type={'text'}
-                                                        readonly={
-                                                            !(
-                                                                (userRoles.includes(
-                                                                    'Accounting'
-                                                                ) ||
-                                                                    userRoles.includes(
-                                                                        'Administrator'
-                                                                    )) &&
-                                                                (props.rowData
-                                                                    .data
-                                                                    .statusLMD ===
-                                                                    'FUTURE INVOICE' ||
-                                                                    props
-                                                                        .rowData
-                                                                        .data
-                                                                        .statusLMD ===
-                                                                        'OK FOR INVOICING' ||
-                                                                    props
-                                                                        .rowData
-                                                                        .data
-                                                                        .statusLMD ===
-                                                                        'INVOICED') &&
-                                                                props.rowData
-                                                                    .parentId ===
-                                                                    null
-                                                            )
-                                                        }
+                                                        readonly={isReadonlyCell('data.documentNumberCMCT', userRoles, props)}
                                                         invoiced={
                                                             props.rowData.data
                                                                 .statusLMD ===
@@ -3482,10 +3512,7 @@ export function SubmissionsTable(props: Props) {
                                                             props.rowData
                                                                 .parentId !==
                                                                 null ||
-                                                            cellReadonly(
-                                                                props,
-                                                                false
-                                                            )
+                                                            cellReadonly(props)
                                                         }
                                                         backgroundColor={mandatoryFieldValidation(
                                                             props
@@ -3586,8 +3613,7 @@ export function SubmissionsTable(props: Props) {
                                                         }
                                                         backgroundColor="#F5FAEF"
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         onUpdate={
                                                             handleCommunicationCellUpdate
@@ -3624,8 +3650,7 @@ export function SubmissionsTable(props: Props) {
                                                     <EditableTableCell
                                                         type={'dropdown'}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         invoiced={
                                                             lmdColumnEdit(
@@ -3703,7 +3728,7 @@ export function SubmissionsTable(props: Props) {
                                                                         .rowData
                                                                         .data
                                                                         .paymentMethodLMD ===
-                                                                    'Central CN'
+                                                                    'Intercompany'
                                                                 ) {
                                                                     handleCommunicationCellUpdate(
                                                                         submission,
@@ -3712,55 +3737,7 @@ export function SubmissionsTable(props: Props) {
                                                                     );
                                                                 }
                                                             }
-                                                            // if (
-                                                            //     value ===
-                                                            //     'Pre-Invoice'
-                                                            // ) {
-                                                            //     handleCommunicationCellUpdate(
-                                                            //         submission,
-                                                            //         'data.materialNumberLMD',
-                                                            //         '7000100'
-                                                            //     );
-                                                            //     handleCommunicationCellUpdate(
-                                                            //         submission,
-                                                            //         'data.alsoMarketingProjectNumberLMD',
-                                                            //         '6110VZ01'
-                                                            //     );
 
-                                                            //     handleCommunicationCellUpdate(
-                                                            //         submission,
-                                                            //         'data.reasonLMD',
-                                                            //         '40'
-                                                            //     );
-                                                            //     handleCommunicationCellUpdate(
-                                                            //         submission,
-                                                            //         'data.reasonCodeLMD',
-                                                            //         'ZWKZ'
-                                                            //     );
-                                                            //     handleCommunicationCellUpdate(
-                                                            //         submission,
-                                                            //         'data.cancellationInfoLMD',
-                                                            //         ''
-                                                            //     );
-                                                            //     handleCommunicationCellUpdate(
-                                                            //         submission,
-                                                            //         'data.additionalInformationLMD',
-                                                            //         ''
-                                                            //     );
-                                                            //     if (
-                                                            //         props
-                                                            //             .rowData
-                                                            //             .data
-                                                            //             .paymentMethodLMD ===
-                                                            //         'Central CN'
-                                                            //     ) {
-                                                            //         handleCommunicationCellUpdate(
-                                                            //             submission,
-                                                            //             'data.paymentMethodLMD',
-                                                            //             ''
-                                                            //         );
-                                                            //     }
-                                                            // }
                                                             if (
                                                                 value ===
                                                                 'Internal Invoice'
@@ -3957,7 +3934,7 @@ export function SubmissionsTable(props: Props) {
                                                         type={'text'}
                                                         readonly={
                                                             cellReadonly(
-                                                                props, false
+                                                                props
                                                             ) ||
                                                             !(
                                                                 userRoles.includes(
@@ -4054,8 +4031,7 @@ export function SubmissionsTable(props: Props) {
                                                         }
                                                         maxLength={12}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         backgroundColor={cellColor(
                                                             props
@@ -4065,319 +4041,16 @@ export function SubmissionsTable(props: Props) {
                                                             path: string,
                                                             value: any
                                                         ) => {
-                                                            handleCommunicationCellUpdate(
+                                                            alsoProjectNumberUpdate(
                                                                 submission,
                                                                 path,
-                                                                value
+                                                                value,
+                                                                handleCommunicationCellUpdate,
+                                                                findSubmissionsByPO,
+                                                                props,
+                                                                checkCountryPrefixEqual,
+                                                                communicationSubmissions
                                                             );
-                                                            handleCommunicationCellUpdate(
-                                                                submission,
-                                                                'data.newLine',
-                                                                true
-                                                            );
-                                                            var vs =
-                                                                findSubmissionsByPO(
-                                                                    value
-                                                                );
-                                                            if (vs.length < 1) {
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.vendorLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.vodLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.buLMD',
-                                                                    ''
-                                                                );
-                                                                toast(
-                                                                    <Toast
-                                                                        title={
-                                                                            'Unknown Project Number'
-                                                                        }
-                                                                        message={
-                                                                            'Project Number not found'
-                                                                        }
-                                                                        type={
-                                                                            'error'
-                                                                        }
-                                                                    />
-                                                                );
-                                                            } else {
-                                                                var currentVendor =
-                                                                    '';
-                                                                if (
-                                                                    props
-                                                                        .rowData
-                                                                        .data
-                                                                        .vendorLMD ===
-                                                                    ''
-                                                                ) {
-                                                                    var parent =
-                                                                        communicationSubmissions.find(
-                                                                            ({
-                                                                                id,
-                                                                            }) =>
-                                                                                id ===
-                                                                                props
-                                                                                    .rowData
-                                                                                    .parentId
-                                                                        );
-                                                                    if (
-                                                                        parent !==
-                                                                        undefined
-                                                                    ) {
-                                                                        currentVendor =
-                                                                            parent
-                                                                                ?.data
-                                                                                .vendorLMD;
-                                                                    } else {
-                                                                        currentVendor =
-                                                                            '';
-                                                                    }
-                                                                } else {
-                                                                    currentVendor =
-                                                                        props
-                                                                            .rowData
-                                                                            .data
-                                                                            .vendorLMD;
-                                                                }
-                                                                if (
-                                                                    typeof currentVendor ===
-                                                                    'string'
-                                                                ) {
-                                                                    var valid =
-                                                                        false;
-                                                                    vs.forEach(
-                                                                        (s) => {
-                                                                            if (
-                                                                                s
-                                                                                    .data
-                                                                                    .vendorName !==
-                                                                                undefined
-                                                                            ) {
-                                                                                var vendor: string =
-                                                                                    '';
-                                                                                // var vendorBU: string = "";
-                                                                                if (
-                                                                                    currentVendor.includes(
-                                                                                        'BU'
-                                                                                    )
-                                                                                ) {
-                                                                                    currentVendor =
-                                                                                        currentVendor
-                                                                                            .toString()
-                                                                                            .substring(
-                                                                                                0,
-                                                                                                currentVendor.toString()
-                                                                                                    .length -
-                                                                                                    7
-                                                                                            );
-                                                                                }
-                                                                                if (
-                                                                                    s.data.vendorName.includes(
-                                                                                        'BU'
-                                                                                    )
-                                                                                ) {
-                                                                                    vendor =
-                                                                                        s.data.vendorName
-                                                                                            .toString()
-                                                                                            .substring(
-                                                                                                0,
-                                                                                                s.data.vendorName.toString()
-                                                                                                    .length -
-                                                                                                    7
-                                                                                            );
-                                                                                    // vendorBU = s.data.vendorName
-                                                                                    //   .toString()
-                                                                                    //   .substring(
-                                                                                    //     s.data.vendorName.toString()
-                                                                                    //       .length - 3,
-                                                                                    //     s.data.vendorName.toString().length
-                                                                                    //   );
-                                                                                } else {
-                                                                                    vendor =
-                                                                                        s
-                                                                                            .data
-                                                                                            .vendorName;
-                                                                                }
-                                                                                if (
-                                                                                    currentVendor ===
-                                                                                    vendor
-                                                                                ) {
-                                                                                    handleCommunicationCellUpdate(
-                                                                                        submission,
-                                                                                        'data.vendorLMD',
-                                                                                        s.data.vendorName.toString()
-                                                                                    );
-                                                                                    handleCommunicationCellUpdate(
-                                                                                        submission,
-                                                                                        'data.buLMD',
-                                                                                        s
-                                                                                            .data
-                                                                                            .businessUnit
-                                                                                    );
-                                                                                    handleCommunicationCellUpdate(
-                                                                                        submission,
-                                                                                        'data.vodLMD',
-                                                                                        s
-                                                                                            .data
-                                                                                            .debitorNumber
-                                                                                    );
-                                                                                    handleCommunicationCellUpdate(
-                                                                                        submission,
-                                                                                        'data.documentCurrencyLMD',
-                                                                                        s
-                                                                                            .data
-                                                                                            .vendorBudgetCurrency
-                                                                                    );
-                                                                                    handleCommunicationCellUpdate(
-                                                                                        submission,
-                                                                                        'data.amountLMD',
-                                                                                        s
-                                                                                            .data
-                                                                                            .vendorAmount
-                                                                                    );
-                                                                                    valid =
-                                                                                        true;
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    );
-                                                                    if (
-                                                                        props
-                                                                            .rowData
-                                                                            .data
-                                                                            .vendorLMD ===
-                                                                        ''
-                                                                    ) {
-                                                                        valid =
-                                                                            true;
-                                                                    }
-                                                                    if (
-                                                                        !valid
-                                                                    ) {
-                                                                        handleCommunicationCellUpdate(
-                                                                            submission,
-                                                                            'data.vendorLMD',
-                                                                            ''
-                                                                        );
-                                                                        handleCommunicationCellUpdate(
-                                                                            submission,
-                                                                            'data.vodLMD',
-                                                                            ''
-                                                                        );
-                                                                        toast(
-                                                                            <Toast
-                                                                                title={
-                                                                                    'Unknown Vendor Selected'
-                                                                                }
-                                                                                message={
-                                                                                    'Vendor does not exist under this project'
-                                                                                }
-                                                                                type={
-                                                                                    'error'
-                                                                                }
-                                                                            />
-                                                                        );
-                                                                    }
-                                                                }
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.invoiceTextLMD',
-                                                                    vs[0].data
-                                                                        .projectName
-                                                                );
-                                                                var amount = 0;
-                                                                switch (
-                                                                    vs[0].data
-                                                                        .projectType
-                                                                ) {
-                                                                    case 'Local One Vendor' ||
-                                                                        'European One Vendor':
-                                                                        amount =
-                                                                            vs[0]
-                                                                                .data
-                                                                                .campaignEstimatedIncomeBudgetsCurrency;
-                                                                        break;
-                                                                    case 'Local Multi Vendor' ||
-                                                                        'European Multi Vendor':
-                                                                        vs.forEach(
-                                                                            (
-                                                                                s
-                                                                            ) => {
-                                                                                if (
-                                                                                    !isNaN(
-                                                                                        s
-                                                                                            .data
-                                                                                            .vendorBudgetAmount
-                                                                                    )
-                                                                                ) {
-                                                                                    amount +=
-                                                                                        Number(
-                                                                                            s
-                                                                                                .data
-                                                                                                .vendorBudgetAmount
-                                                                                        );
-                                                                                }
-                                                                            }
-                                                                        );
-                                                                        break;
-                                                                    default:
-                                                                        amount =
-                                                                            NaN;
-                                                                }
-                                                                if (
-                                                                    !isNaN(
-                                                                        amount
-                                                                    )
-                                                                ) {
-                                                                    handleCommunicationCellUpdate(
-                                                                        submission,
-                                                                        'data.amountLMD',
-                                                                        amount
-                                                                    );
-                                                                }
-                                                                if (
-                                                                    props
-                                                                        .rowData
-                                                                        .data
-                                                                        .newLine
-                                                                ) {
-                                                                    toast(
-                                                                        <Toast
-                                                                            title={
-                                                                                'Project Found'
-                                                                            }
-                                                                            message={
-                                                                                'Data copied from project-check amounts and currencies'
-                                                                            }
-                                                                            type={
-                                                                                'success'
-                                                                            }
-                                                                        />
-                                                                    );
-                                                                } else {
-                                                                    toast(
-                                                                        <Toast
-                                                                            title={
-                                                                                'Project Found'
-                                                                            }
-                                                                            message={
-                                                                                'Data copied from parent project'
-                                                                            }
-                                                                            type={
-                                                                                'success'
-                                                                            }
-                                                                        />
-                                                                    );
-                                                                }
-                                                            }
                                                         }}
                                                         rowIndex={
                                                             props.rowIndex
@@ -4411,7 +4084,7 @@ export function SubmissionsTable(props: Props) {
                                                         type={'dropdown'}
                                                         readonly={
                                                             cellReadonly(
-                                                                props, false
+                                                                props
                                                             ) ||
                                                             !(
                                                                 userRoles.includes(
@@ -4779,10 +4452,7 @@ export function SubmissionsTable(props: Props) {
                                                             props.rowData
                                                                 .parentId !==
                                                                 null ||
-                                                            cellReadonly(
-                                                                props,
-                                                                false
-                                                            )
+                                                            cellReadonly(props)
                                                         }
                                                         onUpdate={
                                                             handleCommunicationCellUpdate
@@ -4822,8 +4492,7 @@ export function SubmissionsTable(props: Props) {
                                                             return BUs;
                                                         }}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         invoiced={
                                                             lmdColumnEdit(
@@ -4892,8 +4561,7 @@ export function SubmissionsTable(props: Props) {
                                                         }
                                                         type={'date'}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         backgroundColor="#F5FAEF"
                                                         onUpdate={
@@ -4946,8 +4614,7 @@ export function SubmissionsTable(props: Props) {
                                                             )
                                                         }
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         backgroundColor={cellColor(
                                                             props
@@ -5009,8 +4676,7 @@ export function SubmissionsTable(props: Props) {
                                                             )
                                                         }
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            true
+                                                            props
                                                         )}
                                                         loadOptions={() => {
                                                             return [
@@ -5087,8 +4753,7 @@ export function SubmissionsTable(props: Props) {
                                                             props
                                                         )}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         onUpdate={
                                                             handleCommunicationCellUpdate
@@ -5142,8 +4807,7 @@ export function SubmissionsTable(props: Props) {
                                                             props
                                                         )}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         onUpdate={
                                                             handleCommunicationCellUpdate
@@ -5195,8 +4859,7 @@ export function SubmissionsTable(props: Props) {
                                                             )
                                                         }
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         backgroundColor="#F5FAEF"
                                                         onUpdate={
@@ -5251,8 +4914,7 @@ export function SubmissionsTable(props: Props) {
                                                             props
                                                         )}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         onUpdate={
                                                             handleCommunicationCellUpdate
@@ -5309,8 +4971,7 @@ export function SubmissionsTable(props: Props) {
                                                             handleCommunicationCellUpdate
                                                         }
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         rowIndex={
                                                             props.rowIndex
@@ -5325,33 +4986,6 @@ export function SubmissionsTable(props: Props) {
                                                     />
                                                 ),
                                             },
-                                            // {
-                                            //   key: "data.additionalInvoiceInfoLMD",
-                                            //   dataKey: "data.additionalInvoiceInfoLMD",
-                                            //   title: "Additional Info on Invoice",
-                                            //   group: "Input of Local Marketing Department",
-
-                                            //   width: columnWidth(
-                                            //     "data.additionalInvoiceInfoLMD",
-                                            //     200
-                                            //   ),
-                                            //   resizable: true,
-                                            //   hidden: visibilityController(
-                                            //     "LMD",
-                                            //     "data.additionalInvoiceInfoLMD"
-                                            //   ),
-                                            //   cellRenderer: (props: any) => (
-                                            //     <EditableTableCell
-                                            //       type={"text"}
-                                            //       backgroundColor="#F5FAEF"
-                                            //       onUpdate={handleCommunicationCellUpdate}
-                                            //       rowIndex={props.rowIndex}
-                                            //       columnKey={props.column.dataKey}
-                                            //       rowData={props.rowData}
-                                            //       initialValue={props.cellData}
-                                            //     />
-                                            //   ),
-                                            // },
                                             {
                                                 key: 'data.documentCurrencyLMD',
                                                 dataKey:
@@ -5386,8 +5020,7 @@ export function SubmissionsTable(props: Props) {
                                                         }
                                                         type={'dropdown'}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         loadOptions={() => {
                                                             return ExchangeRates;
@@ -5431,8 +5064,7 @@ export function SubmissionsTable(props: Props) {
                                                     <EditableTableCell
                                                         type={'dropdown'}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         invoiced={
                                                             lmdColumnEdit(
@@ -5485,8 +5117,8 @@ export function SubmissionsTable(props: Props) {
                                                                         value: 'Credit Note from Vendor',
                                                                     },
                                                                     {
-                                                                        label: 'Central CN',
-                                                                        value: 'Central CN',
+                                                                        label: 'Intercompany',
+                                                                        value: 'Intercompany',
                                                                     },
                                                                 ];
                                                             }
@@ -5649,10 +5281,7 @@ export function SubmissionsTable(props: Props) {
                                                                         .data
                                                                         .paymentMethodLMD ===
                                                                         'Credit Note from Vendor')) ||
-                                                            cellReadonly(
-                                                                props,
-                                                                false
-                                                            )
+                                                            cellReadonly(props)
                                                         }
                                                         loadOptions={() => {
                                                             return [
@@ -5692,7 +5321,7 @@ export function SubmissionsTable(props: Props) {
                                                     'data.depositNumberLMD',
                                                 group: 'Input of Local Marketing Department',
 
-                                                title: 'Deposit Number/Central CN Number',
+                                                title: 'Deposit Number/Intercompany CN Number',
                                                 width: columnWidth(
                                                     'data.depositNumberLMD',
                                                     200
@@ -5728,8 +5357,7 @@ export function SubmissionsTable(props: Props) {
                                                         //   )
                                                         // }
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         backgroundColor={cellColor(
                                                             props
@@ -5797,8 +5425,7 @@ export function SubmissionsTable(props: Props) {
                                                             )
                                                         }
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         backgroundColor={mandatoryFieldValidation(
                                                             props
@@ -5855,8 +5482,7 @@ export function SubmissionsTable(props: Props) {
                                                             props
                                                         )}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         onUpdate={
                                                             handleCommunicationCellUpdate
@@ -5911,8 +5537,7 @@ export function SubmissionsTable(props: Props) {
                                                             '#F5FAEF'
                                                         }
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         onUpdate={
                                                             handleCommunicationCellUpdate
@@ -5966,8 +5591,7 @@ export function SubmissionsTable(props: Props) {
                                                             props
                                                         )}
                                                         readonly={cellReadonly(
-                                                            props,
-                                                            false
+                                                            props
                                                         )}
                                                         onUpdate={
                                                             handleCommunicationCellUpdate
@@ -6756,7 +6380,7 @@ export function SubmissionsTable(props: Props) {
                                                                     invoiceTypeLMD:
                                                                         'Invoice',
                                                                     reasonLMD:
-                                                                        '25',
+                                                                        '40',
                                                                     reasonCodeLMD:
                                                                         'ZWKZ',
                                                                 },
