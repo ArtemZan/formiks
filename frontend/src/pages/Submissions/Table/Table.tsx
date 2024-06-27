@@ -86,6 +86,7 @@ import {
 import moment from 'moment';
 import { alsoProjectNumberUpdate } from './cellUpdateFunctions';
 import { isReadonlyCell, getTableCells } from './functions';
+import SaveFilters from './SaveFilters';
 // import { types } from "util";
 // import { modalPropTypes } from "rsuite/esm/Overlay/Modal";
 // import { table } from "console";
@@ -2287,7 +2288,7 @@ export function SubmissionsTable(props: Props) {
             </Box>
 
             <Box h="70px" textAlign={'end'}>
-                <IconButton
+                {/* <IconButton
                     icon={<IoSave />}
                     isDisabled={
                         selectedTemplate === 'local'
@@ -2318,7 +2319,7 @@ export function SubmissionsTable(props: Props) {
                     aria-label="save"
                     colorScheme="blue"
                     mr="10px"
-                />
+                /> */}
                 <IconButton
                     icon={onlyMine ? <RiAlbumFill /> : <RiAlbumLine />}
                     onClick={() => {
@@ -3078,19 +3079,16 @@ export function SubmissionsTable(props: Props) {
                                                         type={'text'}
                                                         readonly={
                                                             !(
-                                                                (
-                                                                    (userRoles.includes(
-                                                                        'Accounting'
-                                                                    ) ||
-                                                                        userRoles.includes(
-                                                                            'Administrator'
-                                                                        )) &&
-                                                                    props
-                                                                        .rowData
-                                                                        .data
-                                                                        .invoiceTypeLMD ===
-                                                                        'Internal Invoice'
-                                                                )
+                                                                (userRoles.includes(
+                                                                    'Accounting'
+                                                                ) ||
+                                                                    userRoles.includes(
+                                                                        'Administrator'
+                                                                    )) &&
+                                                                props.rowData
+                                                                    .data
+                                                                    .invoiceTypeLMD ===
+                                                                    'Internal Invoice'
                                                             )
                                                         }
                                                         invoiced={
@@ -3104,7 +3102,6 @@ export function SubmissionsTable(props: Props) {
                                                             value: any
                                                         ) => {
                                                             //TODO send value to BE
-
                                                         }}
                                                         backgroundColor={cellColor(
                                                             props
@@ -3139,7 +3136,11 @@ export function SubmissionsTable(props: Props) {
                                                 cellRenderer: (props: any) => (
                                                     <EditableTableCell
                                                         type={'text'}
-                                                        readonly={isReadonlyCell('data.documentNumberCMCT', userRoles, props)}
+                                                        readonly={isReadonlyCell(
+                                                            'data.documentNumberCMCT',
+                                                            userRoles,
+                                                            props
+                                                        )}
                                                         invoiced={
                                                             props.rowData.data
                                                                 .statusLMD ===
@@ -6422,7 +6423,20 @@ export function SubmissionsTable(props: Props) {
                 color={'gray.500'}
             >
                 <Box mb={'1em'} w="100%">
-                    <Text mb="8px">Displayed Columns</Text>
+                    <Stack
+                        style={{ marginBottom: '10px' }}
+                        direction={'row'}
+                        justifyContent="space-between"
+                        alignItems="center"
+                    >
+                        <Text mb="8px">Displayed Columns</Text>
+                        <SaveFilters
+                            selectedTemplate={selectedTemplate}
+                            displayedColumns={displayedColumns}
+                            filters={filters}
+                        />
+                    </Stack>
+
                     <CheckTreePicker
                         cleanable={false}
                         defaultExpandAll={false}

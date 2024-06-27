@@ -380,3 +380,7 @@ button[name="data[submit]"]:hover {
 .export-btn-ermv {
   margin-right: 15px !important;
 }
+
+.rs-picker-default {
+  z-index: 1 !important;
+}
