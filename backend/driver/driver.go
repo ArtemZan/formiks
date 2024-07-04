@@ -2,6 +2,7 @@ package driver
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
@@ -24,6 +25,7 @@ func Connect() error {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+	fmt.Println("Connecting to the db")
 	err = client.Connect(ctx)
 	if err != nil {
 		return err

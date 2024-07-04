@@ -60,7 +60,7 @@ func (r *Submission) Fetch(c *gin.Context) {
 	if len(c.Query("project")) > 0 {
 		filter = bson.M{"data.projectNumber": c.Query("project")}
 	}
-	
+
 	submissions, err := r.repo.Fetch(c.Request.Context(), filter)
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to fetch submissions", err)
@@ -68,14 +68,14 @@ func (r *Submission) Fetch(c *gin.Context) {
 		return
 	}
 	for _, submission := range submissions {
-        for key, value := range submission.Data {
-            if v, ok := value.(float64); ok {
-                if math.IsInf(v, 1) || math.IsInf(v, -1) {
-                    submission.Data[key] = nil // Replace with nil or any default value you prefer
-                }
-            }
-        }
-    }
+		for key, value := range submission.Data {
+			if v, ok := value.(float64); ok {
+				if math.IsInf(v, 1) || math.IsInf(v, -1) {
+					submission.Data[key] = nil // Replace with nil or any default value you prefer
+				}
+			}
+		}
+	}
 
 	c.JSON(http.StatusOK, submissions)
 }
@@ -107,7 +107,6 @@ func (r *Submission) FetchByProjectWithChildren(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
-
 
 func (r *Submission) Create(c *gin.Context) {
 	var submission models.Submission
@@ -141,6 +140,8 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("Parsed data: ")
+
 	var hasChanged bool
 
 	parentProjectNumber, exists := submissionWithChildren.Submission.Data["projectNumber"].(string)
@@ -149,27 +150,43 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("Project number exists: ", parentProjectNumber)
+
 	childrenProjectNumbers := []string{}
 
 	for _, child := range submissionWithChildren.Children {
 		if child.Group == "country" {
-			if submissionWithChildren.Local != nil && child.Data["companyCode"] == *submissionWithChildren.Local {
-				if pn, exists := child.Data["projectNumber"].(string); exists {
-					childrenProjectNumbers = append(childrenProjectNumbers, pn)
-				} else {
-					c.Status(http.StatusBadRequest)
-					return
-				}
-			} else {
-				if pn, exists := child.Data["localProjectNumber"].(string); exists {
-					childrenProjectNumbers = append(childrenProjectNumbers, pn)
-				} else {
-					c.Status(http.StatusBadRequest)
-					return
-				}
+
+			projectNumber := child.Data["ProjectNumber"].(string)
+
+			if countryCode, exists := child.Data["CountryCodeEMEA"].(string); exists {
+				withoutCountryCode := projectNumber[4:]
+				projectNumber = countryCode + withoutCountryCode
 			}
+			childrenProjectNumbers = append(childrenProjectNumbers, projectNumber)
+
+			// if submissionWithChildren.Local != nil && child.Data["companyCode"] == *submissionWithChildren.Local {
+			// 	if pn, exists := child.Data["projectNumber"].(string); exists {
+			// 		childrenProjectNumbers = append(childrenProjectNumbers, pn)
+			// 	} else {
+			// 		fmt.Println("Child project number not there: ", child)
+			// 		c.Status(http.StatusBadRequest)
+			// 		return
+			// 	}
+			// } else {
+			// 	if pn, exists := child.Data["localProjectNumber"].(string); exists {
+			// 		childrenProjectNumbers = append(childrenProjectNumbers, pn)
+			// 	} else {
+			// 		fmt.Println("Child local project number not there: ", child)
+
+			// 		c.Status(http.StatusBadRequest)
+			// 		return
+			// 	}
+			// }
 		}
 	}
+
+	fmt.Println("Got childrenProjectNumbers: ", childrenProjectNumbers)
 
 	for {
 		pns := make([]string, 0, 1+len(childrenProjectNumbers))
@@ -179,6 +196,7 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 			suffix := parentProjectNumber[len(parentProjectNumber)-2:]
 			iSuffix, err := strconv.Atoi(suffix)
 			if err != nil || iSuffix > 99 {
+				fmt.Println("Invalid suffix: ", iSuffix)
 				c.Status(http.StatusBadRequest)
 				return
 			}
@@ -204,11 +222,13 @@ func (r *Submission) CreateWithChildren(c *gin.Context) {
 		}
 	}
 
+	fmt.Println("Changed data")
+
 	views, err := r.repo.CreateViews(context.TODO(), submissionWithChildren)
 
 	if submissionWithChildren.Local != nil {
 		var targetSubmission models.Submission
-		
+
 		for _, child := range submissionWithChildren.Children {
 			if child.Group == "country" && child.Data["companyCode"] == *submissionWithChildren.Local {
 				targetSubmission = child
