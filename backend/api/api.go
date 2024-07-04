@@ -37,11 +37,11 @@ func RegisterRoutes(r *gin.Engine) {
 	projectsGroup.DELETE("/:id", projectHandler.Delete) // delete project
 
 	bookmarksGroup.GET("/", bookmarkHandler.Fetch)
-	bookmarksGroup.POST("/",  bookmarkHandler.Create)
-	bookmarksGroup.DELETE("/:id",  bookmarkHandler.Delete)
+	bookmarksGroup.POST("/", bookmarkHandler.Create)
+	bookmarksGroup.DELETE("/:id", bookmarkHandler.Delete)
 
-	submissionsGroup.GET("/", submissionHandler.Fetch)                    // get all submissions available to user
-	submissionsGroup.GET("/:id", submissionHandler.FetchByIDWithChildren) // get submission
+	submissionsGroup.GET("/", submissionHandler.Fetch)                                      // get all submissions available to user
+	submissionsGroup.GET("/:id", submissionHandler.FetchByIDWithChildren)                   // get submission
 	submissionsGroup.GET("/project/:project", submissionHandler.FetchByProjectWithChildren) // get submission by projectNumber
 	submissionsGroup.GET("/:id/sap", submissionHandler.CallSap)
 	submissionsGroup.POST("/", submissionHandler.Create)                     // create submission
@@ -66,18 +66,19 @@ func RegisterRoutes(r *gin.Engine) {
 	pipelinesGroup.PUT("/:id")    // update pipeline
 	pipelinesGroup.DELETE("/:id") // delete pipeline
 
-	dropdownsGroup.GET("/", dropdownHandler.Fetch)                      // get custom dropdowns
-	dropdownsGroup.GET("/sync/:id", dropdownHandler.Sync)               // sync custom dropdown
-	dropdownsGroup.GET("/:id", dropdownHandler.FetchByID)               // get custom dropdown
-	dropdownsGroup.GET("/:id/values", dropdownHandler.Values)           // get custom dropdown values
-	dropdownsGroup.POST("/", dropdownHandler.Create)      // create custom dropdown
-	dropdownsGroup.PUT("/:id", dropdownHandler.Update)    // update custom dropdown
-	dropdownsGroup.DELETE("/:id", dropdownHandler.Delete) // delete custom dropdown
+	dropdownsGroup.GET("/", dropdownHandler.Fetch)            // get custom dropdowns
+	dropdownsGroup.GET("/sync/:id", dropdownHandler.Sync)     // sync custom dropdown
+	dropdownsGroup.GET("/:id", dropdownHandler.FetchByID)     // get custom dropdown
+	dropdownsGroup.GET("/:id/values", dropdownHandler.Values) // get custom dropdown values
+	dropdownsGroup.POST("/", dropdownHandler.Create)          // create custom dropdown
+	dropdownsGroup.PUT("/:id", dropdownHandler.Update)        // update custom dropdown
+	dropdownsGroup.DELETE("/:id", dropdownHandler.Delete)     // delete custom dropdown
 
 	reportsGroup.GET("/", reportHandler.FetchPAreport) // get report data
 
 	templatesGroup.GET("/", templateHandler.Fetch)
 	templatesGroup.PUT("/:name", templateHandler.Update)
+	templatesGroup.POST("/", templateHandler.Create)
 
 	draftsGroup.GET("/", draftHandler.Fetch)
 	draftsGroup.GET("/:id", draftHandler.FetchByID)
