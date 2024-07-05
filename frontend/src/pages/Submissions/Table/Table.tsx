@@ -1370,7 +1370,8 @@ export function SubmissionsTable(props: Props) {
         if (props.column.key === 'data.selfInvoiceNumber') {
             if (
                 props.rowData.data.invoiceTypeLMD === 'Internal Invoice' &&
-                props.rowData.data.statusLMD === 'OK FOR INVOICING'
+                props.rowData.data.statusLMD === 'OK FOR INVOICING' &&
+                !props.rowData.data.selfInvoiceNumber
             ) {
                 return '#f7cdd6';
             } else {
@@ -2173,7 +2174,8 @@ export function SubmissionsTable(props: Props) {
     // }
 
     // console.log('displayedColumns', displayedColumns);
-    // console.log('submission 1', submissions && submissions[0]);
+    // console.log('submission 1', submissions && submissions[0])
+    // console.log('submission 1', communicationSubmissions && communicationSubmissions[0]);
 
     return (
         <div>
@@ -3101,7 +3103,11 @@ export function SubmissionsTable(props: Props) {
                                                             path: string,
                                                             value: any
                                                         ) => {
-                                                            //TODO send value to BE
+                                                            handleCommunicationCellUpdate(
+                                                                submission,
+                                                                'data.selfInvoiceNumber',
+                                                                value
+                                                            );
                                                         }}
                                                         backgroundColor={cellColor(
                                                             props
@@ -3699,6 +3705,53 @@ export function SubmissionsTable(props: Props) {
                                                                 value ===
                                                                 'Invoice'
                                                             ) {
+                                                                const {
+                                                                    equal: countryPrefixEqual,
+                                                                    country,
+                                                                    code: companyCode,
+                                                                } = checkCountryPrefixEqual(
+                                                                    props
+                                                                        .rowData
+                                                                        .data
+                                                                        .alsoMarketingProjectNumberLMD
+                                                                );
+                                                                if (
+                                                                    !countryPrefixEqual
+                                                                ) {
+                                                                    //Logic for case when country letters and prefix are different
+                                                                    handleCommunicationCellUpdate(
+                                                                        submission,
+                                                                        'data.vendorLMD',
+                                                                        ''
+                                                                    );
+                                                                    handleCommunicationCellUpdate(
+                                                                        submission,
+                                                                        'data.buLMD',
+                                                                        ''
+                                                                    );
+
+                                                                    if (
+                                                                        country ===
+                                                                            'IS' ||
+                                                                        country ===
+                                                                            'DE'
+                                                                    ) {
+                                                                        handleCommunicationCellUpdate(
+                                                                            submission,
+                                                                            'data.vodLMD',
+                                                                            '91010001'
+                                                                        );
+                                                                    } else {
+                                                                        handleCommunicationCellUpdate(
+                                                                            submission,
+                                                                            'data.vodLMD',
+                                                                            `9${companyCode}001`
+                                                                        );
+                                                                    }
+
+                                                                    return;
+                                                                }
+
                                                                 handleCommunicationCellUpdate(
                                                                     submission,
                                                                     'data.materialNumberLMD',
@@ -3766,6 +3819,11 @@ export function SubmissionsTable(props: Props) {
                                                                 handleCommunicationCellUpdate(
                                                                     submission,
                                                                     'data.additionalInformationLMD',
+                                                                    ''
+                                                                );
+                                                                handleCommunicationCellUpdate(
+                                                                    submission,
+                                                                    'data.vodLMD',
                                                                     ''
                                                                 );
                                                             }
