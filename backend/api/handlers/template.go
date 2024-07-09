@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/doublegrey/formiks/backend/driver"
@@ -31,6 +30,7 @@ func (t *Template) Fetch(c *gin.Context) {
 		return
 	}
 	cursor.All(c.Request.Context(), &templates)
+
 	c.JSON(http.StatusOK, templates)
 }
 
@@ -42,7 +42,7 @@ func (t *Template) Update(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	t.db.Collection("templates").ReplaceOne(context.TODO(), bson.M{"name": name}, template, options.Replace().SetUpsert(true))
+	t.db.Collection("templates").ReplaceOne(c.Request.Context(), bson.M{"name": name}, template, options.Replace().SetUpsert(true))
 	c.Status(http.StatusOK)
 }
 
@@ -55,18 +55,21 @@ func (templateHandler *Template) Create(c *gin.Context) {
 		return
 	}
 
-	findResult := templateHandler.db.Collection("templates").FindOne(context.TODO(), bson.M{
+	findResult := templateHandler.db.Collection("templates").FindOne(c.Request.Context(), bson.M{
 		"name": template.Name,
 	})
 
-	if findResult != nil {
+	var decoded interface{}
+	findResult.Decode(&decoded)
+
+	if decoded != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "NAME_ALREADY_IN_USE",
 		})
 		return
 	}
 
-	_, err = templateHandler.db.Collection("templates").InsertOne(context.TODO(), template)
+	_, err = templateHandler.db.Collection("templates").InsertOne(c.Request.Context(), template)
 
 	if err != nil {
 		logger.LogHandlerError(c, "Failed to create template", err)

@@ -1,7 +1,7 @@
 package models
 
 type Template struct {
-	Name    string                   `json:"name"`
-	Columns []string                 `json:"columns"`
-	Filters []map[string]interface{} `json:"filters"`
+	Name    string                   `bson:"name" json:"name"`
+	Columns []string                 `bson:"columns" json:"columns"`
+	Filters []map[string]interface{} `bson:"filters" json:"filters"`
 }
