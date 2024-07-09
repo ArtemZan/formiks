@@ -85,7 +85,7 @@ import {
 } from './vars';
 import moment from 'moment';
 import { alsoProjectNumberUpdate } from './cellUpdateFunctions';
-import { isReadonlyCell, getTableCells } from './functions';
+import { isReadonlyCell, getProjectColumns } from './functions';
 import SaveFilters from './SaveFilters';
 // import { types } from "util";
 // import { modalPropTypes } from "rsuite/esm/Overlay/Modal";
@@ -354,6 +354,8 @@ export function SubmissionsTable(props: Props) {
     const [totalLossInToolLC, setTotalLossInToolLC] = useState(0);
     const [totalProfitInToolEUR, setTotalProfitInToolEUR] = useState(0);
     const [totalProfitInToolLC, setTotalProfitInToolLC] = useState(0);
+    const [presetNewName, setPresetNewName] = useState('');
+
     // const { fps, avgFps } = useFps(20);
     const [tableWidth, setTableWidth] = useState(1000);
 
@@ -392,6 +394,8 @@ export function SubmissionsTable(props: Props) {
     //   current: 0,
     //   domSize: 0,
     // });
+
+    console.log('selectedTemplate', selectedTemplate)
 
     const [totalRequests, setTotalRequests] = useState(1);
 
@@ -1224,7 +1228,7 @@ export function SubmissionsTable(props: Props) {
         }
     }
 
-    const tableCells = getTableCells(
+    const projectsTableColumns = getProjectColumns(
         columnWidth,
         visibilityController,
         handleCellUpdate,
@@ -1252,7 +1256,7 @@ export function SubmissionsTable(props: Props) {
     );
 
     function getColumnName(dataKey: string, group: string) {
-        var column = tableCells.find((el) => el.dataKey === dataKey);
+        var column = projectsTableColumns.find((el) => el.dataKey === dataKey);
         return column ? column.title : '';
     }
 
@@ -1501,21 +1505,30 @@ export function SubmissionsTable(props: Props) {
     useEffect(() => {
         var selected = localStorage.getItem('template') || 'local';
         setSelectedTemplate(selected);
-        var template = templates.find((t) => t.name == selected);
+        console.log('selected',selected);
+        
+        const match = presetNewName ? presetNewName : selected;
+        var template = templates.find((t) => t.name === match);
+        console.log('template', template)
         if (template) {
             setDisplayedColumns(template.columns);
-            setFilters(template.filters);
+            setFilters(template.filters)
         }
     }, [templates]);
 
     useEffect(() => {
-        localStorage.setItem('template', selectedTemplate);
-    }, [selectedTemplate]);
+        localStorage.setItem('template', presetNewName || selectedTemplate);
+    }, [selectedTemplate, presetNewName]);
+
+    const fetchTemplates = async() =>{
+        const templatesRes = await RestAPI.getTemplates();
+        setTemplates(templatesRes.data);
+
+    }
 
     const fetchData = async () => {
         try {
-            const templatesRes = await RestAPI.getTemplates();
-            setTemplates(templatesRes.data);
+            fetchTemplates();
 
             const submissionsRes = await RestAPI.getSubmissions();
             var vSubs: Submission[] = [];
@@ -2168,7 +2181,7 @@ export function SubmissionsTable(props: Props) {
     );
     // function alterGetDisplsayedColumns() {
     //   var alterDisplayedColumns = []
-    //   tableCells.forEach((cell) => {
+    //   projectsTableColumns.forEach((cell) => {
     //     if (cell.group === "General Information") {
     //   });
     // }
@@ -2903,7 +2916,7 @@ export function SubmissionsTable(props: Props) {
                                         width={width}
                                         height={height}
                                         fixed
-                                        columns={tableCells}
+                                        columns={projectsTableColumns}
                                         headerRenderer={headerRendererForTable}
                                         headerClassName="header-cells"
                                         frozenData={
@@ -3701,6 +3714,18 @@ export function SubmissionsTable(props: Props) {
                                                             path: string,
                                                             value: any
                                                         ) => {
+                                                            handleCommunicationCellUpdate(
+                                                                submission,
+                                                                path,
+                                                                value
+                                                            );
+
+                                                            handleCommunicationCellUpdate(
+                                                                submission,
+                                                                'data.sendToLMD',
+                                                                ''
+                                                            );
+
                                                             if (
                                                                 value ===
                                                                 'Invoice'
@@ -3944,16 +3969,6 @@ export function SubmissionsTable(props: Props) {
                                                                     'INCOMPLETE'
                                                                 );
                                                             }
-                                                            handleCommunicationCellUpdate(
-                                                                submission,
-                                                                path,
-                                                                value
-                                                            );
-                                                            handleCommunicationCellUpdate(
-                                                                submission,
-                                                                'data.sendToLMD',
-                                                                ''
-                                                            );
                                                         }}
                                                         // onUpdate={handleCommunicationCellUpdate}
                                                         rowIndex={
@@ -5717,10 +5732,12 @@ export function SubmissionsTable(props: Props) {
                                                                             s.id ===
                                                                             submissionId
                                                                     );
-                                                                getColumnName(
-                                                                    'data.depositNumberLMD',
-                                                                    'Input of Local Marketing Department'
-                                                                );
+
+                                                                // getColumnName(
+                                                                //     'data.depositNumberLMD',
+                                                                //     'Input of Local Marketing Department'
+                                                                // );
+
                                                                 if (
                                                                     props
                                                                         .rowData
@@ -5748,6 +5765,7 @@ export function SubmissionsTable(props: Props) {
                                                                     );
                                                                     return isInvoiceCorrect;
                                                                 }
+
                                                                 if (
                                                                     communicationSubmissions[
                                                                         targetSubmissionIndex
@@ -6492,6 +6510,9 @@ export function SubmissionsTable(props: Props) {
                             selectedTemplate={selectedTemplate}
                             displayedColumns={displayedColumns}
                             filters={filters}
+                            setPresetName={setPresetNewName}
+                            presetName={presetNewName}
+                            fetchTemplates={fetchTemplates}
                         />
                     </Stack>
 
@@ -7102,7 +7123,7 @@ export function SubmissionsTable(props: Props) {
                                                             isClearable={false}
                                                             name="color"
                                                             // options={displayedColumns}
-                                                            options={tableCells
+                                                            options={projectsTableColumns
                                                                 .filter(
                                                                     (
                                                                         cell: any

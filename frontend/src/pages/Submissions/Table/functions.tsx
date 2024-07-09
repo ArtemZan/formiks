@@ -6,7 +6,7 @@ import EditableTableCell from '../../../components/EditableTableCell'
 import Toast, { ToastType } from '../../../components/Toast';
 import { NumberWithCommas } from '../../../utils/Numbers';
 
-export const getTableCells = (
+export const getProjectColumns = (
     columnWidth: Function,
     visibilityController: Function,
     handleCellUpdate: Function,

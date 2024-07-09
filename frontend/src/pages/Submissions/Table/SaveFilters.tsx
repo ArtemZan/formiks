@@ -20,13 +20,15 @@ interface Props {
     selectedTemplate: string;
     displayedColumns: any;
     filters: any;
+    presetName: string,
+    setPresetName: Function,
+    fetchTemplates: Function
 }
 
 export default function SaveFilters(props: Props) {
     const { selectedTemplate, displayedColumns, filters } = props;
     const [popupOpen, setPopupOpen] = useState<boolean>(false);
     const cancelRef = useRef(null);
-    const [presetName, setPresetName] = useState('');
 
     const openPopup = () => setPopupOpen(true);
     const closePopup = () => setPopupOpen(false);
@@ -34,26 +36,31 @@ export default function SaveFilters(props: Props) {
     const onConfirm = async () => {
         try {
             var template: Template = {
-                name: selectedTemplate,
+                name: props.presetName,
                 columns: displayedColumns,
                 filters,
             };
-            // RestAPI.updateTemplate(template).then(() => {
-            //     toast(
-            //         <Toast
-            //             title={'Preset updated'}
-            //             message={
-            //                 <div
-            //                     dangerouslySetInnerHTML={{
-            //                         __html: 'Preset successfully saved',
-            //                     }}
-            //                 />
-            //             }
-            //             type={'success'}
-            //         />
-            //     );
-            // });
-        } catch (err) {}
+            RestAPI.createTemplate(template).then(() => {
+                toast(
+                    <Toast
+                        title={'Preset updated'}
+                        message={
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: 'Preset successfully saved',
+                                }}
+                            />
+                        }
+                        type={'success'}
+                    />
+                );
+                props.fetchTemplates();
+                closePopup();
+            });
+        } catch (err) {
+            console.log(err);
+            
+        }
     };
 
     // if(cancelRef?.current === undefined) {
@@ -87,7 +94,7 @@ export default function SaveFilters(props: Props) {
                     <AlertDialogCloseButton />
                     <AlertDialogBody>
                         <Input
-                            onChange={(e) => setPresetName(e.target.value)}
+                            onChange={(e) => props.setPresetName(e.target.value)}
                             placeholder="Preset name"
                             size="sm"
                         />
@@ -100,7 +107,7 @@ export default function SaveFilters(props: Props) {
                         >
                             No
                         </Button>
-                        <Button ml={3} disabled={!presetName}>
+                        <Button ml={3} disabled={!props.presetName} onClick={onConfirm}>
                             Yes
                         </Button>
                     </AlertDialogFooter>

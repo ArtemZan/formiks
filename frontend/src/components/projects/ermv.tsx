@@ -64,6 +64,8 @@ export default function Ermv(props: Props) {
         label: '',
         value: '',
     });
+
+    //selected vendors
     const [vendorsNames, setVendorsNames] = useState<any>([]);
     const [year, setYear] = useState<any>({
         label: '',
@@ -117,6 +119,9 @@ export default function Ermv(props: Props) {
     const [totalcbCosts, setTotalcbCosts] = useState('0.00');
 
     const [render, rerender] = useState(0);
+
+    console.log('VendorsNames', VendorsNames)
+    
 
     useEffect(() => {
         if (props.submission) {

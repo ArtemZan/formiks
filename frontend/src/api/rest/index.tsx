@@ -10,11 +10,11 @@ import {
 import { Template } from "../../types/template";
 
 export class API {
-  // public baseUrl =
-  //   process.env.NODE_ENV === "production"
-  //     ? "/api"
-  //     : "http://localhost:7000/api";
-  public baseUrl = 'https://mato.root.local/api';
+  public baseUrl =
+    process.env.NODE_ENV === "production"
+      ? "/api"
+      : "http://localhost:7000/api"
+  // public baseUrl = 'https://mato.root.local/api';
   public usersUrl = `${this.baseUrl}/users/`;
   public projectsUrl = `${this.baseUrl}/projects/`;
   public bookmarksUrl = `${this.baseUrl}/bookmarks/`;
@@ -164,6 +164,13 @@ export class API {
   updateTemplate(template: Template): Promise<AxiosResponse> {
     return axios.put<Template>(
       `${this.templatesUrl}${template.name}`,
+      JSON.stringify(template)
+    );
+  }
+
+  createTemplate(template: Template): Promise<AxiosResponse> {
+    return axios.post<Template>(
+      `${this.templatesUrl}`,
       JSON.stringify(template)
     );
   }
