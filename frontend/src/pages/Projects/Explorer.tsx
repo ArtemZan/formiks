@@ -127,7 +127,8 @@ export function Explorer(props: Props) {
         spacing={{ base: "40px", lg: "3em" }}
         mx={{ base: 0, "2xl": "300px" }}
       >
-        {filteredProjects.map((project) => {
+
+        {/* {filteredProjects.map((project) => {
           if (!isAdmin && project.id === "619515b754e61c8dd33daa52") {
             return null;
           } else
@@ -136,6 +137,11 @@ export function Explorer(props: Props) {
                 <ProjectCard history={props.history} project={project} />
               </WrapItem>
             );
+        })} */}
+        {projects.map((project) => {
+         return <WrapItem key={`wrap-${project.id}`}>
+          <ProjectCard history={props.history} project={project} />
+        </WrapItem>
         })}
       </Wrap>
     </div>

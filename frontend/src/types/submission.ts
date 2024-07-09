@@ -10,6 +10,8 @@ export interface Submission {
   status: string;
   author: string;
   data: any;
+  projectNumber?: any;
+  
 }
 
 export interface SubmissionWithChildren {

@@ -85,7 +85,7 @@ import {
 } from './vars';
 import moment from 'moment';
 import { alsoProjectNumberUpdate } from './cellUpdateFunctions';
-import { isReadonlyCell, getProjectColumns } from './functions';
+import { isReadonlyCell, getProjectColumns, cellReadonly } from './functions';
 import SaveFilters from './SaveFilters';
 // import { types } from "util";
 // import { modalPropTypes } from "rsuite/esm/Overlay/Modal";
@@ -121,6 +121,22 @@ var SapStatus: any[] = [
 //   { label: "Cost Not Invoiced", value: "Cost Not Invoiced" },
 //   { label: "Not Relevant", value: "Not Relevant" },
 // ];
+
+export const checkCountryPrefixEqual = (projectNum: String) => {
+    let equal = true;
+    const prefix = projectNum.substring(0, 4);
+    const country = projectNum.substring(4, 6);
+    let code = null;
+    // console.log('projectNum', projectNum)
+    Companies.forEach((company) => {
+        if (company.value.country === country) {
+            equal = company.value.code === prefix;
+            code = company.value.code;
+        }
+    });
+    return { equal, country, code };
+};
+
 var submissionData: any;
 
 let invoiceBlueFields: string[] = [
@@ -388,14 +404,6 @@ export function SubmissionsTable(props: Props) {
         },
         [scrollLeft]
     );
-    // const [heapInfo, setHeapInfo] = useState<any>({
-    //   total: 0,
-    //   allocated: 0,
-    //   current: 0,
-    //   domSize: 0,
-    // });
-
-    console.log('selectedTemplate', selectedTemplate)
 
     const [totalRequests, setTotalRequests] = useState(1);
 
@@ -404,14 +412,6 @@ export function SubmissionsTable(props: Props) {
     }, []);
     const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
-    // useEffect(() => {
-    //   getHeapInfo();
-    //   const interval = setInterval(() => {
-    //     getHeapInfo();
-    //   }, 5000);
-
-    //   return () => clearInterval(interval);
-    // }, []);
 
     useEffect(() => {
         setUserRoles(props.roles);
@@ -1030,18 +1030,6 @@ export function SubmissionsTable(props: Props) {
         financialYear,
     ]);
 
-    // const getHeapInfo = () => {
-    //   var memory = (window.performance as any).memory;
-    //   if (memory !== undefined) {
-    //     var info: any = {
-    //       total: memory.jsHeapSizeLimit,
-    //       allocated: memory.totalJSHeapSize,
-    //       current: memory.usedJSHeapSize,
-    //       domSize: document.getElementsByTagName("*").length,
-    //     };
-    //     setHeapInfo(info);
-    //   }
-    // };
     const getVisibleColumnIndices = (offset: number, columns: any) => {
         var netOffsets: any[] = [],
             offsetSum = 0,
@@ -1064,39 +1052,7 @@ export function SubmissionsTable(props: Props) {
 
         return visibleIndices;
     };
-    // ________________________________
-    // |              |               |
-    // |              |               |
-    // |              |               |
-    // |              |               |
-    // |              |               |
-    // |              |               |
-    // --------------------------------
 
-    // // rightBound = offset+tableWidth;
-    //  <-------------*--------------->
-    //  <-------------************---->
-
-    //  // leftBound = offset;
-    //  <-------------*--------------->
-    //  <--************--------------->
-
-    // leftBound = offset - maxColumnWidth;
-
-    //                 offset ->
-    // ********<---------------|--------------->*********
-    //         leftBound       -      rightBound
-
-    // leftBound = offset;
-    // rightBound = tableWidth;
-
-    // isOutside = columnOffset < leftBound || columnOffset > rightBound;
-
-    // if (!isOutside) {
-    //     // render column
-    // } else {
-    //     // remove from DOM
-    // }
     const rowRenderer = React.useCallback(
         ({ cells, columns }) => {
             // null out hidden content on scroll
@@ -1255,11 +1211,6 @@ export function SubmissionsTable(props: Props) {
         setRejectedSubmission
     );
 
-    function getColumnName(dataKey: string, group: string) {
-        var column = projectsTableColumns.find((el) => el.dataKey === dataKey);
-        return column ? column.title : '';
-    }
-
     function handleCommunicationCellUpdate(
         submission: string,
         path: string,
@@ -1330,45 +1281,30 @@ export function SubmissionsTable(props: Props) {
             return '#f7cdd6';
         }
     }
-    function deleteSubmission(submissionId: string) {
-        var tbd: string[] = [submissionId];
-        var submissionIndex = submissions.findIndex(
-            (s) => s.id === submissionId
-        );
-        if (submissionIndex > -1) {
-            var temp = [...submissions];
-            temp.splice(submissionIndex, 1);
-            temp.map((s, index) => {
-                if (s.parentId !== null && s.parentId === submissionId) {
-                    if (s.id) {
-                        temp.splice(index, 1);
-                        tbd.push(s.id);
-                    }
-                }
-            });
-            setSubmissions(temp);
-            RestAPI.deleteSubmission(submissionId);
-        }
-    }
-    function parentizeSubmission(submissionId: string) {
-        var submissionIndex = submissions.findIndex(
-            (s) => s.id === submissionId
-        );
-        if (submissionIndex > -1) {
-            var temp = [...submissions];
-            temp[submissionIndex].parentId = null;
-            partialUpdate(submissionId, 'parentId', null);
-            setSubmissions(temp);
-        }
-    }
 
     function cellColor(props: any): string {
+        //TODOrefactor this function
         var mandatoryFields: any = [];
         if (
             props.column.key === 'data.invoiceTypeLMD' &&
             props.cellData === ''
         ) {
             return '#f7cdd6';
+        }
+        const {
+            equal: countryPrefixEqual
+        } = checkCountryPrefixEqual(
+            props.rowData.data.alsoMarketingProjectNumberLMD
+        );
+
+        if (props.rowData.data.invoiceTypeLMD === 'Invoice') {
+            if (
+                !countryPrefixEqual &&
+                (props.column.key === 'data.vendorLMD' ||
+                    props.column.key === 'data.buLMD')
+            ) {
+                return '#F5FAEF';
+            }
         }
 
         if (props.column.key === 'data.selfInvoiceNumber') {
@@ -1382,6 +1318,7 @@ export function SubmissionsTable(props: Props) {
                 return '#f9f9ff';
             }
         }
+
 
         switch (props.rowData.data.invoiceTypeLMD) {
             case 'Invoice':
@@ -1397,6 +1334,7 @@ export function SubmissionsTable(props: Props) {
                 mandatoryFields = cancellationMandatoryFields;
                 break;
         }
+
         if (
             mandatoryFields.includes(
                 props.column.key.substring(5, props.column.key.length)
@@ -1505,14 +1443,12 @@ export function SubmissionsTable(props: Props) {
     useEffect(() => {
         var selected = localStorage.getItem('template') || 'local';
         setSelectedTemplate(selected);
-        console.log('selected',selected);
-        
+
         const match = presetNewName ? presetNewName : selected;
         var template = templates.find((t) => t.name === match);
-        console.log('template', template)
         if (template) {
             setDisplayedColumns(template.columns);
-            setFilters(template.filters)
+            setFilters(template.filters);
         }
     }, [templates]);
 
@@ -1520,11 +1456,10 @@ export function SubmissionsTable(props: Props) {
         localStorage.setItem('template', presetNewName || selectedTemplate);
     }, [selectedTemplate, presetNewName]);
 
-    const fetchTemplates = async() =>{
+    const fetchTemplates = async () => {
         const templatesRes = await RestAPI.getTemplates();
         setTemplates(templatesRes.data);
-
-    }
+    };
 
     const fetchData = async () => {
         try {
@@ -1731,22 +1666,27 @@ export function SubmissionsTable(props: Props) {
         );
     }
 
-    function isFieldMandatory(props: any) {
-        if (props.cellData && props.cellData.length > 0) {
-            return '#F5FAEF';
-        } else {
-            return '#f7cdd6';
-        }
-    }
-
-    function createNewLineActive(props: any) {
-        return true;
-    }
-
     function mandatoryFieldValidation(props: any) {
         if (props === undefined) {
             return '#F5FAEF';
         }
+
+        const {
+            equal: countryPrefixEqual
+        } = checkCountryPrefixEqual(
+            props.rowData.data.alsoMarketingProjectNumberLMD
+        );
+
+        if (props.rowData.data.invoiceTypeLMD === 'Invoice') {
+            if (
+                !countryPrefixEqual &&
+                (props.column.key === 'data.vendorLMD' ||
+                    props.column.key === 'data.buLMD')
+            ) {
+                return '#F5FAEF';
+            }
+        }
+
         switch (props.rowData.data.invoiceTypeLMD) {
             case 'Invoice':
                 if (props.column.key === 'data.depositNumberLMD') {
@@ -1963,194 +1903,6 @@ export function SubmissionsTable(props: Props) {
     }
 
     // console.log('Companies', Companies)
-
-    const checkCountryPrefixEqual = (projectNum: String) => {
-        let equal = true;
-        const prefix = projectNum.substring(0, 4);
-        const country = projectNum.substring(4, 6);
-        let code = null;
-        // console.log('projectNum', projectNum)
-        Companies.forEach((company) => {
-            if (company.value.country === country) {
-                equal = company.value.code === prefix;
-                code = company.value.code;
-            }
-        });
-        return { equal, country, code };
-    };
-
-    function cellReadonly(props: any) {
-        let invoiceReadonlyFields: string[] = [
-            'data.cancellationInfoLMD',
-            'data.reasonLMD',
-            'data.reasonCodeLMD',
-            'data.vodLMD',
-            'data.entryDateLMD',
-            'data.reasonLMD',
-            'data.reasonCodeLMD',
-            'data.materialNumberLMD',
-            'data.requestorLMD',
-        ];
-        let invoiceSubLineReadonlyFields: string[] = [
-            'data.cancellationInfoLMD',
-            'data.reasonLMD',
-            'data.reasonCodeLMD',
-            'data.materialNumberLMD',
-            'data.vodLMD',
-            'data.buLMD',
-            'data.paymentMethodLMD',
-            'data.dunningStopLMD',
-            'data.sendToLMD',
-            'data.invoiceTypeLMD',
-            'data.requestorLMD',
-            'data.entryDateLMD',
-        ];
-
-        let internalInvoiceReadonlyFields: string[] = [
-            'data.cancellationInfoLMD',
-            'data.entryDateLMD',
-            'data.vodLMD',
-            'data.reasonCodeLMD',
-            'data.reasonLMD',
-            'data.materialNumberLMD',
-            'data.requestorLMD',
-            'data.sendToLMD',
-        ];
-        let internalInvoiceSubLineReadonlyFields: string[] = [
-            'data.cancellationInfoLMD',
-            'data.entryDateLMD',
-            'data.invoiceTypeLMD',
-            'data.reasonCodeLMD',
-            'data.reasonLMD',
-            'data.vodLMD',
-            'data.materialNumberLMD',
-            'data.requestorLMD',
-            'data.reasonLMD',
-            'data.sendToLMD',
-        ];
-        let cancellationReadonlyFields: string[] = [
-            'data.requestorLMD',
-            'data.vendorLMD',
-            'data.vodLMD',
-            'data.buLMD',
-            'data.entryDateLMD',
-            'data.materialNumberLMD',
-            'data.reasonLMD',
-            'data.depositNumberLMD',
-            'data.reasonCodeLMD',
-            'data.referenceNumberFromVendor',
-            'data.activityIdForPortalVendors',
-            'data.alsoMarketingProjectNumberLMD',
-            'data.invoiceTextLMD',
-            'data.amountLMD',
-            'data.linkToProofsLMD',
-            'data.documentCurrencyLMD',
-            'data.paymentMethodLMD',
-            'data.dunningStopLMD',
-            'data.dateOfServiceRenderedLMD',
-        ];
-        if (props === undefined) {
-            return false;
-        }
-
-        // console.log('props.column.key', props.column.key)
-
-        const projectNum = props.rowData.data.alsoMarketingProjectNumberLMD;
-
-        if (!!projectNum) {
-            const { equal: countryPrefixEqual } =
-                checkCountryPrefixEqual(projectNum);
-
-            if (!countryPrefixEqual) {
-                if (
-                    props.column.key === 'data.vendorLMD' ||
-                    props.column.key === 'data.buLMD'
-                ) {
-                    return true;
-                }
-            }
-        }
-
-        switch (props.rowData.data.invoiceTypeLMD) {
-            case 'Invoice':
-                if (props.column.key === 'data.depositNumberLMD') {
-                    if (
-                        props.rowData.data.paymentMethodLMD ===
-                            'Money in House' ||
-                        props.rowData.data.paymentMethodLMD === 'Intercompany'
-                    ) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
-                if (props.rowData.parentId) {
-                    if (
-                        invoiceSubLineReadonlyFields.findIndex(
-                            (element) => element === props.column.key
-                        ) > -1
-                    ) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    if (
-                        invoiceReadonlyFields.findIndex(
-                            (element) => element === props.column.key
-                        ) > -1
-                    ) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-
-            case 'Internal Invoice':
-                if (props.column.key === 'data.depositNumberLMD') {
-                    if (
-                        props.rowData.data.paymentMethodLMD ===
-                            'Money in House' ||
-                        props.rowData.data.paymentMethodLMD === 'Intercompany'
-                    ) {
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }
-                if (props.rowData.parentId) {
-                    if (
-                        internalInvoiceSubLineReadonlyFields.findIndex(
-                            (element) => element === props.column.key
-                        ) > -1
-                    ) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    if (
-                        internalInvoiceReadonlyFields.findIndex(
-                            (element) => element === props.column.key
-                        ) > -1
-                    ) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            case 'Cancellation':
-                if (
-                    cancellationReadonlyFields.findIndex(
-                        (element) => element === props.column.key
-                    ) > -1
-                ) {
-                    return true;
-                } else {
-                    return false;
-                }
-        }
-    }
 
     const headerRendererForTable = useCallback(
         (props: {

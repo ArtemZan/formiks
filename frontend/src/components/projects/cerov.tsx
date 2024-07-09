@@ -611,11 +611,13 @@ export default function Cerov(props: Props) {
     ]);
 
     async function createSubmission(draft: boolean, local: string | null) {
-        var projectId = '629dfb3f55d209262194a3e6';
+
+        var projectId = '629dfb3f55d209262194a3e6'
         var parent: Submission = {
             project: projectId,
             title: campaignName,
             parentId: null,
+            projectNumber: projectNumber,
             viewId: null,
             group: null,
             status: 'New',
@@ -701,6 +703,7 @@ export default function Cerov(props: Props) {
         var children: Submission[] = [];
         children.push({
             project: projectId,
+            projectNumber: projectNumber,
             title: '',
             parentId: '',
             viewId: null,
@@ -742,6 +745,7 @@ export default function Cerov(props: Props) {
                     parentId: null,
                     viewId: null,
                     group: 'country',
+                    projectNumber: projectNumber,
                     created: new Date(),
                     updated: new Date(),
                     status: 'Incomplete',
@@ -812,6 +816,8 @@ export default function Cerov(props: Props) {
                     project: projectId,
                     title: '',
                     parentId: '',
+                    projectNumber: projectNumber,
+
                     viewId: null,
                     group: 'country',
                     created: new Date(),
@@ -889,6 +895,9 @@ export default function Cerov(props: Props) {
             children,
             local: local,
         };
+        console.log('====================================');
+        console.log('children', children);
+        console.log('====================================');
         if (props.isDraft) {
             if (draft) {
                 submission.submission.id = props.submission.id;

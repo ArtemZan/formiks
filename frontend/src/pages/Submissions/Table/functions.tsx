@@ -5,6 +5,7 @@ import { RestAPI } from '../../../api/rest';
 import EditableTableCell from '../../../components/EditableTableCell'
 import Toast, { ToastType } from '../../../components/Toast';
 import { NumberWithCommas } from '../../../utils/Numbers';
+import { checkCountryPrefixEqual } from './Table';
 
 export const getProjectColumns = (
     columnWidth: Function,
@@ -3188,3 +3189,176 @@ export const isReadonlyCell = (
             return true;
     }
 };
+
+export const cellReadonly = (props: any) => {
+    let invoiceReadonlyFields: string[] = [
+        'data.cancellationInfoLMD',
+        'data.reasonLMD',
+        'data.reasonCodeLMD',
+        'data.vodLMD',
+        'data.entryDateLMD',
+        'data.reasonLMD',
+        'data.reasonCodeLMD',
+        'data.materialNumberLMD',
+        'data.requestorLMD',
+    ];
+    let invoiceSubLineReadonlyFields: string[] = [
+        'data.cancellationInfoLMD',
+        'data.reasonLMD',
+        'data.reasonCodeLMD',
+        'data.materialNumberLMD',
+        'data.vodLMD',
+        'data.buLMD',
+        'data.paymentMethodLMD',
+        'data.dunningStopLMD',
+        'data.sendToLMD',
+        'data.invoiceTypeLMD',
+        'data.requestorLMD',
+        'data.entryDateLMD',
+    ];
+
+    let internalInvoiceReadonlyFields: string[] = [
+        'data.cancellationInfoLMD',
+        'data.entryDateLMD',
+        'data.vodLMD',
+        'data.reasonCodeLMD',
+        'data.reasonLMD',
+        'data.materialNumberLMD',
+        'data.requestorLMD',
+        'data.sendToLMD',
+    ];
+    let internalInvoiceSubLineReadonlyFields: string[] = [
+        'data.cancellationInfoLMD',
+        'data.entryDateLMD',
+        'data.invoiceTypeLMD',
+        'data.reasonCodeLMD',
+        'data.reasonLMD',
+        'data.vodLMD',
+        'data.materialNumberLMD',
+        'data.requestorLMD',
+        'data.reasonLMD',
+        'data.sendToLMD',
+    ];
+    let cancellationReadonlyFields: string[] = [
+        'data.requestorLMD',
+        'data.vendorLMD',
+        'data.vodLMD',
+        'data.buLMD',
+        'data.entryDateLMD',
+        'data.materialNumberLMD',
+        'data.reasonLMD',
+        'data.depositNumberLMD',
+        'data.reasonCodeLMD',
+        'data.referenceNumberFromVendor',
+        'data.activityIdForPortalVendors',
+        'data.alsoMarketingProjectNumberLMD',
+        'data.invoiceTextLMD',
+        'data.amountLMD',
+        'data.linkToProofsLMD',
+        'data.documentCurrencyLMD',
+        'data.paymentMethodLMD',
+        'data.dunningStopLMD',
+        'data.dateOfServiceRenderedLMD',
+    ];
+    if (props === undefined) {
+        return false;
+    }
+
+    // console.log('props.column.key', props.column.key)
+
+    const projectNum = props.rowData.data.alsoMarketingProjectNumberLMD;
+
+    if (!!projectNum) {
+        const { equal: countryPrefixEqual } =
+            checkCountryPrefixEqual(projectNum);
+
+        if (!countryPrefixEqual) {
+            if (
+                props.column.key === 'data.vendorLMD' ||
+                props.column.key === 'data.buLMD'
+            ) {
+                return true;
+            }
+        }
+    }
+
+    switch (props.rowData.data.invoiceTypeLMD) {
+        case 'Invoice':
+            if (props.column.key === 'data.depositNumberLMD') {
+                if (
+                    props.rowData.data.paymentMethodLMD ===
+                        'Money in House' ||
+                    props.rowData.data.paymentMethodLMD === 'Intercompany'
+                ) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            if (props.rowData.parentId) {
+                if (
+                    invoiceSubLineReadonlyFields.findIndex(
+                        (element) => element === props.column.key
+                    ) > -1
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (
+                    invoiceReadonlyFields.findIndex(
+                        (element) => element === props.column.key
+                    ) > -1
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+        case 'Internal Invoice':
+            if (props.column.key === 'data.depositNumberLMD') {
+                if (
+                    props.rowData.data.paymentMethodLMD ===
+                        'Money in House' ||
+                    props.rowData.data.paymentMethodLMD === 'Intercompany'
+                ) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            if (props.rowData.parentId) {
+                if (
+                    internalInvoiceSubLineReadonlyFields.findIndex(
+                        (element) => element === props.column.key
+                    ) > -1
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (
+                    internalInvoiceReadonlyFields.findIndex(
+                        (element) => element === props.column.key
+                    ) > -1
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        case 'Cancellation':
+            if (
+                cancellationReadonlyFields.findIndex(
+                    (element) => element === props.column.key
+                ) > -1
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+    }
+}
