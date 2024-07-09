@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/doublegrey/formiks/backend/driver"
+	"github.com/doublegrey/formiks/backend/logger"
 	"github.com/doublegrey/formiks/backend/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -43,4 +44,35 @@ func (t *Template) Update(c *gin.Context) {
 	}
 	t.db.Collection("templates").ReplaceOne(context.TODO(), bson.M{"name": name}, template, options.Replace().SetUpsert(true))
 	c.Status(http.StatusOK)
+}
+
+func (templateHandler *Template) Create(c *gin.Context) {
+	var template models.Template
+
+	err := c.BindJSON(&template)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	findResult := templateHandler.db.Collection("templates").FindOne(context.TODO(), bson.M{
+		"name": template.Name,
+	})
+
+	if findResult != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "NAME_ALREADY_IN_USE",
+		})
+		return
+	}
+
+	_, err = templateHandler.db.Collection("templates").InsertOne(context.TODO(), template)
+
+	if err != nil {
+		logger.LogHandlerError(c, "Failed to create template", err)
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	c.Status(http.StatusCreated)
 }

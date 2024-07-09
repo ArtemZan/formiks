@@ -31,6 +31,7 @@ func main() {
 		}
 	}
 	network.Initialize()
+
 	err := driver.Connect()
 	if err != nil {
 		log.Fatalf("Failed to initialize database connection: %v\n", err)
@@ -42,7 +43,7 @@ func main() {
 		// fmt.Println("account lines parsed...")
 		// sap.CreateSubmissionsForAccountLines()
 		// os.Exit(0)
-		
+
 		cron.Every(1).Day().At("03:00").Do(func() {
 			mongoUpdate.Update()
 			sap.FetchAccountLines()

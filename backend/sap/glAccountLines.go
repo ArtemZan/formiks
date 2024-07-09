@@ -21,6 +21,7 @@ import (
 
 var AccountLines = make(map[string][]AccountLineRecord)
 
+// weird
 var allowedAccounts = map[string][]string{
 	"Sales Invoices": {
 		"0040400000",
