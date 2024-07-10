@@ -18,10 +18,10 @@ import { Submission } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 
 import Cerov from "../../components/projects/cerov";
-import Ermv from "../../components/projects/ermv";
-import Elmv from "../../components/projects/elmv";
-import Elov from "../../components/projects/elov";
-import Por from "../../components/projects/por";
+import Elmv from "../../components/projects/localMulti";
+import Elov from "../../components/projects/localOne";
+import Por from "../../components/projects/purchaseOrder";
+import Ermv from "../../components/projects/EuropeanMulti/europeanMulti";
 
 interface Props {
   history: any;

@@ -15,36 +15,31 @@ import {
     AlertIcon,
     Alert,
 } from '@chakra-ui/react';
-import Project from '../../types/project';
+import Project from '../../../types/project';
 import Select from 'react-select';
-import { getAccountInfo } from '../../utils/MsGraphApiCall';
+import { getAccountInfo } from '../../../utils/MsGraphApiCall';
 import DatePicker from 'react-datepicker';
 import isEqual from 'lodash/isEqual';
 import { toast } from 'react-toastify';
-import Toast from '../../components/Toast';
-import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
-import moment from 'moment';
+import Toast from '../../Toast';
 
 import { Table, Uploader } from 'rsuite';
-import { Submission, SubmissionWithChildren } from '../../types/submission';
-import { RestAPI } from '../../api/rest';
-import { DefaultSelectStyles } from '../../utils/Styles';
-import { GiConsoleController } from 'react-icons/gi';
+import { Submission, SubmissionWithChildren } from '../../../types/submission';
+import { RestAPI } from '../../../api/rest';
+import moment from 'moment';
+import FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
+import RequestorCompanyName from './RequestorCompanyName/RequestorCompanyName';
 
 var PH1: any[] = [];
 var Companies: any[] = [];
-var VendorsNames: any[] = [];
-var BUs: any[] = [];
+// var VendorsNames: any[] = [];
 var CampaignChannel: any[] = [];
 var TargetAudience: any[] = [];
 var Budget: any[] = [];
 var ExchangeRates: any[] = [];
 var FiscalQuarter: any[] = [];
-
-var vendorsAfterCompanySelect: string[] = [];
 var Year: any[] = [];
-var AlsoInternationalVendorsNames: any[] = [];
 var ProjectStartQuarter: any[] = [];
 
 const { Column, HeaderCell, Cell } = Table;
@@ -57,7 +52,7 @@ interface Props {
     isDraft?: boolean;
 }
 
-export default function Elmv(props: Props) {
+export default function Ermv(props: Props) {
     const [requestorsCompanyName, setRequestorsCompanyName] = useState<any>({
         label: '',
         value: { name: '', code: '', country: '' },
@@ -70,6 +65,9 @@ export default function Elmv(props: Props) {
         label: '',
         value: '',
     });
+
+    const [vendorsOptions, setVendorOptions] = useState<any>([]);
+    //selected vendors
     const [vendorsNames, setVendorsNames] = useState<any>([]);
     const [year, setYear] = useState<any>({
         label: '',
@@ -111,26 +109,17 @@ export default function Elmv(props: Props) {
     );
     const [comments, setComments] = useState('');
     const [vendors, setVendors] = useState<any>([]);
-    const [vendor, setVendor] = useState<any>({
-        ph: {
-            label: '',
-            value: '',
-        },
-    });
-
     const [costBreakdown, setCostBreakdown] = useState<any>([]);
-    const [organizingCompany, setOrganizingCompany] = useState('');
 
-    const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
-    const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
+    // const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
+    // const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
 
     const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState('');
 
-    const [inputErrors, setInputErrors] = useState<string[]>([]);
-
-    const [injectionReady, setInjectionReady] = useState(false);
-
-    const [render, rerender] = useState(0);
+    const [totalcbShare, setTotalcbShare] = useState('0');
+    const [totalcbContribution, setTotalcbContribution] = useState('0.00');
+    const [totalcbCosts, setTotalcbCosts] = useState('0.00');
+    
 
     useEffect(() => {
         if (props.submission) {
@@ -143,14 +132,6 @@ export default function Elmv(props: Props) {
                     currency: props.submission.data.localCurrency ?? '',
                 },
             });
-            switch (props.submission.data.companyCode) {
-                case '1550':
-                    vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
-                    break;
-                case '6110':
-                    vendorsAfterCompanySelect = VendorsNames;
-                    break;
-            }
             setCampaignName(props.submission.data.campaignName ?? '');
             setCampaignDescription(
                 props.submission.data.campaignDescription ?? ''
@@ -158,22 +139,15 @@ export default function Elmv(props: Props) {
             setTargetAudience(props.submission.data.targetAudience ?? '');
             setCampaignChannel({
                 label: props.submission.data.campaignChannel ?? '',
-                value:
-                    props.submission.data.campaignChannel.length > 0
-                        ? props.submission.data.campaignChannel.substr(0, 1)
-                        : '',
+                value: props.submission.data.campaignChannel ?? '',
             });
             setYear({
                 label: props.submission.data.year ?? '',
-                value: (props.submission.data.year ?? '').substring(2, 4),
+                value: props.submission.data.year ?? '',
             });
-            setOrganizingCompany(props.submission.data.organizingCompany ?? '');
             setProjectStartQuarter({
                 label: props.submission.data.projectStartQuarter ?? '',
-                value:
-                    props.submission.data.projectStartQuarter.length > 0
-                        ? props.submission.data.projectStartQuarter.substr(0, 2)
-                        : '',
+                value: props.submission.data.projectStartQuarter ?? '',
             });
             setProjectNumber(props.submission.data.projectNumber ?? '');
             setRequestorsName(props.submission.data.requestorsName ?? '');
@@ -182,80 +156,56 @@ export default function Elmv(props: Props) {
                 value: props.submission.data.manufacturersFiscalQuarter ?? '',
             });
             setStartDate(
-                props.submission.data.campaignStartDate === null ||
-                    props.submission.data.campaignStartDate === ''
-                    ? ''
-                    : new Date(props.submission.data.campaignStartDate)
+                new Date(props.submission.data.campaignStartDate) || null
             );
-            setEndDate(
-                props.submission.data.campaignEndDate === null ||
-                    props.submission.data.campaignEndDate === ''
-                    ? ''
-                    : new Date(props.submission.data.campaignEndDate)
+            setEndDate(new Date(props.submission.data.campaignEndDate) || null);
+            setBudgetSource({
+                label: props.submission.data.budgetSource ?? '',
+                value: props.submission.data.budgetSource ?? '',
+            });
+            setBudgetApprovedByVendor(
+                props.submission.data.budgetApprovedByVendor ?? ''
             );
-            if (
-                Budget.length > 0 &&
-                props.submission.data.budgetSource !== ''
-            ) {
-                setBudgetSource({
-                    label: props.submission.data.budgetSource ?? '',
-                    value:
-                        Budget.find(
-                            (b) =>
-                                b.label === props.submission.data.budgetSource
-                        ).value ?? '',
-                });
-            }
-            if (
-                ExchangeRates.length > 0 &&
-                props.submission.data.campaignBudgetsCurrency !== ''
-            ) {
-                setExchangeRates({
-                    label: props.submission.data.campaignBudgetsCurrency ?? '',
-                    value:
-                        ExchangeRates.find(
-                            (b) =>
-                                b.label ===
-                                props.submission.data.campaignBudgetsCurrency
-                        ).value ?? '',
-                });
-            }
+            setExchangeRates({
+                label: props.submission.data.campaignBudgetsCurrency ?? '',
+                value: props.submission.data.campaignBudgetsCurrency ?? '',
+            });
             setEstimatedIncomeBudgetCurrency(
                 (
                     props.submission.data
-                        .campaignEstimatedIncomeBudgetsCurrency ?? ''
-                ).toString()
+                        .campaignEstimatedIncomeBudgetsCurrency ?? 0
+                ).toFixed(2)
             );
             setEstimatedIncome(
-                props.submission.data.campaignEstimatedIncomeEur
-                    ? props.submission.data.campaignEstimatedIncomeEur.toFixed(
-                          2
-                      )
-                    : 'NaN'
+                (props.submission.data.campaignEstimatedIncomeEur || 0).toFixed(
+                    2
+                )
             );
             setEstimatedCosts(
-                props.submission.data.campaignEstimatedCostsEur
-                    ? props.submission.data.campaignEstimatedCostsEur.toFixed(2)
-                    : 'NaN'
+                (props.submission.data.campaignEstimatedCostsEur || 0).toFixed(
+                    2
+                )
             );
             setNetProfitTarget(
-                props.submission.data.campaignNetProfitTargetEur
-                    ? props.submission.data.campaignNetProfitTargetEur.toFixed(
-                          2
-                      )
-                    : 'NaN'
+                (props.submission.data.campaignNetProfitTargetEur || 0).toFixed(
+                    2
+                )
             );
             setEstimatedCostsBudgetCurrency(
                 (
                     props.submission.data
-                        .campaignEstimatedCostsBudgetsCurrency ?? ''
-                ).toString()
+                        .campaignEstimatedCostsBudgetsCurrency ?? 0
+                ).toFixed(2)
             );
             setNetProfitTargetBudgetCurrency(
                 (
                     props.submission.data
-                        .campaignNetProfitTargetBudgetsCurrency ?? 'NaN'
-                ).toString()
+                        .campaignNetProfitTargetBudgetsCurrency ?? 0
+                ).toFixed(2)
+            );
+            setComments(props.submission.data.comments ?? '');
+            setTotalEstimatedCostsLC(
+                (props.submission.data.totalEstimatedCostsLC || 0).toFixed(2)
             );
             setLocalExchangeRate(
                 parseFloat(
@@ -268,15 +218,8 @@ export default function Elmv(props: Props) {
                     ).value
                 )
             );
-            setComments(props.submission.data.comments ?? '');
-            setTotalEstimatedCostsLC(
-                props.submission.data.totalEstimatedCostsLC
-                    ? props.submission.data.totalEstimatedCostsLC.toFixed(2)
-                    : 'NaN'
-            );
 
             //
-
             if (props.children && props.children.length > 0) {
                 setVendorsNames(
                     props.children
@@ -288,48 +231,39 @@ export default function Elmv(props: Props) {
                             };
                         })
                 );
-                setVendorsNames(
+                setCompaniesParticipating(
                     props.children
-                        .filter((s) => s.group === 'vendor')
+                        .filter((s) => s.group === 'country')
                         .map((s) => {
                             return {
-                                label: s.data.vendorName,
-                                value: {
-                                    alsoMarketingConsultant: s.data
-                                        .marketingResponsible
-                                        ? s.data.marketingConsultant
-                                        : '',
-                                    bu: s.data.businessUnit
-                                        ? s.data.businessUnit
-                                        : '',
-                                    city: s.data.city ? s.data.city : '',
-                                    cityCode: s.data.cityCode
-                                        ? s.data.cityCode
-                                        : '',
-                                    debitorischer: s.data.debitorNumber
-                                        ? s.data.debitorNumber
-                                        : '',
-                                    email: s.data.email ? s.data.email : '',
-                                    hersteller: s.data.debitorNumber
-                                        ? s.data.debitorNumber
-                                        : '',
-                                    kreditor: s.data.creditorNumber
-                                        ? s.data.creditorNumber
-                                        : '',
-                                    manufacturer: s.data.manufacturerNumber
-                                        ? s.data.manufacturerNumber
-                                        : '',
-                                    telephone: s.data.telephone
-                                        ? s.data.telephone
-                                        : '',
-                                    vendorAddress: s.data.adress
-                                        ? s.data.adress
-                                        : '',
-                                },
+                                label: s.data.companyName,
+                                value: s.data.companyName,
                             };
                         })
                 );
                 var v: any[] = [];
+                var c: any[] = [];
+
+                props.children
+                    .filter((s) => s.group === 'country')
+                    .forEach((s) => {
+                        c.push({
+                            companyName: s.data.companyName,
+                            companyCode: s.data.countryCodeEMEA,
+                            country: s.data.countriesEMEA,
+                            contactEmail: s.data.productionProjectManager,
+                            projectNumber: s.data.parentProjectNumber,
+                            share: (s.data.countryShare || 0).toFixed(2),
+                            contribution: (
+                                s.data.countryBudgetContributionCC || 0
+                            ).toFixed(2),
+                            estimatedCosts: (
+                                s.data.countryCostEstimationCC || 0
+                            ).toFixed(2),
+                        });
+                    });
+                setCostBreakdown([...c]);
+
                 props.children
                     .filter((s) => s.group === 'vendor')
                     .forEach((s) => {
@@ -340,7 +274,7 @@ export default function Elmv(props: Props) {
                             debitor: s.data.debitorNumber,
                             manufacturer: s.data.manufacturerNumber,
                             bu: s.data.businessUnit,
-                            ph: s.data.PH1,
+                            ph: { label: s.data.PH1, value: s.data.PH1 },
                             budgetCurrency: {
                                 label: s.data.vendorBudgetCurrency,
                                 value: (
@@ -354,13 +288,11 @@ export default function Elmv(props: Props) {
                             budgetAmount: (
                                 s.data.vendorBudgetAmount || 0
                             ).toFixed(2),
-                            localBudget: (s.data.vendorAmountLC || 0).toFixed(
-                                2
-                            ),
+                            localBudget: (s.data.vendorAmount || 0).toFixed(2),
                             eurBudget: (s.data.estimatedIncomeEUR || 0).toFixed(
                                 2
                             ),
-                            share: (s.data.vendorShare || 0).toFixed(2),
+                            share: s.data.vendorShare.toFixed(0) || '0',
                             estimatedCostsCC: (
                                 s.data.estimatedCostsCC || 0
                             ).toFixed(2),
@@ -406,565 +338,13 @@ export default function Elmv(props: Props) {
                 setVendors([...v]);
             }
         }
-        setTimeout(() => {
-            setInjectionReady(true);
-        }, 3000);
     }, [props.submission, props.children, ExchangeRates]);
-
-    useEffect(() => {
-        if (props.submission && !injectionReady) {
-            return;
-        }
-        var data: any = [];
-        vendorsNames.forEach((vendor: any) => {
-            var ex = vendors.find((v: any) => v.vendor === vendor.label);
-            if (ex) {
-                data.push(ex);
-            } else {
-                data.push({
-                    vendor: vendor.label,
-                    marketingResponsible: vendor.value.alsoMarketingConsultant,
-                    creditor: vendor.value.kreditor,
-                    debitor: vendor.value.debitorischer,
-                    manufacturer: vendor.value.hersteller,
-                    city: vendor.value.city,
-                    cityCode: vendor.value.cityCode,
-                    email: vendor.value.email,
-                    telephone: vendor.value.telephone,
-                    vendorAddress: vendor.value.vendorAddress,
-                    budgetCurrency: '',
-                    budgetAmount: '',
-                    localBudget: '',
-                    eurBudget: '',
-                    share: '',
-                    estimatedCostsCC: '',
-                    estimatedIncomeCC: '',
-                    estimatedCostsLC: '',
-                    estimatedCostsEUR: '',
-                    netProfitTargetVC: '',
-                    netProfitTargetLC: '',
-                    netProfitTargetEUR: '',
-                    ph1: { label: '', value: '' },
-                    bu: '',
-                });
-            }
-        });
-        data.push({
-            vendor: 'TOTAL',
-            marketingResponsible: '',
-            creditor: '',
-            debitor: '',
-            manufacturerNumber: '',
-            city: '',
-            cityCode: '',
-            email: '',
-            telephone: '',
-            vendorAddress: '',
-            budgetCurrency: '',
-            budgetAmount: '',
-            localBudget: '',
-            eurBudget: '',
-            share: '',
-            estimatedCostsCC: '',
-            estimatedIncomeCC: '',
-            estimatedCostsLC: '',
-            estimatedCostsEUR: '',
-            netProfitTargetVC: '',
-            netProfitTargetLC: '',
-            netProfitTargetEUR: '',
-            ph1: { label: '', value: '' },
-            bu: '',
-        });
-        setVendors(data);
-    }, [vendorsNames]);
-
-    function createSubmission(draft: boolean) {
-        var projectId = '6246ec8efa2a446faadb8d9b';
-        var parent: Submission = {
-            project: projectId,
-            title: campaignName,
-            parentId: null,
-            viewId: null,
-            group: null,
-            status: 'New',
-            created: new Date(),
-            updated: new Date(),
-            author: requestorsName,
-            data: {
-                status: 'New',
-                requestorsCompanyName: requestorsCompanyName.label,
-                companyCode: requestorsCompanyName.value.code,
-                requestorsCountry: requestorsCompanyName.value.country,
-                organizingCompany: organizingCompany,
-                campaignName: campaignName,
-                projectName: campaignName,
-                campaignDescription: campaignDescription,
-                targetAudience: targetAudience,
-                campaignChannel: campaignChannel.label,
-                year: year.label,
-                projectStartQuarter: projectStartQuarter.label,
-                projectNumber: projectNumber,
-                requestorsName: requestorsName,
-                projectApprover: projectApproval,
-                businessUnit: vendor.bu,
-                projectApproval: projectApproval,
-                manufacturersFiscalQuarter: fiscalQuarter.label,
-                campaignStartDate:
-                    startDate === null || startDate === ''
-                        ? null
-                        : startDate.toString(),
-                campaignEndDate:
-                    endDate === null || endDate === ''
-                        ? null
-                        : endDate.toString(),
-                budgetSource: budgetSource.label,
-                campaignBudgetsCurrency: exchangeRates.label,
-                campaignCurrency: exchangeRates.label,
-                localCurrency: requestorsCompanyName.value['currency'],
-                campaignEstimatedIncomeBudgetsCurrency: isNaN(
-                    parseFloat(estimatedIncomeBudgetCurrency)
-                )
-                    ? ''
-                    : parseFloat(estimatedIncomeBudgetCurrency),
-                campaignEstimatedCostsBudgetsCurrency: isNaN(
-                    parseFloat(estimatedCostsBudgetCurrency)
-                )
-                    ? ''
-                    : parseFloat(estimatedCostsBudgetCurrency),
-                campaignNetProfitTargetBudgetsCurrency: parseFloat(
-                    netProfitTargetBudgetCurrency
-                ),
-                campaignEstimatedIncomeEur: isNaN(parseFloat(estimatedIncome))
-                    ? ''
-                    : parseFloat(estimatedIncome),
-                campaignEstimatedCostsEur: parseFloat(estimatedCosts),
-                campaignNetProfitTargetEur: parseFloat(netProfitTarget),
-                totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
-                comments: comments,
-                additionalInformation: comments,
-                projectType: 'Local Multi Vendor',
-                estimatedCostsCC: parseFloat(estimatedCostsBudgetCurrency),
-                estimatedIncomeCC:
-                    budgetSource.value === 'noBudget'
-                        ? 0.0
-                        : parseFloat(estimatedIncomeBudgetCurrency),
-                estimatedResultCC:
-                    parseFloat(netProfitTargetBudgetCurrency) *
-                    (budgetSource.value === 'noBudget' ? -1 : 1),
-                // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-                estimatedIncomeEUR:
-                    budgetSource.value === 'noBudget'
-                        ? 0.0
-                        : parseFloat(estimatedIncome),
-                estimatedCostsEUR: parseFloat(estimatedCosts),
-                estimatedResultEUR:
-                    parseFloat(netProfitTarget) *
-                    (budgetSource.value === 'noBudget' ? -1 : 1),
-                estimatedResultBC:
-                    parseFloat(netProfitTargetBudgetCurrency) *
-                    (budgetSource.value === 'noBudget' ? -1 : 1),
-            },
-        };
-        var children: Submission[] = [];
-
-        vendors
-            //.slice(0, -1)
-            .filter((vendor: any) => vendor.vendor !== 'TOTAL')
-            .forEach((vendor: any) => {
-                children.push({
-                    project: projectId,
-                    title: '',
-                    parentId: '',
-                    viewId: null,
-                    group: 'vendor',
-                    created: new Date(),
-                    updated: new Date(),
-                    status: 'New',
-                    author: requestorsName,
-                    data: {
-                        vendorName: vendor.vendor,
-                        marketingResponsible: vendor.projectManager,
-                        companyCode: requestorsCompanyName.value.code,
-                        projectNumber: projectNumber,
-                        creditorNumber: '',
-                        debitorNumber: vendor.debitor,
-                        manufacturerNumber: vendor.manufacturer,
-                        businessUnit: vendor.bu,
-                        // PH1: vendor.ph ? vendor.ph : "",
-                        vendorBudgetCurrency:
-                            vendor.budgetCurrency === ''
-                                ? ''
-                                : vendor.budgetCurrency.label,
-                        vendorAmountLC:
-                            isNaN(parseFloat(vendor.localBudget)) ||
-                            budgetSource.value === 'noBudget'
-                                ? 0.0
-                                : parseFloat(vendor.localBudget),
-                        vendorAmount:
-                            isNaN(parseFloat(vendor.budgetAmount)) ||
-                            budgetSource.value === 'noBudget'
-                                ? 0.0
-                                : parseFloat(vendor.budgetAmount),
-                        vendorBudgetAmount:
-                            isNaN(parseFloat(vendor.budgetAmount)) ||
-                            budgetSource.value === 'noBudget'
-                                ? 0.0
-                                : parseFloat(vendor.budgetAmount),
-                        // cbbudgetEur: parseFloat(vendor.eurBudget),
-                        vendorShare: parseFloat(vendor.share),
-                        estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
-                        estimatedIncomeCC:
-                            budgetSource.value === 'noBudget'
-                                ? 0.0
-                                : parseFloat(vendor.estimatedIncomeCC),
-                        estimatedResultCC: parseFloat(vendor.netProfitTargetVC),
-                        // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
-                        estimatedIncomeEUR:
-                            budgetSource.value === 'noBudget'
-                                ? 0.0
-                                : parseFloat(vendor.eurBudget),
-                        estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
-                        estimatedResultEUR: parseFloat(
-                            vendor.netProfitTargetEUR
-                        ),
-                        estimatedResultBC: parseFloat(vendor.netProfitTargetLC),
-                        projectType: 'Local Multi Vendor',
-                    },
-                });
-            });
-        var submission: SubmissionWithChildren = {
-            submission: parent,
-            children,
-            local: null,
-        };
-        if (props.isDraft) {
-            if (draft) {
-                submission.submission.id = props.submission.id;
-                RestAPI.updateDraft(submission).then((response) => {
-                    toast(
-                        <Toast
-                            title={'Draft save'}
-                            message={`Draft has been successfully saved.`}
-                            type={'info'}
-                        />
-                    );
-                });
-            } else {
-                if (submissionValidation(submission).length !== 0) {
-                    toast(
-                        <Toast
-                            title={'Mandatory fields are not filled'}
-                            message={
-                                'not all fields that are required were provided'
-                            }
-                            type={'error'}
-                        />
-                    );
-                    return;
-                }
-                RestAPI.deleteDraft(props.submission.id).then(() => {
-                    RestAPI.createSubmissionWithChildren(submission).then(
-                        (response) => {
-                            if (response.data.hasChanged) {
-                                toast(
-                                    <Toast
-                                        title={
-                                            'Project Number has been adjusted'
-                                        }
-                                        message={
-                                            <p>
-                                                Project Number changed to:{' '}
-                                                <b>
-                                                    {
-                                                        response.data.submission
-                                                            .data.projectNumber
-                                                    }
-                                                </b>
-                                            </p>
-                                        }
-                                        type={'info'}
-                                    />
-                                );
-                            }
-                            toast(
-                                <Toast
-                                    title={'Project has been transferred'}
-                                    message={
-                                        <p>
-                                            Project ({' '}
-                                            <b>
-                                                {
-                                                    response.data.submission
-                                                        .data.projectNumber
-                                                }
-                                            </b>{' '}
-                                            ) has been transferred into the tool
-                                        </p>
-                                    }
-                                    type={'success'}
-                                />
-                            );
-                            props.history.push('/submissions');
-                        }
-                    );
-                });
-            }
-        } else {
-            if (draft) {
-                RestAPI.createDraft(submission).then((response) => {
-                    toast(
-                        <Toast
-                            title={'Draft save'}
-                            message={`Draft has been successfully saved.`}
-                            type={'info'}
-                        />
-                    );
-                });
-            } else {
-                if (submissionValidation(submission).length !== 0) {
-                    toast(
-                        <Toast
-                            title={'Mandatory fields are not filled'}
-                            message={
-                                'not all fields that are required were provided'
-                            }
-                            type={'error'}
-                        />
-                    );
-                    return;
-                }
-                RestAPI.createSubmissionWithChildren(submission).then(
-                    (response) => {
-                        if (response.data.hasChanged) {
-                            toast(
-                                <Toast
-                                    title={'Project Number has been adjusted'}
-                                    message={
-                                        <p>
-                                            Project Number changed to:{' '}
-                                            <b>
-                                                {
-                                                    response.data.submission
-                                                        .data.projectNumber
-                                                }
-                                            </b>
-                                        </p>
-                                    }
-                                    type={'info'}
-                                />
-                            );
-                        }
-                        toast(
-                            <Toast
-                                title={'Project has been transferred'}
-                                message={
-                                    <p>
-                                        Project ({' '}
-                                        <b>
-                                            {
-                                                response.data.submission.data
-                                                    .projectNumber
-                                            }
-                                        </b>{' '}
-                                        ) has been transferred into the tool
-                                    </p>
-                                }
-                                type={'success'}
-                            />
-                        );
-                        props.history.push('/submissions');
-                    }
-                );
-            }
-        }
-    }
-
-    function totalAlert(value: any, row: any, check: number) {
-        if (value) {
-            if (
-                (parseFloat(value) - check >= 0.02 ||
-                    parseFloat(value) - check < -0.02) &&
-                row === 'TOTAL'
-            ) {
-                return useColorModeValue('red.300', '#ABB2BF');
-            }
-        }
-    }
-
-    function cellNumberAlert(value: any, row: any) {
-        if (!Number.isNaN(value) && value !== '' && value !== 'NaN') {
-        } else {
-            if (row.vendor !== 'TOTAL') {
-                return useColorModeValue('red.300', '#ABB2BF');
-            }
-        }
-    }
-
-    function cellTextAlert(value: any, row: any) {
-        if (value !== '') {
-        } else {
-            if (row.vendor !== 'TOTAL') {
-                return useColorModeValue('red.300', '#ABB2BF');
-            }
-        }
-    }
-
-    function cellDropDownAlert(value: any, row: any) {
-        if (value !== '') {
-            return false;
-        } else {
-            if (row.vendor !== 'TOTAL') {
-                return true;
-            } else return false;
-        }
-    }
-
-    function submissionValidation(submission: SubmissionWithChildren) {
-        var fieldKeys: string[] = [];
-        var nonMandatoryFields: string[] = [
-            'targetAudience',
-            'projectApprover',
-            'projectApproval',
-            'vendorBudgetCurrency',
-            'manufacturersFiscalQuarter',
-            'comments',
-            'additionalInformation',
-            'status',
-            'marketingResponsible',
-            'manufacturerNumber',
-            'PH1',
-            'vendor',
-            'creditorNumber',
-            'vendorShare',
-            'estimatedCostsCC',
-            'estimatedResultCC',
-            'estimatedIncomeEUR',
-            'estimatedCostsEUR',
-            'estimatedResultEUR',
-            'estimatedResultBC',
-            'marketingResponsible',
-            'creditorNumber',
-        ];
-
-        var totalBudget = 0;
-        submission.children.forEach((e) => {
-            if (e.group === 'vendor') {
-                Object.keys(e.data).forEach((key: any) => {
-                    if (key === 'estimatedIncomeEUR') {
-                        totalBudget = totalBudget + e.data[key];
-                    }
-                    if (!nonMandatoryFields.includes(key)) {
-                        if (key !== 'businessUnit') {
-                            switch (typeof e.data[key]) {
-                                case 'number':
-                                    if (
-                                        isNaN(e.data[key]) ||
-                                        e.data[key] === 0 ||
-                                        e.data[key] === 0.0
-                                    ) {
-                                        fieldKeys.push(key);
-                                    }
-                                    break;
-                                case 'object':
-                                    if (e.data[key] === null) {
-                                        fieldKeys.push(key);
-                                    } else {
-                                        if (e.data[key].length !== 0) {
-                                            fieldKeys.push(key);
-                                        }
-                                    }
-                                    break;
-                                case 'string':
-                                    if (e.data[key] === '') {
-                                        fieldKeys.push(key);
-                                    }
-                                    break;
-                                case 'undefined':
-                                    fieldKeys.push(key);
-                                    break;
-                            }
-                        }
-                    }
-                });
-            }
-        });
-        if (totalBudget !== parseFloat(estimatedIncome)) {
-            fieldKeys.push('totalVendorBudgetInEUR');
-        }
-
-        var sub = submission.submission;
-        if (
-            sub.data.budgetSource === 'No budget' ||
-            sub.data.budgetSource === 'noBudget'
-        ) {
-            nonMandatoryFields.push('debitorNumber');
-        }
-        var vendor = submission.children.filter(
-            (el) => el.group === 'vendor'
-        )[0];
-        Object.keys(sub.data).forEach((key: any) => {
-            if (!nonMandatoryFields.includes(key)) {
-                if (key !== 'businessUnit') {
-                    switch (typeof sub.data[key]) {
-                        case 'number':
-                            if (isNaN(sub.data[key]) || sub.data[key] === 0) {
-                                fieldKeys.push(key);
-                            }
-                            break;
-                        case 'object':
-                            if (sub.data[key] === null) {
-                                fieldKeys.push(key);
-                            }
-                            break;
-                        case 'string':
-                            if (sub.data[key] === '') {
-                                fieldKeys.push(key);
-                            }
-                            break;
-                        case 'undefined':
-                            fieldKeys.push(key);
-                            break;
-                    }
-                }
-            }
-        });
-        if (vendor !== undefined) {
-            Object.keys(vendor.data).forEach((key: any) => {
-                if (!nonMandatoryFields.includes(key)) {
-                    switch (typeof vendor.data[key]) {
-                        case 'number':
-                            if (isNaN(vendor.data[key])) {
-                                fieldKeys.push(key);
-                            }
-                            break;
-                        case 'object':
-                            if (vendor.data[key] === null) {
-                                fieldKeys.push(key);
-                            }
-                            break;
-                        case 'string':
-                            if (vendor.data[key] === '') {
-                                fieldKeys.push(key);
-                            }
-                            break;
-                        case 'undefined':
-                            fieldKeys.push(key);
-                            break;
-                    }
-                }
-            });
-        } else {
-            fieldKeys.push('vendorName');
-        }
-        setInputErrors(fieldKeys);
-        return fieldKeys;
-    }
 
     async function fetchDropdowns() {
         var dropdownsIds: string[] = [
             '619b630a9a5a2bb37a93b23b',
             '619b61419a5a2bb37a93b237',
-            '6391eea09a3d043b9a89d767',
+            '619b63429a5a2bb37a93b23d',
             '619b62d79a5a2bb37a93b239',
             '619b632c9a5a2bb37a93b23c',
             '619b62959a5a2bb37a93b238',
@@ -972,19 +352,15 @@ export default function Elmv(props: Props) {
             '619b66defe27d06ad17d75ac',
             '619b6754fe27d06ad17d75ad',
             '619b6799fe27d06ad17d75ae',
-            // "633e93ed5a7691ac30c977fc",
-            '63295a2ef26db37a14557092',
-            '636abbd43927f9c7703b19c4',
         ];
         var responses = await Promise.all(
             dropdownsIds.map((di) => {
                 return RestAPI.getDropdownValues(di);
             })
         );
-
         PH1 = responses[0].data;
         Companies = responses[1].data;
-        VendorsNames = responses[2].data;
+        // VendorsNames = responses[2].data;
         CampaignChannel = responses[3].data;
         TargetAudience = responses[4].data;
         Budget = responses[5].data;
@@ -992,10 +368,10 @@ export default function Elmv(props: Props) {
         FiscalQuarter = responses[7].data;
         Year = responses[8].data;
         ProjectStartQuarter = responses[9].data;
-        BUs = responses[10].data;
     }
+
     useEffect(() => {
-        if (props.submission && !injectionReady) {
+        if (props.submission) {
             return;
         }
         setTotalEstimatedCostsLC(
@@ -1014,7 +390,119 @@ export default function Elmv(props: Props) {
     const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
     useEffect(() => {
-        if (props.submission && !injectionReady) {
+        if (props.submission) {
+            return;
+        }
+        var data: any = [];
+        vendorsNames.forEach((vendor: any) => {
+            data.push({
+                vendor: vendor.label,
+                projectManager: vendor.value.alsoMarketingConsultant,
+                creditor: vendor.value.kreditor,
+                debitor: vendor.value.debitorischer,
+                manufacturer: vendor.value.hersteller,
+                bu: vendor.value.bu,
+                ph: { label: '', value: '' },
+                budgetCurrency: { label: '', value: '' },
+                budgetAmount: '',
+                localBudget: '',
+                eurBudget: '',
+                share: '',
+                estimatedCostsCC: '',
+                estimatedIncomeCC: '',
+                estimatedCostsLC: '',
+                estimatedCostsEUR: '',
+                netProfitTargetVC: '',
+                netProfitTargetLC: '',
+                netProfitTargetEUR: '',
+            });
+        });
+        data.push({
+            vendor: 'TOTAL',
+            projectManager: '',
+            creditor: '',
+            debitor: '',
+            manufacturer: '',
+            bu: '',
+            ph: { label: '', value: '' },
+            budgetCurrency: { label: '', value: '' },
+            budgetAmount: '',
+            localBudget: '',
+            eurBudget: '',
+            share: '',
+            estimatedCostsCC: '',
+            estimatedIncomeCC: '',
+            estimatedCostsLC: '',
+            estimatedCostsEUR: '',
+            netProfitTargetVC: '',
+            netProfitTargetLC: '',
+            netProfitTargetEUR: '',
+        });
+        setVendors(data);
+    }, [vendorsNames]);
+    useEffect(() => {
+        if (props.submission) {
+            return;
+        }
+        var data: any = [];
+        companiesParticipating.forEach((company: any) => {
+            data.push({
+                companyName: company.label,
+                companyCode: company.value.code,
+                country: company.value.country,
+                contactEmail: '',
+                projectNumber: '',
+                contribution: '',
+                estimatedCosts: '',
+                share: '',
+            });
+        });
+        setCostBreakdown(data);
+    }, [companiesParticipating]);
+
+    useEffect(() => {
+        // if (props.submission) {
+        //   return;
+        // }
+        var totalShare = 0.0;
+        var totalContribution = 0.0;
+        var totalCosts = 0.0;
+        var temp = [...costBreakdown];
+        temp.forEach((row: any) => {
+            if (budgetSource.value === 'noBudget') {
+                row.contribution = '0.00';
+            } else {
+                row.contribution = (
+                    parseFloat(row.share) *
+                    0.01 *
+                    parseFloat(estimatedIncomeBudgetCurrency)
+                ).toFixed(2);
+            }
+
+            row.estimatedCosts = (
+                parseFloat(row.share) *
+                0.01 *
+                parseFloat(estimatedCostsBudgetCurrency)
+            ).toFixed(2);
+
+            totalShare += parseFloat(row.share) || 0;
+            totalContribution += parseFloat(row.contribution) || 0;
+            totalCosts += parseFloat(row.estimatedCosts) || 0;
+        });
+        if (!isEqual(costBreakdown, temp)) {
+            setCostBreakdown(temp);
+        }
+        setTotalcbShare(totalShare.toFixed(0));
+        setTotalcbContribution(totalContribution.toFixed(2));
+        setTotalcbCosts(totalCosts.toFixed(2));
+    }, [
+        costBreakdown,
+        estimatedIncomeBudgetCurrency,
+        estimatedCostsBudgetCurrency,
+    ]);
+
+    useEffect(() => {
+        if (props.submission) {
             return;
         }
         setEstimatedCosts(
@@ -1061,12 +549,36 @@ export default function Elmv(props: Props) {
     ]);
 
     useEffect(() => {
+        if (props.submission) {
+            return;
+        }
+        setProjectNumber(
+            (requestorsCompanyName.value.code === ''
+                ? '????'
+                : requestorsCompanyName.value.code) +
+                (requestorsCompanyName.value.country === ''
+                    ? '??'
+                    : requestorsCompanyName.value.country) +
+                (year.value === '' ? '??' : year.value) +
+                (campaignChannel.value === '' ? '?' : campaignChannel.value) +
+                (projectStartQuarter.value === ''
+                    ? '?'
+                    : projectStartQuarter.value.slice(1)) +
+                '01'
+        );
+    }, [year, campaignChannel, projectStartQuarter, requestorsCompanyName]);
+
+    useEffect(() => {
+        // if (props.submission) {
+        //   return;
+        // }
         var totalBudgetEur = 0;
         var totalBudgetLC = 0;
         var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
         var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
         var totalCostsLC = parseFloat(totalEstimatedCostsLC);
         var totalCostsEur = parseFloat(estimatedCosts);
+
         var temp = [...vendors];
         temp.slice(0, -1).forEach((row: any) => {
             row.eurBudget = (
@@ -1118,17 +630,13 @@ export default function Elmv(props: Props) {
                     parseFloat(row.estimatedCostsEUR) * localExchangeRate
                 ).toFixed(2);
             } else {
-                share =
-                    row.budgetAmount /
-                    row.budgetCurrency.value /
-                    totalBudgetEur;
-                row.share = (share * 100).toFixed(0);
+                share = vbEur / totalBudgetEur;
+                row.share = (share * 100).toFixed(2);
                 if (index === temp.length - 1) {
                     var totalShare = 0.0;
-                    temp.slice(0, temp.length - 2).forEach((t) => {
-                        totalShare += parseFloat(t.eurBudget) / totalBudgetEur;
-                    });
-
+                    temp.slice(0, temp.length - 2).forEach(
+                        (t) => (totalShare += parseFloat(t.share))
+                    );
                     row.share = (100 - totalShare).toFixed(2);
                     share = (100 - totalShare) * 0.01;
                 }
@@ -1155,26 +663,24 @@ export default function Elmv(props: Props) {
                     }
                 }
             }
-            row.netProfitTargetEUR = (
-                parseFloat(row.eurBudget) - parseFloat(row.estimatedCostsEUR)
-            ).toFixed(2);
+            row.netProfitTargetEUR =
+                `${budgetSource.value === 'noBudget' ? '-' : ''}` +
+                (
+                    parseFloat(row.eurBudget) -
+                    parseFloat(row.estimatedCostsEUR)
+                ).toFixed(2);
 
             row.netProfitTargetLC = (
                 parseFloat(row.localBudget) - parseFloat(row.estimatedCostsLC)
             ).toFixed(2);
-            row.netProfitTargetVC = (
-                parseFloat(row.estimatedIncomeCC) -
-                parseFloat(row.estimatedCostsCC)
-            ).toFixed(2);
 
-            totalVendorBudgetInLC +=
-                parseFloat(row.budgetAmount) /
-                row.budgetCurrency.value /
-                localExchangeRate;
-            totalVendorBudgetInEUR +=
-                parseFloat(row.budgetAmount) / row.budgetCurrency.value;
-            totalVendorShare +=
-                (parseFloat(row.eurBudget) / totalBudgetEur) * 100;
+            row.netProfitTargetVC =
+                `${budgetSource.value === 'noBudget' ? '-' : ''}` +
+                (share * parseFloat(netProfitTargetBudgetCurrency)).toFixed(2);
+
+            totalVendorBudgetInLC += parseFloat(row.localBudget);
+            totalVendorBudgetInEUR += parseFloat(row.eurBudget);
+            totalVendorShare += parseFloat(row.share);
             totalEstimatedIncomeInCC += parseFloat(row.estimatedIncomeCC);
             totalEstimatedCostsInCC += parseFloat(row.estimatedCostsCC);
             totalEstimatedCostsInLC += parseFloat(row.estimatedCostsLC);
@@ -1196,7 +702,7 @@ export default function Elmv(props: Props) {
             budgetAmount: '',
             localBudget: totalVendorBudgetInLC.toFixed(2),
             eurBudget: totalVendorBudgetInEUR.toFixed(2),
-            share: totalVendorShare.toFixed(0),
+            share: totalVendorShare.toFixed(2),
             estimatedCostsCC: totalEstimatedCostsInCC.toFixed(2),
             estimatedIncomeCC: totalEstimatedIncomeInCC.toFixed(2),
             estimatedCostsLC: totalEstimatedCostsInLC.toFixed(2),
@@ -1206,8 +712,8 @@ export default function Elmv(props: Props) {
             netProfitTargetEUR: totalNetProfitTargetInEUR.toFixed(2),
         };
 
-        setTotalVendorBudgetInEUR(totalBudgetEur);
-        setTotalVendorBudgetInLC(totalBudgetLC);
+        // setTotalVendorBudgetInEUR(totalBudgetEur);
+        // setTotalVendorBudgetInLC(totalBudgetLC);
         if (!isEqual(vendors, temp)) {
             setVendors(temp);
         }
@@ -1218,30 +724,235 @@ export default function Elmv(props: Props) {
         budgetSource,
     ]);
 
-    useEffect(() => {
-        if (props.submission && !injectionReady) {
+    const draftSubmitHandler = (draft: boolean) => {
+        var projectId = '619515b754e61c8dd33daa52';
+
+        var parent: Submission = {
+            project: projectId,
+            title: campaignName,
+            parentId: null,
+            viewId: null,
+            group: null,
+            created: new Date(),
+            updated: new Date(),
+            status: 'New',
+            author: requestorsName,
+            data: {
+                requestorsCompanyName: requestorsCompanyName.label,
+                companyCode: requestorsCompanyName.value.code,
+                requestorsCountry: requestorsCompanyName.value.country,
+                campaignName: campaignName,
+                projectName: campaignName,
+                campaignDescription: campaignDescription,
+                targetAudience: targetAudience,
+                campaignChannel: campaignChannel.label,
+                year: year.label,
+                projectStartQuarter: projectStartQuarter.label,
+                projectNumber: projectNumber,
+                requestorsName: requestorsName,
+                projectApprover: projectApproval,
+                projectApproval: projectApproval,
+                manufacturersFiscalQuarter: fiscalQuarter.label,
+                campaignStartDate:
+                    startDate === null ? null : startDate.toString(),
+                campaignEndDate: endDate === null ? null : endDate.toString(),
+                budgetSource: budgetSource.label,
+                budgetApprovedByVendor: budgetApprovedByVendor,
+                campaignBudgetsCurrency: exchangeRates.label,
+                campaignCurrency: exchangeRates.label,
+                campaignEstimatedIncomeBudgetsCurrency: parseFloat(
+                    estimatedIncomeBudgetCurrency
+                ),
+                campaignEstimatedCostsBudgetsCurrency: parseFloat(
+                    estimatedCostsBudgetCurrency
+                ),
+                campaignNetProfitTargetBudgetsCurrency: parseFloat(
+                    netProfitTargetBudgetCurrency
+                ),
+                campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
+                campaignEstimatedCostsEur: parseFloat(estimatedCosts),
+                campaignNetProfitTargetEur: parseFloat(netProfitTarget),
+                totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
+                comments: comments,
+                additionalInformation: comments,
+                localCurrency: requestorsCompanyName.value.currency,
+                projectType: 'European Multi Vendor',
+            },
+        };
+        var children: Submission[] = [];
+        vendors.slice(0, -1).forEach((vendor: any) => {
+            children.push({
+                project: projectId,
+                title: '',
+                parentId: '',
+                viewId: null,
+                group: 'vendor',
+                created: new Date(),
+                updated: new Date(),
+                status: 'New',
+                author: requestorsName,
+                data: {
+                    projectType: 'European Multi Vendor',
+                    vendorName: vendor.vendor,
+                    projectNumber: projectNumber,
+                    marketingResponsible: vendor.projectManager,
+                    creditorNumber: vendor.creditor,
+                    debitorNumber: vendor.debitor,
+                    manufacturerNumber: vendor.manufacturer,
+                    businessUnit: vendor.bu,
+                    PH1: vendor.ph.label,
+                    vendorBudgetCurrency:
+                        budgetSource.value === 'noBudget'
+                            ? 'N/A'
+                            : vendor.budgetCurrency.label,
+                    vendorAmount:
+                        isNaN(parseFloat(vendor.localBudget)) ||
+                        budgetSource.value === 'noBudget'
+                            ? 0.0
+                            : parseFloat(vendor.localBudget),
+                    vendorBudgetAmount:
+                        isNaN(parseFloat(vendor.budgetAmount)) ||
+                        budgetSource.value === 'noBudget'
+                            ? 0.0
+                            : parseFloat(vendor.budgetAmount),
+                    // cbbudgetEur: parseFloat(vendor.eurBudget),
+                    vendorShare: parseFloat(vendor.share),
+                    estimatedCostsCC: parseFloat(vendor.estimatedCostsCC),
+                    estimatedIncomeCC:
+                        budgetSource.value === 'noBudget'
+                            ? 0.0
+                            : parseFloat(vendor.estimatedIncomeCC),
+                    estimatedResultCC: parseFloat(vendor.netProfitTargetVC),
+                    // cbestimatedCostsLC: parseFloat(vendor.estimatedCostsLC),
+                    estimatedIncomeEUR:
+                        budgetSource.value === 'noBudget'
+                            ? 0.0
+                            : parseFloat(vendor.eurBudget),
+                    estimatedCostsEUR: parseFloat(vendor.estimatedCostsEUR),
+                    estimatedResultEUR: parseFloat(vendor.netProfitTargetEUR),
+                    estimatedResultBC: parseFloat(vendor.netProfitTargetLC),
+                },
+            });
+        });
+        costBreakdown.forEach((company: any) => {
+            children.push({
+                project: projectId,
+                title: '',
+                parentId: null,
+                viewId: null,
+                group: 'country',
+                created: new Date(),
+                updated: new Date(),
+                status: 'New',
+                author: requestorsName,
+                data: {
+                    projectName: campaignName,
+                    additionalInformation: comments,
+                    campaignChannel: campaignChannel.label,
+                    parentProjectNumber:
+                        company.companyCode + projectNumber.substring(4),
+                    projectNumber: company.projectNumber,
+                    campaignStartDate:
+                        startDate === null ? null : startDate.toString(),
+                    campaignEndDate:
+                        endDate === null ? null : endDate.toString(),
+                    budgetSource: budgetSource.label,
+                    campaignCurrency: exchangeRates.label,
+                    // vendorName: vendorName.label,
+                    // businessUnit: vendor.bu,
+                    // PH1: vendor.ph.label,
+                    vendorShare: 100,
+                    estimatedIncomeEUR:
+                        budgetSource.value === 'noBudget'
+                            ? 0.0
+                            : parseFloat(estimatedIncome),
+                    estimatedCostsEUR: parseFloat(estimatedCosts),
+                    estimatedResultEUR:
+                        parseFloat(netProfitTarget) *
+                        (budgetSource.value === 'noBudget' ? -1 : 1),
+                    estimatedResultBC:
+                        parseFloat(netProfitTargetBudgetCurrency) *
+                        (budgetSource.value === 'noBudget' ? -1 : 1),
+                    projectType: 'European Multi Vendor',
+                    companyName: company.companyName,
+                    countryCodeEMEA: company.companyCode,
+                    country: company.country,
+                    countriesEMEA: company.country,
+                    productionProjectManager: company.contactEmail,
+                    countryShare: parseFloat(company.share),
+                    countryBudgetContributionEur: company.contribution,
+                    countryCostEstimationEur: company.estimatedCosts,
+                    countryBudgetContributionCC: isNaN(
+                        parseFloat(company.contribution)
+                    )
+                        ? 0.0
+                        : parseFloat(company.contribution),
+                    countryCostEstimationCC: parseFloat(company.estimatedCosts),
+                },
+            });
+        });
+        var submission: SubmissionWithChildren = {
+            submission: parent,
+            children,
+            local: null,
+        };
+
+        if (draft) {
+            RestAPI.createDraft(submission).then(() => {
+                toast(
+                    <Toast
+                        title={'Draft save'}
+                        message={`Draft has been successfully saved.`}
+                        type={'info'}
+                    />
+                );
+            });
             return;
         }
 
-        setProjectNumber(
-            (requestorsCompanyName.value.code === ''
-                ? '????'
-                : requestorsCompanyName.value.code) +
-                (organizingCompany === '' ? '??' : organizingCompany) +
-                (year.value === '' ? '??' : year.value) +
-                (campaignChannel.value === '' ? '?' : campaignChannel.value) +
-                (projectStartQuarter.value === ''
-                    ? '?'
-                    : projectStartQuarter.value.slice(1)) +
-                '01'
-        );
-    }, [
-        year,
-        organizingCompany,
-        campaignChannel,
-        projectStartQuarter,
-        requestorsCompanyName,
-    ]);
+        RestAPI.getSubmissions().then((response) => {
+            var parentSubmissions = response.data.filter(
+                (s) => s.parentId === null
+            );
+            let isUnique = false;
+            let pn = projectNumber;
+            while (!isUnique) {
+                let found = false;
+                for (let s of parentSubmissions) {
+                    if (s.data.projectNumber === pn) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    isUnique = true;
+                } else {
+                    var newSuffix: any = parseInt(pn.slice(-2)) + 1;
+                    newSuffix =
+                        (newSuffix > 9 ? '' : '0') + newSuffix.toString();
+                    pn = pn.slice(0, -2) + newSuffix;
+                }
+            }
+            if (pn !== projectNumber) {
+                // we changed project number. Notify user
+                setProjectNumber(pn);
+                toast(
+                    <Toast
+                        title={'SAP Response'}
+                        message={`Project Number already exists. Changed to: ${pn}. Press submit again.`}
+                        type={'info'}
+                    />
+                );
+                return;
+            } else {
+                RestAPI.createSubmissionWithChildren(submission).then(
+                    (response) => {
+                        props.history.push('/submissions');
+                    }
+                );
+            }
+        });
+    };
 
     return (
         <Box>
@@ -1253,62 +964,14 @@ export default function Elmv(props: Props) {
                     approval for verification if needed
                 </Text>
                 <Text as="b">Requestor`s Details</Text>
-                <Box w="100%">
-                    <Text mb="8px">Requestor`s Company Name</Text>
-                    <Select
-                        menuPortalTarget={document.body}
-                        styles={DefaultSelectStyles(
-                            useColorModeValue,
-                            inputErrors.includes('requestorsCompanyName')
-                        )}
-                        theme={(theme) => ({
-                            ...theme,
-                            borderRadius: 6,
-                            colors: {
-                                ...theme.colors,
-                                primary: '#3082CE',
-                            },
-                        })}
-                        value={{
-                            label: requestorsCompanyName.label,
-                            value: requestorsCompanyName.value,
-                        }}
-                        onChange={(value: any) => {
-                            var ler = 0.0;
-                            ExchangeRates.forEach((rate) => {
-                                if (rate.label === value.value.currency) {
-                                    ler = parseFloat(rate.value);
-                                }
-                            });
-                            switch (value.value.code) {
-                                case '1550':
-                                    vendorsAfterCompanySelect =
-                                        AlsoInternationalVendorsNames;
-                                    break;
-                                case '6110':
-                                    vendorsAfterCompanySelect = VendorsNames;
-                                    break;
-                                default:
-                                    var temp = { ...vendor };
-                                    temp.manufacturer = '';
-                                    temp.creditor = '';
-                                    temp.debitor = '';
-                                    temp.bu = '';
-                                    temp.ph = { label: '', value: '' };
-                                    setVendor(temp);
-                                    setVendorsNames([]);
-                                    vendorsAfterCompanySelect = [];
-                            }
-                            setLocalExchangeRate(ler);
-                            setRequestorsCompanyName(value);
-                            setOrganizingCompany(value.value.country);
-                        }}
-                        classNamePrefix="select"
-                        isClearable={false}
-                        name="requestorsCompanyName"
-                        options={Companies}
-                    />
-                </Box>
+                <RequestorCompanyName
+                    requestorsCompanyName={requestorsCompanyName}
+                    ExchangeRates={ExchangeRates}
+                    setLocalExchangeRate={setLocalExchangeRate}
+                    setRequestorsCompanyName={setRequestorsCompanyName}
+                    Companies={Companies}
+                    setVendorOptions={setVendorOptions}
+                />
                 <HStack w="100%">
                     <Box w="100%">
                         <Text mb="8px">Requestor`s Company Code</Text>
@@ -1319,6 +982,25 @@ export default function Elmv(props: Props) {
                             color={useColorModeValue('gray.800', '#ABB2BF')}
                         />
                     </Box>
+                    <Alert
+                        status="error"
+                        display={
+                            requestorsCompanyName.value.code !== '6110' &&
+                            requestorsCompanyName.value.code !== ''
+                                ? 'flex'
+                                : 'none'
+                        }
+                    >
+                        <AlertIcon />
+                        <AlertDescription>
+                            Please note no actual project for 1550 will be
+                            created in the tool just yet, this still needs to be
+                            done via the usual process. But a project for
+                            Switzerland will be created if they are part of the
+                            campaign, as they are using the tool. Other
+                            countries and 1550 will follow.
+                        </AlertDescription>
+                    </Alert>
                     <Box w="100%">
                         <Text mb="8px">Requestor`s Country</Text>
                         <Input
@@ -1339,48 +1021,14 @@ export default function Elmv(props: Props) {
                     }
                 >
                     <AlertIcon />
+                    <AlertTitle>
+                        Please change Requestor`s Company Name!
+                    </AlertTitle>
                     <AlertDescription>
-                        Please note no actual project for 1550 will be created
-                        in the tool just yet, this still needs to be done via
-                        the usual process. But a project for Switzerland will be
-                        created if they are part of the campaign, as they are
-                        using the tool. Other countries and 1550 will follow.
+                        Currently, only companies with '6110' code are allowed
+                        ('ALSO Schweiz AG')
                     </AlertDescription>
                 </Alert>
-                <Box w="100%">
-                    <Text mb="8px">Organizing Company</Text>
-                    <Select
-                        menuPortalTarget={document.body}
-                        styles={DefaultSelectStyles(
-                            useColorModeValue,
-                            inputErrors.includes('organizingCompany')
-                        )}
-                        theme={(theme) => ({
-                            ...theme,
-                            borderRadius: 6,
-                            colors: {
-                                ...theme.colors,
-                                primary: '#3082CE',
-                            },
-                        })}
-                        value={{
-                            label: organizingCompany,
-                            value: organizingCompany,
-                        }}
-                        onChange={(selected: any) => {
-                            setOrganizingCompany(selected.value);
-                        }}
-                        classNamePrefix="select"
-                        isClearable={false}
-                        name="organizingCompany"
-                        options={Companies.map((company) => {
-                            return {
-                                label: company.value.country,
-                                value: company.value.country,
-                            };
-                        })}
-                    />
-                </Box>
                 <Text as="b">Campaign`s Details</Text>
 
                 <Box w="100%">
@@ -1390,7 +1038,6 @@ export default function Elmv(props: Props) {
                     </Text>
                     <Input
                         maxLength={40}
-                        isInvalid={inputErrors.includes('campaignName')}
                         value={campaignName}
                         onChange={(event) => {
                             setCampaignName(event.target.value);
@@ -1404,7 +1051,6 @@ export default function Elmv(props: Props) {
                     <Text mb="8px">Campaign Description</Text>
                     <Textarea
                         value={campaignDescription}
-                        isInvalid={inputErrors.includes('campaignDescription')}
                         onChange={(event) => {
                             setCampaignDescription(event.target.value);
                         }}
@@ -1419,10 +1065,25 @@ export default function Elmv(props: Props) {
                     <Text mb="8px">Campaign Channel</Text>
                     <Select
                         menuPortalTarget={document.body}
-                        styles={DefaultSelectStyles(
-                            useColorModeValue,
-                            inputErrors.includes('campaignChannel')
-                        )}
+                        styles={{
+                            menu: (provided) => ({
+                                ...provided,
+                                zIndex: 1000000,
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: '#718196',
+                            }),
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: 40,
+                                border: '1px solid #E2E8F0',
+                                transition: '0.3s',
+                                '&:hover': {
+                                    border: '1px solid #CBD5E0',
+                                },
+                            }),
+                        }}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1447,10 +1108,25 @@ export default function Elmv(props: Props) {
                     <Text mb="8px">Year</Text>
                     <Select
                         menuPortalTarget={document.body}
-                        styles={DefaultSelectStyles(
-                            useColorModeValue,
-                            inputErrors.includes('year')
-                        )}
+                        styles={{
+                            menu: (provided) => ({
+                                ...provided,
+                                zIndex: 1000000,
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: '#718196',
+                            }),
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: 40,
+                                border: '1px solid #E2E8F0',
+                                transition: '0.3s',
+                                '&:hover': {
+                                    border: '1px solid #CBD5E0',
+                                },
+                            }),
+                        }}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1476,10 +1152,25 @@ export default function Elmv(props: Props) {
                     </Text>
                     <Select
                         menuPortalTarget={document.body}
-                        styles={DefaultSelectStyles(
-                            useColorModeValue,
-                            inputErrors.includes('projectStartQuarter')
-                        )}
+                        styles={{
+                            menu: (provided) => ({
+                                ...provided,
+                                zIndex: 1000000,
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: '#718196',
+                            }),
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: 40,
+                                border: '1px solid #E2E8F0',
+                                transition: '0.3s',
+                                '&:hover': {
+                                    border: '1px solid #CBD5E0',
+                                },
+                            }),
+                        }}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1506,7 +1197,6 @@ export default function Elmv(props: Props) {
                     <Text mb="8px">Project Number</Text>
                     <Input
                         placeholder="____________"
-                        isInvalid={inputErrors.includes('projectNumber')}
                         value={projectNumber}
                         onChange={(event) => {
                             if (event.target.value.length < 13) {
@@ -1522,7 +1212,6 @@ export default function Elmv(props: Props) {
                     <Text mb="8px">Requestor`s Name</Text>
                     <Input
                         value={requestorsName}
-                        isInvalid={inputErrors.includes('requestorsName')}
                         onChange={(event) =>
                             setRequestorsName(event.target.value)
                         }
@@ -1537,9 +1226,6 @@ export default function Elmv(props: Props) {
                         <DatePicker
                             customInput={
                                 <Input
-                                    isInvalid={inputErrors.includes(
-                                        'campaignStartDate'
-                                    )}
                                     bg={useColorModeValue('white', '#2C313C')}
                                     color={useColorModeValue(
                                         'gray.800',
@@ -1559,9 +1245,6 @@ export default function Elmv(props: Props) {
                         <DatePicker
                             customInput={
                                 <Input
-                                    isInvalid={inputErrors.includes(
-                                        'campaignEndDate'
-                                    )}
                                     bg={useColorModeValue('white', '#2C313C')}
                                     color={useColorModeValue(
                                         'gray.800',
@@ -1582,10 +1265,25 @@ export default function Elmv(props: Props) {
                     <Text mb="8px">Budget Source</Text>
                     <Select
                         menuPortalTarget={document.body}
-                        styles={DefaultSelectStyles(
-                            useColorModeValue,
-                            inputErrors.includes('budgetSource')
-                        )}
+                        styles={{
+                            menu: (provided) => ({
+                                ...provided,
+                                zIndex: 1000000,
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: '#718196',
+                            }),
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: 40,
+                                border: '1px solid #E2E8F0',
+                                transition: '0.3s',
+                                '&:hover': {
+                                    border: '1px solid #CBD5E0',
+                                },
+                            }),
+                        }}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1612,9 +1310,6 @@ export default function Elmv(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Local Currency</Text>
                     <Input
-                        isInvalid={inputErrors.includes(
-                            'requestorsCompanyName'
-                        )}
                         defaultValue={requestorsCompanyName.value.currency}
                         disabled
                         bg={useColorModeValue('white', '#2C313C')}
@@ -1625,10 +1320,25 @@ export default function Elmv(props: Props) {
                     <Text mb="8px">Campaign Currency</Text>
                     <Select
                         menuPortalTarget={document.body}
-                        styles={DefaultSelectStyles(
-                            useColorModeValue,
-                            inputErrors.includes('campaignCurrency')
-                        )}
+                        styles={{
+                            menu: (provided) => ({
+                                ...provided,
+                                zIndex: 1000000,
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: '#718196',
+                            }),
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: 40,
+                                border: '1px solid #E2E8F0',
+                                transition: '0.3s',
+                                '&:hover': {
+                                    border: '1px solid #CBD5E0',
+                                },
+                            }),
+                        }}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1653,9 +1363,7 @@ export default function Elmv(props: Props) {
                         Campaign Estimated Income in Campaign Currency
                     </Text>
                     <Input
-                        isInvalid={inputErrors.includes(
-                            'campaignEstimatedIncomeBudgetsCurrency'
-                        )}
+                        disabled={budgetSource.value === 'noBudget'}
                         value={estimatedIncomeBudgetCurrency}
                         onChange={(event) => {
                             setEstimatedIncomeBudgetCurrency(
@@ -1672,9 +1380,6 @@ export default function Elmv(props: Props) {
                     </Text>
                     <Input
                         value={estimatedCostsBudgetCurrency}
-                        isInvalid={inputErrors.includes(
-                            'campaignEstimatedCostsBudgetsCurrency'
-                        )}
                         onChange={(event) => {
                             setEstimatedCostsBudgetCurrency(event.target.value);
                         }}
@@ -1690,9 +1395,6 @@ export default function Elmv(props: Props) {
                     </Text>
                     <Input
                         value={netProfitTargetBudgetCurrency}
-                        isInvalid={inputErrors.includes(
-                            'campaignNetProfitTargetBudgetsCurrency'
-                        )}
                         onChange={(event) => {
                             setNetProfitTargetBudgetCurrency(
                                 event.target.value
@@ -1706,7 +1408,6 @@ export default function Elmv(props: Props) {
                     <Text mb="8px">Campaign Estimated Income in EUR</Text>
                     <Input
                         disabled={budgetSource.value === 'noBudget'}
-                        isInvalid={inputErrors.includes('estimatedIncomeCC')}
                         value={estimatedIncome}
                         onChange={(event) => {
                             setEstimatedIncome(event.target.value);
@@ -1719,9 +1420,6 @@ export default function Elmv(props: Props) {
                     <Text mb="8px">Campaign Estimated Costs in EUR</Text>
                     <Input
                         value={estimatedCosts}
-                        isInvalid={inputErrors.includes(
-                            'campaignEstimatedCostsEur'
-                        )}
                         onChange={(event) => {
                             setEstimatedCosts(event.target.value);
                         }}
@@ -1738,9 +1436,6 @@ export default function Elmv(props: Props) {
                     <Input
                         // value={netProfitTarget}
                         value={netProfitTarget}
-                        isInvalid={inputErrors.includes(
-                            'campaignNetProfitTargetEur'
-                        )}
                         onChange={(event) => {
                             setNetProfitTarget(event.target.value);
                         }}
@@ -1754,9 +1449,6 @@ export default function Elmv(props: Props) {
                     </Text>
                     <Input
                         value={totalEstimatedCostsLC}
-                        isInvalid={inputErrors.includes(
-                            'totalEstimatedCostsLC'
-                        )}
                         onChange={(event) => {
                             setTotalEstimatedCostsLC(event.target.value);
                         }}
@@ -1770,10 +1462,25 @@ export default function Elmv(props: Props) {
                     <Select
                         // menuPortalTarget={document.body}
                         isMulti
-                        styles={DefaultSelectStyles(
-                            useColorModeValue,
-                            inputErrors.includes('vendorName')
-                        )}
+                        styles={{
+                            menu: (provided) => ({
+                                ...provided,
+                                zIndex: 1000000,
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: '#718196',
+                            }),
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: 40,
+                                border: '1px solid #E2E8F0',
+                                transition: '0.3s',
+                                '&:hover': {
+                                    border: '1px solid #CBD5E0',
+                                },
+                            }),
+                        }}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1785,31 +1492,23 @@ export default function Elmv(props: Props) {
                         value={vendorsNames}
                         placeholder=""
                         onChange={(value: any) => {
-                            if (value.length < vendors.length) {
-                                var deletedElem = vendorsNames.filter(
-                                    (n: any) => !value.includes(n)
-                                );
-                                deletedElem.forEach((e: any) => {
-                                    VendorsNames.splice(
-                                        VendorsNames.findIndex(
-                                            (s: any) => s.label === e.label
-                                        ),
-                                        1
-                                    );
-                                });
-                            }
                             setVendorsNames(value);
                         }}
                         classNamePrefix="select"
                         isClearable={false}
                         name="vendorsName"
-                        options={vendorsAfterCompanySelect}
+                        options={vendorsOptions?.map((option: any) => {
+                            return {
+                                label: `${option.label} (${option.value.debitorischer} - ${option.value.bu})`,
+                                value: option.value,
+                            };
+                        })}
                     />
                 </Box>
+
                 <Box w="100%">
                     <Text mb="8px">Vendors</Text>
                     <Table
-                        shouldUpdateScroll={false}
                         hover={false}
                         autoHeight
                         rowHeight={65}
@@ -1827,12 +1526,6 @@ export default function Elmv(props: Props) {
                                                 event.target.value;
                                             setVendors(temp);
                                         }}
-                                        bg={cellTextAlert(
-                                            vendors[index!] !== undefined
-                                                ? vendors[index!].vendor
-                                                : '',
-                                            rowData
-                                        )}
                                     />
                                 )}
                             </Cell>
@@ -1843,19 +1536,12 @@ export default function Elmv(props: Props) {
                                 {(rowData, index) => (
                                     <Input
                                         value={rowData.debitor}
-                                        disabled={true}
                                         onChange={(event) => {
                                             var temp = [...vendors];
                                             temp[index!].debitor =
                                                 event.target.value;
                                             setVendors(temp);
                                         }}
-                                        bg={cellTextAlert(
-                                            vendors[index!] !== undefined
-                                                ? vendors[index!].debitor
-                                                : '',
-                                            rowData
-                                        )}
                                     />
                                 )}
                             </Cell>
@@ -1866,6 +1552,7 @@ export default function Elmv(props: Props) {
                             <Cell dataKey="creditor">
                                 {(rowData, index) => (
                                     <Input
+                                        isDisabled
                                         value={rowData.creditor}
                                         onChange={(event) => {
                                             var temp = [...vendors];
@@ -1884,19 +1571,12 @@ export default function Elmv(props: Props) {
                                 {(rowData, index) => (
                                     <Input
                                         value={rowData.manufacturer}
-                                        disabled={true}
                                         onChange={(event) => {
                                             var temp = [...vendors];
                                             temp[index!].manufacturer =
                                                 event.target.value;
                                             setVendors(temp);
                                         }}
-                                        bg={cellTextAlert(
-                                            vendors[index!] !== undefined
-                                                ? vendors[index!].manufacturer
-                                                : '',
-                                            rowData
-                                        )}
                                     />
                                 )}
                             </Cell>
@@ -1906,14 +1586,46 @@ export default function Elmv(props: Props) {
                             <HeaderCell>Business Unit</HeaderCell>
                             <Cell dataKey="bu">
                                 {(rowData, index) => (
+                                    <Input
+                                        value={rowData.bu}
+                                        onChange={(event) => {
+                                            var temp = [...vendors];
+                                            temp[index!].bu =
+                                                event.target.value;
+                                            setVendors(temp);
+                                        }}
+                                    />
+                                )}
+                            </Cell>
+                        </Column>
+                        <Column width={200} resizable>
+                            <HeaderCell>PH1</HeaderCell>
+                            <Cell dataKey="ph">
+                                {(rowData, index) => (
                                     <Select
-                                        styles={DefaultSelectStyles(
-                                            useColorModeValue,
-                                            cellDropDownAlert(
-                                                rowData.bu,
-                                                rowData
-                                            )
-                                        )}
+                                        styles={{
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                zIndex: 1000000000,
+                                            }),
+                                            menuPortal: (base) => ({
+                                                ...base,
+                                                zIndex: 10000000,
+                                            }),
+                                            singleValue: (provided) => ({
+                                                ...provided,
+                                                color: '#718196',
+                                            }),
+                                            control: (base, state) => ({
+                                                ...base,
+                                                minHeight: 40,
+                                                border: '1px solid #E2E8F0',
+                                                transition: '0.3s',
+                                                '&:hover': {
+                                                    border: '1px solid #CBD5E0',
+                                                },
+                                            }),
+                                        }}
                                         theme={(theme) => ({
                                             ...theme,
                                             borderRadius: 6,
@@ -1923,220 +1635,21 @@ export default function Elmv(props: Props) {
                                             },
                                         })}
                                         menuPortalTarget={document.body}
-                                        value={{
-                                            label: rowData.bu,
-                                            value:
-                                                typeof rowData.bu === 'string'
-                                                    ? rowData.bu.substr(0, 3)
-                                                    : '',
-                                        }}
+                                        value={rowData.ph}
                                         onChange={(value) => {
-                                            if (value !== null) {
-                                                var temp = [...vendors];
-                                                if (
-                                                    temp[
-                                                        index!
-                                                    ].vendor.substring(
-                                                        temp[
-                                                            index!
-                                                        ].vendor.toString()
-                                                            .length - 6,
-                                                        temp[
-                                                            index!
-                                                        ].vendor.toString()
-                                                            .length - 4
-                                                    ) === 'BU'
-                                                ) {
-                                                    temp[index!].vendor =
-                                                        temp[
-                                                            index!
-                                                        ].vendor.substring(
-                                                            0,
-                                                            temp[index!].vendor
-                                                                .length - 6
-                                                        ) +
-                                                        'BU ' +
-                                                        value.label.substring(
-                                                            0,
-                                                            3
-                                                        );
-                                                } else {
-                                                    var idxSelected =
-                                                        vendorsNames.findIndex(
-                                                            (s: any) =>
-                                                                s.label.substring(
-                                                                    0,
-                                                                    s.label
-                                                                        .length
-                                                                ) ===
-                                                                temp[index!]
-                                                                    .vendor
-                                                        );
-                                                    var vend =
-                                                        vendorsNames[
-                                                            idxSelected
-                                                        ];
-                                                    var lab = '';
-                                                    if (
-                                                        vend.label.substring(
-                                                            vend.label.length -
-                                                                5,
-                                                            vend.label.length -
-                                                                3
-                                                        ) === 'BU'
-                                                    ) {
-                                                        lab =
-                                                            vend.label.substring(
-                                                                0,
-                                                                vend.label
-                                                                    .length - 5
-                                                            ) +
-                                                            ' (' +
-                                                            vend.value
-                                                                .debitorischer +
-                                                            ')';
-                                                    } else {
-                                                        lab = vend.label;
-                                                    }
-
-                                                    var data = {
-                                                        label: lab,
-                                                        value: {
-                                                            alsoMarketingConsultant:
-                                                                vend.value
-                                                                    .alsoMarketingConsultant,
-                                                            bu: vend.value.bu,
-                                                            city: vend.value
-                                                                .city,
-                                                            cityCode:
-                                                                vend.value
-                                                                    .cityCode,
-                                                            debitorischer:
-                                                                vend.value
-                                                                    .debitorischer,
-                                                            email: vend.value
-                                                                .email,
-                                                            hersteller:
-                                                                vend.value
-                                                                    .hersteller,
-                                                            kreditor:
-                                                                vend.value
-                                                                    .kreditor,
-                                                            manufacturerName:
-                                                                vend.value
-                                                                    .manufacturerName,
-                                                            vendorAddress:
-                                                                vend.value
-                                                                    .vendorAddress,
-                                                        },
-                                                    };
-                                                    VendorsNames.splice(
-                                                        VendorsNames.findIndex(
-                                                            (s: any) =>
-                                                                s.label.substring(
-                                                                    0,
-                                                                    s.label
-                                                                        .length
-                                                                ) ===
-                                                                temp[index!]
-                                                                    .vendor
-                                                        ),
-                                                        0,
-                                                        data
-                                                    );
-                                                    temp[index!].vendor =
-                                                        temp[index!].vendor +
-                                                        ' BU ' +
-                                                        value.label.substring(
-                                                            0,
-                                                            3
-                                                        );
-                                                    vend.label =
-                                                        temp[index!].vendor;
-                                                    var v = [...vendorsNames];
-                                                    v[idxSelected] = vend;
-                                                    setVendorsNames(v);
-                                                }
-                                                temp[index!].bu = value.label;
-                                                setVendors(temp);
-                                            }
+                                            var temp = [...vendors];
+                                            temp[index!].ph = value;
+                                            setVendors(temp);
                                         }}
                                         placeholder=""
                                         classNamePrefix="select"
                                         isClearable={false}
-                                        name="BUs"
-                                        options={(() => {
-                                            var tBUs = [...BUs];
-                                            if (vendorsNames.length < 1) {
-                                                return BUs;
-                                            }
-                                            vendors.forEach((element: any) => {
-                                                if (
-                                                    element.debitor ===
-                                                    rowData.debitor
-                                                ) {
-                                                    var idx = tBUs.findIndex(
-                                                        (s: any) =>
-                                                            s.label ===
-                                                            element.bu
-                                                    );
-                                                    tBUs.splice(idx, 1);
-                                                }
-                                            });
-                                            return tBUs;
-                                        })()}
+                                        name="PH1"
+                                        options={PH1}
                                     />
                                 )}
                             </Cell>
                         </Column>
-                        {/* <Column width={200} resizable>
-              <HeaderCell>PH1</HeaderCell>
-              <Cell dataKey="ph">
-                {(rowData, index) => (
-                  <Select
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        zIndex: 1000000000,
-                      }),
-                      singleValue: (provided) => ({
-                        ...provided,
-                        color: "#718196",
-                      }),
-                      control: (base, state) => ({
-                        ...base,
-                        minHeight: 40,
-                        border: "1px solid #E2E8F0",
-                        transition: "0.3s",
-                        "&:hover": {
-                          border: "1px solid #CBD5E0",
-                        },
-                      }),
-                    }}
-                    theme={(theme) => ({
-                      ...theme,
-                      borderRadius: 6,
-                      colors: {
-                        ...theme.colors,
-                        primary: "#3082CE",
-                      },
-                    })}
-                    menuPortalTarget={document.body}
-                    value={rowData.ph}
-                    onChange={(value) => {
-                      var temp = [...vendors];
-                      temp[index!].ph = value;
-                      setVendors(temp);
-                    }}
-                    placeholder=""
-                    classNamePrefix="select"
-                    isClearable={false}
-                    name="PH1"
-                    options={PH1}
-                  />
-                )}
-              </Cell>
-            </Column> */}
                         <Column width={200} resizable>
                             <HeaderCell>Vendor Budget Currency</HeaderCell>
                             <Cell dataKey="budgetCurrency">
@@ -2145,13 +1658,29 @@ export default function Elmv(props: Props) {
                                         isDisabled={
                                             budgetSource.value === 'noBudget'
                                         }
-                                        styles={DefaultSelectStyles(
-                                            useColorModeValue,
-                                            cellDropDownAlert(
-                                                rowData.budgetCurrency,
-                                                rowData
-                                            )
-                                        )}
+                                        styles={{
+                                            menu: (provided) => ({
+                                                ...provided,
+                                                zIndex: 1000000000,
+                                            }),
+                                            menuPortal: (base) => ({
+                                                ...base,
+                                                zIndex: 10000000,
+                                            }),
+                                            singleValue: (provided) => ({
+                                                ...provided,
+                                                color: '#718196',
+                                            }),
+                                            control: (base, state) => ({
+                                                ...base,
+                                                minHeight: 40,
+                                                border: '1px solid #E2E8F0',
+                                                transition: '0.3s',
+                                                '&:hover': {
+                                                    border: '1px solid #CBD5E0',
+                                                },
+                                            }),
+                                        }}
                                         theme={(theme) => ({
                                             ...theme,
                                             borderRadius: 6,
@@ -2184,9 +1713,6 @@ export default function Elmv(props: Props) {
                                         disabled={
                                             budgetSource.value === 'noBudget'
                                         }
-                                        isInvalid={inputErrors.includes(
-                                            'budgetAmount'
-                                        )}
                                         value={rowData.budgetAmount}
                                         onChange={(event) => {
                                             var temp = [...vendors];
@@ -2194,10 +1720,6 @@ export default function Elmv(props: Props) {
                                                 event.target.value;
                                             setVendors(temp);
                                         }}
-                                        bg={cellNumberAlert(
-                                            rowData.budgetAmount,
-                                            rowData
-                                        )}
                                     />
                                 )}
                             </Cell>
@@ -2217,10 +1739,6 @@ export default function Elmv(props: Props) {
                                                 event.target.value;
                                             setVendors(temp);
                                         }}
-                                        bg={cellNumberAlert(
-                                            rowData.localBudget,
-                                            rowData
-                                        )}
                                     />
                                 )}
                             </Cell>
@@ -2240,11 +1758,6 @@ export default function Elmv(props: Props) {
                                                 event.target.value;
                                             setVendors(temp);
                                         }}
-                                        bg={totalAlert(
-                                            totalVendorBudgetInEUR,
-                                            rowData.vendor,
-                                            parseFloat(estimatedIncome)
-                                        )}
                                     />
                                 )}
                             </Cell>
@@ -2368,6 +1881,219 @@ export default function Elmv(props: Props) {
                     </Table>
                 </Box>
                 <Box w="100%">
+                    <Text mb="8px">Companies Participating</Text>
+                    <Select
+                        menuPortalTarget={document.body}
+                        isMulti
+                        styles={{
+                            menu: (provided) => ({
+                                ...provided,
+                                zIndex: 10000000,
+                            }),
+                            menuPortal: (base) => ({
+                                ...base,
+                                zIndex: 10000000,
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: '#718196',
+                            }),
+                            control: (base, state) => ({
+                                ...base,
+                                minHeight: 40,
+                                border: '1px solid #E2E8F0',
+                                transition: '0.3s',
+                                '&:hover': {
+                                    border: '1px solid #CBD5E0',
+                                },
+                            }),
+                        }}
+                        theme={(theme) => ({
+                            ...theme,
+                            borderRadius: 6,
+                            colors: {
+                                ...theme.colors,
+                                primary: '#3082CE',
+                            },
+                        })}
+                        value={companiesParticipating}
+                        placeholder=""
+                        onChange={(value: any) => {
+                            setCompaniesParticipating(value);
+                        }}
+                        // classNamePrefix="select"
+                        isClearable={false}
+                        name="companiesParticipating"
+                        options={Companies}
+                    />
+                </Box>
+
+                <Box w="100%">
+                    <Text mb="8px">Country Breakdown</Text>
+                    <Table
+                        shouldUpdateScroll={false}
+                        hover={false}
+                        autoHeight
+                        rowHeight={65}
+                        data={[
+                            ...costBreakdown,
+                            {
+                                invalid: totalcbShare === '100' ? false : true,
+                                companyName: 'TOTAL',
+                                share: totalcbShare + '%',
+                                contribution:
+                                    totalcbContribution +
+                                    ' ' +
+                                    exchangeRates.label,
+                                estimatedCosts:
+                                    totalcbCosts + ' ' + exchangeRates.label,
+                            },
+                        ]}
+                    >
+                        <Column width={200} resizable>
+                            <HeaderCell>Company Name</HeaderCell>
+                            <Cell dataKey="companyName">
+                                {(rowData, index) => (
+                                    <Input
+                                        value={rowData.companyName}
+                                        onChange={(event) => {
+                                            var temp = [...costBreakdown];
+                                            temp[index!].companyName =
+                                                event.target.value;
+                                            setCostBreakdown(temp);
+                                        }}
+                                    />
+                                )}
+                            </Cell>
+                        </Column>
+
+                        <Column width={200} resizable>
+                            <HeaderCell>Company Code</HeaderCell>
+                            <Cell dataKey="companyCode">
+                                {(rowData, index) => (
+                                    <Input
+                                        value={rowData.companyCode}
+                                        onChange={(event) => {
+                                            var temp = [...costBreakdown];
+                                            temp[index!].companyCode =
+                                                event.target.value;
+                                            setCostBreakdown(temp);
+                                        }}
+                                    />
+                                )}
+                            </Cell>
+                        </Column>
+
+                        <Column width={100} resizable>
+                            <HeaderCell>Country</HeaderCell>
+                            <Cell dataKey="country">
+                                {(rowData, index) => (
+                                    <Input
+                                        value={rowData.country}
+                                        onChange={(event) => {
+                                            var temp = [...costBreakdown];
+                                            temp[index!].country =
+                                                event.target.value;
+                                            setCostBreakdown(temp);
+                                        }}
+                                    />
+                                )}
+                            </Cell>
+                        </Column>
+
+                        <Column width={200} resizable>
+                            <HeaderCell>Contact Person's Email</HeaderCell>
+                            <Cell dataKey="contactEmail">
+                                {(rowData, index) => (
+                                    <Input
+                                        value={rowData.contactEmail}
+                                        onChange={(event) => {
+                                            var temp = [...costBreakdown];
+                                            temp[index!].contactEmail =
+                                                event.target.value;
+                                            setCostBreakdown(temp);
+                                        }}
+                                    />
+                                )}
+                            </Cell>
+                        </Column>
+
+                        <Column width={200} resizable>
+                            <HeaderCell>Local Project Number</HeaderCell>
+                            <Cell dataKey="projectNumber">
+                                {(rowData, index) => (
+                                    <Input
+                                        value={rowData.projectNumber}
+                                        onChange={(event) => {
+                                            var temp = [...costBreakdown];
+                                            temp[index!].projectNumber =
+                                                event.target.value;
+                                            setCostBreakdown(temp);
+                                        }}
+                                    />
+                                )}
+                            </Cell>
+                        </Column>
+                        <Column width={100} resizable>
+                            <HeaderCell>Share %</HeaderCell>
+                            <Cell dataKey="share">
+                                {(rowData, index) => (
+                                    <Input
+                                        color={rowData.invalid && 'red'}
+                                        value={rowData.share}
+                                        onChange={(event) => {
+                                            var temp = [...costBreakdown];
+                                            temp[index!].share =
+                                                event.target.value;
+                                            setCostBreakdown(temp);
+                                        }}
+                                    />
+                                )}
+                            </Cell>
+                        </Column>
+                        <Column width={400} resizable>
+                            <HeaderCell>
+                                Budget Contribution in Campaign Currency
+                            </HeaderCell>
+                            <Cell dataKey="contribution">
+                                {(rowData, index) => (
+                                    <Input
+                                        disabled={
+                                            budgetSource.value === 'noBudget'
+                                        }
+                                        value={rowData.contribution}
+                                        onChange={(event) => {
+                                            var temp = [...costBreakdown];
+                                            temp[index!].contribution =
+                                                event.target.value;
+                                            setCostBreakdown(temp);
+                                        }}
+                                    />
+                                )}
+                            </Cell>
+                        </Column>
+                        <Column width={400} resizable>
+                            <HeaderCell>
+                                Total Estimated Costs in Campaign Currency
+                            </HeaderCell>
+                            <Cell dataKey="estimatedCosts">
+                                {(rowData, index) => (
+                                    <Input
+                                        value={rowData.estimatedCosts}
+                                        onChange={(event) => {
+                                            var temp = [...costBreakdown];
+                                            temp[index!].estimatedCosts =
+                                                event.target.value;
+                                            setCostBreakdown(temp);
+                                        }}
+                                    />
+                                )}
+                            </Cell>
+                        </Column>
+                    </Table>
+                </Box>
+
+                <Box w="100%">
                     <Text mb="8px">Comments</Text>
                     <Textarea
                         value={comments}
@@ -2382,16 +2108,18 @@ export default function Elmv(props: Props) {
                     />
                 </Box>
             </VStack>
-            <Box h="3em">
+            <VStack justifyContent={'end'} flexDirection="row">
                 <Button
                     float="right"
-                    colorScheme={'blue'}
-                    onClick={() => {
-                        createSubmission(false);
+                    mr="15px"
+                    color={'white'}
+                    bg={useColorModeValue('blue.400', '#4D97E2')}
+                    _hover={{
+                        bg: useColorModeValue('blue.300', '#377bbf'),
                     }}
-                    isDisabled={requestorsCompanyName.value.code !== '6110'}
+                    onClick={() => draftSubmitHandler(true)}
                 >
-                    Submit
+                    Save to draft
                 </Button>
                 <Button
                     float="right"
@@ -2401,6 +2129,7 @@ export default function Elmv(props: Props) {
                     _hover={{
                         bg: useColorModeValue('green.300', '#377bbf'),
                     }}
+                    className="btn-ermv export-btn-ermv"
                     onClick={() => {
                         interface FD {
                             [key: string]: any;
@@ -2418,10 +2147,6 @@ export default function Elmv(props: Props) {
                         formattedData.push([
                             'Requestor`s Country',
                             requestorsCompanyName.value.country,
-                        ]);
-                        formattedData.push([
-                            'Organizing Company',
-                            organizingCompany,
                         ]);
                         formattedData.push(['Campaign Name', campaignName]);
                         formattedData.push([
@@ -2587,6 +2312,35 @@ export default function Elmv(props: Props) {
                                     : parseFloat(v.netProfitTargetEUR),
                             ]);
                         });
+                        formattedData.push([]);
+                        formattedData.push([
+                            'Company Name',
+                            'VCompany Company Code',
+                            'Country',
+                            "Contact Person's Email",
+                            'Local Project Number',
+                            'Share %',
+                            'Budget Contribution in Campaign Currency',
+                            'Total Estimated Costs in Campaign Currency',
+                        ]);
+                        costBreakdown.forEach((c: any) => {
+                            formattedData.push([
+                                c.companyName,
+                                c.companyCode,
+                                c.country,
+                                c.contactEmail,
+                                c.projectNumber,
+                                `${c.share || 0}%`,
+                                isNaN(c.contribution) || c.contribution === ''
+                                    ? 0.0
+                                    : parseFloat(c.contribution),
+                                isNaN(c.estimatedCosts) ||
+                                c.estimatedCosts === ''
+                                    ? 0.0
+                                    : parseFloat(c.estimatedCosts),
+                            ]);
+                        });
+                        formattedData.push([]);
                         formattedData.push(['Comments', comments]);
                         formattedData.push([]);
 
@@ -2608,20 +2362,22 @@ export default function Elmv(props: Props) {
                     Export
                 </Button>
                 <Button
+                    className="btn-ermv"
                     float="right"
-                    mr="15px"
                     color={'white'}
                     bg={useColorModeValue('blue.400', '#4D97E2')}
                     _hover={{
                         bg: useColorModeValue('blue.300', '#377bbf'),
                     }}
-                    onClick={() => {
-                        createSubmission(true);
-                    }}
+                    isDisabled={
+                        requestorsCompanyName.value.code !== '6110' ||
+                        props.submission
+                    }
+                    onClick={() => draftSubmitHandler(false)}
                 >
-                    {props.isDraft ? 'Save to draft' : 'Save to draft'}
+                    Submit
                 </Button>
-            </Box>
+            </VStack>
         </Box>
     );
 }

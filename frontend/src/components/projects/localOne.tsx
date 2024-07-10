@@ -21,7 +21,7 @@ import { getAccountInfo } from '../../utils/MsGraphApiCall';
 import DatePicker from 'react-datepicker';
 import isEqual from 'lodash/isEqual';
 import { toast } from 'react-toastify';
-import Toast from '../../components/Toast';
+import Toast from '../Toast';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import moment from 'moment';

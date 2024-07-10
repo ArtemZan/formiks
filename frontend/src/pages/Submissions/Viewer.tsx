@@ -17,10 +17,10 @@ import { useEffect, useState } from "react";
 import Project from "../../types/project";
 import { RestAPI } from "../../api/rest";
 
-import Ermv from "../../components/projects/ermv";
-import Elmv from "../../components/projects/elmv";
-import Elov from "../../components/projects/elov";
-import Por from "../../components/projects/por";
+import Ermv from "../../components/projects/EuropeanMulti/europeanMulti";
+import Elmv from "../../components/projects/localMulti";
+import Elov from "../../components/projects/localOne";
+import Por from "../../components/projects/purchaseOrder";
 import Cerov from "../../components/projects/cerov";
 import { Submission } from "../../types/submission";
 

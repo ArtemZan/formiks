@@ -22,7 +22,7 @@ import { DefaultSelectStyles } from "../../utils/Styles";
 import isEqual from "lodash/isEqual";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
-import Toast from "../../components/Toast";
+import Toast from "../Toast";
 import { Table, Uploader } from "rsuite";
 import { Submission, SubmissionWithChildren } from "../../types/submission";
 import { RestAPI } from "../../api/rest";

@@ -1,23 +1,7 @@
-import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import {
-  Badge,
   Box,
-  Button,
-  Center,
-  SimpleGrid,
   Tag,
-  TagLabel,
-  TagLeftIcon,
-  Wrap,
-  WrapItem,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  useColorModeValue,
-  ModalCloseButton,
   Accordion,
   AccordionItem,
   AccordionButton,
@@ -31,13 +15,9 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { RestAPI } from "../../api/rest";
-import CreateBookmark from "../../components/CreateBookmark";
-import ProjectCard from "../../components/ProjectCard";
-import Bookmark from "../../types/bookmark";
 import Project from "../../types/project";
 import moment from "moment";
 import { Submission } from "../../types/submission";
-import { rest } from "lodash";
 
 interface Props {
   history: any;
