@@ -17,7 +17,7 @@ import Project from "../../types/project";
 import { Submission } from "../../types/submission";
 import { RestAPI } from "../../api/rest";
 
-import Cerov from "../../components/projects/cerov";
+import Cerov from "../../components/projects/europeanOne";
 import Elmv from "../../components/projects/localMulti";
 import Elov from "../../components/projects/localOne";
 import Por from "../../components/projects/purchaseOrder";

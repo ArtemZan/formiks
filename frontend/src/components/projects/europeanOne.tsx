@@ -15,7 +15,7 @@ import {
     Alert,
 } from '@chakra-ui/react';
 import { toast } from 'react-toastify';
-import Toast from '../../components/Toast';
+import Toast from '../Toast';
 import Project from '../../types/project';
 import Select from 'react-select';
 import { getAccountInfo } from '../../utils/MsGraphApiCall';

@@ -3,14 +3,12 @@ import {
   Text,
   Stack,
   Heading,
-  Avatar,
   useColorModeValue,
   Tag,
   Wrap,
   WrapItem,
   Tooltip,
 } from "@chakra-ui/react";
-import moment from "moment";
 import Project from "../types/project";
 
 interface Props {
@@ -69,23 +67,6 @@ export default function ProjectCard(props: Props) {
         </Tooltip>
       </Stack>
 
-      {/* <Stack mt={6} direction={"row"} spacing={4} align={"center"}>
-        <Avatar name={props.project.author} alt={"Author"} />
-        <Stack direction={"column"} spacing={0} fontSize={"sm"}>
-          <Text fontWeight={600}>{props.project.author}</Text>
-          <Tooltip
-            bg={useColorModeValue("white", "#373c45")}
-            color={useColorModeValue("gray.600", "#c0c6d1")}
-            p={4}
-            hasArrow
-            label={moment(props.project.updated).format("DD.MM.YYYY HH:mm")}
-          >
-            <Text color={"gray.500"}>
-              {moment(props.project.updated).format("MMMM DD, YYYY")}
-            </Text>
-          </Tooltip>
-        </Stack>
-      </Stack> */}
       <Wrap
         display="flex"
         justifyContent="center"

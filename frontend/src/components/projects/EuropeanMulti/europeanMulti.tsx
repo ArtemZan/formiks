@@ -30,6 +30,7 @@ import moment from 'moment';
 import FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import RequestorCompanyName from './RequestorCompanyName/RequestorCompanyName';
+import CountryBreakdown from './CountryBreakdown/CountryBreakdown';
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -109,7 +110,7 @@ export default function Ermv(props: Props) {
     );
     const [comments, setComments] = useState('');
     const [vendors, setVendors] = useState<any>([]);
-    const [costBreakdown, setCostBreakdown] = useState<any>([]);
+    const [countryBreakdown, setCountryBreakdown] = useState<any>([]);
 
     // const [totalVendorBudgetInLC, setTotalVendorBudgetInLC] = useState(0);
     // const [totalVendorBudgetInEUR, setTotalVendorBudgetInEUR] = useState(0);
@@ -119,7 +120,7 @@ export default function Ermv(props: Props) {
     const [totalcbShare, setTotalcbShare] = useState('0');
     const [totalcbContribution, setTotalcbContribution] = useState('0.00');
     const [totalcbCosts, setTotalcbCosts] = useState('0.00');
-    
+
 
     useEffect(() => {
         if (props.submission) {
@@ -262,7 +263,7 @@ export default function Ermv(props: Props) {
                             ).toFixed(2),
                         });
                     });
-                setCostBreakdown([...c]);
+                setCountryBreakdown([...c]);
 
                 props.children
                     .filter((s) => s.group === 'vendor')
@@ -371,6 +372,21 @@ export default function Ermv(props: Props) {
     }
 
     useEffect(() => {
+        if (countryBreakdown) {
+            const temp = countryBreakdown.map((country: any) => {
+                const firstPart = country.projectNumber.substring(0, 4);
+                const secondPart = projectNumber.substring(4, 12);
+                return {
+                    ...country,
+                    projectNumber: `${firstPart}${secondPart}`,
+                };
+            });
+
+            setCountryBreakdown(temp);
+        }
+    }, [projectNumber]);
+
+    useEffect(() => {
         if (props.submission) {
             return;
         }
@@ -451,13 +467,16 @@ export default function Ermv(props: Props) {
                 companyCode: company.value.code,
                 country: company.value.country,
                 contactEmail: '',
-                projectNumber: '',
+                projectNumber: `${company.value?.code}${projectNumber.substring(
+                    4,
+                    12
+                )}`,
                 contribution: '',
                 estimatedCosts: '',
                 share: '',
             });
         });
-        setCostBreakdown(data);
+        setCountryBreakdown(data);
     }, [companiesParticipating]);
 
     useEffect(() => {
@@ -467,7 +486,7 @@ export default function Ermv(props: Props) {
         var totalShare = 0.0;
         var totalContribution = 0.0;
         var totalCosts = 0.0;
-        var temp = [...costBreakdown];
+        var temp = [...countryBreakdown];
         temp.forEach((row: any) => {
             if (budgetSource.value === 'noBudget') {
                 row.contribution = '0.00';
@@ -489,14 +508,14 @@ export default function Ermv(props: Props) {
             totalContribution += parseFloat(row.contribution) || 0;
             totalCosts += parseFloat(row.estimatedCosts) || 0;
         });
-        if (!isEqual(costBreakdown, temp)) {
-            setCostBreakdown(temp);
+        if (!isEqual(countryBreakdown, temp)) {
+            setCountryBreakdown(temp);
         }
         setTotalcbShare(totalShare.toFixed(0));
         setTotalcbContribution(totalContribution.toFixed(2));
         setTotalcbCosts(totalCosts.toFixed(2));
     }, [
-        costBreakdown,
+        countryBreakdown,
         estimatedIncomeBudgetCurrency,
         estimatedCostsBudgetCurrency,
     ]);
@@ -834,7 +853,7 @@ export default function Ermv(props: Props) {
                 },
             });
         });
-        costBreakdown.forEach((company: any) => {
+        countryBreakdown.forEach((company: any) => {
             children.push({
                 project: projectId,
                 title: '',
@@ -971,6 +990,7 @@ export default function Ermv(props: Props) {
                     setRequestorsCompanyName={setRequestorsCompanyName}
                     Companies={Companies}
                     setVendorOptions={setVendorOptions}
+                    setCountryBreakdown={setCountryBreakdown}
                 />
                 <HStack w="100%">
                     <Box w="100%">
@@ -1928,170 +1948,15 @@ export default function Ermv(props: Props) {
                     />
                 </Box>
 
-                <Box w="100%">
-                    <Text mb="8px">Country Breakdown</Text>
-                    <Table
-                        shouldUpdateScroll={false}
-                        hover={false}
-                        autoHeight
-                        rowHeight={65}
-                        data={[
-                            ...costBreakdown,
-                            {
-                                invalid: totalcbShare === '100' ? false : true,
-                                companyName: 'TOTAL',
-                                share: totalcbShare + '%',
-                                contribution:
-                                    totalcbContribution +
-                                    ' ' +
-                                    exchangeRates.label,
-                                estimatedCosts:
-                                    totalcbCosts + ' ' + exchangeRates.label,
-                            },
-                        ]}
-                    >
-                        <Column width={200} resizable>
-                            <HeaderCell>Company Name</HeaderCell>
-                            <Cell dataKey="companyName">
-                                {(rowData, index) => (
-                                    <Input
-                                        value={rowData.companyName}
-                                        onChange={(event) => {
-                                            var temp = [...costBreakdown];
-                                            temp[index!].companyName =
-                                                event.target.value;
-                                            setCostBreakdown(temp);
-                                        }}
-                                    />
-                                )}
-                            </Cell>
-                        </Column>
-
-                        <Column width={200} resizable>
-                            <HeaderCell>Company Code</HeaderCell>
-                            <Cell dataKey="companyCode">
-                                {(rowData, index) => (
-                                    <Input
-                                        value={rowData.companyCode}
-                                        onChange={(event) => {
-                                            var temp = [...costBreakdown];
-                                            temp[index!].companyCode =
-                                                event.target.value;
-                                            setCostBreakdown(temp);
-                                        }}
-                                    />
-                                )}
-                            </Cell>
-                        </Column>
-
-                        <Column width={100} resizable>
-                            <HeaderCell>Country</HeaderCell>
-                            <Cell dataKey="country">
-                                {(rowData, index) => (
-                                    <Input
-                                        value={rowData.country}
-                                        onChange={(event) => {
-                                            var temp = [...costBreakdown];
-                                            temp[index!].country =
-                                                event.target.value;
-                                            setCostBreakdown(temp);
-                                        }}
-                                    />
-                                )}
-                            </Cell>
-                        </Column>
-
-                        <Column width={200} resizable>
-                            <HeaderCell>Contact Person's Email</HeaderCell>
-                            <Cell dataKey="contactEmail">
-                                {(rowData, index) => (
-                                    <Input
-                                        value={rowData.contactEmail}
-                                        onChange={(event) => {
-                                            var temp = [...costBreakdown];
-                                            temp[index!].contactEmail =
-                                                event.target.value;
-                                            setCostBreakdown(temp);
-                                        }}
-                                    />
-                                )}
-                            </Cell>
-                        </Column>
-
-                        <Column width={200} resizable>
-                            <HeaderCell>Local Project Number</HeaderCell>
-                            <Cell dataKey="projectNumber">
-                                {(rowData, index) => (
-                                    <Input
-                                        value={rowData.projectNumber}
-                                        onChange={(event) => {
-                                            var temp = [...costBreakdown];
-                                            temp[index!].projectNumber =
-                                                event.target.value;
-                                            setCostBreakdown(temp);
-                                        }}
-                                    />
-                                )}
-                            </Cell>
-                        </Column>
-                        <Column width={100} resizable>
-                            <HeaderCell>Share %</HeaderCell>
-                            <Cell dataKey="share">
-                                {(rowData, index) => (
-                                    <Input
-                                        color={rowData.invalid && 'red'}
-                                        value={rowData.share}
-                                        onChange={(event) => {
-                                            var temp = [...costBreakdown];
-                                            temp[index!].share =
-                                                event.target.value;
-                                            setCostBreakdown(temp);
-                                        }}
-                                    />
-                                )}
-                            </Cell>
-                        </Column>
-                        <Column width={400} resizable>
-                            <HeaderCell>
-                                Budget Contribution in Campaign Currency
-                            </HeaderCell>
-                            <Cell dataKey="contribution">
-                                {(rowData, index) => (
-                                    <Input
-                                        disabled={
-                                            budgetSource.value === 'noBudget'
-                                        }
-                                        value={rowData.contribution}
-                                        onChange={(event) => {
-                                            var temp = [...costBreakdown];
-                                            temp[index!].contribution =
-                                                event.target.value;
-                                            setCostBreakdown(temp);
-                                        }}
-                                    />
-                                )}
-                            </Cell>
-                        </Column>
-                        <Column width={400} resizable>
-                            <HeaderCell>
-                                Total Estimated Costs in Campaign Currency
-                            </HeaderCell>
-                            <Cell dataKey="estimatedCosts">
-                                {(rowData, index) => (
-                                    <Input
-                                        value={rowData.estimatedCosts}
-                                        onChange={(event) => {
-                                            var temp = [...costBreakdown];
-                                            temp[index!].estimatedCosts =
-                                                event.target.value;
-                                            setCostBreakdown(temp);
-                                        }}
-                                    />
-                                )}
-                            </Cell>
-                        </Column>
-                    </Table>
-                </Box>
+                <CountryBreakdown
+                    countryBreakdown={countryBreakdown}
+                    totalcbShare={totalcbShare}
+                    totalcbContribution={totalcbContribution}
+                    exchangeRates={exchangeRates}
+                    totalcbCosts={totalcbCosts}
+                    setCountryBreakdown={setCountryBreakdown}
+                    budgetSource={budgetSource}
+                />
 
                 <Box w="100%">
                     <Text mb="8px">Comments</Text>
@@ -2323,7 +2188,7 @@ export default function Ermv(props: Props) {
                             'Budget Contribution in Campaign Currency',
                             'Total Estimated Costs in Campaign Currency',
                         ]);
-                        costBreakdown.forEach((c: any) => {
+                        countryBreakdown.forEach((c: any) => {
                             formattedData.push([
                                 c.companyName,
                                 c.companyCode,

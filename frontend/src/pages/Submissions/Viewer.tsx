@@ -21,7 +21,7 @@ import Ermv from "../../components/projects/EuropeanMulti/europeanMulti";
 import Elmv from "../../components/projects/localMulti";
 import Elov from "../../components/projects/localOne";
 import Por from "../../components/projects/purchaseOrder";
-import Cerov from "../../components/projects/cerov";
+import Cerov from "../../components/projects/europeanOne";
 import { Submission } from "../../types/submission";
 
 interface Props {
