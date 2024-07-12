@@ -102,13 +102,14 @@ export default function Ermv(props: Props) {
         useState('');
     const [netProfitTargetBudgetCurrency, setNetProfitTargetBudgetCurrency] =
         useState('');
-    const [estimatedIncome, setEstimatedIncome] = useState('');
-    const [estimatedCosts, setEstimatedCosts] = useState('');
+    const [estimatedIncomeEuro, setEstimatedIncomeEuro] = useState('');
+    const [estimatedCostsEuro, setEstimatedCostsEuro] = useState('');
     const [netProfitTarget, setNetProfitTarget] = useState('');
     const [companiesParticipating, setCompaniesParticipating] = useState<any>(
         []
     );
     const [comments, setComments] = useState('');
+    //selected vendors - table data
     const [vendors, setVendors] = useState<any>([]);
     const [countryBreakdown, setCountryBreakdown] = useState<any>([]);
 
@@ -120,7 +121,6 @@ export default function Ermv(props: Props) {
     const [totalcbShare, setTotalcbShare] = useState('0');
     const [totalcbContribution, setTotalcbContribution] = useState('0.00');
     const [totalcbCosts, setTotalcbCosts] = useState('0.00');
-
 
     useEffect(() => {
         if (props.submission) {
@@ -177,12 +177,12 @@ export default function Ermv(props: Props) {
                         .campaignEstimatedIncomeBudgetsCurrency ?? 0
                 ).toFixed(2)
             );
-            setEstimatedIncome(
+            setEstimatedIncomeEuro(
                 (props.submission.data.campaignEstimatedIncomeEur || 0).toFixed(
                     2
                 )
             );
-            setEstimatedCosts(
+            setEstimatedCostsEuro(
                 (props.submission.data.campaignEstimatedCostsEur || 0).toFixed(
                     2
                 )
@@ -391,9 +391,9 @@ export default function Ermv(props: Props) {
             return;
         }
         setTotalEstimatedCostsLC(
-            (parseFloat(estimatedCosts) * localExchangeRate).toFixed(2)
+            (parseFloat(estimatedCostsEuro) * localExchangeRate).toFixed(2)
         );
-    }, [estimatedCosts, localExchangeRate]);
+    }, [estimatedCostsEuro, localExchangeRate]);
 
     useEffect(() => {
         getAccountInfo().then((response) => {
@@ -461,6 +461,7 @@ export default function Ermv(props: Props) {
             return;
         }
         var data: any = [];
+
         companiesParticipating.forEach((company: any) => {
             data.push({
                 companyName: company.label,
@@ -474,6 +475,8 @@ export default function Ermv(props: Props) {
                 contribution: '',
                 estimatedCosts: '',
                 share: '',
+                contributionEur: '',
+                estimatedCostsEur: '',
             });
         });
         setCountryBreakdown(data);
@@ -524,25 +527,56 @@ export default function Ermv(props: Props) {
         if (props.submission) {
             return;
         }
-        setEstimatedCosts(
-            (
-                parseFloat(estimatedCostsBudgetCurrency) /
-                parseFloat(exchangeRates.value)
-            )
-                .toFixed(2)
-                .toString()
-        );
+        const newEstimatedCostEuro =
+            parseFloat(estimatedCostsBudgetCurrency) /
+            parseFloat(exchangeRates.value);
+
+            setEstimatedCostsEuro(newEstimatedCostEuro.toFixed(2));
+        let tempCountryBreakdown = countryBreakdown.map((c: any) => {
+            const shareNum = Number(c.share);
+
+            if (
+                shareNum &&
+                !isNaN(c.share) &&
+                newEstimatedCostEuro &&
+                !isNaN(newEstimatedCostEuro)
+            ) {
+                const tempCostShare =
+                    newEstimatedCostEuro * (shareNum / 100);
+                return { ...c, estimatedCostsEur: tempCostShare.toFixed(2) };
+            }
+            return c;
+        });
+
+        if(budgetSource.value === 'noBudget') {
+            setCountryBreakdown(tempCountryBreakdown);
+        }
+
         if (budgetSource.value !== 'noBudget') {
-            setEstimatedIncome(
-                (
-                    parseFloat(estimatedIncomeBudgetCurrency) /
-                    parseFloat(exchangeRates.value)
-                )
-                    .toFixed(2)
-                    .toString()
-            );
+            const newEstimatedIncomeEuro =
+                parseFloat(estimatedIncomeBudgetCurrency) /
+                parseFloat(exchangeRates.value);
+            setEstimatedIncomeEuro(newEstimatedIncomeEuro.toFixed(2));
+
+            tempCountryBreakdown = tempCountryBreakdown.map((c: any) => {
+                const shareNum = Number(c.share);
+
+                if (
+                    shareNum &&
+                    !isNaN(c.share) &&
+                    newEstimatedIncomeEuro &&
+                    !isNaN(newEstimatedIncomeEuro)
+                ) {
+                    const tempContributionShare =
+                        newEstimatedIncomeEuro * (shareNum / 100);
+                    return { ...c, contributionEur: tempContributionShare.toFixed(2) };
+                }
+                return c;
+            });
+            setCountryBreakdown(tempCountryBreakdown);
+
             setNetProfitTarget(
-                (parseFloat(estimatedIncome) - parseFloat(estimatedCosts))
+                (parseFloat(estimatedIncomeEuro) - parseFloat(estimatedCostsEuro))
                     .toFixed(2)
                     .toString()
             );
@@ -555,13 +589,13 @@ export default function Ermv(props: Props) {
                     .toString()
             );
         } else {
-            setNetProfitTarget(estimatedCosts);
+            setNetProfitTarget(estimatedCostsEuro);
             setNetProfitTargetBudgetCurrency(estimatedCostsBudgetCurrency);
         }
     }, [
         budgetSource,
-        estimatedIncome,
-        estimatedCosts,
+        estimatedIncomeEuro,
+        estimatedCostsEuro,
         exchangeRates,
         estimatedIncomeBudgetCurrency,
         estimatedCostsBudgetCurrency,
@@ -596,7 +630,7 @@ export default function Ermv(props: Props) {
         var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
         var totalIncomeCC = parseFloat(estimatedIncomeBudgetCurrency);
         var totalCostsLC = parseFloat(totalEstimatedCostsLC);
-        var totalCostsEur = parseFloat(estimatedCosts);
+        var totalCostsEur = parseFloat(estimatedCostsEuro);
 
         var temp = [...vendors];
         temp.slice(0, -1).forEach((row: any) => {
@@ -643,7 +677,7 @@ export default function Ermv(props: Props) {
                 ).toFixed(2);
 
                 row.estimatedCostsEUR = (
-                    share * parseFloat(estimatedCosts)
+                    share * parseFloat(estimatedCostsEuro)
                 ).toFixed(2);
                 row.estimatedCostsLC = (
                     parseFloat(row.estimatedCostsEUR) * localExchangeRate
@@ -788,8 +822,8 @@ export default function Ermv(props: Props) {
                 campaignNetProfitTargetBudgetsCurrency: parseFloat(
                     netProfitTargetBudgetCurrency
                 ),
-                campaignEstimatedIncomeEur: parseFloat(estimatedIncome),
-                campaignEstimatedCostsEur: parseFloat(estimatedCosts),
+                campaignEstimatedIncomeEur: parseFloat(estimatedIncomeEuro),
+                campaignEstimatedCostsEur: parseFloat(estimatedCostsEuro),
                 campaignNetProfitTargetEur: parseFloat(netProfitTarget),
                 totalEstimatedCostsLC: parseFloat(totalEstimatedCostsLC),
                 comments: comments,
@@ -884,8 +918,8 @@ export default function Ermv(props: Props) {
                     estimatedIncomeEUR:
                         budgetSource.value === 'noBudget'
                             ? 0.0
-                            : parseFloat(estimatedIncome),
-                    estimatedCostsEUR: parseFloat(estimatedCosts),
+                            : parseFloat(estimatedIncomeEuro),
+                    estimatedCostsEUR: parseFloat(estimatedCostsEuro),
                     estimatedResultEUR:
                         parseFloat(netProfitTarget) *
                         (budgetSource.value === 'noBudget' ? -1 : 1),
@@ -970,6 +1004,41 @@ export default function Ermv(props: Props) {
                     }
                 );
             }
+        });
+    };
+
+    const isFormValid = () => {
+        const vendorsValid = vendorsNames?.length >= 2;
+
+        const requiredValues = [
+            requestorsCompanyName?.label,
+            campaignName,
+            campaignDescription,
+            campaignChannel,
+            year?.label,
+            projectStartQuarter?.label,
+            requestorsName,
+            startDate,
+            endDate,
+            budgetSource,
+            exchangeRates?.label,
+            estimatedIncomeBudgetCurrency,
+            estimatedCostsBudgetCurrency,
+            netProfitTargetBudgetCurrency,
+            estimatedIncomeEuro,
+            estimatedCostsEuro,
+            netProfitTarget,
+            totalEstimatedCostsLC,
+        ];
+
+        vendors.forEach((v: any, index: number) => {
+            if (index === vendors.length - 1) {
+                return;
+            }
+
+            requiredValues.push(v.ph?.label);
+            requiredValues.push(v.budgetAmount);
+            requiredValues.push(v.budgetCurrency?.label);
         });
     };
 
@@ -1317,7 +1386,7 @@ export default function Ermv(props: Props) {
                             setBudgetSource(value);
                             if (value.value === 'noBudget') {
                                 setEstimatedIncomeBudgetCurrency('');
-                                setEstimatedIncome('');
+                                setEstimatedIncomeEuro('');
                             }
                         }}
                         placeholder=""
@@ -1428,9 +1497,9 @@ export default function Ermv(props: Props) {
                     <Text mb="8px">Campaign Estimated Income in EUR</Text>
                     <Input
                         disabled={budgetSource.value === 'noBudget'}
-                        value={estimatedIncome}
+                        value={estimatedIncomeEuro}
                         onChange={(event) => {
-                            setEstimatedIncome(event.target.value);
+                            setEstimatedIncomeEuro(event.target.value);
                         }}
                         bg={useColorModeValue('white', '#2C313C')}
                         color={useColorModeValue('gray.800', '#ABB2BF')}
@@ -1439,9 +1508,9 @@ export default function Ermv(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Campaign Estimated Costs in EUR</Text>
                     <Input
-                        value={estimatedCosts}
+                        value={estimatedCostsEuro}
                         onChange={(event) => {
-                            setEstimatedCosts(event.target.value);
+                            setEstimatedCostsEuro(event.target.value);
                         }}
                         bg={useColorModeValue('white', '#2C313C')}
                         color={useColorModeValue('gray.800', '#ABB2BF')}
@@ -1801,7 +1870,6 @@ export default function Ermv(props: Props) {
                                 )}
                             </Cell>
                         </Column>
-                        {/* FIXME: calculate */}
                         <Column width={300} resizable>
                             <HeaderCell>
                                 Vendor Estimated Income in Campaign Currency
@@ -1956,6 +2024,8 @@ export default function Ermv(props: Props) {
                     totalcbCosts={totalcbCosts}
                     setCountryBreakdown={setCountryBreakdown}
                     budgetSource={budgetSource}
+                    estimatedCostsEuro={estimatedCostsEuro}
+                    estimatedIncomeEuro={estimatedIncomeEuro}
                 />
 
                 <Box w="100%">
@@ -2075,17 +2145,17 @@ export default function Ermv(props: Props) {
                         ]);
                         formattedData.push([
                             'Campaign Estimated Income in EUR',
-                            estimatedIncome === '' ||
-                            isNaN(parseFloat(estimatedIncome))
+                            estimatedIncomeEuro === '' ||
+                            isNaN(parseFloat(estimatedIncomeEuro))
                                 ? 'N/A'
-                                : parseFloat(estimatedIncome),
+                                : parseFloat(estimatedIncomeEuro),
                         ]);
                         formattedData.push([
                             'Campaign Estimated Costs in EUR',
-                            estimatedCosts === '' ||
-                            isNaN(parseFloat(estimatedCosts))
+                            estimatedCostsEuro === '' ||
+                            isNaN(parseFloat(estimatedCostsEuro))
                                 ? 'N/A'
-                                : parseFloat(estimatedCosts),
+                                : parseFloat(estimatedCostsEuro),
                         ]);
                         formattedData.push([
                             'Campaign Net Profit Target in EUR',

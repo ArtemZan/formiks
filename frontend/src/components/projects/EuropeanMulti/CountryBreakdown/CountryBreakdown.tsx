@@ -12,6 +12,8 @@ export default function CountryBreakdown(props: any) {
         totalcbCosts,
         setCountryBreakdown,
         budgetSource,
+        estimatedIncomeEuro,
+        estimatedCostsEuro,
     } = props;
 
     const totalShareNum = Number(totalcbShare);
@@ -131,8 +133,17 @@ export default function CountryBreakdown(props: any) {
                             <Input
                                 value={rowData.share}
                                 onChange={(event) => {
+                                    const share = Number(event.target.value);
+                                    if (isNaN(share)) {
+                                        return;
+                                    }
+
                                     var temp = [...countryBreakdown];
-                                    temp[index!].share = event.target.value;
+                                    temp[index!].share = share;
+                                    
+                                    temp[index!].contributionEur = estimatedIncomeEuro * (share / 100);
+                                    temp[index!].estimatedCostsEur = estimatedCostsEuro * (share / 100);
+
                                     setCountryBreakdown(temp);
                                 }}
                                 bg={rowData.invalid && '#F3696F'}
@@ -173,6 +184,41 @@ export default function CountryBreakdown(props: any) {
                                         event.target.value;
                                     setCountryBreakdown(temp);
                                 }}
+                            />
+                        )}
+                    </Cell>
+                </Column>
+                <Column width={400} resizable>
+                    <HeaderCell>Budget contribution in Euro</HeaderCell>
+                    <Cell dataKey="budgetContributionEur">
+                        {(rowData, index) => (
+                            <Input
+                                disabled={budgetSource.value === 'noBudget'}
+                                value={rowData.contributionEur}
+                                onChange={(event) => {}}
+                                // bg={totalAlert(
+                                //     totalcbContributionEur,
+                                //     rowData.companyName,
+                                //     parseFloat(estimatedIncome),
+                                //     'budgetContributionEur'
+                                // )}
+                            />
+                        )}
+                    </Cell>
+                </Column>
+                <Column width={400} resizable>
+                    <HeaderCell>Total estimated costs in Euro</HeaderCell>
+                    <Cell dataKey="estimatedCostsEur">
+                        {(rowData, index) => (
+                            <Input
+                                value={rowData.estimatedCostsEur}
+                                onChange={(event) => {}}
+                                // bg={totalAlert(
+                                //     totalcbCostsEur,
+                                //     rowData.companyName,
+                                //     parseFloat(estimatedCosts),
+                                //     'estimatedCostsEur'
+                                // )}
                             />
                         )}
                     </Cell>

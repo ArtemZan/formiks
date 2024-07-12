@@ -895,9 +895,7 @@ export default function Cerov(props: Props) {
             children,
             local: local,
         };
-        console.log('====================================');
-        console.log('children', children);
-        console.log('====================================');
+
         if (props.isDraft) {
             if (draft) {
                 submission.submission.id = props.submission.id;
