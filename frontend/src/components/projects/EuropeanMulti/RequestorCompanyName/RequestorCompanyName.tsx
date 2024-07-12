@@ -17,6 +17,7 @@ export default function RequestorCompanyName(props: any) {
         setRequestorsCompanyName,
         Companies,
         setVendorOptions,
+        showErrors
     } = props;
 
     const fetchVendors = async (vendorId: string) => {

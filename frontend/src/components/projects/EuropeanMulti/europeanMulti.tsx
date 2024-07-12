@@ -31,6 +31,7 @@ import FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import RequestorCompanyName from './RequestorCompanyName/RequestorCompanyName';
 import CountryBreakdown from './CountryBreakdown/CountryBreakdown';
+import { DefaultSelectStyles } from '../../../utils/Styles';
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -121,6 +122,7 @@ export default function Ermv(props: Props) {
     const [totalcbShare, setTotalcbShare] = useState('0');
     const [totalcbContribution, setTotalcbContribution] = useState('0.00');
     const [totalcbCosts, setTotalcbCosts] = useState('0.00');
+    const [showErrors, setShowErrors] = useState(false);
 
     useEffect(() => {
         if (props.submission) {
@@ -531,7 +533,7 @@ export default function Ermv(props: Props) {
             parseFloat(estimatedCostsBudgetCurrency) /
             parseFloat(exchangeRates.value);
 
-            setEstimatedCostsEuro(newEstimatedCostEuro.toFixed(2));
+        setEstimatedCostsEuro(newEstimatedCostEuro.toFixed(2));
         let tempCountryBreakdown = countryBreakdown.map((c: any) => {
             const shareNum = Number(c.share);
 
@@ -541,14 +543,13 @@ export default function Ermv(props: Props) {
                 newEstimatedCostEuro &&
                 !isNaN(newEstimatedCostEuro)
             ) {
-                const tempCostShare =
-                    newEstimatedCostEuro * (shareNum / 100);
+                const tempCostShare = newEstimatedCostEuro * (shareNum / 100);
                 return { ...c, estimatedCostsEur: tempCostShare.toFixed(2) };
             }
             return c;
         });
 
-        if(budgetSource.value === 'noBudget') {
+        if (budgetSource.value === 'noBudget') {
             setCountryBreakdown(tempCountryBreakdown);
         }
 
@@ -569,14 +570,20 @@ export default function Ermv(props: Props) {
                 ) {
                     const tempContributionShare =
                         newEstimatedIncomeEuro * (shareNum / 100);
-                    return { ...c, contributionEur: tempContributionShare.toFixed(2) };
+                    return {
+                        ...c,
+                        contributionEur: tempContributionShare.toFixed(2),
+                    };
                 }
                 return c;
             });
             setCountryBreakdown(tempCountryBreakdown);
 
             setNetProfitTarget(
-                (parseFloat(estimatedIncomeEuro) - parseFloat(estimatedCostsEuro))
+                (
+                    parseFloat(estimatedIncomeEuro) -
+                    parseFloat(estimatedCostsEuro)
+                )
                     .toFixed(2)
                     .toString()
             );
@@ -777,6 +784,90 @@ export default function Ermv(props: Props) {
         budgetSource,
     ]);
 
+    const isFormValid = () => {
+        const requiredValues = [
+            requestorsCompanyName?.label,
+            campaignName,
+            campaignDescription,
+            campaignChannel?.label,
+            year?.label,
+            projectStartQuarter?.label,
+            startDate,
+            endDate,
+            budgetSource?.label,
+            exchangeRates?.label,
+            estimatedIncomeBudgetCurrency,
+            estimatedCostsBudgetCurrency,
+            netProfitTargetBudgetCurrency,
+            estimatedIncomeEuro,
+            estimatedCostsEuro,
+            totalEstimatedCostsLC,
+            requestorsName,
+            projectNumber,
+            netProfitTarget,
+        ];
+
+        const numberValues = [
+            netProfitTargetBudgetCurrency,
+            netProfitTarget,
+            totalEstimatedCostsLC,
+            estimatedIncomeBudgetCurrency,
+            estimatedCostsBudgetCurrency.replace,
+            estimatedIncomeEuro,
+            estimatedCostsEuro
+        ];
+
+        const isNumbersValuesValid = numberValues.some(v => !isNaN(Number(v)));
+        console.log('numberValues', numberValues);
+        console.log('isNumbersValuesValid', isNumbersValuesValid);
+        
+        const vendorsNumValid = vendorsNames?.length >= 2;
+        const hasEmptyRequiredValues = requiredValues.some(
+            (e) => !e || e === 'NaN'
+        );
+
+        let vendorsBudgetSum = 0;
+        let countryBreakdownPercents = 0;
+
+        vendors.forEach((v: any, index: number) => {
+            if (index === vendors.length - 1) {
+                return;
+            }
+
+            // requiredValues.push(v.ph?.label);
+            const budgetAmount = Number(v.eurBudget);
+            if (!isNaN(budgetAmount) && v.eurBudget !== 'NaN') {
+                vendorsBudgetSum += budgetAmount;
+            }
+            requiredValues.push(v.bu);
+            requiredValues.push(v.budgetCurrency?.label);
+        });
+
+        countryBreakdown.forEach((v: any, index: number) => {
+            const shareNum = Number(v.share);
+
+            if (v.share && !isNaN(shareNum)) {
+                countryBreakdownPercents += shareNum;
+            }
+
+            requiredValues.push(v.projectNumber);
+            requiredValues.push(v.contactEmail);
+        });
+
+        const countryBreakdownPercentsValid = countryBreakdownPercents === 100;
+        const vendorsBudgetValid =
+            vendorsBudgetSum === Number(estimatedIncomeEuro);
+
+
+        return (
+            vendorsNumValid &&
+            !hasEmptyRequiredValues &&
+            vendorsBudgetValid &&
+            countryBreakdownPercentsValid &&
+            isNumbersValuesValid
+        );
+    };
+
     const draftSubmitHandler = (draft: boolean) => {
         var projectId = '619515b754e61c8dd33daa52';
 
@@ -963,6 +1054,16 @@ export default function Ermv(props: Props) {
             return;
         }
 
+        const isValid = isFormValid();
+
+        console.log('isValid',  isValid)
+        
+
+        if (!isValid) {
+            setShowErrors(true);
+            return;
+        }
+
         RestAPI.getSubmissions().then((response) => {
             var parentSubmissions = response.data.filter(
                 (s) => s.parentId === null
@@ -1007,41 +1108,6 @@ export default function Ermv(props: Props) {
         });
     };
 
-    const isFormValid = () => {
-        const vendorsValid = vendorsNames?.length >= 2;
-
-        const requiredValues = [
-            requestorsCompanyName?.label,
-            campaignName,
-            campaignDescription,
-            campaignChannel,
-            year?.label,
-            projectStartQuarter?.label,
-            requestorsName,
-            startDate,
-            endDate,
-            budgetSource,
-            exchangeRates?.label,
-            estimatedIncomeBudgetCurrency,
-            estimatedCostsBudgetCurrency,
-            netProfitTargetBudgetCurrency,
-            estimatedIncomeEuro,
-            estimatedCostsEuro,
-            netProfitTarget,
-            totalEstimatedCostsLC,
-        ];
-
-        vendors.forEach((v: any, index: number) => {
-            if (index === vendors.length - 1) {
-                return;
-            }
-
-            requiredValues.push(v.ph?.label);
-            requiredValues.push(v.budgetAmount);
-            requiredValues.push(v.budgetCurrency?.label);
-        });
-    };
-
     return (
         <Box>
             <VStack spacing="20px" mb={'40px'} align="start">
@@ -1069,6 +1135,7 @@ export default function Ermv(props: Props) {
                             disabled
                             bg={useColorModeValue('white', '#2C313C')}
                             color={useColorModeValue('gray.800', '#ABB2BF')}
+                            i
                         />
                     </Box>
                     <Alert
@@ -1126,6 +1193,7 @@ export default function Ermv(props: Props) {
                         'Vendor Name 1' 'Vendor Name 2'... 'Campaign Name')
                     </Text>
                     <Input
+                        isInvalid={showErrors && !campaignName}
                         maxLength={40}
                         value={campaignName}
                         onChange={(event) => {
@@ -1139,6 +1207,7 @@ export default function Ermv(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Campaign Description</Text>
                     <Textarea
+                        isInvalid={showErrors && !campaignDescription}
                         value={campaignDescription}
                         onChange={(event) => {
                             setCampaignDescription(event.target.value);
@@ -1153,26 +1222,12 @@ export default function Ermv(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Campaign Channel</Text>
                     <Select
+                        // isInvalid={showErrors && !campaignDescription}
                         menuPortalTarget={document.body}
-                        styles={{
-                            menu: (provided) => ({
-                                ...provided,
-                                zIndex: 1000000,
-                            }),
-                            singleValue: (provided) => ({
-                                ...provided,
-                                color: '#718196',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: 40,
-                                border: '1px solid #E2E8F0',
-                                transition: '0.3s',
-                                '&:hover': {
-                                    border: '1px solid #CBD5E0',
-                                },
-                            }),
-                        }}
+                        styles={DefaultSelectStyles(
+                            useColorModeValue,
+                            showErrors && !campaignChannel?.label
+                        )}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1197,25 +1252,10 @@ export default function Ermv(props: Props) {
                     <Text mb="8px">Year</Text>
                     <Select
                         menuPortalTarget={document.body}
-                        styles={{
-                            menu: (provided) => ({
-                                ...provided,
-                                zIndex: 1000000,
-                            }),
-                            singleValue: (provided) => ({
-                                ...provided,
-                                color: '#718196',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: 40,
-                                border: '1px solid #E2E8F0',
-                                transition: '0.3s',
-                                '&:hover': {
-                                    border: '1px solid #CBD5E0',
-                                },
-                            }),
-                        }}
+                        styles={DefaultSelectStyles(
+                            useColorModeValue,
+                            showErrors && !year?.label
+                        )}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1241,25 +1281,10 @@ export default function Ermv(props: Props) {
                     </Text>
                     <Select
                         menuPortalTarget={document.body}
-                        styles={{
-                            menu: (provided) => ({
-                                ...provided,
-                                zIndex: 1000000,
-                            }),
-                            singleValue: (provided) => ({
-                                ...provided,
-                                color: '#718196',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: 40,
-                                border: '1px solid #E2E8F0',
-                                transition: '0.3s',
-                                '&:hover': {
-                                    border: '1px solid #CBD5E0',
-                                },
-                            }),
-                        }}
+                        styles={DefaultSelectStyles(
+                            useColorModeValue,
+                            showErrors && !projectStartQuarter.label
+                        )}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1285,6 +1310,7 @@ export default function Ermv(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Project Number</Text>
                     <Input
+                        isInvalid={showErrors && !projectNumber}
                         placeholder="____________"
                         value={projectNumber}
                         onChange={(event) => {
@@ -1300,6 +1326,7 @@ export default function Ermv(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Requestor`s Name</Text>
                     <Input
+                        isInvalid={showErrors && !requestorsName}
                         value={requestorsName}
                         onChange={(event) =>
                             setRequestorsName(event.target.value)
@@ -1315,6 +1342,7 @@ export default function Ermv(props: Props) {
                         <DatePicker
                             customInput={
                                 <Input
+                                    isInvalid={showErrors && !startDate}
                                     bg={useColorModeValue('white', '#2C313C')}
                                     color={useColorModeValue(
                                         'gray.800',
@@ -1334,6 +1362,7 @@ export default function Ermv(props: Props) {
                         <DatePicker
                             customInput={
                                 <Input
+                                    isInvalid={showErrors && !endDate}
                                     bg={useColorModeValue('white', '#2C313C')}
                                     color={useColorModeValue(
                                         'gray.800',
@@ -1354,25 +1383,10 @@ export default function Ermv(props: Props) {
                     <Text mb="8px">Budget Source</Text>
                     <Select
                         menuPortalTarget={document.body}
-                        styles={{
-                            menu: (provided) => ({
-                                ...provided,
-                                zIndex: 1000000,
-                            }),
-                            singleValue: (provided) => ({
-                                ...provided,
-                                color: '#718196',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: 40,
-                                border: '1px solid #E2E8F0',
-                                transition: '0.3s',
-                                '&:hover': {
-                                    border: '1px solid #CBD5E0',
-                                },
-                            }),
-                        }}
+                        styles={DefaultSelectStyles(
+                            useColorModeValue,
+                            showErrors && !budgetSource.label
+                        )}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1409,25 +1423,10 @@ export default function Ermv(props: Props) {
                     <Text mb="8px">Campaign Currency</Text>
                     <Select
                         menuPortalTarget={document.body}
-                        styles={{
-                            menu: (provided) => ({
-                                ...provided,
-                                zIndex: 1000000,
-                            }),
-                            singleValue: (provided) => ({
-                                ...provided,
-                                color: '#718196',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: 40,
-                                border: '1px solid #E2E8F0',
-                                transition: '0.3s',
-                                '&:hover': {
-                                    border: '1px solid #CBD5E0',
-                                },
-                            }),
-                        }}
+                        styles={DefaultSelectStyles(
+                            useColorModeValue,
+                            showErrors && !exchangeRates.label
+                        )}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1452,6 +1451,11 @@ export default function Ermv(props: Props) {
                         Campaign Estimated Income in Campaign Currency
                     </Text>
                     <Input
+                        isInvalid={
+                            showErrors &&
+                            (!estimatedIncomeBudgetCurrency ||
+                                isNaN(Number(estimatedIncomeBudgetCurrency)))
+                        }
                         disabled={budgetSource.value === 'noBudget'}
                         value={estimatedIncomeBudgetCurrency}
                         onChange={(event) => {
@@ -1468,6 +1472,11 @@ export default function Ermv(props: Props) {
                         Campaign Estimated Costs in Campaign Currency
                     </Text>
                     <Input
+                        isInvalid={
+                            showErrors &&
+                            (!estimatedCostsBudgetCurrency ||
+                                isNaN(Number(estimatedCostsBudgetCurrency)))
+                        }
                         value={estimatedCostsBudgetCurrency}
                         onChange={(event) => {
                             setEstimatedCostsBudgetCurrency(event.target.value);
@@ -1484,6 +1493,11 @@ export default function Ermv(props: Props) {
                     </Text>
                     <Input
                         value={netProfitTargetBudgetCurrency}
+                        isInvalid={
+                            showErrors &&
+                            (!netProfitTargetBudgetCurrency ||
+                                isNaN(Number(netProfitTargetBudgetCurrency)))
+                        }
                         onChange={(event) => {
                             setNetProfitTargetBudgetCurrency(
                                 event.target.value
@@ -1523,7 +1537,10 @@ export default function Ermv(props: Props) {
                             : 'Campaign Net Profit Target in EUR'}
                     </Text>
                     <Input
-                        // value={netProfitTarget}
+                        isInvalid={
+                            showErrors &&
+                            (!netProfitTarget || isNaN(Number(netProfitTarget)))
+                        }
                         value={netProfitTarget}
                         onChange={(event) => {
                             setNetProfitTarget(event.target.value);
@@ -1537,6 +1554,11 @@ export default function Ermv(props: Props) {
                         Total Estimated Costs in Local Currency
                     </Text>
                     <Input
+                        isInvalid={
+                            showErrors &&
+                            (!totalEstimatedCostsLC ||
+                                isNaN(Number(totalEstimatedCostsLC)))
+                        }
                         value={totalEstimatedCostsLC}
                         onChange={(event) => {
                             setTotalEstimatedCostsLC(event.target.value);
@@ -1551,25 +1573,10 @@ export default function Ermv(props: Props) {
                     <Select
                         // menuPortalTarget={document.body}
                         isMulti
-                        styles={{
-                            menu: (provided) => ({
-                                ...provided,
-                                zIndex: 1000000,
-                            }),
-                            singleValue: (provided) => ({
-                                ...provided,
-                                color: '#718196',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: 40,
-                                border: '1px solid #E2E8F0',
-                                transition: '0.3s',
-                                '&:hover': {
-                                    border: '1px solid #CBD5E0',
-                                },
-                            }),
-                        }}
+                        styles={DefaultSelectStyles(
+                            useColorModeValue,
+                            showErrors && vendorsNames?.length < 2
+                        )}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
@@ -1973,29 +1980,10 @@ export default function Ermv(props: Props) {
                     <Select
                         menuPortalTarget={document.body}
                         isMulti
-                        styles={{
-                            menu: (provided) => ({
-                                ...provided,
-                                zIndex: 10000000,
-                            }),
-                            menuPortal: (base) => ({
-                                ...base,
-                                zIndex: 10000000,
-                            }),
-                            singleValue: (provided) => ({
-                                ...provided,
-                                color: '#718196',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: 40,
-                                border: '1px solid #E2E8F0',
-                                transition: '0.3s',
-                                '&:hover': {
-                                    border: '1px solid #CBD5E0',
-                                },
-                            }),
-                        }}
+                        styles={DefaultSelectStyles(
+                            useColorModeValue,
+                            showErrors && !companiesParticipating?.length
+                        )}
                         theme={(theme) => ({
                             ...theme,
                             borderRadius: 6,
