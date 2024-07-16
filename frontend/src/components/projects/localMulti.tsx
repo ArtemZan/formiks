@@ -478,6 +478,8 @@ export default function Elmv(props: Props) {
         setVendors(data);
     }, [vendorsNames]);
 
+    console.log('vendorsNames', vendorsNames);
+
     function createSubmission(draft: boolean) {
         var projectId = '6246ec8efa2a446faadb8d9b';
         var parent: Submission = {
@@ -1243,6 +1245,10 @@ export default function Elmv(props: Props) {
         requestorsCompanyName,
     ]);
 
+    // console.log('vendorsAfterCompanySelect', vendorsAfterCompanySelect);
+    console.log('VendorsNames', VendorsNames);
+    console.log('vendorsAfterCompanySelect', vendorsAfterCompanySelect);
+    
     return (
         <Box>
             <VStack spacing="20px" mb={'40px'} align="start">
