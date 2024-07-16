@@ -39,7 +39,7 @@ export default function VendorNames(props: any) {
                     creditor: vendor.value.kreditor,
                     debitor: vendor.value.debitorischer,
                     manufacturer: vendor.value.hersteller,
-                    bu: vendor.value.bu,
+                    bu: '',
                     ph: { label: '', value: '' },
                     budgetCurrency: { label: '', value: '' },
                     budgetAmount: '',
