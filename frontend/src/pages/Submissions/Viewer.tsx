@@ -18,7 +18,7 @@ import Project from "../../types/project";
 import { RestAPI } from "../../api/rest";
 
 import Ermv from "../../components/projects/EuropeanMulti/europeanMulti";
-import Elmv from "../../components/projects/localMulti";
+import Elmv from "../../components/projects/LocalMulti/localMulti";
 import Elov from "../../components/projects/localOne";
 import Por from "../../components/projects/purchaseOrder";
 import Cerov from "../../components/projects/europeanOne";

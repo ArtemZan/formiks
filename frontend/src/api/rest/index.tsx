@@ -10,12 +10,12 @@ import {
 import { Template } from "../../types/template";
 
 export class API {
-  public baseUrl =
-    process.env.NODE_ENV === "production"
-      ? "/api"
-      : "http://localhost:7000/api"
+  // public baseUrl =
+  //   process.env.NODE_ENV === "production"
+  //     ? "/api"
+  //     : "http://localhost:7000/api"
   
-  // public baseUrl = 'https://mato.root.local/api';
+  public baseUrl = 'https://mato.root.local/api';
   public usersUrl = `${this.baseUrl}/users/`;
   public projectsUrl = `${this.baseUrl}/projects/`;
   public bookmarksUrl = `${this.baseUrl}/bookmarks/`;

@@ -32,11 +32,15 @@ import * as XLSX from 'xlsx';
 import RequestorCompanyName from './RequestorCompanyName/RequestorCompanyName';
 import CountryBreakdown from './CountryBreakdown/CountryBreakdown';
 import { DefaultSelectStyles } from '../../../utils/Styles';
-import VendorsTable from './VendorsTable/VendorsTable';
+import VendorNames from '../LocalMulti/VendorNames/VendorNames';
+import VendorsTable from '../LocalMulti/VendorsTable/VendorsTable';
+
+var VendorsNames: any[] = [];
+var AlsoInternationalVendorsNames: any[] = [];
+var vendorsAfterCompanySelect: string[] = [];
 
 var PH1: any[] = [];
 var Companies: any[] = [];
-// var VendorsNames: any[] = [];
 var CampaignChannel: any[] = [];
 var TargetAudience: any[] = [];
 var Budget: any[] = [];
@@ -45,7 +49,6 @@ var FiscalQuarter: any[] = [];
 var Year: any[] = [];
 var ProjectStartQuarter: any[] = [];
 var BUs: any[] = [];
-var VendorsNames: any[] = [];
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -127,6 +130,25 @@ export default function Ermv(props: Props) {
     const [totalcbContribution, setTotalcbContribution] = useState('0.00');
     const [totalcbCosts, setTotalcbCosts] = useState('0.00');
     const [showErrors, setShowErrors] = useState(false);
+
+
+    const getTotalVendorsBudget = () => {
+        let total = 0;
+        vendors?.forEach((v: any, index: number) =>{
+            if(index === vendors.length - 1) {
+                return;
+            }
+            const budgetNum = Number(v.eurBudget);
+
+            if(!isNaN(budgetNum)) {
+                total += budgetNum;
+            }
+        })
+        return total;   
+    };
+
+    const vendorBudgetInEUR = getTotalVendorsBudget();
+
 
     useEffect(() => {
         if (props.submission) {
@@ -414,58 +436,72 @@ export default function Ermv(props: Props) {
     }, []);
     const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
-    // useEffect(() => {
-    //     if (props.submission) {
-    //         return;
-    //     }
-    //     var data: any = [];
-    //     vendorsNames.forEach((vendor: any) => {
-    //         data.push({
-    //             vendor: vendor.label,
-    //             projectManager: vendor.value.alsoMarketingConsultant,
-    //             creditor: vendor.value.kreditor,
-    //             debitor: vendor.value.debitorischer,
-    //             manufacturer: vendor.value.hersteller,
-    //             bu: vendor.value.bu,
-    //             ph: { label: '', value: '' },
-    //             budgetCurrency: { label: '', value: '' },
-    //             budgetAmount: '',
-    //             localBudget: '',
-    //             eurBudget: '',
-    //             share: '',
-    //             estimatedCostsCC: '',
-    //             estimatedIncomeCC: '',
-    //             estimatedCostsLC: '',
-    //             estimatedCostsEUR: '',
-    //             netProfitTargetVC: '',
-    //             netProfitTargetLC: '',
-    //             netProfitTargetEUR: '',
-    //         });
-    //     });
+    useEffect(() => {
+        if (props.submission) {
+            return;
+        }
+        var data: any = [];
+        vendorsNames.forEach((vendor: any) => {
+            data.push({
+                vendor: vendor.label,
+                projectManager: vendor.value.alsoMarketingConsultant,
+                creditor: vendor.value.kreditor,
+                debitor: vendor.value.debitorischer,
+                manufacturer: vendor.value.hersteller,
+                bu: vendor.value.bu,
+                ph: { label: '', value: '' },
+                budgetCurrency: { label: '', value: '' },
+                budgetAmount: '',
+                localBudget: '',
+                eurBudget: '',
+                share: '',
+                estimatedCostsCC: '',
+                estimatedIncomeCC: '',
+                estimatedCostsLC: '',
+                estimatedCostsEUR: '',
+                netProfitTargetVC: '',
+                netProfitTargetLC: '',
+                netProfitTargetEUR: '',
+            });
+        });
 
-    //     data.push({
-    //         vendor: 'TOTAL',
-    //         projectManager: '',
-    //         creditor: '',
-    //         debitor: '',
-    //         manufacturer: '',
-    //         bu: '',
-    //         ph: { label: '', value: '' },
-    //         budgetCurrency: { label: '', value: '' },
-    //         budgetAmount: '',
-    //         localBudget: '',
-    //         eurBudget: '',
-    //         share: '',
-    //         estimatedCostsCC: '',
-    //         estimatedIncomeCC: '',
-    //         estimatedCostsLC: '',
-    //         estimatedCostsEUR: '',
-    //         netProfitTargetVC: '',
-    //         netProfitTargetLC: '',
-    //         netProfitTargetEUR: '',
-    //     });
-    //     setVendors(data);
-    // }, [vendorsNames]);
+        data.push({
+            vendor: 'TOTAL',
+            projectManager: '',
+            creditor: '',
+            debitor: '',
+            manufacturer: '',
+            bu: '',
+            ph: { label: '', value: '' },
+            budgetCurrency: { label: '', value: '' },
+            budgetAmount: '',
+            localBudget: '',
+            eurBudget: '',
+            share: '',
+            estimatedCostsCC: '',
+            estimatedIncomeCC: '',
+            estimatedCostsLC: '',
+            estimatedCostsEUR: '',
+            netProfitTargetVC: '',
+            netProfitTargetLC: '',
+            netProfitTargetEUR: '',
+        });
+        setVendors(data);
+    }, [vendorsNames]);
+
+    useEffect(() => {
+        switch (requestorsCompanyName?.value?.code) {
+            case '6110':
+                vendorsAfterCompanySelect = VendorsNames;
+                break;
+            case '1550':
+                vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
+                break;
+            default:
+                vendorsAfterCompanySelect = [];
+                break;
+        }
+    }, [requestorsCompanyName?.value?.code]);
 
     useEffect(() => {
         if (props.submission) {
@@ -832,9 +868,7 @@ export default function Ermv(props: Props) {
         );
 
         const vendorsNumValid = vendorsNames?.length >= 2;
-        const hasEmptyRequiredValues = requiredValues.some(
-            (e) => !e || e === 'NaN'
-        );
+
 
         let vendorsBudgetSum = 0;
         let countryBreakdownPercents = 0;
@@ -862,8 +896,12 @@ export default function Ermv(props: Props) {
 
             requiredValues.push(v.projectNumber);
             requiredValues.push(v.contactEmail);
+            console.log('v.contactEmail', v.projectNumber);
         });
 
+        const hasEmptyRequiredValues = requiredValues.some(
+            (e) => !e || e === 'NaN'
+        );
         const countryBreakdownPercentsValid = countryBreakdownPercents === 100;
         const vendorsBudgetValid =
             vendorsBudgetSum === Number(estimatedIncomeEuro);
@@ -876,6 +914,49 @@ export default function Ermv(props: Props) {
             isNumbersValuesValid
         );
     };
+
+    console.log('countryBreakdown', countryBreakdown);
+    
+
+    function cellTextAlert(value: any, row: any) {
+        if (value !== '') {
+        } else {
+            if (row.vendor !== 'TOTAL') {
+                return useColorModeValue('red.300', '#ABB2BF');
+            }
+        }
+    }
+
+    function cellDropDownAlert(value: any, row: any) {
+        if (value !== '') {
+            return false;
+        } else {
+            if (row.vendor !== 'TOTAL') {
+                return true;
+            } else return false;
+        }
+    }
+
+    function cellNumberAlert(value: any, row: any) {
+        if (!Number.isNaN(value) && value !== '' && value !== 'NaN') {
+        } else {
+            if (row.vendor !== 'TOTAL') {
+                return useColorModeValue('red.300', '#ABB2BF');
+            }
+        }
+    }
+
+    function totalAlert(value: any, row: any, check: number) {
+        if (value) {
+            if (
+                (parseFloat(value) - check >= 0.02 ||
+                    parseFloat(value) - check < -0.02) &&
+                row === 'TOTAL'
+            ) {
+                return useColorModeValue('red.300', '#ABB2BF');
+            }
+        }
+    }
 
     const draftSubmitHandler = (draft: boolean) => {
         var projectId = '619515b754e61c8dd33daa52';
@@ -1076,6 +1157,7 @@ export default function Ermv(props: Props) {
             );
             return;
         }
+        
 
         RestAPI.getSubmissions().then((response) => {
             var parentSubmissions = response.data.filter(
@@ -1120,79 +1202,6 @@ export default function Ermv(props: Props) {
             }
         });
     };
-
-    const vendorSelectHandler = (value: any) => {
-        setVendorsNames(value);
-        
-        // if (!!value.length) {
-        //     const tempOptions = [...vendorsOptions];
-        //     value.forEach((v: any) => {
-        //         const index = tempOptions.findIndex(
-        //             (e) => e.value.manufacturerName === v.value.manufacturerName
-        //         );
-
-        //         tempOptions.splice(index, 1);
-
-        //     });
-
-        //     setVendorSelectOptions(tempOptions);
-        // } else {
-        //     setVendorSelectOptions(vendorsOptions);
-        // }
-        setVendorSelectOptions(vendorsOptions);
-
-        var data: any = [];
-        value.forEach((vendor: any) => {
-            data.push({
-                vendor: vendor.label,
-                projectManager: vendor.value.alsoMarketingConsultant,
-                creditor: vendor.value.kreditor,
-                debitor: vendor.value.debitorischer,
-                manufacturer: vendor.value.hersteller,
-                bu: vendor.value.bu,
-                ph: { label: '', value: '' },
-                budgetCurrency: { label: '', value: '' },
-                budgetAmount: '',
-                localBudget: '',
-                eurBudget: '',
-                share: '',
-                estimatedCostsCC: '',
-                estimatedIncomeCC: '',
-                estimatedCostsLC: '',
-                estimatedCostsEUR: '',
-                netProfitTargetVC: '',
-                netProfitTargetLC: '',
-                netProfitTargetEUR: '',
-            });
-        });
-
-        data.push({
-            vendor: 'TOTAL',
-            projectManager: '',
-            creditor: '',
-            debitor: '',
-            manufacturer: '',
-            bu: '',
-            ph: { label: '', value: '' },
-            budgetCurrency: { label: '', value: '' },
-            budgetAmount: '',
-            localBudget: '',
-            eurBudget: '',
-            share: '',
-            estimatedCostsCC: '',
-            estimatedIncomeCC: '',
-            estimatedCostsLC: '',
-            estimatedCostsEUR: '',
-            netProfitTargetVC: '',
-            netProfitTargetLC: '',
-            netProfitTargetEUR: '',
-        });
-        setVendors(data);
-    };
-
-    console.log('options', vendorsSelectOptions);
-    console.log('vendorNames', vendorsNames);
-    
 
     return (
         <Box>
@@ -1657,62 +1666,32 @@ export default function Ermv(props: Props) {
                     />
                 </Box>
 
-                <Box w="100%">
-                    <Text mb="8px">Vendor`s Names</Text>
-                    <Select
-                        // menuPortalTarget={document.body}
-                        isMulti
-                        styles={DefaultSelectStyles(
-                            useColorModeValue,
-                            showErrors && vendorsNames?.length < 2
-                        )}
-                        theme={(theme) => ({
-                            ...theme,
-                            borderRadius: 6,
-                            colors: {
-                                ...theme.colors,
-                                primary: '#3082CE',
-                            },
-                        })}
-                        value={vendorsNames}
-                        placeholder=""
-                        onChange={(value: any) => {
-                            if (value.length < vendors.length) {
-                                var deletedElem = vendorsNames.filter(
-                                    (n: any) => !value.includes(n)
-                                );
-                                deletedElem.forEach((e: any) => {
-                                    VendorsNames.splice(
-                                        VendorsNames.findIndex(
-                                            (s: any) => s.label === e.label
-                                        ),
-                                        1
-                                    );
-                                });
-                            }
+                <VendorNames
+                    vendorsNames={vendorsNames}
+                    hasErrors={showErrors && vendorsNames?.length < 2}
+                    vendors={vendors}
+                    VendorsNames={VendorsNames}
+                    setVendorsNames={setVendorsNames}
+                    vendorsAfterCompanySelect={vendorsAfterCompanySelect}
+                />
 
-                            vendorSelectHandler(value);
-                        }}
-                        classNamePrefix="select"
-                        isClearable={false}
-                        name="vendorsName"
-                        options={vendorsOptions}
-                    />
-                </Box>
                 <VendorsTable
                     vendors={vendors}
                     setVendors={setVendors}
+                    cellTextAlert={cellTextAlert}
+                    cellDropDownAlert={cellDropDownAlert}
+                    vendorsNames={vendorsNames}
+                    VendorsNames={VendorsNames}
+                    setVendorsNames={setVendorsNames}
+                    BUs={BUs}
                     budgetSource={budgetSource}
                     ExchangeRates={ExchangeRates}
-                    PH1={PH1}
-                    estimatedIncomeEuro={estimatedIncomeEuro}
-                    vendorsNames={vendorsNames}
-                    setVendorsNames={setVendorsNames}
-                    VendorsNames={VendorsNames}
-                    BUs={BUs}
-                    vendorsSelectOptions={vendorsSelectOptions}
-                    firstEl={vendorsOptions[0]}
-                    setVendorSelectOptions={setVendorSelectOptions}
+                    // budgetAmountError={  !rowData.budgetAmount &&
+                    //     !(rowData.vendor === 'TOTAL')}
+                    cellNumberAlert={cellNumberAlert}
+                    totalAlert={totalAlert}
+                    totalVendorBudgetInEUR={vendorBudgetInEUR}
+                    estimatedIncome={estimatedIncomeEuro}
                 />
                 <Box w="100%">
                     <Text mb="8px">Companies Participating</Text>

@@ -98,6 +98,10 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="contactEmail">
                         {(rowData, index) => (
                             <Input
+                                isInvalid={
+                                    rowData.companyName !== 'TOTAL' &&
+                                    !rowData.contactEmail
+                                }
                                 value={rowData.contactEmail}
                                 onChange={(event) => {
                                     var temp = [...countryBreakdown];
@@ -115,6 +119,7 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="projectNumber">
                         {(rowData, index) => (
                             <Input
+                                isInvalid={rowData.companyName !== 'TOTAL' && !rowData.projectNumber}
                                 value={rowData.projectNumber}
                                 onChange={(event) => {
                                     var temp = [...countryBreakdown];
@@ -140,9 +145,11 @@ export default function CountryBreakdown(props: any) {
 
                                     var temp = [...countryBreakdown];
                                     temp[index!].share = share;
-                                    
-                                    temp[index!].contributionEur = estimatedIncomeEuro * (share / 100);
-                                    temp[index!].estimatedCostsEur = estimatedCostsEuro * (share / 100);
+
+                                    temp[index!].contributionEur =
+                                        estimatedIncomeEuro * (share / 100);
+                                    temp[index!].estimatedCostsEur =
+                                        estimatedCostsEuro * (share / 100);
 
                                     setCountryBreakdown(temp);
                                 }}

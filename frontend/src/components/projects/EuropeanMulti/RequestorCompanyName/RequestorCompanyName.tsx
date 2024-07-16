@@ -16,14 +16,14 @@ export default function RequestorCompanyName(props: any) {
         setLocalExchangeRate,
         setRequestorsCompanyName,
         Companies,
-        setVendorOptions,
+        // setVendorOptions,
         showErrors,
     } = props;
 
-    const fetchVendors = async (vendorId: string) => {
-        const res = await RestAPI.getDropdownValues(vendorId);
-        setVendorOptions(res.data);
-    };
+    // const fetchVendors = async (vendorId: string) => {
+    //     const res = await RestAPI.getDropdownValues(vendorId);
+    //     setVendorOptions(res.data);
+    // };
 
     const onChange = (value: any) => {
         const label = value.label;
@@ -34,11 +34,11 @@ export default function RequestorCompanyName(props: any) {
             vendorId = vendorIds[label as VendorIdKey];
         }
 
-        if (vendorId) {
-            fetchVendors(vendorId);
-        } else {
-            setVendorOptions([]);
-        }
+        // if (vendorId) {
+        //     fetchVendors(vendorId);
+        // } else {
+        //     setVendorOptions([]);
+        // }
 
         var ler = 0.0;
         ExchangeRates.forEach((rate: any) => {

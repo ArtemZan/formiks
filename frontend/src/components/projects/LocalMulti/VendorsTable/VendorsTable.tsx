@@ -1,7 +1,6 @@
-import { Input, Box, Text, useColorModeValue } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { useColorModeValue, Input, Box, Text } from '@chakra-ui/react';
+import { Table, Uploader } from 'rsuite';
 import Select from 'react-select';
-import { Table } from 'rsuite';
 import { DefaultSelectStyles } from '../../../../utils/Styles';
 
 const { Column, HeaderCell, Cell } = Table;
@@ -10,33 +9,31 @@ export default function VendorsTable(props: any) {
     const {
         vendors,
         setVendors,
-        budgetSource,
-        ExchangeRates,
-        PH1,
-        estimatedIncomeEuro,
+        cellTextAlert,
+        cellDropDownAlert,
         vendorsNames,
         VendorsNames,
         setVendorsNames,
         BUs,
-        vendorsSelectOptions,
-        firstEl,
-        setVendorSelectOptions,
+        budgetSource,
+        ExchangeRates,
+        budgetAmountError,
+        cellNumberAlert,
+        totalAlert,
+        totalVendorBudgetInEUR,
+        estimatedIncome
     } = props;
-
-    function cellDropDownAlert(value: any, row: any) {
-        if (value !== '') {
-            return false;
-        } else {
-            if (row.vendor !== 'TOTAL') {
-                return true;
-            } else return false;
-        }
-    }
 
     return (
         <Box w="100%">
             <Text mb="8px">Vendors</Text>
-            <Table hover={false} autoHeight rowHeight={65} data={vendors}>
+            <Table
+                shouldUpdateScroll={false}
+                hover={false}
+                autoHeight
+                rowHeight={65}
+                data={vendors}
+            >
                 <Column width={200} resizable>
                     <HeaderCell>Vendor</HeaderCell>
                     <Cell dataKey="vendor">
@@ -48,6 +45,12 @@ export default function VendorsTable(props: any) {
                                     temp[index!].vendor = event.target.value;
                                     setVendors(temp);
                                 }}
+                                bg={cellTextAlert(
+                                    vendors[index!] !== undefined
+                                        ? vendors[index!].vendor
+                                        : '',
+                                    rowData
+                                )}
                             />
                         )}
                     </Cell>
@@ -58,11 +61,18 @@ export default function VendorsTable(props: any) {
                         {(rowData, index) => (
                             <Input
                                 value={rowData.debitor}
+                                disabled={true}
                                 onChange={(event) => {
                                     var temp = [...vendors];
                                     temp[index!].debitor = event.target.value;
                                     setVendors(temp);
                                 }}
+                                bg={cellTextAlert(
+                                    vendors[index!] !== undefined
+                                        ? vendors[index!].debitor
+                                        : '',
+                                    rowData
+                                )}
                             />
                         )}
                     </Cell>
@@ -73,7 +83,6 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="creditor">
                         {(rowData, index) => (
                             <Input
-                                isDisabled
                                 value={rowData.creditor}
                                 onChange={(event) => {
                                     var temp = [...vendors];
@@ -91,12 +100,19 @@ export default function VendorsTable(props: any) {
                         {(rowData, index) => (
                             <Input
                                 value={rowData.manufacturer}
+                                disabled={true}
                                 onChange={(event) => {
                                     var temp = [...vendors];
                                     temp[index!].manufacturer =
                                         event.target.value;
                                     setVendors(temp);
                                 }}
+                                bg={cellTextAlert(
+                                    vendors[index!] !== undefined
+                                        ? vendors[index!].manufacturer
+                                        : '',
+                                    rowData
+                                )}
                             />
                         )}
                     </Cell>
@@ -106,15 +122,6 @@ export default function VendorsTable(props: any) {
                     <HeaderCell>Business Unit</HeaderCell>
                     <Cell dataKey="bu">
                         {(rowData, index) => (
-                            // <Input
-                            //     value={rowData.bu}
-                            //     onChange={(event) => {
-                            //         var temp = [...vendors];
-                            //         temp[index!].bu = event.target.value;
-                            //         setVendors(temp);
-                            //     }}
-                            // />
-
                             <Select
                                 styles={DefaultSelectStyles(
                                     useColorModeValue,
@@ -138,35 +145,103 @@ export default function VendorsTable(props: any) {
                                 }}
                                 onChange={(value) => {
                                     if (value !== null) {
-                                        var tempVendors = [...vendors];
-                                        tempVendors[index!].bu = value.label;
-                                        console.log('current', tempVendors[index!]);
-                                        
-                                        // console.log('vendorsSelectOptions', vendorsSelectOptions);
-                                        
-                                        const tempVendorSelectOptions = [...vendorsSelectOptions];
+                                        var temp = [...vendors];
+                                        if (
+                                            temp[index!].vendor.substring(
+                                                temp[index!].vendor.toString()
+                                                    .length - 6,
+                                                temp[index!].vendor.toString()
+                                                    .length - 4
+                                            ) === 'BU'
+                                        ) {
+                                            temp[index!].vendor =
+                                                temp[index!].vendor.substring(
+                                                    0,
+                                                    temp[index!].vendor.length -
+                                                        6
+                                                ) +
+                                                'BU ' +
+                                                value.label.substring(0, 3);
+                                        } else {
+                                            var idxSelected =
+                                                vendorsNames.findIndex(
+                                                    (s: any) =>
+                                                        s.label.substring(
+                                                            0,
+                                                            s.label.length
+                                                        ) ===
+                                                        temp[index!].vendor
+                                                );
+                                            var vend =
+                                                vendorsNames[idxSelected];
+                                            var lab = '';
+                                            if (
+                                                vend.label.substring(
+                                                    vend.label.length - 5,
+                                                    vend.label.length - 3
+                                                ) === 'BU'
+                                            ) {
+                                                lab =
+                                                    vend.label.substring(
+                                                        0,
+                                                        vend.label.length - 5
+                                                    ) +
+                                                    ' (' +
+                                                    vend.value.debitorischer +
+                                                    ')';
+                                            } else {
+                                                lab = vend.label;
+                                            }
 
-                                        tempVendorSelectOptions.unshift(firstEl);
-                                        setVendorSelectOptions(tempVendorSelectOptions)
-                                        setVendors(tempVendors);
-                                        const tempVendorsNames = [
-                                            ...vendorsNames,
-                                        ];
-                                        const currentVendorName =
-                                            tempVendorsNames[index!]?.label;
-                                        if (currentVendorName) {
-                                            const buValue = tempVendorsNames[index!].value;
-                                            tempVendorsNames[index!].value.bu = tempVendorsNames[index!].value.bu +' test'
-                                            console.log('buValue', buValue);
-                                            
-                                            const splitted =
-                                                currentVendorName.split(' BU ');
-                                            tempVendorsNames[index!].label =
-                                                splitted[0] +
-                                                ` BU ${value.label}`;
-
-                                            setVendorsNames(tempVendorsNames);
+                                            var data = {
+                                                label: lab,
+                                                value: {
+                                                    alsoMarketingConsultant:
+                                                        vend.value
+                                                            .alsoMarketingConsultant,
+                                                    bu: vend.value.bu,
+                                                    city: vend.value.city,
+                                                    cityCode:
+                                                        vend.value.cityCode,
+                                                    debitorischer:
+                                                        vend.value
+                                                            .debitorischer,
+                                                    email: vend.value.email,
+                                                    hersteller:
+                                                        vend.value.hersteller,
+                                                    kreditor:
+                                                        vend.value.kreditor,
+                                                    manufacturerName:
+                                                        vend.value
+                                                            .manufacturerName,
+                                                    vendorAddress:
+                                                        vend.value
+                                                            .vendorAddress,
+                                                },
+                                            };
+                                            VendorsNames.splice(
+                                                VendorsNames.findIndex(
+                                                    (s: any) =>
+                                                        s.label.substring(
+                                                            0,
+                                                            s.label.length
+                                                        ) ===
+                                                        temp[index!].vendor
+                                                ),
+                                                0,
+                                                data
+                                            );
+                                            temp[index!].vendor =
+                                                temp[index!].vendor +
+                                                ' BU ' +
+                                                value.label.substring(0, 3);
+                                            vend.label = temp[index!].vendor;
+                                            var v = [...vendorsNames];
+                                            v[idxSelected] = vend;
+                                            setVendorsNames(v);
                                         }
+                                        temp[index!].bu = value.label;
+                                        setVendors(temp);
                                     }
                                 }}
                                 placeholder=""
@@ -195,58 +270,54 @@ export default function VendorsTable(props: any) {
                         )}
                     </Cell>
                 </Column>
-                <Column width={200} resizable>
-                    <HeaderCell>PH1</HeaderCell>
-                    <Cell dataKey="ph">
-                        {(rowData, index) => (
-                            <Select
-                                styles={{
-                                    menu: (provided) => ({
-                                        ...provided,
-                                        zIndex: 1000000000,
-                                    }),
-                                    menuPortal: (base) => ({
-                                        ...base,
-                                        zIndex: 10000000,
-                                    }),
-                                    singleValue: (provided) => ({
-                                        ...provided,
-                                        color: '#718196',
-                                    }),
-                                    control: (base, state) => ({
-                                        ...base,
-                                        minHeight: 40,
-                                        border: '1px solid #E2E8F0',
-                                        transition: '0.3s',
-                                        '&:hover': {
-                                            border: '1px solid #CBD5E0',
-                                        },
-                                    }),
-                                }}
-                                theme={(theme) => ({
-                                    ...theme,
-                                    borderRadius: 6,
-                                    colors: {
-                                        ...theme.colors,
-                                        primary: '#3082CE',
-                                    },
-                                })}
-                                menuPortalTarget={document.body}
-                                value={rowData.ph}
-                                onChange={(value) => {
-                                    var temp = [...vendors];
-                                    temp[index!].ph = value;
-                                    setVendors(temp);
-                                }}
-                                placeholder=""
-                                classNamePrefix="select"
-                                isClearable={false}
-                                name="PH1"
-                                options={PH1}
-                            />
-                        )}
-                    </Cell>
-                </Column>
+                {/* <Column width={200} resizable>
+<HeaderCell>PH1</HeaderCell>
+<Cell dataKey="ph">
+{(rowData, index) => (
+  <Select
+    styles={{
+      menu: (provided) => ({
+        ...provided,
+        zIndex: 1000000000,
+      }),
+      singleValue: (provided) => ({
+        ...provided,
+        color: "#718196",
+      }),
+      control: (base, state) => ({
+        ...base,
+        minHeight: 40,
+        border: "1px solid #E2E8F0",
+        transition: "0.3s",
+        "&:hover": {
+          border: "1px solid #CBD5E0",
+        },
+      }),
+    }}
+    theme={(theme) => ({
+      ...theme,
+      borderRadius: 6,
+      colors: {
+        ...theme.colors,
+        primary: "#3082CE",
+      },
+    })}
+    menuPortalTarget={document.body}
+    value={rowData.ph}
+    onChange={(value) => {
+      var temp = [...vendors];
+      temp[index!].ph = value;
+      setVendors(temp);
+    }}
+    placeholder=""
+    classNamePrefix="select"
+    isClearable={false}
+    name="PH1"
+    options={PH1}
+  />
+)}
+</Cell>
+</Column> */}
                 <Column width={200} resizable>
                     <HeaderCell>Vendor Budget Currency</HeaderCell>
                     <Cell dataKey="budgetCurrency">
@@ -256,7 +327,7 @@ export default function VendorsTable(props: any) {
                                 styles={DefaultSelectStyles(
                                     useColorModeValue,
                                     cellDropDownAlert(
-                                        rowData.budgetCurrency?.label,
+                                        rowData.budgetCurrency,
                                         rowData
                                     )
                                 )}
@@ -290,6 +361,8 @@ export default function VendorsTable(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
+                                isInvalid={budgetAmountError}
+                                // isInvalid={inputErrors.includes('budgetAmount')}
                                 value={rowData.budgetAmount}
                                 onChange={(event) => {
                                     var temp = [...vendors];
@@ -297,12 +370,10 @@ export default function VendorsTable(props: any) {
                                         event.target.value;
                                     setVendors(temp);
                                 }}
-                                bg={
-                                    !rowData.budgetAmount &&
-                                    !(rowData.vendor === 'TOTAL')
-                                        ? '#F3696F'
-                                        : '#fff'
-                                }
+                                bg={cellNumberAlert(
+                                    rowData.budgetAmount,
+                                    rowData
+                                )}
                             />
                         )}
                     </Cell>
@@ -320,12 +391,10 @@ export default function VendorsTable(props: any) {
                                         event.target.value;
                                     setVendors(temp);
                                 }}
-                                bg={
-                                    !rowData.budgetAmount &&
-                                    !(rowData.vendor === 'TOTAL')
-                                        ? '#F3696F'
-                                        : '#fff'
-                                }
+                                bg={cellNumberAlert(
+                                    rowData.localBudget,
+                                    rowData
+                                )}
                             />
                         )}
                     </Cell>
@@ -342,12 +411,11 @@ export default function VendorsTable(props: any) {
                                     temp[index!].eurBudget = event.target.value;
                                     setVendors(temp);
                                 }}
-                                bg={
-                                    rowData.vendor === 'TOTAL' &&
-                                    rowData.eurBudget !== estimatedIncomeEuro
-                                        ? '#F3696F'
-                                        : '#fff'
-                                }
+                                bg={totalAlert(
+                                    totalVendorBudgetInEUR,
+                                    rowData.vendor,
+                                    parseFloat(estimatedIncome)
+                                )}
                             />
                         )}
                     </Cell>
@@ -368,6 +436,7 @@ export default function VendorsTable(props: any) {
                         )}
                     </Cell>
                 </Column>
+                {/* FIXME: calculate */}
                 <Column width={300} resizable>
                     <HeaderCell>
                         Vendor Estimated Income in Campaign Currency
