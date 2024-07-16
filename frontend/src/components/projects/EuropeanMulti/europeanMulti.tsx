@@ -131,24 +131,22 @@ export default function Ermv(props: Props) {
     const [totalcbCosts, setTotalcbCosts] = useState('0.00');
     const [showErrors, setShowErrors] = useState(false);
 
-
     const getTotalVendorsBudget = () => {
         let total = 0;
-        vendors?.forEach((v: any, index: number) =>{
-            if(index === vendors.length - 1) {
+        vendors?.forEach((v: any, index: number) => {
+            if (index === vendors.length - 1) {
                 return;
             }
             const budgetNum = Number(v.eurBudget);
 
-            if(!isNaN(budgetNum)) {
+            if (!isNaN(budgetNum)) {
                 total += budgetNum;
             }
-        })
-        return total;   
+        });
+        return total;
     };
 
     const vendorBudgetInEUR = getTotalVendorsBudget();
-
 
     useEffect(() => {
         if (props.submission) {
@@ -383,6 +381,7 @@ export default function Ermv(props: Props) {
             '619b6799fe27d06ad17d75ae',
             '63295a2ef26db37a14557092',
             '6391eea09a3d043b9a89d767',
+            '636abbd43927f9c7703b19c4',
         ];
         var responses = await Promise.all(
             dropdownsIds.map((di) => {
@@ -400,6 +399,7 @@ export default function Ermv(props: Props) {
         ProjectStartQuarter = responses[9].data;
         BUs = responses[10].data;
         VendorsNames = responses[11].data;
+        AlsoInternationalVendorsNames= responses[12].data;
     }
 
     useEffect(() => {
@@ -442,6 +442,9 @@ export default function Ermv(props: Props) {
                 vendorsAfterCompanySelect = VendorsNames;
                 break;
             case '1550':
+                vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
+                break;
+            case '1010':
                 vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
                 break;
             default:
@@ -816,7 +819,6 @@ export default function Ermv(props: Props) {
 
         const vendorsNumValid = vendorsNames?.length >= 2;
 
-
         let vendorsBudgetSum = 0;
         let countryBreakdownPercents = 0;
 
@@ -861,8 +863,6 @@ export default function Ermv(props: Props) {
             isNumbersValuesValid
         );
     };
-
-    
 
     function cellTextAlert(value: any, row: any) {
         if (value !== '') {
@@ -1103,7 +1103,6 @@ export default function Ermv(props: Props) {
             );
             return;
         }
-        
 
         RestAPI.getSubmissions().then((response) => {
             var parentSubmissions = response.data.filter(

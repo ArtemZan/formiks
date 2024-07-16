@@ -611,8 +611,7 @@ export default function Cerov(props: Props) {
     ]);
 
     async function createSubmission(draft: boolean, local: string | null) {
-
-        var projectId = '629dfb3f55d209262194a3e6'
+        var projectId = '629dfb3f55d209262194a3e6';
         var parent: Submission = {
             project: projectId,
             title: campaignName,
@@ -1325,6 +1324,9 @@ export default function Cerov(props: Props) {
                                     break;
                                 case '6110':
                                     vendorsAfterCompanySelect = VendorsNames;
+                                    break;
+                                case '1010':
+                                    vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
                                     break;
                                 default:
                                     var temp = { ...vendor };

@@ -995,6 +995,7 @@ export default function Elmv(props: Props) {
         Year = responses[8].data;
         ProjectStartQuarter = responses[9].data;
         BUs = responses[10].data;
+        AlsoInternationalVendorsNames= responses[11].data
     }
     useEffect(() => {
         if (props.submission && !injectionReady) {
@@ -1287,6 +1288,10 @@ export default function Elmv(props: Props) {
                                     vendorsAfterCompanySelect =
                                         AlsoInternationalVendorsNames;
                                     break;
+                                    case '1010':
+                                        vendorsAfterCompanySelect =
+                                            AlsoInternationalVendorsNames;
+                                        break;
                                 case '6110':
                                     vendorsAfterCompanySelect = VendorsNames;
                                     break;

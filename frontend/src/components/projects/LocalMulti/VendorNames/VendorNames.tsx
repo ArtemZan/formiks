@@ -29,6 +29,9 @@ export default function VendorNames(props: any) {
 
         if (setVendors) {
             var data: any = [];
+            
+
+
             value.forEach((vendor: any) => {
                 data.push({
                     vendor: vendor.label,
@@ -42,7 +45,7 @@ export default function VendorNames(props: any) {
                     budgetAmount: '',
                     localBudget: '',
                     eurBudget: '',
-                    share: '',
+                    share: '',  
                     estimatedCostsCC: '',
                     estimatedIncomeCC: '',
                     estimatedCostsLC: '',

@@ -910,6 +910,10 @@ export default function Elov(props: Props) {
                                     vendorsAfterCompanySelect =
                                         AlsoInternationalVendorsNames;
                                     break;
+                                    case '1010':
+                                        vendorsAfterCompanySelect =
+                                            AlsoInternationalVendorsNames;
+                                        break;
                                 case '6110':
                                     vendorsAfterCompanySelect = VendorsNames;
                                     break;
