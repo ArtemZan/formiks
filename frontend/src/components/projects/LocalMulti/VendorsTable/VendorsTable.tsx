@@ -21,8 +21,84 @@ export default function VendorsTable(props: any) {
         cellNumberAlert,
         totalAlert,
         totalVendorBudgetInEUR,
-        estimatedIncome
+        estimatedIncome,
     } = props;
+
+    const buSelectHandler = (value: any, index: number | undefined) => {
+        if (value !== null) {
+            var temp = [...vendors];
+            if (
+                temp[index!].vendor.substring(
+                    temp[index!].vendor.toString().length - 6,
+                    temp[index!].vendor.toString().length - 4
+                ) === 'BU'
+            ) {
+                temp[index!].vendor =
+                    temp[index!].vendor.substring(
+                        0,
+                        temp[index!].vendor.length - 6
+                    ) +
+                    'BU ' +
+                    value.label.substring(0, 3);
+            } else {
+                var idxSelected = vendorsNames.findIndex(
+                    (s: any) =>
+                        s.label.substring(0, s.label.length) ===
+                        temp[index!].vendor
+                );
+                var vend = vendorsNames[idxSelected];
+                var lab = '';
+                if (
+                    vend.label.substring(
+                        vend.label.length - 5,
+                        vend.label.length - 3
+                    ) === 'BU'
+                ) {
+                    lab =
+                        vend.label.substring(0, vend.label.length - 5) +
+                        ' (' +
+                        vend.value.debitorischer +
+                        ')';
+                } else {
+                    lab = vend.label;
+                }
+
+                var data = {
+                    label: lab,
+                    value: {
+                        alsoMarketingConsultant:
+                            vend.value.alsoMarketingConsultant,
+                        bu: vend.value.bu,
+                        city: vend.value.city,
+                        cityCode: vend.value.cityCode,
+                        debitorischer: vend.value.debitorischer,
+                        email: vend.value.email,
+                        hersteller: vend.value.hersteller,
+                        kreditor: vend.value.kreditor,
+                        manufacturerName: vend.value.manufacturerName,
+                        vendorAddress: vend.value.vendorAddress,
+                    },
+                };
+                VendorsNames.splice(
+                    VendorsNames.findIndex(
+                        (s: any) =>
+                            s.label.substring(0, s.label.length) ===
+                            temp[index!].vendor
+                    ),
+                    0,
+                    data
+                );
+                temp[index!].vendor =
+                    temp[index!].vendor + ' BU ' + value.label.substring(0, 3);
+                vend.label = temp[index!].vendor;
+                var v = [...vendorsNames];
+                v[idxSelected] = vend;
+                setVendorsNames(v);
+            }
+            temp[index!].bu = value.label;
+            setVendors(temp);
+        }
+    };
 
     return (
         <Box w="100%">
@@ -144,105 +220,7 @@ export default function VendorsTable(props: any) {
                                             : '',
                                 }}
                                 onChange={(value) => {
-                                    if (value !== null) {
-                                        var temp = [...vendors];
-                                        if (
-                                            temp[index!].vendor.substring(
-                                                temp[index!].vendor.toString()
-                                                    .length - 6,
-                                                temp[index!].vendor.toString()
-                                                    .length - 4
-                                            ) === 'BU'
-                                        ) {
-                                            temp[index!].vendor =
-                                                temp[index!].vendor.substring(
-                                                    0,
-                                                    temp[index!].vendor.length -
-                                                        6
-                                                ) +
-                                                'BU ' +
-                                                value.label.substring(0, 3);
-                                        } else {
-                                            var idxSelected =
-                                                vendorsNames.findIndex(
-                                                    (s: any) =>
-                                                        s.label.substring(
-                                                            0,
-                                                            s.label.length
-                                                        ) ===
-                                                        temp[index!].vendor
-                                                );
-                                            var vend =
-                                                vendorsNames[idxSelected];
-                                            var lab = '';
-                                            if (
-                                                vend.label.substring(
-                                                    vend.label.length - 5,
-                                                    vend.label.length - 3
-                                                ) === 'BU'
-                                            ) {
-                                                lab =
-                                                    vend.label.substring(
-                                                        0,
-                                                        vend.label.length - 5
-                                                    ) +
-                                                    ' (' +
-                                                    vend.value.debitorischer +
-                                                    ')';
-                                            } else {
-                                                lab = vend.label;
-                                            }
-
-                                            var data = {
-                                                label: lab,
-                                                value: {
-                                                    alsoMarketingConsultant:
-                                                        vend.value
-                                                            .alsoMarketingConsultant,
-                                                    bu: vend.value.bu,
-                                                    city: vend.value.city,
-                                                    cityCode:
-                                                        vend.value.cityCode,
-                                                    debitorischer:
-                                                        vend.value
-                                                            .debitorischer,
-                                                    email: vend.value.email,
-                                                    hersteller:
-                                                        vend.value.hersteller,
-                                                    kreditor:
-                                                        vend.value.kreditor,
-                                                    manufacturerName:
-                                                        vend.value
-                                                            .manufacturerName,
-                                                    vendorAddress:
-                                                        vend.value
-                                                            .vendorAddress,
-                                                },
-                                            };
-                                            VendorsNames.splice(
-                                                VendorsNames.findIndex(
-                                                    (s: any) =>
-                                                        s.label.substring(
-                                                            0,
-                                                            s.label.length
-                                                        ) ===
-                                                        temp[index!].vendor
-                                                ),
-                                                0,
-                                                data
-                                            );
-                                            temp[index!].vendor =
-                                                temp[index!].vendor +
-                                                ' BU ' +
-                                                value.label.substring(0, 3);
-                                            vend.label = temp[index!].vendor;
-                                            var v = [...vendorsNames];
-                                            v[idxSelected] = vend;
-                                            setVendorsNames(v);
-                                        }
-                                        temp[index!].bu = value.label;
-                                        setVendors(temp);
-                                    }
+                                    buSelectHandler(value, index);
                                 }}
                                 placeholder=""
                                 classNamePrefix="select"

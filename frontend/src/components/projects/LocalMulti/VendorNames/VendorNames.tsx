@@ -10,7 +10,73 @@ export default function VendorNames(props: any) {
         VendorsNames,
         setVendorsNames,
         vendorsAfterCompanySelect,
+        setVendors,
     } = props;
+
+    const selectHandler = (value: any) => {
+        if (value.length < vendors.length) {
+            var deletedElem = vendorsNames.filter(
+                (n: any) => !value.includes(n)
+            );
+            deletedElem.forEach((e: any) => {
+                VendorsNames.splice(
+                    VendorsNames.findIndex((s: any) => s.label === e.label),
+                    1
+                );
+            });
+        }
+        setVendorsNames(value);
+
+        if (setVendors) {
+            var data: any = [];
+            value.forEach((vendor: any) => {
+                data.push({
+                    vendor: vendor.label,
+                    projectManager: vendor.value.alsoMarketingConsultant,
+                    creditor: vendor.value.kreditor,
+                    debitor: vendor.value.debitorischer,
+                    manufacturer: vendor.value.hersteller,
+                    bu: vendor.value.bu,
+                    ph: { label: '', value: '' },
+                    budgetCurrency: { label: '', value: '' },
+                    budgetAmount: '',
+                    localBudget: '',
+                    eurBudget: '',
+                    share: '',
+                    estimatedCostsCC: '',
+                    estimatedIncomeCC: '',
+                    estimatedCostsLC: '',
+                    estimatedCostsEUR: '',
+                    netProfitTargetVC: '',
+                    netProfitTargetLC: '',
+                    netProfitTargetEUR: '',
+                });
+            });
+
+            data.push({
+                vendor: 'TOTAL',
+                projectManager: '',
+                creditor: '',
+                debitor: '',
+                manufacturer: '',
+                bu: '',
+                ph: { label: '', value: '' },
+                budgetCurrency: { label: '', value: '' },
+                budgetAmount: '',
+                localBudget: '',
+                eurBudget: '',
+                share: '',
+                estimatedCostsCC: '',
+                estimatedIncomeCC: '',
+                estimatedCostsLC: '',
+                estimatedCostsEUR: '',
+                netProfitTargetVC: '',
+                netProfitTargetLC: '',
+                netProfitTargetEUR: '',
+            });
+            setVendors(data);
+        }
+    };
 
     return (
         <Box w="100%">
@@ -34,20 +100,7 @@ export default function VendorNames(props: any) {
                 value={vendorsNames}
                 placeholder=""
                 onChange={(value: any) => {
-                    if (value.length < vendors.length) {
-                        var deletedElem = vendorsNames.filter(
-                            (n: any) => !value.includes(n)
-                        );
-                        deletedElem.forEach((e: any) => {
-                            VendorsNames.splice(
-                                VendorsNames.findIndex(
-                                    (s: any) => s.label === e.label
-                                ),
-                                1
-                            );
-                        });
-                    }
-                    setVendorsNames(value);
+                    selectHandler(value);
                 }}
                 classNamePrefix="select"
                 isClearable={false}

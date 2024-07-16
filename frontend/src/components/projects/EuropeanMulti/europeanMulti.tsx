@@ -437,59 +437,6 @@ export default function Ermv(props: Props) {
     const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
     useEffect(() => {
-        if (props.submission) {
-            return;
-        }
-        var data: any = [];
-        vendorsNames.forEach((vendor: any) => {
-            data.push({
-                vendor: vendor.label,
-                projectManager: vendor.value.alsoMarketingConsultant,
-                creditor: vendor.value.kreditor,
-                debitor: vendor.value.debitorischer,
-                manufacturer: vendor.value.hersteller,
-                bu: vendor.value.bu,
-                ph: { label: '', value: '' },
-                budgetCurrency: { label: '', value: '' },
-                budgetAmount: '',
-                localBudget: '',
-                eurBudget: '',
-                share: '',
-                estimatedCostsCC: '',
-                estimatedIncomeCC: '',
-                estimatedCostsLC: '',
-                estimatedCostsEUR: '',
-                netProfitTargetVC: '',
-                netProfitTargetLC: '',
-                netProfitTargetEUR: '',
-            });
-        });
-
-        data.push({
-            vendor: 'TOTAL',
-            projectManager: '',
-            creditor: '',
-            debitor: '',
-            manufacturer: '',
-            bu: '',
-            ph: { label: '', value: '' },
-            budgetCurrency: { label: '', value: '' },
-            budgetAmount: '',
-            localBudget: '',
-            eurBudget: '',
-            share: '',
-            estimatedCostsCC: '',
-            estimatedIncomeCC: '',
-            estimatedCostsLC: '',
-            estimatedCostsEUR: '',
-            netProfitTargetVC: '',
-            netProfitTargetLC: '',
-            netProfitTargetEUR: '',
-        });
-        setVendors(data);
-    }, [vendorsNames]);
-
-    useEffect(() => {
         switch (requestorsCompanyName?.value?.code) {
             case '6110':
                 vendorsAfterCompanySelect = VendorsNames;
@@ -915,7 +862,6 @@ export default function Ermv(props: Props) {
         );
     };
 
-    console.log('countryBreakdown', countryBreakdown);
     
 
     function cellTextAlert(value: any, row: any) {
@@ -1673,6 +1619,7 @@ export default function Ermv(props: Props) {
                     VendorsNames={VendorsNames}
                     setVendorsNames={setVendorsNames}
                     vendorsAfterCompanySelect={vendorsAfterCompanySelect}
+                    setVendors={setVendors}
                 />
 
                 <VendorsTable
