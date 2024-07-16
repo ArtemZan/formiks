@@ -480,6 +480,8 @@ export default function Elmv(props: Props) {
         setVendors(data);
     }, [vendorsNames]);
 
+    console.log('vendors', vendors);
+
     function createSubmission(draft: boolean) {
         var projectId = '6246ec8efa2a446faadb8d9b';
         var parent: Submission = {
@@ -890,6 +892,10 @@ export default function Elmv(props: Props) {
                 });
             }
         });
+
+        if (vendors?.length < 3) {
+            fieldKeys.push('vendorName');
+        }
         if (totalBudget !== parseFloat(estimatedIncome)) {
             fieldKeys.push('totalVendorBudgetInEUR');
         }
@@ -995,7 +1001,7 @@ export default function Elmv(props: Props) {
         Year = responses[8].data;
         ProjectStartQuarter = responses[9].data;
         BUs = responses[10].data;
-        AlsoInternationalVendorsNames= responses[11].data
+        AlsoInternationalVendorsNames = responses[11].data;
     }
     useEffect(() => {
         if (props.submission && !injectionReady) {
@@ -1288,10 +1294,10 @@ export default function Elmv(props: Props) {
                                     vendorsAfterCompanySelect =
                                         AlsoInternationalVendorsNames;
                                     break;
-                                    case '1010':
-                                        vendorsAfterCompanySelect =
-                                            AlsoInternationalVendorsNames;
-                                        break;
+                                case '1010':
+                                    vendorsAfterCompanySelect =
+                                        AlsoInternationalVendorsNames;
+                                    break;
                                 case '6110':
                                     vendorsAfterCompanySelect = VendorsNames;
                                     break;

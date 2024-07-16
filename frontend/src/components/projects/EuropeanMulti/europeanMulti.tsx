@@ -874,7 +874,7 @@ export default function Ermv(props: Props) {
     }
 
     function cellDropDownAlert(value: any, row: any) {
-        if (value !== '') {
+        if (value?.label !== '') {
             return false;
         } else {
             if (row.vendor !== 'TOTAL') {
@@ -1722,7 +1722,7 @@ export default function Ermv(props: Props) {
                             [key: string]: any;
                         }
                         var formattedData = [];
-                        formattedData.push(['Request', 'Local Multi Vendor']);
+                        formattedData.push(['Request', 'European Multi Vendor']);
                         formattedData.push([
                             'Requestor`s Company Name',
                             requestorsCompanyName.label,
@@ -1834,7 +1834,7 @@ export default function Ermv(props: Props) {
                             'Creditor',
                             'Manufacturer',
                             'Business Unit',
-                            'PH1',
+                            // 'PH1',
                             'Vendor Budget Currency',
                             'Vendor Budget Amount',
                             'Vendor Budget in LC',
@@ -1855,7 +1855,7 @@ export default function Ermv(props: Props) {
                                 v.creditor,
                                 v.manufacturer,
                                 v.bu,
-                                v.ph,
+                                // v.ph,
                                 v.budgetCurrency.label,
                                 isNaN(v.budgetAmount) || v.budgetAmount === ''
                                     ? 0.0
@@ -1902,7 +1902,7 @@ export default function Ermv(props: Props) {
                         formattedData.push([]);
                         formattedData.push([
                             'Company Name',
-                            'VCompany Company Code',
+                            'Company Company Code',
                             'Country',
                             "Contact Person's Email",
                             'Local Project Number',
