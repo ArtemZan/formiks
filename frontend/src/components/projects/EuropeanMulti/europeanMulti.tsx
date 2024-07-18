@@ -1962,8 +1962,10 @@ export default function Ermv(props: Props) {
                         bg: useColorModeValue('blue.300', '#377bbf'),
                     }}
                     isDisabled={
-                        requestorsCompanyName.value.code !== '6110' ||
-                        props.submission
+                        requestorsCompanyName.value.code !== '6110' &&
+                        !countryBreakdown.some(
+                            (company: any) => company.companyCode === '6110'
+                        )
                     }
                     onClick={() => draftSubmitHandler(false)}
                 >
