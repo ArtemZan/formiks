@@ -1,5 +1,5 @@
 import { useColorModeValue, Input, Box, Text } from '@chakra-ui/react';
-import { Table, Uploader } from 'rsuite';
+import { Table } from 'rsuite';
 import Select from 'react-select';
 import { DefaultSelectStyles } from '../../../../utils/Styles';
 
@@ -12,7 +12,6 @@ export default function VendorsTable(props: any) {
         cellTextAlert,
         cellDropDownAlert,
         vendorsNames,
-        VendorsNames,
         setVendorsNames,
         BUs,
         budgetSource,
@@ -22,6 +21,7 @@ export default function VendorsTable(props: any) {
         totalAlert,
         totalVendorBudgetInEUR,
         estimatedIncome,
+        vendorsAfterCompanySelect
     } = props;
 
     const buSelectHandler = (value: any, index: number | undefined) => {
@@ -79,8 +79,9 @@ export default function VendorsTable(props: any) {
                         vendorAddress: vend.value.vendorAddress,
                     },
                 };
-                VendorsNames.splice(
-                    VendorsNames.findIndex(
+
+                vendorsAfterCompanySelect.splice(
+                    vendorsAfterCompanySelect.findIndex(
                         (s: any) =>
                             s.label.substring(0, s.label.length) ===
                             temp[index!].vendor
@@ -88,6 +89,7 @@ export default function VendorsTable(props: any) {
                     0,
                     data
                 );
+
                 temp[index!].vendor =
                     temp[index!].vendor + ' BU ' + value.label.substring(0, 3);
                 vend.label = temp[index!].vendor;

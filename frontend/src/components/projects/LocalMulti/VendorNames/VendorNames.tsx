@@ -7,20 +7,23 @@ export default function VendorNames(props: any) {
         vendorsNames,
         hasErrors,
         vendors,
-        VendorsNames,
         setVendorsNames,
         vendorsAfterCompanySelect,
         setVendors,
     } = props;
+
 
     const selectHandler = (value: any) => {
         if (value.length < vendors.length) {
             var deletedElem = vendorsNames.filter(
                 (n: any) => !value.includes(n)
             );
+
             deletedElem.forEach((e: any) => {
-                VendorsNames.splice(
-                    VendorsNames.findIndex((s: any) => s.label === e.label),
+                vendorsAfterCompanySelect.splice(
+                    vendorsAfterCompanySelect.findIndex(
+                        (s: any) => s.label === e.label
+                    ),
                     1
                 );
             });
@@ -29,8 +32,6 @@ export default function VendorNames(props: any) {
 
         if (setVendors) {
             var data: any = [];
-            
-
 
             value.forEach((vendor: any) => {
                 data.push({
@@ -45,7 +46,7 @@ export default function VendorNames(props: any) {
                     budgetAmount: '',
                     localBudget: '',
                     eurBudget: '',
-                    share: '',  
+                    share: '',
                     estimatedCostsCC: '',
                     estimatedIncomeCC: '',
                     estimatedCostsLC: '',

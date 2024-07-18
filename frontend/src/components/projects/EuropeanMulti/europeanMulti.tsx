@@ -874,13 +874,19 @@ export default function Ermv(props: Props) {
     }
 
     function cellDropDownAlert(value: any, row: any) {
-        if (value?.label !== '') {
+        if (row.vendor === 'TOTAL') {
             return false;
-        } else {
-            if (row.vendor !== 'TOTAL') {
-                return true;
-            } else return false;
+        } 
+
+        if(!value) {
+            return true;
         }
+
+        if (value?.label === '') {
+            return true;
+        } 
+
+        return false;
     }
 
     function cellNumberAlert(value: any, row: any) {
@@ -1615,7 +1621,6 @@ export default function Ermv(props: Props) {
                     vendorsNames={vendorsNames}
                     hasErrors={showErrors && vendorsNames?.length < 2}
                     vendors={vendors}
-                    VendorsNames={VendorsNames}
                     setVendorsNames={setVendorsNames}
                     vendorsAfterCompanySelect={vendorsAfterCompanySelect}
                     setVendors={setVendors}
@@ -1627,7 +1632,6 @@ export default function Ermv(props: Props) {
                     cellTextAlert={cellTextAlert}
                     cellDropDownAlert={cellDropDownAlert}
                     vendorsNames={vendorsNames}
-                    VendorsNames={VendorsNames}
                     setVendorsNames={setVendorsNames}
                     BUs={BUs}
                     budgetSource={budgetSource}
@@ -1638,6 +1642,7 @@ export default function Ermv(props: Props) {
                     totalAlert={totalAlert}
                     totalVendorBudgetInEUR={vendorBudgetInEUR}
                     estimatedIncome={estimatedIncomeEuro}
+                    vendorsAfterCompanySelect={vendorsAfterCompanySelect}                
                 />
                 <Box w="100%">
                     <Text mb="8px">Companies Participating</Text>
