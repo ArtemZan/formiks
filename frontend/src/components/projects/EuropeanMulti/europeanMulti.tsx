@@ -1541,7 +1541,7 @@ export default function Ermv(props: Props) {
                             : 'Campaign Net Profit Target in Campaign Currency'}
                     </Text>
                     <Input
-                        value={netProfitTargetBudgetCurrency}
+                        value={netProfitTargetBudgetCurrency === 'NaN' ? '' : netProfitTargetBudgetCurrency}
                         isInvalid={
                             showErrors &&
                             (!netProfitTargetBudgetCurrency ||
@@ -1559,8 +1559,8 @@ export default function Ermv(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Campaign Estimated Income in EUR</Text>
                     <Input
+                        value={estimatedIncomeEuro === 'NaN' ? '' : estimatedIncomeEuro}
                         disabled={budgetSource.value === 'noBudget'}
-                        value={estimatedIncomeEuro}
                         onChange={(event) => {
                             setEstimatedIncomeEuro(event.target.value);
                         }}
@@ -1571,7 +1571,7 @@ export default function Ermv(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Campaign Estimated Costs in EUR</Text>
                     <Input
-                        value={estimatedCostsEuro}
+                        value={estimatedCostsEuro === 'NaN' ? '' : estimatedCostsEuro}
                         onChange={(event) => {
                             setEstimatedCostsEuro(event.target.value);
                         }}
@@ -1590,7 +1590,7 @@ export default function Ermv(props: Props) {
                             showErrors &&
                             (!netProfitTarget || isNaN(Number(netProfitTarget)))
                         }
-                        value={netProfitTarget}
+                        value={netProfitTarget === 'NaN' ? '' : netProfitTarget}
                         onChange={(event) => {
                             setNetProfitTarget(event.target.value);
                         }}
@@ -1608,7 +1608,7 @@ export default function Ermv(props: Props) {
                             (!totalEstimatedCostsLC ||
                                 isNaN(Number(totalEstimatedCostsLC)))
                         }
-                        value={totalEstimatedCostsLC}
+                        value={totalEstimatedCostsLC === 'NaN' ? '' : totalEstimatedCostsLC}
                         onChange={(event) => {
                             setTotalEstimatedCostsLC(event.target.value);
                         }}
@@ -1907,7 +1907,7 @@ export default function Ermv(props: Props) {
                         formattedData.push([]);
                         formattedData.push([
                             'Company Name',
-                            'Company Company Code',
+                            'Company Code',
                             'Country',
                             "Contact Person's Email",
                             'Local Project Number',

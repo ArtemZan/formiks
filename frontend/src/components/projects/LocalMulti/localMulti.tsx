@@ -1702,7 +1702,7 @@ export default function Elmv(props: Props) {
                             : 'Campaign Net Profit Target in Campaign Currency'}
                     </Text>
                     <Input
-                        value={netProfitTargetBudgetCurrency}
+                        value={netProfitTargetBudgetCurrency === 'NaN' ? '' : netProfitTargetBudgetCurrency}
                         isInvalid={inputErrors.includes(
                             'campaignNetProfitTargetBudgetsCurrency'
                         )}
@@ -1720,7 +1720,7 @@ export default function Elmv(props: Props) {
                     <Input
                         disabled={budgetSource.value === 'noBudget'}
                         isInvalid={inputErrors.includes('estimatedIncomeCC')}
-                        value={estimatedIncome}
+                        value={estimatedIncome === 'NaN' ? '' : estimatedIncome}
                         onChange={(event) => {
                             setEstimatedIncome(event.target.value);
                         }}
@@ -1731,7 +1731,7 @@ export default function Elmv(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Campaign Estimated Costs in EUR</Text>
                     <Input
-                        value={estimatedCosts}
+                        value={estimatedCosts === 'NaN' ? '' : estimatedCosts}
                         isInvalid={inputErrors.includes(
                             'campaignEstimatedCostsEur'
                         )}
@@ -1750,7 +1750,7 @@ export default function Elmv(props: Props) {
                     </Text>
                     <Input
                         // value={netProfitTarget}
-                        value={netProfitTarget}
+                        value={netProfitTarget === 'NaN' ? '' : netProfitTarget}
                         isInvalid={inputErrors.includes(
                             'campaignNetProfitTargetEur'
                         )}
@@ -1766,7 +1766,8 @@ export default function Elmv(props: Props) {
                         Total Estimated Costs in Local Currency
                     </Text>
                     <Input
-                        value={totalEstimatedCostsLC}
+                        // value={totalEstimatedCostsLC}
+                        value={totalEstimatedCostsLC === 'NaN' ? '' : totalEstimatedCostsLC}
                         isInvalid={inputErrors.includes(
                             'totalEstimatedCostsLC'
                         )}

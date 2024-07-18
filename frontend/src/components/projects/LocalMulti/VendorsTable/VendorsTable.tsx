@@ -364,7 +364,7 @@ export default function VendorsTable(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
-                                value={rowData.localBudget}
+                                value={rowData.localBudget === 'NaN' ? '' : rowData.localBudget}
                                 onChange={(event) => {
                                     var temp = [...vendors];
                                     temp[index!].localBudget =
@@ -385,7 +385,7 @@ export default function VendorsTable(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
-                                value={rowData.eurBudget}
+                                value={rowData.eurBudget === 'NaN' ? '' : rowData.eurBudget}
                                 onChange={(event) => {
                                     var temp = [...vendors];
                                     temp[index!].eurBudget = event.target.value;
@@ -406,7 +406,7 @@ export default function VendorsTable(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value !== 'noBudget'}
-                                value={rowData.share}
+                                value={rowData.share === 'NaN' ? '' : rowData.share}
                                 onChange={(event) => {
                                     var temp = [...vendors];
                                     temp[index!].share = event.target.value;
@@ -426,7 +426,7 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
                                 onChange={() => {}}
-                                value={rowData.estimatedIncomeCC}
+                                value={rowData.estimatedIncomeCC === 'NaN' ? '' : rowData.estimatedIncomeCC}
                             />
                         )}
                     </Cell>
@@ -440,7 +440,7 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.estimatedCostsCC}
+                                value={rowData.estimatedCostsCC === 'NaN' ? '' : rowData.estimatedCostsCC}
                             />
                         )}
                     </Cell>
@@ -452,7 +452,7 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.estimatedCostsLC}
+                                value={rowData.estimatedCostsLC === 'NaN' ? '' : rowData.estimatedCostsLC}
                             />
                         )}
                     </Cell>
@@ -464,7 +464,7 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.estimatedCostsEUR}
+                                value={rowData.estimatedCostsEUR === 'NaN' ? '' : rowData.estimatedCostsEUR}
                             />
                         )}
                     </Cell>
@@ -478,7 +478,7 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.netProfitTargetVC}
+                                value={rowData.netProfitTargetVC === 'NaN' ? '' : rowData.netProfitTargetVC}
                             />
                         )}
                     </Cell>
@@ -490,7 +490,7 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.netProfitTargetLC}
+                                value={rowData.netProfitTargetLC === 'NaN' ? '' : rowData.netProfitTargetLC}
                             />
                         )}
                     </Cell>
@@ -502,7 +502,7 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.netProfitTargetEUR}
+                                value={rowData.netProfitTargetEUR === 'NaN' ? '' : rowData.netProfitTargetEUR}
                             />
                         )}
                     </Cell>

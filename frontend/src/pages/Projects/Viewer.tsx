@@ -19,7 +19,7 @@ import { RestAPI } from "../../api/rest";
 
 import Cerov from "../../components/projects/europeanOne";
 import Elmv from "../../components/projects/LocalMulti/localMulti";
-import Elov from "../../components/projects/localOne";
+import LocalOne from "../../components/projects/localOne";
 import Por from "../../components/projects/purchaseOrder";
 import Ermv from "../../components/projects/EuropeanMulti/europeanMulti";
 
@@ -64,7 +64,7 @@ export function Viewer(props: Props) {
         }
         if (props.match.params.id === "624ac98682eeddf1a9b6a622") {
           setPredefinedProject(
-            <Elov project={project} history={props.history} />
+            <LocalOne project={project} history={props.history} />
           );
         }
         if (props.match.params.id === "62610ab73a88d397b05cea12") {

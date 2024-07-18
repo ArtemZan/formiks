@@ -166,7 +166,7 @@ export default function CountryBreakdown(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
-                                value={rowData.contribution}
+                                value={rowData.contribution === 'NaN' ? '' : rowData.contribution}
                                 onChange={(event) => {
                                     var temp = [...countryBreakdown];
                                     temp[index!].contribution =
@@ -184,7 +184,7 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="estimatedCosts">
                         {(rowData, index) => (
                             <Input
-                                value={rowData.estimatedCosts}
+                                value={rowData.estimatedCosts === 'NaN' ? '' : rowData.estimatedCosts}
                                 onChange={(event) => {
                                     var temp = [...countryBreakdown];
                                     temp[index!].estimatedCosts =
@@ -201,14 +201,8 @@ export default function CountryBreakdown(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
-                                value={rowData.contributionEur}
+                                value={rowData.contributionEur === 'NaN' ? '' : rowData.contributionEur}
                                 onChange={(event) => {}}
-                                // bg={totalAlert(
-                                //     totalcbContributionEur,
-                                //     rowData.companyName,
-                                //     parseFloat(estimatedIncome),
-                                //     'budgetContributionEur'
-                                // )}
                             />
                         )}
                     </Cell>
@@ -218,14 +212,8 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="estimatedCostsEur">
                         {(rowData, index) => (
                             <Input
-                                value={rowData.estimatedCostsEur}
+                                value={rowData.estimatedCostsEur === 'NaN' ? '' : rowData.estimatedCostsEur}
                                 onChange={(event) => {}}
-                                // bg={totalAlert(
-                                //     totalcbCostsEur,
-                                //     rowData.companyName,
-                                //     parseFloat(estimatedCosts),
-                                //     'estimatedCostsEur'
-                                // )}
                             />
                         )}
                     </Cell>

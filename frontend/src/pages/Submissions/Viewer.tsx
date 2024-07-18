@@ -19,7 +19,7 @@ import { RestAPI } from "../../api/rest";
 
 import Ermv from "../../components/projects/EuropeanMulti/europeanMulti";
 import Elmv from "../../components/projects/LocalMulti/localMulti";
-import Elov from "../../components/projects/localOne";
+import LocalOne from "../../components/projects/localOne";
 import Por from "../../components/projects/purchaseOrder";
 import Cerov from "../../components/projects/europeanOne";
 import { Submission } from "../../types/submission";
@@ -77,7 +77,7 @@ export function Viewer(props: Props) {
           }
           if (response.data.submission.project === "624ac98682eeddf1a9b6a622") {
             setPredefinedProject(
-              <Elov
+              <LocalOne
                 project={project}
                 submission={response.data.submission}
                 children={response.data.children}
@@ -165,7 +165,7 @@ export function Viewer(props: Props) {
           }
           if (projectId === "624ac98682eeddf1a9b6a622") {
             setPredefinedProject(
-              <Elov
+              <LocalOne
                 project={project}
                 submission={response.data.submission}
                 children={response.data.children}

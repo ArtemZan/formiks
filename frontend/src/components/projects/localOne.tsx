@@ -10,7 +10,6 @@ import {
     HStack,
     Textarea,
     Button,
-    AlertTitle,
     AlertDescription,
     AlertIcon,
     Alert,
@@ -19,18 +18,15 @@ import Project from '../../types/project';
 import Select from 'react-select';
 import { getAccountInfo } from '../../utils/MsGraphApiCall';
 import DatePicker from 'react-datepicker';
-import isEqual from 'lodash/isEqual';
 import { toast } from 'react-toastify';
 import Toast from '../Toast';
 import * as FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
 
-import { Table, Uploader } from 'rsuite';
 import { Submission, SubmissionWithChildren } from '../../types/submission';
 import { RestAPI } from '../../api/rest';
 import { DefaultSelectStyles } from '../../utils/Styles';
-import { isObject } from 'lodash';
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -47,8 +43,6 @@ var ProjectStartQuarter: any[] = [];
 
 var vendorsAfterCompanySelect: string[] = [];
 
-const { Column, HeaderCell, Cell } = Table;
-
 interface Props {
     history: any;
     project: Project;
@@ -57,7 +51,7 @@ interface Props {
     isDraft?: boolean;
 }
 
-export default function Elov(props: Props) {
+export default function LocalOne(props: Props) {
     const [requestorsCompanyName, setRequestorsCompanyName] = useState<any>({
         label: '',
         value: { name: '', code: '', country: '' },
@@ -851,8 +845,6 @@ export default function Elov(props: Props) {
         requestorsCompanyName,
     ]);
 
-    console.log('vendorsAfterCompanySelect', vendorsAfterCompanySelect);
-
     return (
         <Box>
             <VStack spacing="20px" mb={'40px'} align="start">
@@ -1319,7 +1311,8 @@ export default function Elov(props: Props) {
                             : 'Campaign Net Profit Target in Campaign Currency'}
                     </Text>
                     <Input
-                        value={netProfitTargetBudgetCurrency}
+                        // value={netProfitTargetBudgetCurrency}
+                        value={netProfitTargetBudgetCurrency === 'NaN' ? '' : netProfitTargetBudgetCurrency}
                         isInvalid={inputErrors.includes('estimatedResultCC')}
                         onChange={(event) => {
                             setNetProfitTargetBudgetCurrency(
@@ -1335,7 +1328,7 @@ export default function Elov(props: Props) {
                     <Input
                         disabled={budgetSource.value === 'noBudget'}
                         isInvalid={inputErrors.includes('estimatedIncomeEUR')}
-                        value={estimatedIncome}
+                        value={estimatedIncome === 'NaN' ? '' : estimatedIncome}
                         onChange={(event) => {
                             setEstimatedIncome(event.target.value);
                         }}
@@ -1346,7 +1339,7 @@ export default function Elov(props: Props) {
                 <Box w="100%">
                     <Text mb="8px">Campaign Estimated Costs in EUR</Text>
                     <Input
-                        value={estimatedCosts}
+                        value={estimatedCosts === 'NaN' ? '' : estimatedCosts}
                         isInvalid={inputErrors.includes('estimatedCostsEUR')}
                         onChange={(event) => {
                             setEstimatedCosts(event.target.value);
@@ -1362,8 +1355,7 @@ export default function Elov(props: Props) {
                             : 'Campaign Net Profit Target in EUR'}
                     </Text>
                     <Input
-                        // value={netProfitTarget}
-                        value={netProfitTarget}
+                        value={netProfitTarget === 'NaN' ? '' : netProfitTarget}
                         isInvalid={inputErrors.includes('estimatedResultEUR')}
                         onChange={(event) => {
                             setNetProfitTarget(event.target.value);
@@ -1377,7 +1369,7 @@ export default function Elov(props: Props) {
                         Total Estimated Costs in Local Currency{' '}
                     </Text>
                     <Input
-                        value={totalEstimatedCostsLC}
+                        value={totalEstimatedCostsLC === 'NaN' ? '' : totalEstimatedCostsLC}
                         isInvalid={inputErrors.includes(
                             'totalEstimatedCostsLC'
                         )}
