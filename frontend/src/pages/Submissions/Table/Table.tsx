@@ -84,9 +84,10 @@ import {
     DisplayedColumnsList,
 } from './vars';
 import moment from 'moment';
-import { alsoProjectNumberUpdate } from './cellUpdateFunctions';
+import alsoProjectNumberUpdate from './cellUpdateFunctions/alsoProjectNumberUpdate';
 import { isReadonlyCell, getProjectColumns, cellReadonly } from './functions';
 import SaveFilters from './SaveFilters';
+import invoiceTypeUpdate from './cellUpdateFunctions/invoiceTypeUpdate';
 // import { types } from "util";
 // import { modalPropTypes } from "rsuite/esm/Overlay/Modal";
 // import { table } from "console";
@@ -407,15 +408,23 @@ export function SubmissionsTable(props: Props) {
 
     const [totalRequests, setTotalRequests] = useState(1);
 
+    // console.log('====================================');
+    // console.log('submissions 0 ', submissions && submissions[0]);
+    // console.log('submissions 2 ', submissions && submissions[2]);
+    // console.log('communicationSubmissions 0 ', communicationSubmissions && communicationSubmissions[0]);
+    // console.log('communicationSubmissions 18', communicationSubmissions && communicationSubmissions[18]);
+    // console.log('====================================');
+
     useEffect(() => {
         fetchDropdowns().then(() => forceUpdate());
     }, []);
     const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
 
-
     useEffect(() => {
         setUserRoles(props.roles);
     }, [props.roles]);
+
+    // console.log(communicationSubmissions);
 
     useEffect(() => {
         let tca = 0;
@@ -1291,9 +1300,7 @@ export function SubmissionsTable(props: Props) {
         ) {
             return '#f7cdd6';
         }
-        const {
-            equal: countryPrefixEqual
-        } = checkCountryPrefixEqual(
+        const { equal: countryPrefixEqual } = checkCountryPrefixEqual(
             props.rowData.data.alsoMarketingProjectNumberLMD
         );
 
@@ -1318,7 +1325,6 @@ export function SubmissionsTable(props: Props) {
                 return '#f9f9ff';
             }
         }
-
 
         switch (props.rowData.data.invoiceTypeLMD) {
             case 'Invoice':
@@ -1671,9 +1677,7 @@ export function SubmissionsTable(props: Props) {
             return '#F5FAEF';
         }
 
-        const {
-            equal: countryPrefixEqual
-        } = checkCountryPrefixEqual(
+        const { equal: countryPrefixEqual } = checkCountryPrefixEqual(
             props.rowData.data.alsoMarketingProjectNumberLMD
         );
 
@@ -3466,261 +3470,14 @@ export function SubmissionsTable(props: Props) {
                                                             path: string,
                                                             value: any
                                                         ) => {
-                                                            handleCommunicationCellUpdate(
+                                                            invoiceTypeUpdate(
                                                                 submission,
                                                                 path,
-                                                                value
+                                                                value,
+                                                                handleCommunicationCellUpdate,
+                                                                checkCountryPrefixEqual,
+                                                                props
                                                             );
-
-                                                            handleCommunicationCellUpdate(
-                                                                submission,
-                                                                'data.sendToLMD',
-                                                                ''
-                                                            );
-
-                                                            if (
-                                                                value ===
-                                                                'Invoice'
-                                                            ) {
-                                                                const {
-                                                                    equal: countryPrefixEqual,
-                                                                    country,
-                                                                    code: companyCode,
-                                                                } = checkCountryPrefixEqual(
-                                                                    props
-                                                                        .rowData
-                                                                        .data
-                                                                        .alsoMarketingProjectNumberLMD
-                                                                );
-                                                                if (
-                                                                    !countryPrefixEqual
-                                                                ) {
-                                                                    //Logic for case when country letters and prefix are different
-                                                                    handleCommunicationCellUpdate(
-                                                                        submission,
-                                                                        'data.vendorLMD',
-                                                                        ''
-                                                                    );
-                                                                    handleCommunicationCellUpdate(
-                                                                        submission,
-                                                                        'data.buLMD',
-                                                                        ''
-                                                                    );
-
-                                                                    if (
-                                                                        country ===
-                                                                            'IS' ||
-                                                                        country ===
-                                                                            'DE'
-                                                                    ) {
-                                                                        handleCommunicationCellUpdate(
-                                                                            submission,
-                                                                            'data.vodLMD',
-                                                                            '91010001'
-                                                                        );
-                                                                    } else {
-                                                                        handleCommunicationCellUpdate(
-                                                                            submission,
-                                                                            'data.vodLMD',
-                                                                            `9${companyCode}001`
-                                                                        );
-                                                                    }
-
-                                                                    return;
-                                                                }
-
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.materialNumberLMD',
-                                                                    '7000100'
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.reasonLMD',
-                                                                    '40'
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.reasonCodeLMD',
-                                                                    'ZWKZ'
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.cancellationInfoLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.additionalInformationLMD',
-                                                                    ''
-                                                                );
-                                                                if (
-                                                                    props
-                                                                        .rowData
-                                                                        .data
-                                                                        .paymentMethodLMD ===
-                                                                    'Intercompany'
-                                                                ) {
-                                                                    handleCommunicationCellUpdate(
-                                                                        submission,
-                                                                        'data.paymentMethodLMD',
-                                                                        ''
-                                                                    );
-                                                                }
-                                                            }
-
-                                                            if (
-                                                                value ===
-                                                                'Internal Invoice'
-                                                            ) {
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.materialNumberLMD',
-                                                                    '7000100'
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.reasonCodeLMD',
-                                                                    'ZWKZ'
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.reasonLMD',
-                                                                    '40'
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.cancellationInfoLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.additionalInformationLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.vodLMD',
-                                                                    ''
-                                                                );
-                                                            }
-                                                            if (
-                                                                value ===
-                                                                'Cancellation'
-                                                            ) {
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.materialNumberLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.alsoMarketingProjectNumberLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.vendorLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.amountLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.documentCurrencyLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.referenceNumberFromVendor',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.activityIdForPortalVendors',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.additionalInformationLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.dateOfServiceRenderedLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.linkToProofsLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.sendToLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.dunningStopLMD',
-                                                                    ''
-                                                                );
-
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.paymentMethodLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.vodLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.buLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.invoiceTextLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.reasonCodeLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.reasonLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.alsoMarketingProjectNumberLMD',
-                                                                    ''
-                                                                );
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.paymentMethodLMD',
-                                                                    ''
-                                                                );
-                                                            }
-                                                            if (
-                                                                props.rowData
-                                                                    .parentId ===
-                                                                null
-                                                            ) {
-                                                                handleCommunicationCellUpdate(
-                                                                    submission,
-                                                                    'data.statusLMD',
-                                                                    'INCOMPLETE'
-                                                                );
-                                                            }
                                                         }}
                                                         // onUpdate={handleCommunicationCellUpdate}
                                                         rowIndex={
@@ -4293,6 +4050,7 @@ export function SubmissionsTable(props: Props) {
                                                         initialValue={
                                                             props.cellData
                                                         }
+                                                        printLog={true}
                                                     />
                                                 ),
                                             },

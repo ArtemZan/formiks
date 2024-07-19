@@ -586,11 +586,16 @@ export default function Cerov(props: Props) {
         estimatedCostsBudgetCurrency,
     ]);
 
+    console.log('props.submission ', props.submission );
+    
+
     useEffect(() => {
         if (props.submission && !injectionReady) {
             return;
         }
 
+        console.log('here')
+        
         setProjectNumber(
             (requestorsCompanyName.value.code === ''
                 ? '????'

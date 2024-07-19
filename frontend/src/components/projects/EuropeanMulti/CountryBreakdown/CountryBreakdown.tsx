@@ -45,7 +45,6 @@ export default function CountryBreakdown(props: any) {
     };
 
     const getEstimatedCostValue = (rowData: any) => {
-        console.log('rowData', rowData);
         let total = 0;
 
         if (rowData.companyName === 'TOTAL') {

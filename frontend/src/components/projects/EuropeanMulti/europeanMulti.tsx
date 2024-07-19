@@ -131,6 +131,11 @@ export default function Ermv(props: Props) {
     const [totalcbCosts, setTotalcbCosts] = useState('0.00');
     const [showErrors, setShowErrors] = useState(false);
 
+    const [injectionReady, setInjectionReady] = useState(false);
+
+    console.log('projectNumber', projectNumber)
+    
+
     const getTotalVendorsBudget = () => {
         let total = 0;
         vendors?.forEach((v: any, index: number) => {
@@ -365,6 +370,11 @@ export default function Ermv(props: Props) {
                 setVendors([...v]);
             }
         }
+
+
+        setTimeout(() => {
+            setInjectionReady(true);
+        }, 3000);
     }, [props.submission, props.children, ExchangeRates]);
 
     async function fetchDropdowns() {
@@ -418,7 +428,7 @@ export default function Ermv(props: Props) {
     }, [projectNumber]);
 
     useEffect(() => {
-        if (props.submission) {
+        if (props.submission && !injectionReady) {
             return;
         }
         setTotalEstimatedCostsLC(
@@ -454,7 +464,7 @@ export default function Ermv(props: Props) {
     }, [requestorsCompanyName?.value?.code]);
 
     useEffect(() => {
-        if (props.submission) {
+        if (props.submission && !injectionReady) {
             return;
         }
         var data: any = [];
@@ -480,9 +490,9 @@ export default function Ermv(props: Props) {
     }, [companiesParticipating]);
 
     useEffect(() => {
-        // if (props.submission) {
-        //   return;
-        // }
+        if (props.submission && !injectionReady) {
+          return;
+        }
         var totalShare = 0.0;
         var totalContribution = 0.0;
         var totalCosts = 0.0;
@@ -521,7 +531,7 @@ export default function Ermv(props: Props) {
     ]);
 
     useEffect(() => {
-        if (props.submission) {
+        if (props.submission  && !injectionReady) {
             return;
         }
         const newEstimatedCostEuro =
@@ -604,7 +614,7 @@ export default function Ermv(props: Props) {
     ]);
 
     useEffect(() => {
-        if (props.submission) {
+        if (props.submission  && !injectionReady) {
             return;
         }
         setProjectNumber(
@@ -624,9 +634,9 @@ export default function Ermv(props: Props) {
     }, [year, campaignChannel, projectStartQuarter, requestorsCompanyName]);
 
     useEffect(() => {
-        // if (props.submission) {
-        //   return;
-        // }
+        if (props.submission && !injectionReady) {
+          return;
+        }
         var totalBudgetEur = 0;
         var totalBudgetLC = 0;
         var totalCostsCC = parseFloat(estimatedCostsBudgetCurrency);
@@ -845,7 +855,6 @@ export default function Ermv(props: Props) {
 
             requiredValues.push(v.projectNumber);
             requiredValues.push(v.contactEmail);
-            console.log('v.contactEmail', v.projectNumber);
         });
 
         const hasEmptyRequiredValues = requiredValues.some(

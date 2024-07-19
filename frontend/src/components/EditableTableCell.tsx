@@ -26,6 +26,7 @@ class EditableTableCell extends React.Component<
     bold?: boolean;
     maxLength?: number;
     invoiced?: boolean;
+    printLog?: boolean;
   },
   {
     cellValue: any;
@@ -52,6 +53,10 @@ class EditableTableCell extends React.Component<
   }
 
   componentDidMount() {
+    if(this.props.printLog) {
+      // console.log('rowData', this.props.rowData);
+    }
+
     var value: any = undefined;
     if (this.props.rowData.id === "total") {
       value = this.props.initialValue ? this.props.initialValue : "";

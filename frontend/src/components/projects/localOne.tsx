@@ -107,6 +107,9 @@ export default function LocalOne(props: Props) {
         },
     });
 
+    console.log('submission', props.submission);
+    
+
     const [organizingCompany, setOrganizingCompany] = useState('');
 
     const [totalEstimatedCostsLC, setTotalEstimatedCostsLC] = useState('');

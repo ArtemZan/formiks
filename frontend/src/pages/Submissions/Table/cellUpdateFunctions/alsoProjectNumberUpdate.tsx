@@ -1,9 +1,8 @@
 import { toast } from 'react-toastify';
-import { RestAPI } from '../../../api/rest';
-import Toast from '../../../components/Toast';
-import { Submission } from '../../../types/submission';
+import Toast from '../../../../components/Toast';
+import { Submission } from '../../../../types/submission';
 
-export const alsoProjectNumberUpdate = (
+const alsoProjectNumberUpdate = (
     submission: string,
     path: string,
     value: any,
@@ -16,6 +15,10 @@ export const alsoProjectNumberUpdate = (
     handleCommunicationCellUpdate(submission, path, value);
     handleCommunicationCellUpdate(submission, 'data.newLine', true);
     var vs = findSubmissionsByPO(value);
+
+    console.log('====================================');
+    console.log('vs', vs);
+    console.log('====================================');
 
     if (vs.length < 1) {
         handleCommunicationCellUpdate(submission, 'data.vendorLMD', '');
@@ -75,8 +78,6 @@ export const alsoProjectNumberUpdate = (
                     `9${companyCode}001`
                 );
             }
-
-            return;
         }
 
         // RestAPI.getSubmissionWithChildrenByProject(value).then(submission => {
@@ -84,10 +85,6 @@ export const alsoProjectNumberUpdate = (
         // })
 
         // return;
-
-        console.log('====================================');
-        console.log('.rowData.data.vendorLMD', props.rowData.data);
-        console.log('====================================');
 
         var currentVendor = '';
 
@@ -104,7 +101,7 @@ export const alsoProjectNumberUpdate = (
             currentVendor = props.rowData.data.vendorLMD;
         }
 
-        console.log('currentVendor', currentVendor);
+        
 
         if (typeof currentVendor === 'string') {
             var valid = false;
@@ -135,21 +132,24 @@ export const alsoProjectNumberUpdate = (
                         vendor = s.data.vendorName;
                     }
                     if (currentVendor === vendor) {
-                        handleCommunicationCellUpdate(
-                            submission,
-                            'data.vendorLMD',
-                            s.data.vendorName.toString()
-                        );
-                        handleCommunicationCellUpdate(
-                            submission,
-                            'data.buLMD',
-                            s.data.businessUnit
-                        );
-                        handleCommunicationCellUpdate(
-                            submission,
-                            'data.vodLMD',
-                            s.data.debitorNumber
-                        );
+                        if (countryPrefixEqual) {
+                            handleCommunicationCellUpdate(
+                                submission,
+                                'data.vendorLMD',
+                                s.data.vendorName.toString()
+                            );
+                            handleCommunicationCellUpdate(
+                                submission,
+                                'data.buLMD',
+                                s.data.businessUnit
+                            );
+                            handleCommunicationCellUpdate(
+                                submission,
+                                'data.vodLMD',
+                                s.data.debitorNumber
+                            );
+                        }
+
                         handleCommunicationCellUpdate(
                             submission,
                             'data.documentCurrencyLMD',
@@ -187,11 +187,22 @@ export const alsoProjectNumberUpdate = (
             vs[0].data.projectName
         );
         var amount = 0;
+
         switch (vs[0].data.projectType) {
-            case 'Local One Vendor' || 'European One Vendor':
+            case 'Local One Vendor':
                 amount = vs[0].data.campaignEstimatedIncomeBudgetsCurrency;
                 break;
-            case 'Local Multi Vendor' || 'European Multi Vendor':
+            case 'European One Vendor':
+                amount = vs[0].data.campaignEstimatedIncomeBudgetsCurrency;
+                break;
+            case 'European Multi Vendor':
+                vs.forEach((s: any) => {
+                    if (!isNaN(s.data.vendorBudgetAmount)) {
+                        amount += Number(s.data.vendorBudgetAmount);
+                    }
+                });
+                break;
+            case 'Local Multi Vendor':
                 vs.forEach((s: any) => {
                     if (!isNaN(s.data.vendorBudgetAmount)) {
                         amount += Number(s.data.vendorBudgetAmount);
@@ -201,8 +212,10 @@ export const alsoProjectNumberUpdate = (
             default:
                 amount = NaN;
         }
+
         if (!isNaN(amount)) {
             handleCommunicationCellUpdate(submission, 'data.amountLMD', amount);
         }
     }
 };
+export default alsoProjectNumberUpdate;
