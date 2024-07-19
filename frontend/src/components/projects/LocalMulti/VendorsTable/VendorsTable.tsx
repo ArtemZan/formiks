@@ -118,6 +118,7 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="vendor">
                         {(rowData, index) => (
                             <Input
+                                disabled={rowData.vendor === 'TOTAL'}
                                 value={rowData.vendor}
                                 onChange={(event) => {
                                     var temp = [...vendors];
@@ -162,6 +163,7 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="creditor">
                         {(rowData, index) => (
                             <Input
+                                disabled={rowData.vendor === 'TOTAL'}
                                 value={rowData.creditor}
                                 onChange={(event) => {
                                     var temp = [...vendors];
@@ -202,6 +204,7 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="bu">
                         {(rowData, index) => (
                             <Select
+                                isDisabled={rowData.vendor === 'TOTAL'}
                                 styles={DefaultSelectStyles(
                                     useColorModeValue,
                                     cellDropDownAlert(rowData.bu, rowData)
@@ -304,7 +307,10 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="budgetCurrency">
                         {(rowData, index) => (
                             <Select
-                                isDisabled={budgetSource.value === 'noBudget'}
+                                isDisabled={
+                                    budgetSource.value === 'noBudget' ||
+                                    rowData.vendor === 'TOTAL'
+                                }
                                 styles={DefaultSelectStyles(
                                     useColorModeValue,
                                     cellDropDownAlert(
@@ -341,7 +347,10 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="budgetAmount">
                         {(rowData, index) => (
                             <Input
-                                disabled={budgetSource.value === 'noBudget'}
+                                disabled={
+                                    budgetSource.value === 'noBudget' ||
+                                    rowData.vendor === 'TOTAL'
+                                }
                                 isInvalid={budgetAmountError}
                                 // isInvalid={inputErrors.includes('budgetAmount')}
                                 value={rowData.budgetAmount}
@@ -364,7 +373,7 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="localBudget">
                         {(rowData, index) => (
                             <Input
-                                disabled={budgetSource.value === 'noBudget'}
+                                disabled={budgetSource.value === 'noBudget' || rowData.vendor === 'TOTAL'}
                                 value={
                                     checkIsNan(rowData.localBudget)
                                         ? ''
@@ -389,7 +398,7 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="eurBudget">
                         {(rowData, index) => (
                             <Input
-                                disabled={budgetSource.value === 'noBudget'}
+                                disabled={budgetSource.value === 'noBudget' || rowData.vendor === 'TOTAL'}
                                 value={
                                     checkIsNan(rowData.eurBudget)
                                         ? ''
@@ -414,7 +423,7 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="share">
                         {(rowData, index) => (
                             <Input
-                                disabled={budgetSource.value !== 'noBudget'}
+                                disabled={budgetSource.value !== 'noBudget' || rowData.vendor === 'TOTAL'}
                                 value={
                                     checkIsNan(rowData.share)
                                         ? ''
@@ -437,7 +446,7 @@ export default function VendorsTable(props: any) {
                     <Cell dataKey="estimatedIncomeCC">
                         {(rowData, index) => (
                             <Input
-                                disabled={budgetSource.value === 'noBudget'}
+                                disabled={budgetSource.value === 'noBudget' || rowData.vendor === 'TOTAL'}
                                 onChange={() => {}}
                                 value={
                                     checkIsNan(rowData.estimatedIncomeCC)

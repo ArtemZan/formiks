@@ -1327,7 +1327,8 @@ export default function Cerov(props: Props) {
                                     vendorsAfterCompanySelect = VendorsNames;
                                     break;
                                 case '1010':
-                                    vendorsAfterCompanySelect = AlsoInternationalVendorsNames;
+                                    vendorsAfterCompanySelect =
+                                        AlsoInternationalVendorsNames;
                                     break;
                                 default:
                                     var temp = { ...vendor };
@@ -1738,7 +1739,11 @@ export default function Cerov(props: Props) {
                             : 'Campaign Net Profit Target in Campaign Currency'}
                     </Text>
                     <Input
-                        value={netProfitTargetBudgetCurrency === 'NaN' ? '' : netProfitTargetBudgetCurrency}
+                        value={
+                            netProfitTargetBudgetCurrency === 'NaN'
+                                ? ''
+                                : netProfitTargetBudgetCurrency
+                        }
                         isInvalid={inputErrors.includes(
                             'campaignNetProfitTargetBudgetsCurrency'
                         )}
@@ -1801,7 +1806,11 @@ export default function Cerov(props: Props) {
                         Total Estimated Costs in Local Currency
                     </Text>
                     <Input
-                        value={totalEstimatedCostsLC === 'NaN' ? '' : totalEstimatedCostsLC}
+                        value={
+                            totalEstimatedCostsLC === 'NaN'
+                                ? ''
+                                : totalEstimatedCostsLC
+                        }
                         isInvalid={inputErrors.includes(
                             'totalEstimatedCostsLC'
                         )}
@@ -2014,6 +2023,9 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="companyName">
                                 {(rowData, index) => (
                                     <Input
+                                        disabled={
+                                            rowData.companyName === 'TOTAL'
+                                        }
                                         value={rowData.companyName}
                                         onChange={(event) => {
                                             var temp = [...costBreakdown];
@@ -2035,6 +2047,9 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="companyCode">
                                 {(rowData, index) => (
                                     <Input
+                                        disabled={
+                                            rowData.companyName === 'TOTAL'
+                                        }
                                         value={rowData.companyCode}
                                         onChange={(event) => {
                                             var temp = [...costBreakdown];
@@ -2056,6 +2071,9 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="country">
                                 {(rowData, index) => (
                                     <Input
+                                        disabled={
+                                            rowData.companyName === 'TOTAL'
+                                        }
                                         value={rowData.country}
                                         onChange={(event) => {
                                             var temp = [...costBreakdown];
@@ -2077,6 +2095,9 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="contactEmail">
                                 {(rowData, index) => (
                                     <Input
+                                        disabled={
+                                            rowData.companyName === 'TOTAL'
+                                        }
                                         value={rowData.contactEmail}
                                         onChange={(event) => {
                                             var temp = [...costBreakdown];
@@ -2098,6 +2119,9 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="projectNumber">
                                 {(rowData, index) => (
                                     <Input
+                                        disabled={
+                                            rowData.companyName === 'TOTAL'
+                                        }
                                         value={rowData.projectNumber}
                                         onChange={(event) => {
                                             var temp = [...costBreakdown];
@@ -2118,6 +2142,9 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="share">
                                 {(rowData, index) => (
                                     <Input
+                                        disabled={
+                                            rowData.companyName === 'TOTAL'
+                                        }
                                         value={rowData.share}
                                         onChange={(event) => {
                                             onCostBreakdownTableChange(
@@ -2149,9 +2176,14 @@ export default function Cerov(props: Props) {
                                 {(rowData, index) => (
                                     <Input
                                         disabled={
-                                            budgetSource.value === 'noBudget'
+                                            budgetSource.value === 'noBudget' ||
+                                            rowData.companyName === 'TOTAL'
                                         }
-                                        value={checkIsNan(rowData.contribution) ? '' : rowData.contribution}
+                                        value={
+                                            checkIsNan(rowData.contribution)
+                                                ? ''
+                                                : rowData.contribution
+                                        }
                                         onChange={(event) => {
                                             onCostBreakdownTableChange(
                                                 'contribution',
@@ -2181,7 +2213,14 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="estimatedCosts">
                                 {(rowData, index) => (
                                     <Input
-                                        value={checkIsNan(rowData.estimatedCosts) ? '' : rowData.estimatedCosts}
+                                        disabled={
+                                            rowData.companyName === 'TOTAL'
+                                        }
+                                        value={
+                                            checkIsNan(rowData.estimatedCosts)
+                                                ? ''
+                                                : rowData.estimatedCosts
+                                        }
                                         onChange={(event) => {
                                             onCostBreakdownTableChange(
                                                 'estimatedCosts',
@@ -2210,9 +2249,13 @@ export default function Cerov(props: Props) {
                                 {(rowData, index) => (
                                     <Input
                                         disabled={
-                                            budgetSource.value === 'noBudget'
+                                            rowData.companyName === 'TOTAL'
                                         }
-                                        value={checkIsNan(rowData.contributionEur) ? '' : rowData.contributionEur}
+                                        value={
+                                            checkIsNan(rowData.contributionEur)
+                                                ? ''
+                                                : rowData.contributionEur
+                                        }
                                         onChange={(event) => {}}
                                         bg={totalAlert(
                                             totalcbContributionEur,
@@ -2231,7 +2274,16 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="estimatedCostsEur">
                                 {(rowData, index) => (
                                     <Input
-                                        value={checkIsNan(rowData.estimatedCostsEur) ? '' : rowData.estimatedCostsEur}
+                                        disabled={
+                                            rowData.companyName === 'TOTAL'
+                                        }
+                                        value={
+                                            checkIsNan(
+                                                rowData.estimatedCostsEur
+                                            )
+                                                ? ''
+                                                : rowData.estimatedCostsEur
+                                        }
                                         onChange={(event) => {}}
                                         bg={totalAlert(
                                             totalcbCostsEur,

@@ -26,17 +26,18 @@ export default function CountryBreakdown(props: any) {
     const getBudgetContributionValue = (rowData: any) => {
         let total = 0;
 
-        // if (rowData.companyName === 'TOTAL') {
-        //     countryBreakdown?.forEach((e: any) => {
-        //         const budgetNum = Number(e.contributionEur);
+        if (rowData.companyName === 'TOTAL') {
+            // countryBreakdown?.forEach((e: any) => {
+            //     const budgetNum = Number(e.contributionEur);
 
-        //         if (!isNaN(budgetNum)) {
-        //             total += budgetNum;
-        //         }
-        //     });
+            //     if (!isNaN(budgetNum)) {
+            //         total += budgetNum;
+            //     }
+            // });
 
-        //     return total.toFixed(2);
-        // }
+            // return total.toFixed(2);
+            return ''
+        }
 
         const budgetNum = Number(rowData.contributionEur);
 
@@ -47,17 +48,18 @@ export default function CountryBreakdown(props: any) {
         console.log('rowData', rowData);
         let total = 0;
 
-        // if (rowData.companyName === 'TOTAL') {
-        //     countryBreakdown?.forEach((e: any) => {
-        //         const budgetNum = Number(e.estimatedCosts);
+        if (rowData.companyName === 'TOTAL') {
+            // countryBreakdown?.forEach((e: any) => {
+            //     const budgetNum = Number(e.estimatedCosts);
 
-        //         if (!isNaN(budgetNum)) {
-        //             total += budgetNum;
-        //         }
-        //     });
+            //     if (!isNaN(budgetNum)) {
+            //         total += budgetNum;
+            //     }
+            // });
 
-        //     return total.toFixed(2);
-        // }
+            // return total.toFixed(2);
+            return ''
+        }
 
         const budgetNum = Number(rowData.estimatedCosts);
 
@@ -90,6 +92,7 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="companyName">
                         {(rowData, index) => (
                             <Input
+                                disabled={ rowData.companyName === 'TOTAL'}
                                 value={rowData.companyName}
                                 onChange={(event) => {
                                     if(rowData.companyName === 'TOTAL') {
@@ -112,6 +115,7 @@ export default function CountryBreakdown(props: any) {
                         {(rowData, index) => (
                             <Input
                                 value={rowData.companyCode}
+                                disabled={ rowData.companyName === 'TOTAL'}
                                 onChange={(event) => {
                                     if(rowData.companyName === 'TOTAL') {
                                         return;
@@ -131,11 +135,9 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="country">
                         {(rowData, index) => (
                             <Input
+                                disabled={ rowData.companyName === 'TOTAL'}
                                 value={rowData.country}
                                 onChange={(event) => {
-                                    if(rowData.companyName === 'TOTAL') {
-                                        return;
-                                    }
                                     var temp = [...countryBreakdown];
                                     temp[index!].country = event.target.value;
                                     setCountryBreakdown(temp);
@@ -150,15 +152,13 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="contactEmail">
                         {(rowData, index) => (
                             <Input
+                                disabled={ rowData.companyName === 'TOTAL'}
                                 isInvalid={
                                     rowData.companyName !== 'TOTAL' &&
                                     !rowData.contactEmail
                                 }
                                 value={rowData.contactEmail}
-                                onChange={(event) => {
-                                    if(rowData.companyName === 'TOTAL') {
-                                        return;
-                                    }
+                                onChange={(event) => { 
                                     var temp = [...countryBreakdown];
                                     temp[index!].contactEmail =
                                         event.target.value;
@@ -174,15 +174,13 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="projectNumber">
                         {(rowData, index) => (
                             <Input
+                                disabled={ rowData.companyName === 'TOTAL'}
                                 isInvalid={
                                     rowData.companyName !== 'TOTAL' &&
                                     !rowData.projectNumber
                                 }
                                 value={rowData.projectNumber}
                                 onChange={(event) => {
-                                    if(rowData.companyName === 'TOTAL') {
-                                        return; 
-                                    }
                                     
                                     var temp = [...countryBreakdown];
                                     temp[index!].projectNumber =
@@ -198,11 +196,9 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="share">
                         {(rowData, index) => (
                             <Input
+                                disabled={ rowData.companyName === 'TOTAL'}
                                 value={rowData.share}
                                 onChange={(event) => {
-                                    if(rowData.companyName === 'TOTAL') {
-                                        return;
-                                    }
 
                                     const share = Number(event.target.value);
                                     if (isNaN(share)) {
@@ -231,16 +227,13 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="contribution">
                         {(rowData, index) => (
                             <Input
-                                disabled={budgetSource.value === 'noBudget'}
+                                disabled={budgetSource.value === 'noBudget' || rowData.companyName === 'TOTAL'}
                                 value={
                                     checkIsNan(rowData.contribution)
                                         ? ''
                                         : rowData.contribution
                                 }
                                 onChange={(event) => {
-                                    if(rowData.companyName === 'TOTAL') {
-                                        return;
-                                    }
                                     var temp = [...countryBreakdown];
                                     temp[index!].contribution =
                                         event.target.value;
@@ -257,6 +250,7 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="estimatedCosts">
                         {(rowData, index) => (
                             <Input
+                                disabled={ rowData.companyName === 'TOTAL'}
                                 value={
                                     checkIsNan(rowData.estimatedCosts)
                                         ? ''
@@ -278,7 +272,7 @@ export default function CountryBreakdown(props: any) {
                         {(rowData, index) => {
                             return (
                                 <Input
-                                    disabled={budgetSource.value === 'noBudget'}
+                                    disabled={budgetSource.value === 'noBudget' || rowData.companyName === 'TOTAL'}
                                     value={getBudgetContributionValue(rowData)}
                                     onChange={(event) => {}}
                                 />
@@ -291,6 +285,7 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="estimatedCostsEur">
                         {(rowData, index) => (
                             <Input
+                                disabled={ rowData.companyName === 'TOTAL'}
                                 value={getEstimatedCostValue(rowData)}
                                 onChange={(event) => {}}
                             />
