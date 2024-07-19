@@ -31,6 +31,7 @@ import { DefaultSelectStyles } from '../../utils/Styles';
 import { RiCoinsLine } from 'react-icons/ri';
 import { stringToObject } from 'rsuite/esm/utils';
 import { CgToday } from 'react-icons/cg';
+import { checkIsNan } from '../../utils/functions';
 
 var PH1: any[] = [];
 var Companies: any[] = [];
@@ -2150,7 +2151,7 @@ export default function Cerov(props: Props) {
                                         disabled={
                                             budgetSource.value === 'noBudget'
                                         }
-                                        value={rowData.contribution}
+                                        value={checkIsNan(rowData.contribution) ? '' : rowData.contribution}
                                         onChange={(event) => {
                                             onCostBreakdownTableChange(
                                                 'contribution',
@@ -2180,7 +2181,7 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="estimatedCosts">
                                 {(rowData, index) => (
                                     <Input
-                                        value={rowData.estimatedCosts}
+                                        value={checkIsNan(rowData.estimatedCosts) ? '' : rowData.estimatedCosts}
                                         onChange={(event) => {
                                             onCostBreakdownTableChange(
                                                 'estimatedCosts',
@@ -2211,7 +2212,7 @@ export default function Cerov(props: Props) {
                                         disabled={
                                             budgetSource.value === 'noBudget'
                                         }
-                                        value={rowData.contributionEur}
+                                        value={checkIsNan(rowData.contributionEur) ? '' : rowData.contributionEur}
                                         onChange={(event) => {}}
                                         bg={totalAlert(
                                             totalcbContributionEur,
@@ -2230,7 +2231,7 @@ export default function Cerov(props: Props) {
                             <Cell dataKey="estimatedCostsEur">
                                 {(rowData, index) => (
                                     <Input
-                                        value={rowData.estimatedCostsEur}
+                                        value={checkIsNan(rowData.estimatedCostsEur) ? '' : rowData.estimatedCostsEur}
                                         onChange={(event) => {}}
                                         bg={totalAlert(
                                             totalcbCostsEur,

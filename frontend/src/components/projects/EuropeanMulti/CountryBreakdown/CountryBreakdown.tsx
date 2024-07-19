@@ -1,5 +1,6 @@
 import { Input, Box, Text } from '@chakra-ui/react';
 import { Table } from 'rsuite';
+import { checkIsNan } from '../../../../utils/functions';
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -21,6 +22,47 @@ export default function CountryBreakdown(props: any) {
     const totalShareFormated = isNaN(totalShareNum)
         ? '0.00'
         : totalShareNum.toFixed(2);
+
+    const getBudgetContributionValue = (rowData: any) => {
+        let total = 0;
+
+        // if (rowData.companyName === 'TOTAL') {
+        //     countryBreakdown?.forEach((e: any) => {
+        //         const budgetNum = Number(e.contributionEur);
+
+        //         if (!isNaN(budgetNum)) {
+        //             total += budgetNum;
+        //         }
+        //     });
+
+        //     return total.toFixed(2);
+        // }
+
+        const budgetNum = Number(rowData.contributionEur);
+
+        return checkIsNan(budgetNum) ? '' : budgetNum.toFixed(2);
+    };
+
+    const getEstimatedCostValue = (rowData: any) => {
+        console.log('rowData', rowData);
+        let total = 0;
+
+        // if (rowData.companyName === 'TOTAL') {
+        //     countryBreakdown?.forEach((e: any) => {
+        //         const budgetNum = Number(e.estimatedCosts);
+
+        //         if (!isNaN(budgetNum)) {
+        //             total += budgetNum;
+        //         }
+        //     });
+
+        //     return total.toFixed(2);
+        // }
+
+        const budgetNum = Number(rowData.estimatedCosts);
+
+        return checkIsNan(budgetNum) ? '' : budgetNum.toFixed(2);
+    };
 
     return (
         <Box w="100%">
@@ -50,6 +92,10 @@ export default function CountryBreakdown(props: any) {
                             <Input
                                 value={rowData.companyName}
                                 onChange={(event) => {
+                                    if(rowData.companyName === 'TOTAL') {
+                                        return;
+                                    }
+
                                     var temp = [...countryBreakdown];
                                     temp[index!].companyName =
                                         event.target.value;
@@ -67,6 +113,9 @@ export default function CountryBreakdown(props: any) {
                             <Input
                                 value={rowData.companyCode}
                                 onChange={(event) => {
+                                    if(rowData.companyName === 'TOTAL') {
+                                        return;
+                                    }
                                     var temp = [...countryBreakdown];
                                     temp[index!].companyCode =
                                         event.target.value;
@@ -84,6 +133,9 @@ export default function CountryBreakdown(props: any) {
                             <Input
                                 value={rowData.country}
                                 onChange={(event) => {
+                                    if(rowData.companyName === 'TOTAL') {
+                                        return;
+                                    }
                                     var temp = [...countryBreakdown];
                                     temp[index!].country = event.target.value;
                                     setCountryBreakdown(temp);
@@ -104,6 +156,9 @@ export default function CountryBreakdown(props: any) {
                                 }
                                 value={rowData.contactEmail}
                                 onChange={(event) => {
+                                    if(rowData.companyName === 'TOTAL') {
+                                        return;
+                                    }
                                     var temp = [...countryBreakdown];
                                     temp[index!].contactEmail =
                                         event.target.value;
@@ -119,9 +174,16 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="projectNumber">
                         {(rowData, index) => (
                             <Input
-                                isInvalid={rowData.companyName !== 'TOTAL' && !rowData.projectNumber}
+                                isInvalid={
+                                    rowData.companyName !== 'TOTAL' &&
+                                    !rowData.projectNumber
+                                }
                                 value={rowData.projectNumber}
                                 onChange={(event) => {
+                                    if(rowData.companyName === 'TOTAL') {
+                                        return; 
+                                    }
+                                    
                                     var temp = [...countryBreakdown];
                                     temp[index!].projectNumber =
                                         event.target.value;
@@ -138,6 +200,10 @@ export default function CountryBreakdown(props: any) {
                             <Input
                                 value={rowData.share}
                                 onChange={(event) => {
+                                    if(rowData.companyName === 'TOTAL') {
+                                        return;
+                                    }
+
                                     const share = Number(event.target.value);
                                     if (isNaN(share)) {
                                         return;
@@ -166,8 +232,15 @@ export default function CountryBreakdown(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
-                                value={rowData.contribution === 'NaN' ? '' : rowData.contribution}
+                                value={
+                                    checkIsNan(rowData.contribution)
+                                        ? ''
+                                        : rowData.contribution
+                                }
                                 onChange={(event) => {
+                                    if(rowData.companyName === 'TOTAL') {
+                                        return;
+                                    }
                                     var temp = [...countryBreakdown];
                                     temp[index!].contribution =
                                         event.target.value;
@@ -184,7 +257,11 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="estimatedCosts">
                         {(rowData, index) => (
                             <Input
-                                value={rowData.estimatedCosts === 'NaN' ? '' : rowData.estimatedCosts}
+                                value={
+                                    checkIsNan(rowData.estimatedCosts)
+                                        ? ''
+                                        : rowData.estimatedCosts
+                                }
                                 onChange={(event) => {
                                     var temp = [...countryBreakdown];
                                     temp[index!].estimatedCosts =
@@ -198,13 +275,15 @@ export default function CountryBreakdown(props: any) {
                 <Column width={400} resizable>
                     <HeaderCell>Budget contribution in Euro</HeaderCell>
                     <Cell dataKey="budgetContributionEur">
-                        {(rowData, index) => (
-                            <Input
-                                disabled={budgetSource.value === 'noBudget'}
-                                value={rowData.contributionEur === 'NaN' ? '' : rowData.contributionEur}
-                                onChange={(event) => {}}
-                            />
-                        )}
+                        {(rowData, index) => {
+                            return (
+                                <Input
+                                    disabled={budgetSource.value === 'noBudget'}
+                                    value={getBudgetContributionValue(rowData)}
+                                    onChange={(event) => {}}
+                                />
+                            );
+                        }}
                     </Cell>
                 </Column>
                 <Column width={400} resizable>
@@ -212,7 +291,7 @@ export default function CountryBreakdown(props: any) {
                     <Cell dataKey="estimatedCostsEur">
                         {(rowData, index) => (
                             <Input
-                                value={rowData.estimatedCostsEur === 'NaN' ? '' : rowData.estimatedCostsEur}
+                                value={getEstimatedCostValue(rowData)}
                                 onChange={(event) => {}}
                             />
                         )}

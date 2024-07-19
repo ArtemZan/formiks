@@ -2,6 +2,7 @@ import { useColorModeValue, Input, Box, Text } from '@chakra-ui/react';
 import { Table } from 'rsuite';
 import Select from 'react-select';
 import { DefaultSelectStyles } from '../../../../utils/Styles';
+import { checkIsNan } from '../../../../utils/functions';
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -21,7 +22,7 @@ export default function VendorsTable(props: any) {
         totalAlert,
         totalVendorBudgetInEUR,
         estimatedIncome,
-        vendorsAfterCompanySelect
+        vendorsAfterCompanySelect,
     } = props;
 
     const buSelectHandler = (value: any, index: number | undefined) => {
@@ -364,7 +365,11 @@ export default function VendorsTable(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
-                                value={rowData.localBudget === 'NaN' ? '' : rowData.localBudget}
+                                value={
+                                    checkIsNan(rowData.localBudget)
+                                        ? ''
+                                        : rowData.localBudget
+                                }
                                 onChange={(event) => {
                                     var temp = [...vendors];
                                     temp[index!].localBudget =
@@ -385,7 +390,11 @@ export default function VendorsTable(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
-                                value={rowData.eurBudget === 'NaN' ? '' : rowData.eurBudget}
+                                value={
+                                    checkIsNan(rowData.eurBudget)
+                                        ? ''
+                                        : rowData.eurBudget
+                                }
                                 onChange={(event) => {
                                     var temp = [...vendors];
                                     temp[index!].eurBudget = event.target.value;
@@ -406,7 +415,11 @@ export default function VendorsTable(props: any) {
                         {(rowData, index) => (
                             <Input
                                 disabled={budgetSource.value !== 'noBudget'}
-                                value={rowData.share === 'NaN' ? '' : rowData.share}
+                                value={
+                                    checkIsNan(rowData.share)
+                                        ? ''
+                                        : rowData.share
+                                }
                                 onChange={(event) => {
                                     var temp = [...vendors];
                                     temp[index!].share = event.target.value;
@@ -426,7 +439,11 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled={budgetSource.value === 'noBudget'}
                                 onChange={() => {}}
-                                value={rowData.estimatedIncomeCC === 'NaN' ? '' : rowData.estimatedIncomeCC}
+                                value={
+                                    checkIsNan(rowData.estimatedIncomeCC)
+                                        ? ''
+                                        : rowData.estimatedIncomeCC
+                                }
                             />
                         )}
                     </Cell>
@@ -440,7 +457,11 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.estimatedCostsCC === 'NaN' ? '' : rowData.estimatedCostsCC}
+                                value={
+                                    checkIsNan(rowData.estimatedCostsCC)
+                                        ? ''
+                                        : rowData.estimatedCostsCC
+                                }
                             />
                         )}
                     </Cell>
@@ -452,7 +473,11 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.estimatedCostsLC === 'NaN' ? '' : rowData.estimatedCostsLC}
+                                value={
+                                    checkIsNan(rowData.estimatedCostsLC)
+                                        ? ''
+                                        : rowData.estimatedCostsLC
+                                }
                             />
                         )}
                     </Cell>
@@ -464,7 +489,11 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.estimatedCostsEUR === 'NaN' ? '' : rowData.estimatedCostsEUR}
+                                value={
+                                    checkIsNan(rowData.estimatedCostsEUR)
+                                        ? ''
+                                        : rowData.estimatedCostsEUR
+                                }
                             />
                         )}
                     </Cell>
@@ -478,7 +507,11 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.netProfitTargetVC === 'NaN' ? '' : rowData.netProfitTargetVC}
+                                value={
+                                    checkIsNan(rowData.netProfitTargetVC)
+                                        ? ''
+                                        : rowData.netProfitTargetVC
+                                }
                             />
                         )}
                     </Cell>
@@ -490,7 +523,11 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.netProfitTargetLC === 'NaN' ? '' : rowData.netProfitTargetLC}
+                                value={
+                                    checkIsNan(rowData.netProfitTargetLC)
+                                        ? ''
+                                        : rowData.netProfitTargetLC
+                                }
                             />
                         )}
                     </Cell>
@@ -502,7 +539,11 @@ export default function VendorsTable(props: any) {
                             <Input
                                 disabled
                                 onChange={() => {}}
-                                value={rowData.netProfitTargetEUR === 'NaN' ? '' : rowData.netProfitTargetEUR}
+                                value={
+                                    checkIsNan(rowData.netProfitTargetEUR)
+                                        ? ''
+                                        : rowData.netProfitTargetEUR
+                                }
                             />
                         )}
                     </Cell>
