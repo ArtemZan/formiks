@@ -22,14 +22,14 @@ jobs:
           # config_file: .github/workflows/client.ovpn
           username: ${{ secrets.OVPN_USERNAME }}
           password: ${{ secrets.OVPN_PASSWORD }}
-          client_key: ${{ secrets.USER_KEY }}
+          # client_key: ${{ secrets.USER_KEY }}
       - name: Upload the source
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
+          # port: ${{ secrets.PORT }}
           source: "frontend/*,!frontend/node_modules/*,!frontend/.github/*,!frontend/README.md,!frontend/.gitignore"
           target: formiks/frontend
       - name: Use SSH
@@ -37,11 +37,11 @@ jobs:
         with: 
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd formiks/frontend
             rm -rf build
             export NODE_OPTIONS="--max-old-space-size=8192"
             yarn install
             yarn build
-            echo ${{ secrets.PASSWORD }} | sudo -S systemctl restart formiks.service
+            echo ${{ secrets.SERVER_PASSWORD }} | sudo -S systemctl restart formiks.service
